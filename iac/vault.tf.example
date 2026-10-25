@@ -1,0 +1,18 @@
+# OpenBao-backed XO creds — copy to vault.tf, no secret values here.
+# Needs: provider vault + env VAULT_ADDR + `bao login` once per machine.
+#
+# terraform {
+#   required_providers {
+#     vault = { source = "hashicorp/vault" version = "~> 4.0" }
+#   }
+# }
+#
+# data "vault_kv_secret_v2" "xo" {
+#   mount = "kv"
+#   name  = "homelab/xo"
+# }
+#
+# provider "xenorchestra" {
+#   url   = data.vault_kv_secret_v2.xo.data["url"]
+#   token = data.vault_kv_secret_v2.xo.data["token"]
+# }

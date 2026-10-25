@@ -1,0 +1,14 @@
+# Rename to vm.tf and fill names from your XO instance.
+# data "xenorchestra_pool" "pool" { name_label = "Main pool" }
+# data "xenorchestra_template" "tmpl" { name_label = "Ubuntu 24.04 Cloud-Init" }
+# data "xenorchestra_sr" "sr" { name_label = "Local storage" pool_id = data.xenorchestra_pool.pool.id }
+# data "xenorchestra_network" "net" { name_label = "Pool-wide network" pool_id = data.xenorchestra_pool.pool.id }
+#
+# resource "xenorchestra_vm" "vm" {
+#   name_label  = "example"
+#   template    = data.xenorchestra_template.tmpl.id
+#   cpus        = 1
+#   memory_max  = 2147483648
+#   network { network_id = data.xenorchestra_network.net.id }
+#   disk { sr_id = data.xenorchestra_sr.sr.id name_label = "root" size = 21474836480 }
+# }

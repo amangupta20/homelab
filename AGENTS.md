@@ -18,7 +18,8 @@ Read in this order:
   completeness. If something is untested, say so.
 - No secrets in this repo. No tokens, passwords, private keys, real public
   domains, or full configs containing secrets. Examples use placeholders like
-  `__PASTE_ONCE__`. See `docs/secrets-openbao.md` for where secrets live.
+  `__PASTE_ONCE__`. See `docs/secrets-openbao.md` for where secrets live, and
+  `docs/secret-scanning.md` for the scan that blocks a commit or push.
 - Look before touching. Read-only recon first (list, describe, plan), report
   what you found, then change.
 - Snapshots or verified backups before any write to infrastructure. Say which

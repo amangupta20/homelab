@@ -32,6 +32,7 @@ never in git. See `docs/secrets-openbao.md` for where they live.
 - `ops/backup-restore.md` — what gets backed up, and what restore is still untested.
 - `ops/migration.md` — what order the current migration runs in.
 - `docs/secrets-openbao.md` — where secrets live and how to use them.
+- `docs/secret-scanning.md` — the scan that blocks a commit or push carrying a secret.
 - `AGENTS.md` — instructions for AI agents working in this repo.
 
 ## Quick look

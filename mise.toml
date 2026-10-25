@@ -1,0 +1,12 @@
+# Toolchain for this repo. Run `mise install` once per checkout, then
+# `mise run hooks:install` to point git at the tracked hooks.
+[tools]
+gitleaks = "8.30.1"
+
+[tasks."hooks:install"]
+description = "Point git at the tracked hooks (once per checkout)"
+run = "git config core.hooksPath .githooks && echo 'core.hooksPath=.githooks'"
+
+[tasks.scan]
+description = "Scan the full git history for secrets"
+run = "gitleaks git --redact --no-banner -c secret-scan.toml"

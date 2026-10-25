@@ -1,0 +1,51 @@
+#!/usr/bin/env sh
+# Blocks a push that carries a credential in any commit being pushed.
+# A commit already made with --no-verify still cannot leave the machine.
+#
+# Reads the refs git hands a pre-push hook on stdin:
+#   <local ref> <local sha> <remote ref> <remote sha>
+set -eu
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "pre-push: gitleaks is not installed." >&2
+  echo "          run: mise install" >&2
+  exit 1
+fi
+
+root=$(git rev-parse --show-toplevel)
+cd "$root"
+conf="$root/secret-scan.toml"
+
+zero=0000000000000000000000000000000000000000
+status=0
+
+while read -r local_ref local_sha _remote_ref remote_sha; do
+  # Deleting a remote branch pushes no content.
+  [ "$local_sha" = "$zero" ] && continue
+
+  if [ "$remote_sha" = "$zero" ]; then
+    # New remote branch: its whole history is new to the remote.
+    echo "pre-push: scanning full history for $local_ref"
+    gitleaks git --redact --no-banner -c "$conf" || status=1
+  else
+    echo "pre-push: scanning $local_ref ($remote_sha..$local_sha)"
+    gitleaks git --redact --no-banner -c "$conf" \
+      --log-opts "$remote_sha..$local_sha" || status=1
+  fi
+done
+
+# Same blind spot as pre-commit: the config file is never scanned by the pass
+# that uses it. Give it one pass of its own with a throwaway copy as config.
+tmp=$(mktemp)
+trap 'rm -f "$tmp"' EXIT
+cp "$conf" "$tmp"
+gitleaks dir "$conf" --redact --no-banner -c "$tmp" || status=1
+
+if [ "$status" -ne 0 ]; then
+  echo "" >&2
+  echo "pre-push: secret found in a commit being pushed. Nothing was sent." >&2
+  echo "          Rotate the credential first, then rewrite the commit." >&2
+  echo "          See docs/secret-scanning.md" >&2
+fi
+
+exit "$status"

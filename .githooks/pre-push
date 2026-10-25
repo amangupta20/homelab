@@ -21,40 +21,73 @@ tmp=$(mktemp)
 trap 'rm -f "$tmp"' EXIT
 cp secret-scan.toml "$tmp"
 
-zero=0000000000000000000000000000000000000000
-status=0
+# A leak and a scan that could not run both block the push, but they need
+# different instructions, so they are tracked apart.
+leak=0
+failed=0
 
 while read -r local_ref local_sha _remote_ref remote_sha; do
-  # Deleting a remote branch pushes no content.
-  [ "$local_sha" = "$zero" ] && continue
+  # Deleting a remote branch pushes no content: the local oid is all zeros.
+  # How many zeros depends on the object format (40 for SHA-1, 64 for SHA-256),
+  # so match the shape rather than a fixed length.
+  case "$local_sha" in
+    *[!0]*) ;;      # a real object id
+    *) continue ;;  # all zeros -> deletion
+  esac
 
   # Fail closed: gitleaks exits 0 when git cannot resolve a revision, so a range
   # this clone does not understand must never be mistaken for a clean scan.
   if ! git rev-parse --verify --quiet "$local_sha^{commit}" >/dev/null; then
-    echo "pre-push: cannot resolve $local_sha for $local_ref; refusing to push unscanned." >&2
-    status=1
+    echo "pre-push: cannot resolve $local_sha for $local_ref" >&2
+    failed=1
     continue
   fi
+
+  has_remote_tip=1
+  case "$remote_sha" in
+    *[!0]*) ;;
+    *) has_remote_tip=0 ;;
+  esac
 
   # Scan only the commits this ref actually carries. A bare `gitleaks git` walks
   # --all and would block a clean push because of an unrelated local branch.
   # If the remote tip is absent locally (not fetched yet, e.g. before a
   # force-push), scan the pushed ref's own history rather than a range git
   # cannot resolve.
-  if [ "$remote_sha" != "$zero" ] && git rev-parse --verify --quiet "$remote_sha^{commit}" >/dev/null; then
-    echo "pre-push: scanning $local_ref ($remote_sha..$local_sha)"
-    gitleaks git --redact --no-banner -v -c "$tmp" --log-opts "$remote_sha..$local_sha" || status=1
+  if [ "$has_remote_tip" = 1 ] && git rev-parse --verify --quiet "$remote_sha^{commit}" >/dev/null; then
+    range="$remote_sha..$local_sha"
   else
-    echo "pre-push: scanning the full history of $local_ref"
-    gitleaks git --redact --no-banner -v -c "$tmp" --log-opts "$local_sha" || status=1
+    range="$local_sha"
+  fi
+
+  echo "pre-push: scanning $local_ref ($range)"
+  if out=$(gitleaks git --redact --no-banner -v -c "$tmp" --log-opts "$range" 2>&1); then
+    printf '%s\n' "$out"
+  else
+    printf '%s\n' "$out" >&2
+    # gitleaks exits non-zero both for findings and for its own failures; only
+    # the first deserves the rotate-and-rewrite advice.
+    case "$out" in
+      *"leaks found"*) leak=1 ;;
+      *) failed=1 ;;
+    esac
   fi
 done
 
-if [ "$status" -ne 0 ]; then
+if [ "$leak" -eq 1 ]; then
   echo "" >&2
   echo "pre-push: secret found in a commit being pushed. Nothing was sent." >&2
   echo "          Rotate the credential first, then rewrite the commit." >&2
   echo "          See docs/secret-scanning.md" >&2
 fi
 
-exit "$status"
+if [ "$failed" -eq 1 ]; then
+  echo "" >&2
+  echo "pre-push: a scan could not be completed, so nothing was sent." >&2
+  echo "          Fix the error above and push again." >&2
+fi
+
+if [ "$leak" -eq 0 ] && [ "$failed" -eq 0 ]; then
+  exit 0
+fi
+exit 1

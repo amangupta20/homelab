@@ -11,16 +11,15 @@ fi
 
 root=$(git rev-parse --show-toplevel)
 cd "$root"
-conf="$root/secret-scan.toml"
 
-gitleaks git --staged --redact --no-banner -c "$conf"
-
-# gitleaks never scans the file it was handed as its own config, and its default
-# allowlist additionally exempts any path matching "gitleaks.toml" — which is
-# why the rules file is named secret-scan.toml. That still leaves the rules file
-# itself unscanned by the pass above, so it gets a second pass with a throwaway
-# copy as the config.
+# gitleaks exempts the exact path it is handed as -c from being scanned, so the
+# rules file would be the one file no scan can see. Every scan therefore gets a
+# throwaway copy as its config, which makes secret-scan.toml an ordinary target.
+# (The file is also not named .gitleaks.toml: the built-in default config
+# excludes every path matching gitleaks\.toml.)
 tmp=$(mktemp)
 trap 'rm -f "$tmp"' EXIT
-cp "$conf" "$tmp"
-gitleaks dir "$conf" --redact --no-banner -c "$tmp"
+cp secret-scan.toml "$tmp"
+
+# -v names the file, rule and commit on a finding; --redact keeps the value masked.
+gitleaks git --staged --redact --no-banner -v -c "$tmp"

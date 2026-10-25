@@ -14,7 +14,12 @@ fi
 
 root=$(git rev-parse --show-toplevel)
 cd "$root"
-conf="$root/secret-scan.toml"
+
+# Same rules-file problem as pre-commit: hand gitleaks a throwaway copy so
+# secret-scan.toml is scanned like any other file.
+tmp=$(mktemp)
+trap 'rm -f "$tmp"' EXIT
+cp secret-scan.toml "$tmp"
 
 zero=0000000000000000000000000000000000000000
 status=0
@@ -23,23 +28,27 @@ while read -r local_ref local_sha _remote_ref remote_sha; do
   # Deleting a remote branch pushes no content.
   [ "$local_sha" = "$zero" ] && continue
 
-  if [ "$remote_sha" = "$zero" ]; then
-    # New remote branch: its whole history is new to the remote.
-    echo "pre-push: scanning full history for $local_ref"
-    gitleaks git --redact --no-banner -c "$conf" || status=1
-  else
+  # Fail closed: gitleaks exits 0 when git cannot resolve a revision, so a range
+  # this clone does not understand must never be mistaken for a clean scan.
+  if ! git rev-parse --verify --quiet "$local_sha^{commit}" >/dev/null; then
+    echo "pre-push: cannot resolve $local_sha for $local_ref; refusing to push unscanned." >&2
+    status=1
+    continue
+  fi
+
+  # Scan only the commits this ref actually carries. A bare `gitleaks git` walks
+  # --all and would block a clean push because of an unrelated local branch.
+  # If the remote tip is absent locally (not fetched yet, e.g. before a
+  # force-push), scan the pushed ref's own history rather than a range git
+  # cannot resolve.
+  if [ "$remote_sha" != "$zero" ] && git rev-parse --verify --quiet "$remote_sha^{commit}" >/dev/null; then
     echo "pre-push: scanning $local_ref ($remote_sha..$local_sha)"
-    gitleaks git --redact --no-banner -c "$conf" \
-      --log-opts "$remote_sha..$local_sha" || status=1
+    gitleaks git --redact --no-banner -v -c "$tmp" --log-opts "$remote_sha..$local_sha" || status=1
+  else
+    echo "pre-push: scanning the full history of $local_ref"
+    gitleaks git --redact --no-banner -v -c "$tmp" --log-opts "$local_sha" || status=1
   fi
 done
-
-# Same blind spot as pre-commit: the config file is never scanned by the pass
-# that uses it. Give it one pass of its own with a throwaway copy as config.
-tmp=$(mktemp)
-trap 'rm -f "$tmp"' EXIT
-cp "$conf" "$tmp"
-gitleaks dir "$conf" --redact --no-banner -c "$tmp" || status=1
 
 if [ "$status" -ne 0 ]; then
   echo "" >&2

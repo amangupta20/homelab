@@ -50,8 +50,14 @@ result, or prefix `MISE_QUIET=0 MISE_SILENT=0` to see what it found.
 
 ## Reading a finding
 
-Scans run with `-v`, so a block names the file, rule and commit; `--redact`
-keeps the value itself masked. If it fires:
+Local scans run with `-v`, so a block names the file, rule and commit. Be aware
+of what `--redact` does and does not hide: it masks the matched value only, and
+gitleaks still prints roughly 20 characters either side of it on that line. On a
+one-line `.env` or JSON blob that can expose a neighbouring value, which is why
+CI runs without `-v` — its output is kept in the Actions log, while a local
+hook's output only reaches the person who already has the file.
+
+If it fires:
 
 1. **Rotate first.** Delete-then-commit leaves the value in history, and in
    every clone and CI log that already fetched it. Rotate in OpenBao.

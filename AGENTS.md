@@ -29,6 +29,12 @@ Read in this order:
 - One fact, one owner. `inventory/services.md` owns the service list,
   `inventory/network.md` owns IPs, `platforms/` owns platform rules. Update
   the owner file, link to it from elsewhere — don't copy the fact.
+- One commit, one change. Keep commits atomic: a hook plus the docs and config
+  it needs travel together, two unrelated changes never do. History is the
+  traceback — when something breaks, the commit that caused it should be
+  findable and revertable on its own. No drive-by fixes inside an unrelated
+  commit, and no "and also" commits. Commit subjects are plain prose, present
+  tense, saying what changed (this repo does not use a prefix convention).
 
 ## Danger rules (do not break)
 

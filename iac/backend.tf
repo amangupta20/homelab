@@ -3,7 +3,7 @@
 # Garage does not implement S3 conditional writes (If-Match / If-None-Match), so
 # OpenTofu's native lockfile cannot be used and `use_lockfile` stays off. There
 # is no atomic lock: exactly one checkout may run `tofu apply`, and its plan is
-# pasted into the pull request first. See specs/iac.md.
+# pasted into the pull request first. See iac/README.md.
 #
 # No credentials here. The S3 backend reads AWS_ACCESS_KEY_ID and
 # AWS_SECRET_ACCESS_KEY from the environment, exported by the same wrapper that

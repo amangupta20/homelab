@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Review a pull request against repo/review.md with a model behind any
-OpenAI-compatible chat API, and fail unless the verdict is `approve` with no
-blockers. Warnings are reported and do not fail the check.
+OpenAI-compatible chat API. The check fails only on a blocker from section 1
+(should not be public) or section 5 (unsafe for the lab), or on an unusable
+reply. Everything else, including a needs_owner verdict, is reported in the
+job summary and passes: the owner approves every pull request anyway.
 
 Configuration (repository settings, never this file):
   REVIEW_API_URL  base URL, or a full /chat/completions or      (variable)
@@ -179,16 +181,21 @@ def main():
     warnings = section("warnings")
     if warnings:
         print(f"\nai-review: {len(warnings)} warning(s) — reported, not blocking.", file=sys.stderr)
-    if verdict == "approve" and blockers:
-        print(f"\nai-review: verdict was approve but {len(blockers)} blocker(s) were listed.", file=sys.stderr)
-        return 1
-    if verdict == "approve" and not truncated:
-        return 0
-    if verdict == "needs_owner":
-        print("\nai-review: needs_owner — the owner has to decide; merge only after reading the findings.", file=sys.stderr)
-    elif verdict not in ("approve", "request_changes"):
+    if verdict not in ("approve", "request_changes", "needs_owner"):
         print(f"\nai-review: no usable verdict line in the reply (got {verdict!r}).", file=sys.stderr)
-    return 1
+        return 1
+    if truncated:
+        print("\nai-review: the diff was cut; split the pull request.", file=sys.stderr)
+        return 1
+    # Blockers start with their section number ("- [1] path:line — ...").
+    # Only sections 1 and 5 fail the check; the rest are for the owner to read.
+    hard = [b for b in blockers if b.lstrip("- ").startswith(("[1]", "[5]"))]
+    if hard:
+        print(f"\nai-review: {len(hard)} blocker(s) on public exposure or lab safety.", file=sys.stderr)
+        return 1
+    if blockers or verdict == "needs_owner":
+        print(f"\nai-review: {verdict}, {len(blockers)} finding(s) for the owner — reported, not blocking.", file=sys.stderr)
+    return 0
 
 
 if __name__ == "__main__":

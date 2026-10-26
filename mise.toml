@@ -2,6 +2,8 @@
 # `mise run hooks:install` to point git at the tracked hooks.
 [tools]
 gitleaks = "8.30.1"
+opentofu = "1.13.2"
+tflint = "0.65.0"
 
 [tasks."hooks:install"]
 description = "Point git at the tracked hooks (once per checkout)"

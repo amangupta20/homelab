@@ -15,6 +15,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 import urllib.error
 import urllib.request
 
@@ -33,6 +34,28 @@ def read(path):
             return f.read()
     except FileNotFoundError:
         return ""
+
+
+def read_stream(response):
+    """Collect a streamed chat completion, printing progress every 20 seconds so
+    the job log shows the model is still working (reasoning models can think
+    for minutes before the first word of the answer)."""
+    answer, reasoning, last = [], 0, time.monotonic()
+    for raw in response:
+        line = raw.decode("utf-8", errors="replace").strip()
+        if not line.startswith("data:"):
+            continue
+        data = line[5:].strip()
+        if data == "[DONE]":
+            break
+        choices = json.loads(data).get("choices") or [{}]
+        delta = choices[0].get("delta") or {}
+        answer.append(delta.get("content") or "")
+        reasoning += len(delta.get("reasoning_content") or delta.get("reasoning") or "")
+        if time.monotonic() - last > 20:
+            print(f"ai-review: still receiving — {sum(map(len, answer))} characters of answer, {reasoning} of reasoning", flush=True)
+            last = time.monotonic()
+    return "".join(answer).strip()
 
 
 def main():
@@ -96,6 +119,7 @@ def main():
             {
                 "model": os.environ["REVIEW_MODEL"],
                 "temperature": 0,
+                "stream": True,
                 "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
             }
         ).encode(),
@@ -112,8 +136,12 @@ def main():
         },
     )
     try:
+        print(f"ai-review: sent {len(system) + len(user)} characters to {os.environ['REVIEW_MODEL']}, waiting for the reply", flush=True)
         with urllib.request.urlopen(request, timeout=600) as response:
-            review = json.load(response)["choices"][0]["message"]["content"].strip()
+            if "text/event-stream" in response.headers.get("Content-Type", ""):
+                review = read_stream(response)
+            else:  # a provider that ignores "stream" answers in one piece
+                review = json.load(response)["choices"][0]["message"]["content"].strip()
     except urllib.error.HTTPError as e:
         # The provider's own error body says why (bad model id, quota, auth).
         print(f"ai-review: the provider answered {e.code}: {e.read()[:500].decode(errors='replace')}", file=sys.stderr)

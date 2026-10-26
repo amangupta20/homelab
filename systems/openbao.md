@@ -25,7 +25,7 @@ OpenBao and skip the license question. The `bao` command works like `vault`.
 ## Where the box runs
 
 It must be always-on and reachable from all 5 checkouts — so not the burst
-Hermes VM that gets powered off. Good candidates: the TrueNAS VM host, or any
+agent VM that gets powered off. Good candidates: the TrueNAS VM host, or any
 small always-on VM. Tailscale-only. No public URL (see below why).
 
 Storage backend: not chosen yet — Raft on local disk is likely, PostgreSQL the
@@ -75,7 +75,7 @@ kept as a plausible-looking recipe. The order, once the backend is chosen:
 
 ```bash
 export VAULT_ADDR='https://10.22.33.X:8200'
-bao login -method=userpass username=aman   # once per machine; the token is
+bao login -method=userpass username=<you>  # once per machine; the token is
                                            # stored in ~/.vault-token (git-ignored)
 tofu plan    # OpenTofu reads the secret from the box at runtime
 tofu apply

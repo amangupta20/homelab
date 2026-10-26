@@ -34,7 +34,7 @@ skill, so it says what the skill does *and when to use it*.
 - Nothing harness-specific in a skill. If something only works in one
   harness, it is an extension (`agents/extensions/<harness>/`), not a skill.
 - Agents may write new skills and propose fixes after using one; the owner
-  merges them.
+  merges them (`skills/write-a-skill/`).
 
 ## Runbook template
 
@@ -89,5 +89,7 @@ description: <What it explains and when to use it, in one or two sentences.>
 
 ## Skills
 
-None yet. First runbooks planned: the read-only recon pass, and moving one stack off
+- `write-a-skill/` — how to add or change a skill in this repo (know-how).
+
+First runbooks planned: the read-only recon pass, and moving one stack off
 Portainer.

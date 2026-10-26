@@ -12,8 +12,8 @@ parent: arch-homelab
 the OpenTofu provider, the VM resource shape, and the cloud-init payload that
 gives it a hostname, keys, and an address.
 
-**Owns.** `iac/`. `provider.tf` is the only real configuration file; `vm.tf` and
-`vault.tf` are copies of the examples and are git-ignored.
+**Owns.** `iac/`. `provider.tf` and `backend.tf` are the real configuration
+files; `vm.tf` and `vault.tf` are copies of the examples and are git-ignored.
 
 **Boundary.** It does not configure the VM after boot — that is Ansible or
 Compose, and neither is in this repo. It does not hold credentials: the Xen
@@ -29,8 +29,9 @@ the environment rather than the file. The provider is pinned by a committed
 Garage does not implement S3 conditional writes, so OpenTofu's native lockfile
 cannot be used and `use_lockfile` is off. There is no atomic lock: exactly one
 checkout runs `tofu apply`, everything else plans, and the plan is pasted into
-the pull request first. A scheduled `tofu state pull` export goes offsite,
-because losing the bucket loses the mapping between code and real VMs.
+the pull request first. A `tofu state pull` export offsite is planned but not
+implemented, so the bucket is currently a single copy — losing it loses the
+mapping between code and real VMs.
 
 This backend has not been exercised against a real bucket. Everything checkable
 locally — fmt, validate, tflint, provider lock — passes.

@@ -11,8 +11,8 @@ parent: arch-homelab
 **Responsibility.** Stop the two mistakes that cannot be undone: committing a
 secret, and making a change nobody can trace back to a reason.
 
-**Owns.** `.githooks/`, `secret-scan.toml`, `.github/workflows/secret-scan.yml`,
-`mise.toml`, and the rules in `AGENTS.md`.
+**Owns.** `.githooks/`, `secret-scan.toml`, `.github/workflows/`,
+`iac/.tflint.hcl`, `mise.toml`, and the rules in `AGENTS.md`.
 
 **Boundary.** It cannot stop a commit made with `--no-verify`; it can only refuse
 to push it. CI is detection after the fact, not prevention.
@@ -34,7 +34,8 @@ Decided and implemented in `.github/workflows/`: a pull request is blocked unles
 - `tofu fmt -check`, `tofu init -backend=false`, `tofu validate` and `tflint`
   pass on `iac/` (`.github/workflows/ci.yml`),
 - gitleaks passes over the full history (`.github/workflows/secret-scan.yml`),
-- every `compose*.yaml` in the repo passes `docker compose config`,
+- every compose file in the repo (`compose.yaml`, `docker-compose.yml` and their
+  variants) passes `docker compose config`,
 - a `tofu plan` produced on a tailnet machine is pasted into the pull request,
   and one review approves it.
 

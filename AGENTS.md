@@ -11,15 +11,15 @@ Read in this order:
    may edit what
 4. `inventory/services.md` — what runs here, and what is broken
 5. `inventory/network.md` — IPs and traffic flow
-6. `platforms/xcp-ng-xen-orchestra.md` — VM platform rules, including the one
+6. `systems/xcp-ng.md` — VM platform rules, including the one
    that destroys VMs
-7. The task file under `ops/` or `iac/` for whatever you were asked to do
+7. The page under `systems/`, `plans/` or `iac/` for whatever you were asked to do
 
 ## What you may edit
 
 | Files | You may |
 |---|---|
-| `inventory/`, `ops/`, `platforms/`, `iac/README.md`, `docs/` | edit, as long as every fact you add says how you know it |
+| `inventory/`, `systems/`, `plans/`, `iac/README.md`, `repo/` | edit, as long as every fact you add says how you know it |
 | `decisions/open-questions.md` | append; never delete or resolve an item |
 | `decisions/` (everything else), `AGENTS.md`, `README.md` goal and principles | propose only, in a separate commit for the owner to review |
 
@@ -45,8 +45,8 @@ first is not automatically right.
   **UNTESTED**. A plausible-looking recipe nobody ran is worse than none.
 - No secrets in this repo. No tokens, passwords, private keys, real public
   domains, or full configs containing secrets. Examples use placeholders like
-  `__PASTE_ONCE__`. See `docs/secrets-openbao.md` for where secrets live, and
-  `docs/secret-scanning.md` for the scan that blocks a commit or push.
+  `__PASTE_ONCE__`. See `systems/openbao.md` for where secrets live, and
+  `repo/secret-scanning.md` for the scan that blocks a commit or push.
 - Look before touching. Read-only recon first (list, describe, plan), report
   what you found, then change.
 - Snapshots or verified backups before any write to infrastructure. Say which
@@ -54,8 +54,9 @@ first is not automatically right.
 - Infrastructure changes go through OpenTofu: paste `tofu plan` output in the
   task before `tofu apply`. Never apply blind.
 - One fact, one owner. `inventory/services.md` owns the service list,
-  `inventory/network.md` owns IPs, `platforms/` owns platform rules. Update
-  the owner file, link to it from elsewhere — don't copy the fact.
+  `inventory/network.md` owns IPs, `systems/<thing>.md` owns how each thing
+  works. Update the owner file, link to it from elsewhere — don't copy the
+  fact.
 - One commit, one change. Keep commits atomic: a hook plus the docs and config
   it needs travel together, two unrelated changes never do. History is the
   traceback — when something breaks, the commit that caused it should be
@@ -69,9 +70,9 @@ first is not automatically right.
   in the live disk chain — deleting it corrupts the VM. Only merge/delete
   through the Xen Orchestra web UI, with a verified backup first. In July 2026
   manual handling destroyed VMs and cost ~2 days. See
-  `platforms/xcp-ng-xen-orchestra.md`.
+  `systems/xcp-ng.md`.
 - A backup is not done when the job says success. It is done when a test
-  restore works. See `ops/backup-restore.md`.
+  restore works. See `systems/backups.md`.
 
 ## Task contract (Paperclip / Hermes / any agent)
 

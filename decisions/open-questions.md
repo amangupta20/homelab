@@ -16,7 +16,7 @@ owner file, and is deleted from this list.
 
 ## Platform (XCP-ng, Xen Orchestra)
 
-- Do the live XO backup schedules and retention match `ops/backup-restore.md`?
+- Do the live XO backup schedules and retention match `systems/backups.md`?
 
 ## Backups
 

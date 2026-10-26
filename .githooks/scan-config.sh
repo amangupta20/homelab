@@ -18,6 +18,6 @@ build_scan_config() {
     cat secret-scan.local.toml >>"$1"
   else
     echo "note: no secret-scan.local.toml here, so your own domains are not checked." >&2
-    echo "      See docs/secret-scanning.md (Private rules)." >&2
+    echo "      See repo/secret-scanning.md (Private rules)." >&2
   fi
 }

@@ -26,5 +26,5 @@ nothing, and neither does Uptime Kuma saying a service is "up".
 - [ ] TrueNAS: wipe-and-reimport from backup (clean-import test)
 - [ ] Nextcloud: full recovery from Borg backup
 - [ ] XO config + pool metadata: no restore on record
-- [ ] Pre-migration re-audit (before the migration in `migration.md`)
+- [ ] Pre-migration re-audit (before the migration in `plans/migration.md`)
 - [ ] OpenTofu state: scheduled `tofu state pull` export offsite — not built yet

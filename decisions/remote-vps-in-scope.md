@@ -19,9 +19,9 @@ Portainer.
   (`open-questions.md`).
 - The VPS is the public-facing part, so its docs are where a real domain or
   public IP is most likely to slip into this public repo. The leak rules in
-  `docs/secret-scanning.md` need to cover it before its docs are written.
+  `repo/secret-scanning.md` need to cover it before its docs are written.
 
 ## Where it lives
 
-`inventory/services.md` (Dokploy row), `docs/secrets-openbao.md` (how Dokploy
+`inventory/services.md` (Dokploy row), `systems/openbao.md` (how Dokploy
 reads secrets).

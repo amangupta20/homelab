@@ -4,7 +4,7 @@ XCP-ng is the hypervisor (the layer that runs VMs on bare metal). Xen
 Orchestra (XO) is its web UI — start/stop VMs, take snapshots, schedule
 backups. This pair is the base everything else sits on.
 
-How VMs and XO itself are backed up: `ops/backup-restore.md`.
+How VMs and XO itself are backed up: `systems/backups.md`.
 
 ## The one rule that destroys VMs
 

@@ -1,6 +1,9 @@
 # Services — what runs here
 
 This file owns the service list. Other pages link here, never copy this table.
+
+**Source:** every row is from the docs or the owner's memory and is not
+verified against the live lab, unless its State says `verified: …`.
 IPs live in `inventory/network.md` and hosts in `inventory/hosts.md`; "unknown" in the Host column means no
 document says, and the read-only recon pass has not filled it in yet.
 

@@ -1,8 +1,11 @@
 # Hosts — every machine
 
 This file owns the host list. IPs live in `network.md`; services in
-`services.md`. Everything here is from the docs, not verified — the read-only
-recon pass fills in names, sizes and the unknowns.
+`services.md`.
+
+**Source:** every row is from the docs and is not verified against the live
+lab, unless its State says `verified: …`. The read-only recon pass fills in
+names, sizes and the unknowns.
 
 | Host | Kind | Runs on | Role | OS | State |
 |---|---|---|---|---|---|

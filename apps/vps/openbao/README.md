@@ -21,7 +21,7 @@ OpenBao ships no Compose file of its own.
 
 Choices that differ from those sources, and why:
 
-- Real server with Raft, not dev mode (`decisions/openbao-raft-storage.md`).
+- Real server with Raft storage, not dev mode (`systems/openbao.md`).
 - Port bound to the tailnet address only, no Dokploy domain
   (`decisions/foundations-on-vps.md`).
 - The config lives inside `compose.yaml` (`configs.content`), so the stack

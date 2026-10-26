@@ -1,7 +1,7 @@
 # The VPS stays outside OpenTofu
 
-Decided: 2026-10-26 (owner, in a working session; written up by an agent for
-review). Status: proposed — in force once the owner approves.
+Decided: 2026-10-26 by the owner, in a working session; written up by an
+agent. Status: in force.
 
 ## Why
 

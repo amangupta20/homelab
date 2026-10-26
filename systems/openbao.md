@@ -29,9 +29,11 @@ On the VPS, listening only on its Tailscale address
 every checkout and from both sides of the lab; the VPS is the always-on side,
 and both sides share the tailnet. No public URL (see below why).
 
-Storage backend: Raft on the VPS's disk (`decisions/openbao-raft-storage.md`).
-Back it up with Raft snapshots — losing that disk means losing every secret at
-once.
+Storage backend: Raft on the VPS's disk (owner's choice, 2026-10-26). It is
+built into OpenBao, so there is no second database to run and back up, and it
+has its own snapshot command. Back it up with Raft snapshots taken through
+OpenBao, not by copying the volume while it runs — losing that disk means
+losing every secret at once.
 
 ## Don't put it on the internet
 

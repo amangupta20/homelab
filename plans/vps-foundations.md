@@ -19,7 +19,9 @@ Why this order and why on the VPS: `decisions/foundations-on-vps.md`.
 1. **Decide how OpenTofu manages the VPS.** Depends on the provider having an
    OpenTofu provider, and on whether the existing VPS is imported into state or
    rebuilt from code. — gate: a decision file in `decisions/`.
-2. **OpenBao on the VPS.** Storage backend chosen; listener on the Tailscale
+2. **OpenBao on the VPS.** Before installing: a VPS snapshot from the
+   provider, or a verified backup of every Dokploy app's data, named in the
+   journal entry. Then: storage backend chosen; listener on the Tailscale
    address only, TLS on; initialised with keys kept offline; root token
    deleted; backup to Garage at home; one restore tested
    (`systems/openbao.md`). — gate: restore test in `journal/`.

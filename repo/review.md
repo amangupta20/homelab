@@ -82,7 +82,9 @@ the verdict is `needs_owner`, however good the edit is:
   providers, variables, backend settings) comes with that plan pasted in the
   pull request, from the one checkout that applies. Comments, docs and
   formatting in `iac/` need no plan.
-- A write to infrastructure names the snapshot or verified backup taken first.
+- A write to infrastructure that could lose data names the snapshot or
+  verified backup taken first. A service that keeps no data needs only a
+  copy of its configuration; that copy needs no restore test.
 - Nothing deletes or merges an XCP-ng snapshot by hand (`systems/xcp-ng.md`).
 - Compose files hold secrets and identifying values (domains, public IPs,
   tailnet IPs and names) as references, never as values. Any other value
@@ -103,13 +105,16 @@ Report everything you find, strictly. Then sort each finding:
 - **Blocker** — fails the check, the change cannot merge as is:
   - anything under section 1 (should not be public);
   - anything under section 5 (unsafe for the lab);
-  - a fact that is invented, or contradicts what the repo or the live lab
-    says (section 2) — not merely a missing source, and not a change that
-    is labelled as not deployed or proposed yet.
+  - a fact that is invented, or a false claim about the live lab that
+    would mislead whoever acts on it — saying something is deployed, backed
+    up, restored or secure when it is not (section 2). Not a missing source,
+    not a change labelled as not deployed or proposed yet, and not wording
+    that disagrees with itself inside the change (a tense, a stale line, a
+    "now" that should be "will"): those are warnings.
 - **Needs owner** — section 4: the change is fine to review but the owner has
   to decide on it. Reported as the `needs_owner` verdict, listed as a blocker.
 - **Warning** — reported, does not block: everything else, including missing
-  sources on harmless claims, duplicated facts, links and paths, template
+  sources on harmless claims, wording that disagrees with itself, duplicated facts, links and paths, template
   shape (section 3), and commit shape (section 6) — history cannot change
   after a push, so commit shape is advice for the next change.
 

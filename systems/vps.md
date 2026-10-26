@@ -3,8 +3,9 @@
 A small rented server outside the home network that runs the lab's
 always-on, shared and overflow services, deployed with Dokploy.
 
-**Status:** running — from the owner, not yet documented beyond this page.
-Rows: `inventory/hosts.md`, `inventory/services.md` (Dokploy).
+**Status:** running. Step 0 of `plans/vps-foundations.md` documented it on
+2026-10-26 (`journal/2026-10-26-recon-vps.md`). Rows: `inventory/hosts.md`,
+`inventory/services.md`.
 
 ## What goes here
 
@@ -15,22 +16,41 @@ foundation services (OpenBao, SSO) also live here
 
 ## How it works
 
-- **Dokploy** deploys every app on the VPS. App definitions move into this
-  repo under `apps/vps/<app>/`; how to deploy one is
-  `skills/deploy-on-dokploy/`.
-- **Tailscale** joins the VPS and the homelab (owner, 2026-10-26; not verified). Admin access and anything
-  internal (OpenBao) is reachable only over the tailnet.
-- **Public traffic** reaches public apps through Cloudflare. Whether Dokploy's
-  own proxy or something else terminates it is not documented yet.
-- **Backups** go to Garage on TrueNAS at home, per `inventory/services.md`;
-  not verified, part of step 0 of `plans/vps-foundations.md`.
+Read on 2026-10-26 over SSH and through Dokploy, unless it says otherwise
+(`journal/2026-10-26-recon-vps.md`). Security details of the firewall and
+access setup are kept out of this public repo on purpose.
+
+- **Machine:** Oracle Cloud Infrastructure (OCI), shape `VM.Standard.A1.Flex`
+  (Ampere, ARM64), from the instance metadata service. 4 CPUs, 23 GiB RAM,
+  193 GB disk (68% used), an 8 GB swap file. Ubuntu 24.04.4 LTS. Every image
+  deployed here must exist for `arm64`. The owner runs it on the Always Free
+  tier and has no plan to rebuild it (owner, 2026-10-26).
+- **Admin access:** SSH with a key, over Tailscale (Tailscale 1.102.3).
+- **Docker** 29.7.2 in swarm mode (single node), as Dokploy installs it.
+- **Dokploy** v0.30.10 (image tag of the `dokploy` swarm service), with its
+  own Postgres 16 and Redis 7. The owner applies every Dokploy update when the
+  UI offers it (owner, 2026-10-26), so the version here goes stale; read it
+  again before relying on a version-specific feature.
+- **Public traffic** enters through Dokploy's Traefik (v3.6.7, container
+  `dokploy-traefik`) on ports 80 and 443; each app's domain is set in Dokploy.
+  The Dokploy dashboard is also on a public domain, by the owner's choice
+  (owner, 2026-10-26).
+- **How apps are defined:** each Dokploy app is a Compose service. Most store
+  their Compose file inside Dokploy (source type `raw`); a few pull it from
+  GitHub repositories, none of them this one. Dokploy checks each app out at
+  `/etc/dokploy/compose/<appName>/code`. Moving them into `apps/vps/` is step
+  5 of the foundations plan.
+- **Backups** go to Garage at home through a Dokploy destination
+  (`systems/backups.md`).
 
 ## Rules
 
-- Nothing admin-facing on a public port: Dokploy's UI, OpenBao and SSH are
-  tailnet-only.
-- No real domain or public IP in this repo — the commit hook blocks them
-  (`repo/secret-scanning.md`); use placeholders.
+- Nothing admin-facing on a public port except the Dokploy dashboard, which
+  is public by the owner's choice. OpenBao and SSH are tailnet-only.
+- No real domain, public IP or tailnet name in this repo — the commit hook
+  blocks domains and public IPs (`repo/secret-scanning.md`); use placeholders.
+- Security findings (exposed ports, missing authentication) do not go in this
+  repo while they are unfixed.
 
 ## Open questions
 

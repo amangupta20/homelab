@@ -15,6 +15,13 @@ OpenTofu state has no backup at all (see "Still to test").
   backup from inside the app, managed through BorgWarehouse on TrueNAS.
 - OpenTofu state: a `tofu state pull` export offsite is planned but **not
   implemented**, so the state bucket is a single copy today.
+- Remote VPS: Dokploy backs up its own database and the volumes or
+  databases of 12 service names to one destination, `garage` — the Garage
+  store at home, addressed by its home LAN IP, presumably through a Tailscale
+  subnet route (not checked). Two projects both name their service `app`, so
+  the exact number of apps is unclear. Most runs succeed; every run of the
+  `odysseus` backup has failed (88 of 88 in Dokploy's list). Read from
+  Dokploy's backup list, recon 2026-10-26.
 
 All of the above is what the docs say is configured. Nobody has compared it to
 the live XO schedules yet.
@@ -31,3 +38,4 @@ nothing, and neither does Uptime Kuma saying a service is "up".
 - [ ] XO config + pool metadata: no restore on record
 - [ ] Pre-migration re-audit (before the migration in `plans/migration.md`)
 - [ ] OpenTofu state: scheduled `tofu state pull` export offsite — not built yet
+- [ ] VPS: restore one Dokploy app backup and Dokploy's own database backup from Garage

@@ -1,6 +1,6 @@
 # VPS foundations
 
-**Status:** not started.
+**Status:** step 0 done 2026-10-26 (`journal/2026-10-26-recon-vps.md`).
 **Goal:** OpenBao and SSO running on the VPS with tested backups, so every app
 after them is deployed once with secrets and sign-in already wired.
 **Done when:** OpenBao and SSO each have a restore test in `journal/`, and the

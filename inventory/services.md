@@ -4,6 +4,7 @@ This file owns the service list. Other pages link here, never copy this table.
 
 | Service | What it is | State |
 |---|---|---|
+| Portainer CE | Web UI for the homeserver's Docker stacks. Every homeserver app is deployed from here today. | stable — replacement not decided, Arcane is the likely candidate |
 | TrueNAS VM | Storage OS. Holds file shares and is the backup target for VM images. | stable — full clean-import restore still to test |
 | Xen Orchestra | Web UI that manages all VMs: start/stop, snapshots, scheduled backups. | stable — sends alerts to ntfy |
 | BorgWarehouse | Web UI for BorgBackup. Used for app-level backups where a full VM image is not enough (e.g. inside Nextcloud). | stable, runs on TrueNAS |

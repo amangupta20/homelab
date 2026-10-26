@@ -22,10 +22,35 @@ document says, and the read-only recon pass has not filled it in yet.
 | ntfy bus | Push-notification service. Backup jobs, deploys, and security alerts post here. | unknown | stable — offsite "is the host itself down?" check still to do |
 | Nextcloud AIO | Self-hosted file sync (Dropbox replacement), all-in-one container. | unknown | stable — full restore test still to do |
 | Uptime Kuma | Up/down monitoring. Named once in the old platform page; nothing else mentions it. | unknown | unknown whether it runs |
-| Dokploy | Deploys every app on the VPS (`systems/vps.md`). Its stacks are not in this repo yet. | remote VPS | running |
+| Dokploy | Deploys every app on the VPS (`systems/vps.md`). Its stacks are not in this repo yet. | remote VPS | running v0.30.10 — verified: recon 2026-10-26 |
 | OpenBao | Secret store. See `systems/openbao.md`. | — | planned, not deployed |
 | OCI Borgmatic | Planned: run Borg backups on a cheap cloud VM. | — | design only — do not deploy yet |
 | Object storage lab | Experiment: S3-compatible storage (Garage/SeaweedFS) across two sites. | — | idea, not built |
+
+### Apps on the VPS
+
+One row per Dokploy project, from Dokploy's service list and `docker ps -a`
+on the VPS (recon 2026-10-26). "Containers" counts running / existing
+containers under each app's Compose project name; 0/0 means none exist, so the
+app is not running. What each app is for was not checked: names only. Whether
+`ntfy` and `supa` here are the "ntfy bus" and "Supabase" rows above is not
+checked either.
+
+| Dokploy project | Services (containers running / existing) | Host | State |
+|---|---|---|---|
+| Coder | coder (0/0) | remote VPS | not running |
+| gtnh | eudash (1/1) | remote VPS | running |
+| hermes | hermes (2/2), hindsight (2/2), camofox (1/1) | remote VPS | running |
+| jobops | app (0/0) | remote VPS | not running |
+| kimai | app (2/2) | remote VPS | running |
+| ntfy | ntfy (1/1) | remote VPS | running |
+| Odyssues | odysseus (0/0), litellm (0/0), diagram mcp (0/0), geogebramcp (0/0) | remote VPS | not running |
+| opendota | opendota (0/0) | remote VPS | not running |
+| openwebui | open-webui (3/3), memory (0/2), githubmcp (0/1), oikb (0/1), office (0/0) | remote VPS | partly running |
+| paperclip | paperclip (2/2) | remote VPS | running |
+| pelican | pelican-dashboard (1/1) | remote VPS | running |
+| router9 | 9router (2/2) | remote VPS | running |
+| supa | supabase (13/13) | remote VPS | running |
 
 How each service is backed up: `systems/backups.md`.
 

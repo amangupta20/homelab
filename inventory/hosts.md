@@ -13,5 +13,5 @@ names, sizes and the unknowns.
 | TrueNAS VM | VM | XCP-ng host | storage, VM backup target, Garage, BorgWarehouse | TrueNAS | in docs, not verified |
 | Docker + proxy host | unknown | unknown | Docker stacks, Nginx Proxy Manager, apt cache | unknown | in docs, not verified |
 | Xen Orchestra | unknown | unknown | manages VMs and backups | unknown | in docs, not verified |
-| Remote VPS | VPS | external provider | always-on, shared and overflow apps via Dokploy; OpenBao and SSO planned (`systems/vps.md`) | unknown | joined to the tailnet (owner, unverified) |
+| Remote VPS | VPS (Oracle Cloud, Ampere ARM64, 4 CPU / 23 GiB) | Oracle Cloud | always-on, shared and overflow apps via Dokploy; OpenBao and SSO planned (`systems/vps.md`) | Ubuntu 24.04.4 | running — verified: recon 2026-10-26 over SSH |
 | Agent VM | VM | XCP-ng host | runs the maintenance agent | — | planned |

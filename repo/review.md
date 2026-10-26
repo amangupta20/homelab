@@ -53,6 +53,11 @@ cannot:
 - Nothing is invented to fill a gap — a missing reason stays marked missing.
 - Nothing states as fact what `decisions/open-questions.md` lists as open,
   unless the same change resolves the question there.
+- The repo leads the lab: a stack, config or decision has to merge before it
+  can be deployed or put in force, so a change may describe something the
+  live lab does not have yet. That is not a contradiction as long as the
+  change says so ("not deployed", "planned", "proposed"). Stating it as
+  already live is.
 
 ## 3. One fact, one owner
 
@@ -97,7 +102,8 @@ Report everything you find, strictly. Then sort each finding:
   - anything under section 1 (should not be public);
   - anything under section 5 (unsafe for the lab);
   - a fact that is invented, or contradicts what the repo or the live lab
-    says (section 2) — not merely a missing source.
+    says (section 2) — not merely a missing source, and not a change that
+    is labelled as not deployed or proposed yet.
 - **Needs owner** — section 4: the change is fine to review but the owner has
   to decide on it. Reported as the `needs_owner` verdict, listed as a blocker.
 - **Warning** — reported, does not block: everything else, including missing

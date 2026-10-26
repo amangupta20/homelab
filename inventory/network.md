@@ -3,6 +3,8 @@
 This file owns every IP address. Hosts are named as in `hosts.md`; what runs
 on each is in `services.md`.
 
+**Source:** from the docs, not verified against the router.
+
 Private subnet `10.22.33.0/24`.
 
 | IP | Host |

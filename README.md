@@ -1,8 +1,9 @@
 # Homelab
 
 My bare-metal homelab. One physical server runs many isolated VMs, so one
-compromised service can't take down everything. Everything important is
-reproducible from code, not hand-configured.
+compromised service can't take down everything. The goal is that everything
+important is reproducible from code, not hand-configured — it is not there
+yet (see Status).
 
 - Hypervisor: XCP-ng (type-1, runs directly on hardware). Think Proxmox
   alternative, Xen-based.
@@ -10,8 +11,9 @@ reproducible from code, not hand-configured.
   snapshots, backups.
 - VMs: one per job (storage, proxies, apps). Apps inside VMs run as Docker
   Compose stacks.
-- Provisioning: cloud-init for first boot (hostname, SSH keys, IP), Ansible
-  and OpenTofu for everything after.
+- Provisioning: OpenTofu defines the VM, cloud-init does its first boot
+  (hostname, SSH keys, IP). Configuration after boot has no tool in this repo
+  yet.
 - Access: admin only over Tailscale (private mesh VPN). No SSH open to the
   internet.
 - Edge: Cloudflare (filter) -> Nginx Proxy Manager (routing) -> containers.
@@ -50,8 +52,8 @@ never in git. See `docs/secrets-openbao.md` for where they live.
 
 1. **Isolation first** — one VM per job, GPU passed through only where needed.
    A bad VM stays in its box.
-2. **Rebuild, don't pet** — cloud-init boots it, Ansible configures it,
-   Compose runs apps. If a VM rots, I recreate it.
+2. **Rebuild, don't pet** — if a VM rots, recreate it from code rather than
+   nurse it back.
 3. **Zero-trust admin** — Tailscale only, least-privilege ACLs. Edge is
    filtered and logged.
 4. **Backups that can restore** — a backup only counts when a test restore
@@ -59,6 +61,16 @@ never in git. See `docs/secrets-openbao.md` for where they live.
    `ops/backup-restore.md`.
 
 ## Status
+
+Where it actually stands (October 2026):
+
+- Documented: services, network, platform rules, backups, secret handling —
+  from memory, not yet checked against the live lab.
+- Guardrails working: secret scanning at commit, push and in CI; OpenTofu
+  static checks in CI.
+- Not yet true: no VM is defined in code (`vm.tf` is git-ignored), homeserver
+  stacks live only in Portainer, OpenBao is not deployed, nothing configures
+  a VM after first boot.
 
 Migration in progress. Rule: no migration writes until snapshots are verified.
 See `ops/migration.md`.

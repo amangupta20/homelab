@@ -29,9 +29,9 @@ On the VPS, listening only on its Tailscale address
 every checkout and from both sides of the lab; the VPS is the always-on side,
 and both sides share the tailnet. No public URL (see below why).
 
-Storage backend: not chosen yet — Raft on local disk is likely, PostgreSQL the
-alternative (`decisions/open-questions.md`). Whichever it is, back it up like
-any database — losing that disk means losing every secret at once.
+Storage backend: Raft on the VPS's disk (`decisions/openbao-raft-storage.md`).
+Back it up with Raft snapshots — losing that disk means losing every secret at
+once.
 
 ## Don't put it on the internet
 
@@ -59,10 +59,9 @@ the tailnet). Never open the box itself.
 
 ## One-time setup (on the server) — not written yet
 
-The exact commands depend on the storage backend, which is not chosen. A
-previous draft here ran the `latest` image on the file backend over plain
+A previous draft here ran the `latest` image on the file backend over plain
 HTTP; all three contradicted the rules above, so it was removed rather than
-kept as a plausible-looking recipe. The order, once the backend is chosen:
+kept as a plausible-looking recipe. The order:
 
 1. Run a pinned OpenBao version (never `latest`) with the chosen storage and
    TLS on 8200.

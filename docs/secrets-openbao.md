@@ -22,8 +22,12 @@ It must be always-on and reachable from all 5 checkouts — so not the burst
 Hermes VM that gets powered off. Good candidates: the TrueNAS VM host, or any
 small always-on VM. Tailscale-only. No public URL (see below why).
 
-Storage: a Docker volume or directory holding `/vault/file`. Back it up like
+Storage backend: not chosen yet — Raft on local disk is likely, PostgreSQL the
+alternative (`decisions/open-questions.md`). Whichever it is, back it up like
 any database — losing that disk means losing every secret at once.
+
+**Status: not deployed.** No command on this page has been run against a real
+OpenBao server yet.
 
 ## Don't put it on the internet
 
@@ -49,28 +53,25 @@ the tailnet). Never open the box itself.
 - Back it up and test one restore.
 - Patch it like you'd patch Xen Orchestra — secret-store bugs are CVEs too.
 
-## One-time setup (on the server)
+## One-time setup (on the server) — not written yet
+
+The exact commands depend on the storage backend, which is not chosen. A
+previous draft here ran the `latest` image on the file backend over plain
+HTTP; all three contradicted the rules above, so it was removed rather than
+kept as a plausible-looking recipe. The order, once the backend is chosen:
+
+1. Run a pinned OpenBao version (never `latest`) with the chosen storage and
+   TLS on 8200.
+2. `bao operator init`, keys saved offline; unseal.
+3. Enable a kv-v2 engine at `kv/`, write `kv/homelab/xo` with the Xen
+   Orchestra URL and token. Clear shell history afterwards.
+4. Create the user and per-consumer policies, then delete the root token.
+5. Take a backup and restore it once before trusting it.
+
+## Daily use (each checkout, no .env file) — UNTESTED sketch
 
 ```bash
-docker run -d --name openbao --restart unless-stopped \
-  -p 8200:8200 -v openbao-data:/vault/file \
-  openbao/openbao:latest
-
-export VAULT_ADDR='http://10.22.33.X:8200'   # your OpenBao IP
-bao operator init -key-shares=1 -key-threshold=1  # save the keys OFFLINE
-bao operator unseal
-bao login        # paste the root token from init (one time)
-bao secrets enable -path=kv kv-v2
-bao kv put kv/homelab/xo url="wss://xo-host" token="__PASTE_ONCE__"
-```
-
-After this, the secret lives only in the box. Clear your shell history so the
-pasted token doesn't linger there.
-
-## Daily use (each checkout, no .env file)
-
-```bash
-export VAULT_ADDR='http://10.22.33.X:8200'
+export VAULT_ADDR='https://10.22.33.X:8200'
 bao login -method=userpass username=aman   # once per machine; the token is
                                            # stored in ~/.vault-token (git-ignored)
 tofu plan    # OpenTofu reads the secret from the box at runtime

@@ -12,7 +12,7 @@ gets updated in one, and the copies quietly disagree.
 A first draft (October 2026) used a spec graph generated with ThinkRail
 (JetBrains' spec-driven development tool): a goal, an architecture page, and
 one "module" spec per area. It surfaced useful open questions, but each module
-spec restated the facts already in `inventory/`, `platforms/` and `ops/`. One
+spec restated the facts already in the fact pages. One
 correction to the state backup touched seven files. ThinkRail is also built for
 specs that generate code; most work here is operations, where the thing that
 drifts is the live lab, not code.
@@ -21,7 +21,7 @@ So the layout is:
 
 | What | Where | Who edits |
 |---|---|---|
-| Facts: services, hosts, IPs, schedules | `inventory/`, `platforms/`, `ops/`, `iac/README.md`, `docs/` — one owner per fact | agent, saying how it verified |
+| Facts: services, hosts, IPs, schedules | `inventory/`, `systems/`, `plans/`, `iac/README.md`, `repo/` — one owner per fact | agent, saying how it verified |
 | Decisions and their reasons | `decisions/` | owner; agent proposes |
 | Undecided or unverified | `decisions/open-questions.md` | agent appends, owner resolves |
 | How agents work here | `AGENTS.md` | owner; agent proposes |

@@ -21,7 +21,7 @@ hand-clicked pet.
 ```bash
 cp vm.tf.example vm.tf   # then edit names inside
 export XOA_URL=wss://xo-host
-export XOA_TOKEN=xxxx     # or: bao login, see docs/secrets-openbao.md
+export XOA_TOKEN=xxxx     # or: bao login, see systems/openbao.md
 tofu init
 tofu plan                 # read this before applying
 tofu apply

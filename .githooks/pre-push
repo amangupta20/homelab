@@ -78,7 +78,7 @@ if [ "$leak" -eq 1 ]; then
   echo "" >&2
   echo "pre-push: secret found in a commit being pushed. Nothing was sent." >&2
   echo "          Rotate the credential first, then rewrite the commit." >&2
-  echo "          See docs/secret-scanning.md" >&2
+  echo "          See repo/secret-scanning.md" >&2
 fi
 
 if [ "$failed" -eq 1 ]; then

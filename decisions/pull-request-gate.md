@@ -27,4 +27,4 @@ A pull request is blocked unless:
 
 ## Where it lives
 
-`.github/workflows/`, `iac/.tflint.hcl`, `mise.toml`, `docs/secret-scanning.md`.
+`.github/workflows/`, `iac/.tflint.hcl`, `mise.toml`, `repo/secret-scanning.md`.

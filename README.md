@@ -31,19 +31,19 @@ to an AI agent for routine maintenance without the agent having to guess — and
 without it slowly rewriting the design into something nobody chose.
 
 No secrets in this repo. Ever. Tokens, passwords, keys stay in a vault,
-never in git. See `docs/secrets-openbao.md` for where they live.
+never in git. See `systems/openbao.md` for where they live.
 
 ## What's where
 
 - `inventory/services.md` — every service, what it does, and whether it is healthy.
 - `inventory/network.md` — IP layout and how traffic flows in.
-- `platforms/xcp-ng-xen-orchestra.md` — how VMs are protected, and the one
+- `systems/xcp-ng.md` — how VMs are protected, and the one
   rule that destroys VMs if you break it.
 - `iac/` — OpenTofu code that creates VMs. Start with `iac/README.md`.
-- `ops/backup-restore.md` — what gets backed up, and what restore is still untested.
-- `ops/migration.md` — what order the current migration runs in.
-- `docs/secrets-openbao.md` — where secrets live and how to use them.
-- `docs/secret-scanning.md` — the scan that blocks a commit or push carrying a secret.
+- `systems/backups.md` — what gets backed up, and what restore is still untested.
+- `plans/migration.md` — what order the current migration runs in.
+- `systems/openbao.md` — where secrets live and how to use them.
+- `repo/secret-scanning.md` — the scan that blocks a commit or push carrying a secret.
 - `decisions/` — what was decided and why, one file per decision, plus
   `decisions/open-questions.md`: everything undecided or unverified, in one list.
 - `AGENTS.md` — instructions for AI agents working in this repo.
@@ -58,7 +58,7 @@ never in git. See `docs/secrets-openbao.md` for where they live.
    filtered and logged.
 4. **Backups that can restore** — a backup only counts when a test restore
    works. What is backed up and what is still untested:
-   `ops/backup-restore.md`.
+   `systems/backups.md`.
 
 ## Status
 
@@ -73,4 +73,4 @@ Where it actually stands (October 2026):
   a VM after first boot.
 
 Migration in progress. Rule: no migration writes until snapshots are verified.
-See `ops/migration.md`.
+See `plans/migration.md`.

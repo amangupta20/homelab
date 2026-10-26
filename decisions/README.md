@@ -27,6 +27,7 @@ a change in a separate commit, but does not rewrite an existing one on its own.
 ## Index
 
 - `agent-access.md` — convenient access for agents; disaster recovery is the safety net.
+- `foundations-on-vps.md` — OpenBao and SSO on the VPS, over Tailscale.
 - `vps-role.md` — what runs on the VPS instead of at home.
 - `docs-layout.md` — facts in owner files, reasons here, no spec graph.
 - `pull-request-gate.md` — what has to pass before a change merges.

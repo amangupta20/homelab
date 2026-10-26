@@ -56,12 +56,14 @@ owner file, and is deleted from this list.
   each stack.
 - Which apps run on it — not documented yet.
 
+## Foundations
+
+- SSO: which one. Authentik was tried around 2024 and found too heavy, but
+  that was early in learning self-hosting, so dropping it is not final.
+  Lighter candidates (Authelia, Pocket ID, Kanidm) have not been compared.
+
 ## Not planned yet
 
-- SSO: wanted, undecided. Authentik was tried around 2024 and is probably
-  dropped: too heavy for this lab, and the experience was poor. That trial
-  happened early in learning self-hosting, so the verdict is not final. A
-  lighter option is the likelier pick; none has been evaluated.
 - Observability: wanted, not deployed. Prometheus/Grafana is an assumption,
   not a choice. Whether Uptime Kuma runs at all is unknown
   (`inventory/services.md`).

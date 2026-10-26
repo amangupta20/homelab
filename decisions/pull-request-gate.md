@@ -1,6 +1,6 @@
 # A change merges only after static checks, a secret scan, an AI review, and a pasted plan
 
-Decided: 2026-10-26. Status: in force — enforcement incomplete (see below).
+Decided: 2026-10-26. Status: in force, enforced on GitHub.
 
 ## Why
 
@@ -28,8 +28,16 @@ A pull request is blocked unless:
   It is a gate in front of the owner's review, not a replacement for it.
 - `tofu init -backend=false` skips the backend block, so a typo in
   `iac/backend.tf` only shows up at the first real `tofu init`.
-- **Not done yet:** branch protection and required status checks on `main`.
-  The workflows exist; the repository settings that make them mandatory do not.
+- Enforced by the GitHub ruleset "protect main" (set 2026-10-26): no direct
+  pushes, force-pushes or deletion of `main`; a pull request with one approval
+  (re-approval after any new push); and the checks `opentofu (fmt, validate,
+  tflint)`, `compose config`, `gitleaks (full history)` and `ai review` must
+  pass.
+- GitHub does not let anyone approve their own pull request, so the owner's
+  own changes merge through the admin bypass, which only works through a pull
+  request — the checks still run and show, but the owner can choose to merge
+  past a red one. An agent with its own GitHub account has no bypass: its
+  change needs the owner's approval and every check green.
 
 ## Where it lives
 

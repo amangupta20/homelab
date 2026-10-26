@@ -28,4 +28,5 @@ Naming: `plans/<what>.md` (`migration.md`, `portainer-to-git.md`, `vps-into-repo
 
 - `vps-foundations.md` — OpenBao and SSO on the VPS, before any further VPS app.
 - `openbao-backup.md` — nightly Raft snapshot to Garage and a restore test (foundations step 2).
+- `agent-dokploy-access.md` — agents use Dokploy through a local `npx` MCP with a key that cannot delete or reach backups.
 - `migration.md` — the current migration, in order, and the Portainer -> git target.

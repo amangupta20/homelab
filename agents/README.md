@@ -24,6 +24,9 @@ one command per machine:
 mise run agents:link    # or: sh agents/link.sh
 ```
 
+(Run 2026-10-26 on a machine without Hermes: it reported Hermes as not
+installed and changed nothing.)
+
 Pi asks you to trust a project before it loads project skills; that is
 expected, not an error.
 
@@ -48,4 +51,4 @@ one-line `CLAUDE.md` that points at it — one copy of the rules, never two.
   and are not a source of truth. Facts an agent learns go into the repo.
 - Credentials never: they come from OpenBao or the environment.
 - Shared MCP server definitions: none yet. When the first one is added it gets
-  one copy here (`agents/mcp/`), with a note on how each harness loads it.
+  one copy in an mcp folder here, with a note on how each harness loads it.

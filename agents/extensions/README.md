@@ -8,8 +8,9 @@ agents/extensions/<harness>/<extension>/
 ```
 
 Each extension has a short README: what it does, which harness version it was
-tested with, and how that harness loads it (for Pi, a project link
-`.pi/extensions -> ../agents/extensions/pi` added with the first one).
+tested with, and how that harness loads it. For Pi, the first extension adds
+a project link from .pi/extensions to agents/extensions/pi, since Pi loads
+project extensions from .pi/extensions.
 
 Prefer a skill. A skill works in every harness; an extension works in one, and
 breaks when that harness changes.

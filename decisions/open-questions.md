@@ -35,9 +35,6 @@ owner file, and is deleted from this list.
 
 ## Secrets (OpenBao)
 
-- Storage backend: Raft on local disk (likely) or PostgreSQL. The first draft
-  of the setup guide used the file backend; whether that backend is still supported
-  upstream has not been checked.
 - Auto-unseal: undecided. Without it, every restart needs a human with the keys.
 - Delivery to homeserver containers: a sidecar writing `/run/secrets` is the
   working assumption; a container manager with native vault support would

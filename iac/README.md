@@ -50,10 +50,8 @@ reads whatever is in the bucket now. So the rule is the whole protection — one
 checkout runs `tofu apply`, the plan pasted into the pull request comes from that
 same checkout, produced immediately before the apply.
 
-**Backup — planned, not implemented.** A scheduled `tofu state pull` export is
-supposed to go offsite, because losing the bucket loses the mapping between code
-and real VMs. No script, timer or task does it yet, so today the bucket is a
-single copy.
+**Backup:** losing the bucket loses the mapping between code and real VMs.
+Whether it is backed up is tracked in `systems/backups.md`.
 
 Note: this backend has not been exercised against a real bucket yet. Everything
 that could be checked locally (fmt, validate, tflint, provider lock) has been.

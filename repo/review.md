@@ -102,7 +102,9 @@ the verdict is `needs_owner`, however good the edit is:
 
 Report everything you find, strictly. Then sort each finding:
 
-- **Blocker** — fails the check, the change cannot merge as is:
+- **Blocker** — the change should not merge as is. Only blockers under
+  sections 1 and 5 fail the CI check; the others are listed for the owner,
+  who approves every pull request:
   - anything under section 1 (should not be public);
   - anything under section 5 (unsafe for the lab);
   - a fact that is invented, or a false claim about the live lab that
@@ -112,7 +114,8 @@ Report everything you find, strictly. Then sort each finding:
     that disagrees with itself inside the change (a tense, a stale line, a
     "now" that should be "will"): those are warnings.
 - **Needs owner** — section 4: the change is fine to review but the owner has
-  to decide on it. Reported as the `needs_owner` verdict, listed as a blocker.
+  to decide on it. Reported as the `needs_owner` verdict, listed as a blocker;
+  it does not fail the check, because the owner's approval is required anyway.
 - **Warning** — reported, does not block: everything else, including missing
   sources on harmless claims, wording that disagrees with itself, duplicated facts, links and paths, template
   shape (section 3), and commit shape (section 6) — history cannot change

@@ -1,0 +1,64 @@
+name: ci
+
+# Static checks only: nothing here talks to Xen Orchestra, and no credentials
+# exist for it. The plan that gates a change is produced on a tailnet machine
+# and pasted into the pull request — see specs/repo-guardrails.md.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tofu:
+    name: opentofu (fmt, validate, tflint)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: iac
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.13.2
+          tofu_wrapper: false
+
+      - name: Check formatting
+        run: tofu fmt -check -recursive -diff
+
+      - name: Init without a backend
+        # No state is touched: this only resolves providers so validate can run.
+        run: tofu init -backend=false -input=false -no-color
+
+      - name: Validate
+        run: tofu validate -no-color
+
+      - uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: v0.65.0
+
+      - name: Lint
+        run: |
+          tflint --init
+          tflint --recursive --format compact
+
+  compose:
+    name: compose config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate every compose file in the repo
+        run: |
+          set -eu
+          mapfile -t files < <(git ls-files | grep -Ei '(^|/)compose[^/]*\.ya?ml$' || true)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "no compose files yet — nothing to check"
+            exit 0
+          fi
+          for f in "${files[@]}"; do
+            echo "== $f"
+            docker compose -f "$f" config -q
+          done

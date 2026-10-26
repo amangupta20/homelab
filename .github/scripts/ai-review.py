@@ -102,6 +102,10 @@ def main():
             "Authorization": f"Bearer {os.environ['REVIEW_API_KEY']}",
             "Content-Type": "application/json",
             "User-Agent": "homelab-ai-review/1.0",
+            # OpenCode Go rejects requests without a stable per-conversation
+            # session id; one per pull request lets reruns reuse its prompt
+            # cache. Other providers ignore the header.
+            "x-opencode-session": f"homelab-ai-review-pr-{os.environ.get('PR_NUMBER', 'local')}",
         },
     )
     try:

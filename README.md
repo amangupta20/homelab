@@ -11,9 +11,10 @@ yet (see Status).
   snapshots, backups.
 - VMs: one per job (storage, proxies, apps). Apps inside VMs run as Docker
   Compose stacks.
-- Provisioning: OpenTofu defines the VM, cloud-init does its first boot
-  (hostname, SSH keys, IP). Configuration after boot has no tool in this repo
-  yet.
+- Provisioning (intended, not in use yet): OpenTofu defines each VM and
+  cloud-init does its first boot (hostname, SSH keys, IP). Today no VM is
+  defined in code, and nothing configures a VM after boot
+  (`decisions/open-questions.md`, Provisioning).
 - Access: admin only over Tailscale (private mesh VPN). No SSH open to the
   internet.
 - Edge: Cloudflare (filter) -> Nginx Proxy Manager (routing) -> containers.

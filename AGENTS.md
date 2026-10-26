@@ -20,7 +20,7 @@ Read in this order:
 | Files | You may |
 |---|---|
 | `inventory/`, `systems/`, `plans/`, `apps/`, `iac/README.md`, `repo/` | edit, as long as every fact you add says how you know it |
-| `journal/` | add a new entry at the end of every task; never edit an old one except to append a follow-up |
+| `journal/` | add an entry when a task changed the live lab, handled an incident, or tested a restore (`journal/README.md`); never edit an old one except to append a follow-up |
 | `skills/` | follow; add new skills and propose changes to existing ones (`skills/write-a-skill/`) |
 | `decisions/open-questions.md` | append; never delete or resolve an item |
 | `decisions/` (everything else), `AGENTS.md`, `README.md` goal and principles | propose only, in a separate commit for the owner to review |

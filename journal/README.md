@@ -1,14 +1,21 @@
 # Journal — what happened
 
-One dated entry per operation that changed something, per incident, and per
-recon pass. It is the answer to "what did we do to this, when, and why?" — the
-operations counterpart of git history.
+One dated entry for each of these, and nothing else:
 
-Not every check gets an entry: a routine check that found nothing wrong is not
-news. Write one when something changed, broke, or was learned.
+- a change to the live lab — a server, VM, container or setting, whether or
+  not a pull request went with it;
+- an incident — something broke or was found broken;
+- a restore test — the proof `systems/backups.md` and the plans ask for.
 
-Naming: `journal/YYYY-MM-DD-<what>.md` (`2026-11-02-recon-homeserver.md`), so
-the folder sorts by date.
+It answers "what did we do to the lab, when, and how did we check it?" —
+what git history cannot show, because none of it is a file in this repo.
+
+No entry for read-only checks or changes to this repo alone: facts found by a
+check go into their owner file with their source ("verified: recon
+2026-11-02"), and the pull request describes the repo change.
+
+Naming: `journal/YYYY-MM-DD-<what>.md` (`2026-11-02-restore-test-openbao.md`),
+so the folder sorts by date.
 
 ## Rules
 

@@ -5,3 +5,4 @@
 *.backup
 vm.tf
 .env
+secret-scan.local.toml

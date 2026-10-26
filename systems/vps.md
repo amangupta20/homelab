@@ -40,6 +40,9 @@ access setup are kept out of this public repo on purpose.
   GitHub repositories, none of them this one. Dokploy checks each app out at
   `/etc/dokploy/compose/<appName>/code`. Moving them into `apps/vps/` is step
   5 of the foundations plan.
+- **Agents reach Dokploy** through Dokploy's API, each with its own API key.
+  The shared Dokploy MCP server that used to run here was removed on
+  2026-10-26 (`journal/2026-10-26-remove-dokploy-mcp.md`).
 - **Backups** go to Garage at home through a Dokploy destination
   (`systems/backups.md`).
 

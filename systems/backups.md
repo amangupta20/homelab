@@ -20,7 +20,8 @@ OpenTofu state has no backup at all (see "Still to test").
   store at home, addressed by its home LAN IP, presumably through a Tailscale
   subnet route (not checked). Two projects both name their service `app`, so
   the exact number of apps is unclear. Most runs succeed; every run of the
-  `odysseus` backup has failed (88 of 88 in Dokploy's list). Read from
+  backup of the `odysseus` service (project `Odyssues`) has failed (88 of 88
+  in Dokploy's list). Read from
   Dokploy's backup list, recon 2026-10-26.
 
 All of the above is what the docs say is configured. Nobody has compared it to

@@ -56,12 +56,14 @@ owner file, and is deleted from this list.
 
 - How Dokploy deploys from this repo, and whether it keeps its own copy of
   each stack.
-- Which apps run on it — not documented yet.
+- Which apps run on it — listed by the recon on 2026-10-26 in
+  `inventory/services.md`; for the owner to close.
 - Found by the step-0 recon (2026-10-26, `systems/vps.md`):
-  - The `odysseus` backup has failed on every run, and the Odyssues project
-    has no containers. Retire the app, or fix the backup?
-  - Several apps have no running containers (Coder, jobops, opendota, most of
-    Odyssues, parts of openwebui). Still wanted, or retire?
+  - The `odysseus` backup always fails and the `Odyssues` project has no
+    containers (`systems/backups.md`, `inventory/services.md`). Retire the
+    app, or fix the backup?
+  - Several apps have no running containers (`inventory/services.md`, "Apps
+    on the VPS"). Still wanted, or retire?
   - The owner says the Dokploy dashboard's domain is not proxied by
     Cloudflare; a request to it on 2026-10-26 got a response with the header
     `server: cloudflare`. Which is current?

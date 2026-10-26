@@ -42,8 +42,9 @@ them and links its journal entry here.
 ## Steps
 
 1. **Read the sources, then write your own.** Before writing anything, read
-   Dokploy's template for the app (`blueprints/<app>/` in
-   github.com/Dokploy/templates: `docker-compose.yml` and `template.toml`)
+   Dokploy's template for the app (`blueprints/<name>/` in
+   github.com/Dokploy/templates: `docker-compose.yml` and `template.toml`;
+   the folder name may differ from the app's — OpenBao's nearest is `vault`)
    and the Compose file or container docs in the app's own repository. Do
    not copy either as is — templates often run dev modes, generate secrets
    into the environment, or attach a public domain. Check the image exists

@@ -52,7 +52,7 @@ the local test.
 
 ## Deploying in Dokploy
 
-Follows `skills/deploy-on-dokploy/` step 5, with these differences:
+Follows `skills/deploy-on-dokploy/` step 6, with these differences:
 
 - **No domain.** A Dokploy domain would route OpenBao through the public
   Traefik.

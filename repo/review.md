@@ -80,6 +80,9 @@ the verdict is `needs_owner`, however good the edit is:
 - A write to infrastructure names the snapshot or verified backup taken first.
 - Nothing deletes or merges an XCP-ng snapshot by hand (`systems/xcp-ng.md`).
 - Compose files hold references (`${VAR}`, secret files), never values.
+- Access for agents follows `decisions/agent-access.md`: convenience first,
+  with two hard guards (backups out of an agent's reach, no manual snapshot
+  deletion). Asking for lockdown beyond that is not a finding.
 
 ## 6. Shaped so it can be reverted
 

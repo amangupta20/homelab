@@ -5,11 +5,17 @@ how to work here without breaking things.
 
 Read in this order:
 1. `README.md` — what this homelab is
-2. `inventory/services.md` — what runs here, and what is broken
-3. `inventory/network.md` — IPs and traffic flow
-4. `platforms/xcp-ng-xen-orchestra.md` — VM platform rules, including the one
+2. `specs/goal-and-requirements.md` — why the repo exists, and what is still unconfirmed
+3. `specs/architecture.md` — the modules and the invariants between them
+4. `inventory/services.md` — what runs here, and what is broken
+5. `inventory/network.md` — IPs and traffic flow
+6. `platforms/xcp-ng-xen-orchestra.md` — VM platform rules, including the one
    that destroys VMs
-5. The task file under `ops/` or `iac/` for whatever you were asked to do
+7. The task file under `ops/` or `iac/` for whatever you were asked to do
+
+Specs are drafts until someone reviews them. Where a spec says "unconfirmed"
+and a document states the opposite, the document is not automatically right —
+check, then fix whichever is wrong.
 
 ## Rules
 

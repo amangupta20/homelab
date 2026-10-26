@@ -33,6 +33,8 @@ never in git. See `docs/secrets-openbao.md` for where they live.
 - `ops/migration.md` — what order the current migration runs in.
 - `docs/secrets-openbao.md` — where secrets live and how to use them.
 - `docs/secret-scanning.md` — the scan that blocks a commit or push carrying a secret.
+- `specs/` — the spec graph: the goal, the architecture, and one file per module.
+  Drafted from these docs, not from an audit; anything unverified says so inside.
 - `AGENTS.md` — instructions for AI agents working in this repo.
 
 ## Quick look

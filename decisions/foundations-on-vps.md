@@ -24,6 +24,29 @@ deployed, then patched for OpenBao, then patched again for SSO.
   working.
 - Which SSO is open (`decisions/open-questions.md`).
 
+## If OpenBao ever has to face the internet
+
+Reaffirmed by the owner on 2026-10-26: tailnet-only for now. Encryption at
+rest and the unseal pieces protect the data on disk, not the running API —
+once unsealed, anyone who reaches it can try passwords or a pre-login bug
+against every secret at once.
+
+What would justify a public door: a consumer that can be neither on the
+tailnet nor on the VPS itself — a CI runner such as GitHub Actions, a server
+someone else runs, a device that cannot run Tailscale. Consumers on the VPS
+reach OpenBao over Docker's network, and containers on a tailnet host go out
+through that host, so neither is a reason.
+
+Conditions if it happens, decided again at that time:
+
+- Open the narrowest door that serves that consumer — client certificates
+  (mTLS) or a Cloudflare Access service token in front, so a request without
+  them never reaches OpenBao — rather than OpenBao itself on a public port.
+- Login lockout after failed attempts, a second factor on human logins, the
+  root token revoked, the audit log on with alerts to ntfy, and updates
+  applied promptly.
+- This decision is updated first, with the consumer that needed it.
+
 ## Where it lives
 
 `systems/vps.md`, `systems/openbao.md`, `plans/vps-foundations.md`.

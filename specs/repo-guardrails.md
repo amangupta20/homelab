@@ -27,8 +27,19 @@ to push it. CI is detection after the fact, not prevention.
   given as `-c`, so every scan hands it a temporary copy.
 - One commit, one change; subjects in plain prose, present tense.
 
-## Unconfirmed — research needed
+## Pull request gate
 
-- Whether the workflow becomes a required status check with branch protection.
-  Nothing enforces it today.
-- Whether `tofu fmt`/`validate` and tflint join this gate or get their own.
+Decided and implemented in `.github/workflows/`: a pull request is blocked unless
+
+- `tofu fmt -check`, `tofu init -backend=false`, `tofu validate` and `tflint`
+  pass on `iac/` (`.github/workflows/ci.yml`),
+- gitleaks passes over the full history (`.github/workflows/secret-scan.yml`),
+- every `compose*.yaml` in the repo passes `docker compose config`,
+- a `tofu plan` produced on a tailnet machine is pasted into the pull request,
+  and one review approves it.
+
+CI never reaches Xen Orchestra and holds no credential for it; that is why the
+plan is produced by hand and attached rather than computed in CI.
+
+Not done yet: branch protection and a required status check. The workflow exists,
+the repository settings that make it mandatory do not.

@@ -37,9 +37,9 @@ owner file, and is deleted from this list.
 
 - Auto-unseal: undecided. Without it, every restart needs a human with the keys.
 - Swap: the VPS has an 8 GB swap file in use (recon 2026-10-26), and
-  OpenBao 2.7.1 does not lock its memory (it rejects `disable_mlock` as an
-  unknown field, seen in a local test 2026-10-26), so secrets can be written
-  to swap. OpenBao's install page advises keeping it out of swap. Turn swap
+  OpenBao 2.7.1 rejects `disable_mlock` as an unknown field (local test
+  2026-10-26); whether it locks its memory at all is unverified, so secrets
+  may be written to swap. OpenBao's install page advises keeping it out of swap. Turn swap
   off on the VPS, accept it, or use encrypted swap?
 - Delivery to homeserver containers: a sidecar writing `/run/secrets` is the
   working assumption; a container manager with native vault support would

@@ -54,7 +54,8 @@ the tailnet). Never open the box itself.
 - Delete the initial root token after setup. Log in with a user account, and
   give each use its own narrow permission: checkouts read `kv/homelab/*` only,
   Dokploy reads only its own paths.
-- Turn on the audit log (`bao audit enable ...`) and actually look at it —
+- Turn on the audit log — declared in the server config, since OpenBao 2.x
+  refuses `bao audit enable` (`apps/vps/openbao/compose.yaml`) — and actually look at it —
   even just error lines forwarded to ntfy.
 - Back it up and test one restore.
 - Patch it like you'd patch Xen Orchestra — secret-store bugs are CVEs too.

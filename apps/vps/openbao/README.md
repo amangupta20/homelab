@@ -64,8 +64,8 @@ Follows `skills/deploy-on-dokploy/` steps 6 and 7, with these differences:
 
 ## Data and backups
 
-- `openbao-data` holds the Raft data; `openbao-logs` is for the audit log once
-  it is turned on.
+- `openbao-data` holds the Raft data; `openbao-logs` holds the audit log,
+  `/openbao/logs/audit.log`, declared in the config (tested locally 2026-10-27).
 - Back up with `bao operator raft snapshot save`, not by copying the volume
   while it runs. The snapshot job, its token and its destination are not set
   up yet — that is part of `plans/vps-foundations.md` step 2.

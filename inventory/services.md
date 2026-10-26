@@ -19,7 +19,7 @@ document says, and the read-only recon pass has not filled it in yet.
 | ntfy bus | Push-notification service. Backup jobs, deploys, and security alerts post here. | unknown | stable — offsite "is the host itself down?" check still to do |
 | Nextcloud AIO | Self-hosted file sync (Dropbox replacement), all-in-one container. | unknown | stable — full restore test still to do |
 | Uptime Kuma | Up/down monitoring. Named once in the old platform page; nothing else mentions it. | unknown | unknown whether it runs |
-| Dokploy | Container manager on the remote VPS. Outside this repo's scope beyond this row. | remote VPS | running |
+| Dokploy | Container manager on the remote VPS, which runs the public-facing apps. Its stacks are not in this repo yet. | remote VPS | running |
 | OpenBao | Secret store. See `docs/secrets-openbao.md`. | — | planned, not deployed |
 | OCI Borgmatic | Planned: run Borg backups on a cheap cloud VM. | — | design only — do not deploy yet |
 | Object storage lab | Experiment: S3-compatible storage (Garage/SeaweedFS) across two sites. | — | idea, not built |

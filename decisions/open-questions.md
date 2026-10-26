@@ -50,6 +50,13 @@ owner file, and is deleted from this list.
 - Does the chosen manager read OpenBao natively?
 - Which of the three-year-old stacks are worth migrating, and which get retired?
 
+## Remote VPS (Dokploy)
+
+- Where its definitions live: its own folder, or next to the homeserver apps.
+- How Dokploy deploys from this repo, and whether it keeps its own copy of
+  each stack.
+- Which apps run on it — not documented yet.
+
 ## Not planned yet
 
 - SSO: wanted, undecided. Authentik was used before and dropped — reason not

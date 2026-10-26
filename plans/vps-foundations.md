@@ -18,7 +18,7 @@ Why this order and why on the VPS: `decisions/foundations-on-vps.md`.
    left in "How it works".
 1. **Decide how OpenTofu manages the VPS.** Depends on the provider having an
    OpenTofu provider, and on whether the existing VPS is imported into state or
-   rebuilt from code. — gate: a decision file in `decisions/`. Proposed
+   rebuilt from code. — gate: a decision file in `decisions/`. Done
    2026-10-26: it doesn't (`decisions/vps-outside-opentofu.md`).
 2. **OpenBao on the VPS.** Before installing: a VPS snapshot from the
    provider, or a verified backup of every Dokploy app's data, named in the

@@ -41,6 +41,16 @@ configs:
         node_id = "vps"
       }
 
+      # Audit log on the openbao-logs volume. OpenBao 2.x refuses to enable
+      # audit devices through the API ("use declarative, config-based audit
+      # device management"), so it is declared here.
+      audit "file" "file" {
+        description = "Every request and response, hashed"
+        options {
+          file_path = "/openbao/logs/audit.log"
+        }
+      }
+
       listener "tcp" {
         address         = "0.0.0.0:8200"
         cluster_address = "127.0.0.1:8201"

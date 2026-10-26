@@ -1,0 +1,36 @@
+name: review
+
+# An AI reviewer reads every pull request against repo/review.md and fails the
+# check unless it approves. It is a required check on main, so nothing merges
+# without it (decisions/pull-request-gate.md). The model and provider are
+# repository settings, not code: see .github/scripts/ai-review.py.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    name: ai review
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # the diff and commit list need the base commit
+
+      # The PR title and body come from whoever opened the PR, so they reach the
+      # script through the environment, never pasted into the shell line.
+      - name: Review
+        env:
+          REVIEW_API_URL: ${{ vars.REVIEW_API_URL }}
+          REVIEW_MODEL: ${{ vars.REVIEW_MODEL }}
+          REVIEW_API_KEY: ${{ secrets.REVIEW_API_KEY }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          REPO_OWNER: ${{ github.repository_owner }}
+        run: python3 .github/scripts/ai-review.py

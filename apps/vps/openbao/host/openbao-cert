@@ -7,8 +7,9 @@
 #
 # Host files (never in this repo, see ../README.md "TLS"):
 #   /etc/openbao/cert.conf       BAO_DOMAIN=<the name clients use>
-#                                LEGO_DNS_RESOLVERS=<resolver ip>:53 (optional;
-#                                lego uses the system's resolvers without it)
+#                                LEGO_DNS_RESOLVERS=<resolver ip>:53 (set on the
+#                                VPS; without it lego falls back to the system's
+#                                resolvers, which has not been tried)
 #   /etc/openbao/cloudflare.env  CF_DNS_API_TOKEN=<token: Zone DNS Edit, one zone>
 set -eu
 

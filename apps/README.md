@@ -10,8 +10,12 @@ apps/vps/<app>/          deployed on the remote VPS by Dokploy
 
 Each app folder holds:
 
-- `compose.yaml` — the stack. Every value that is secret or machine-specific is
-  a reference (`${VAR}`, or a `secrets:` file), never the value.
+- `compose.yaml` — the stack. Secrets (keys, passwords, tokens) and values
+  that identify the lab on the internet or the tailnet (domains, public IPs,
+  tailnet IPs and names) are references (`${VAR}`, or a `secrets:` file).
+  Everything else is written in the file as it is — ports, paths, node names,
+  tuning — so a deploy needs as few environment variables as possible. A
+  change to such a value goes through a pull request like any other change.
 - `.env.example` — every variable the stack reads, with placeholders
   (`__PASTE_ONCE__`) and a comment saying where the real value lives in OpenBao.
 - `README.md` — only if the app needs more than the inventory row says: data

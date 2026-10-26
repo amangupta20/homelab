@@ -33,8 +33,9 @@ by some models regardless of scope.
 Today every homeserver stack exists only inside Portainer: its Compose file and
 `.env` live in Portainer's database, not here. The target:
 
-- One directory per app in git: `compose.yaml` plus references (`${VAR}` and
-  `file:` secrets), never values.
+- One directory per app in git: `compose.yaml`, with secrets and identifying
+  values as references (`${VAR}` and `file:` secrets) and everything else
+  written in (`apps/README.md`).
 - A container manager that deploys from that directory, so the repo — not the
   UI — is the source of truth. Which manager is open
   (`decisions/open-questions.md`).

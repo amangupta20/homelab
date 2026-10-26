@@ -45,17 +45,25 @@ Prerequisites before the first `tofu init` works:
   OpenBao.
 
 **One writer.** Garage has no S3 conditional writes, so OpenTofu cannot take a
-lock. Only one checkout runs `tofu apply`; everything else may plan. Before
-applying, confirm the state you are about to change is the one in the bucket
-(`tofu plan` after `tofu init -upgrade` will show drift if it is not).
+lock. No command can detect that someone else applied in between: a plan always
+reads whatever is in the bucket now. So the rule is the whole protection — one
+checkout runs `tofu apply`, the plan pasted into the pull request comes from that
+same checkout, produced immediately before the apply.
 
-**Backups.** A scheduled `tofu state pull` export goes offsite alongside the
-other backups — losing the bucket loses the mapping between code and real VMs.
+**Backup — planned, not implemented.** A scheduled `tofu state pull` export is
+supposed to go offsite, because losing the bucket loses the mapping between code
+and real VMs. No script, timer or task does it yet, so today the bucket is a
+single copy.
 
 Note: this backend has not been exercised against a real bucket yet. Everything
 that could be checked locally (fmt, validate, tflint, provider lock) has been.
+One thing CI cannot check: `tofu init -backend=false` skips the backend block
+entirely, so a typo in `backend.tf` surfaces at your first real `tofu init`, not
+in a pull request.
 
 ## Never commit
 
 `*.tfvars`, `*.tfstate*`, `.terraform/`, `vm.tf`, `vault.tf`, `.env`,
-anything with a token. State files contain secrets — they stay local.
+anything with a token. State is never committed — it holds secrets, so it lives
+in the Garage bucket, which stores it unencrypted (accepted: the bucket is only
+reachable over the tailnet).

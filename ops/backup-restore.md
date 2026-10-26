@@ -8,6 +8,8 @@ What gets backed up, and — more importantly — what restore is still untested
   success/failure posted to ntfy.
 - Apps with internal state (Nextcloud): VM image plus an app-level Borg
   backup from inside the app.
+- OpenTofu state: a `tofu state pull` export offsite is planned but **not
+  implemented**, so the state bucket is a single copy today.
 
 ## The rule
 
@@ -19,3 +21,4 @@ nothing.
 - [ ] TrueNAS: wipe-and-reimport from backup (clean-import test)
 - [ ] Nextcloud: full recovery from Borg backup
 - [ ] Pre-migration re-audit (before the migration in `migration.md`)
+- [ ] OpenTofu state: scheduled `tofu state pull` export offsite — not built yet

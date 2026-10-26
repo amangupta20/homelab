@@ -4,6 +4,7 @@ This file owns the service list. Other pages link here, never copy this table.
 
 | Service | What it is | State |
 |---|---|---|
+| Garage (S3) | S3-compatible object store on the TrueNAS VM, port 30188. Holds Dokploy backups and, once created, the OpenTofu state bucket. | running — single node, no redundancy |
 | Portainer CE | Web UI for the homeserver's Docker stacks. Every homeserver app is deployed from here today. | stable — replacement not decided, Arcane is the likely candidate |
 | TrueNAS VM | Storage OS. Holds file shares and is the backup target for VM images. | stable — full clean-import restore still to test |
 | Xen Orchestra | Web UI that manages all VMs: start/stop, snapshots, scheduled backups. | stable — sends alerts to ntfy |

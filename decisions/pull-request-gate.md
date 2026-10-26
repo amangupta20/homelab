@@ -15,8 +15,10 @@ A pull request is blocked unless:
   pass on `iac/` (`.github/workflows/ci.yml`),
 - every compose file in the repo passes `docker compose config` (same file),
 - gitleaks passes over the full history (`.github/workflows/secret-scan.yml`),
-- an AI reviewer approves the change against `repo/review.md`
-  (`.github/workflows/review.yml`),
+- an AI reviewer finds no blockers against `repo/review.md`
+  (`.github/workflows/review.yml`). It reports strictly, but only blockers —
+  public leaks, lab safety, invented facts, and agent edits that need the
+  owner — fail the check; everything else is a warning in the job summary,
 - a `tofu plan` from the one checkout that applies (see `iac/README.md`) is
   pasted into the pull request, and one review approves it.
 

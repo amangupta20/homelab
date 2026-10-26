@@ -35,4 +35,5 @@ before.
 
 - `xcp-ng.md` — hypervisor and Xen Orchestra, and the rule that destroys VMs.
 - `backups.md` — what is backed up, how, and which restores are untested.
+- `vps.md` — the remote VPS, Dokploy, and what goes there.
 - `openbao.md` — the secret store: where secrets live and how they are read.

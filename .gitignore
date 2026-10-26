@@ -4,5 +4,4 @@
 *.tfvars
 *.backup
 vm.tf
-.terraform.lock.hcl
 .env

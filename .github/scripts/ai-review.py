@@ -44,7 +44,9 @@ def main():
 
     base, head = os.environ["BASE_SHA"], os.environ["HEAD_SHA"]
     diff = git("diff", f"{base}...{head}")
-    commits = git("log", "--format=%h %an: %s%n%b", f"{base}..{head}")
+    # Subject and body only: an author name in front of the subject reads to
+    # the model as a commit prefix, which the checklist forbids.
+    commits = git("log", "--format=commit %h%nsubject: %s%n%b", f"{base}..{head}")
     changed = git("diff", "--name-only", f"{base}...{head}").split()
 
     truncated = len(diff) > MAX_DIFF_CHARS

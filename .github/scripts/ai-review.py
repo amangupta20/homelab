@@ -131,6 +131,13 @@ def main():
     # Models often wrap the line in markdown (`**verdict:** approve`); strip that.
     lines = [line.replace("*", "").replace("`", "").strip().lower() for line in review.splitlines()]
     verdict = next((line.split(":", 1)[1].strip() for line in lines if line.startswith("verdict:")), "")
+    # The checklist allows approve only with no findings; a reply that says
+    # approve and still lists some is treated as asking for changes.
+    after = lines[next((i for i, line in enumerate(lines) if line.startswith("findings:")), len(lines)) + 1 :]
+    findings = [line for line in after if line.startswith("-") and line.strip("- .") not in ("", "none")]
+    if verdict == "approve" and findings:
+        print(f"\nai-review: verdict was approve but {len(findings)} finding(s) were listed.", file=sys.stderr)
+        return 1
     if verdict == "approve" and not truncated:
         return 0
     if verdict == "needs_owner":

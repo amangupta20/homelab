@@ -1,0 +1,53 @@
+# OpenBao, the lab's secret store (systems/openbao.md). Where this file came
+# from and how to deploy it: README.md next to it.
+
+services:
+  openbao:
+    image: openbao/openbao:2.7.1
+    # The image's default command starts a throwaway in-memory dev server.
+    # Run the real one with the config below instead.
+    command: ["bao", "server", "-config=/openbao/config/openbao.hcl"]
+    restart: unless-stopped
+    ports:
+      # Tailnet address only, never every interface
+      # (decisions/foundations-on-vps.md). Unset falls back to loopback.
+      - "${TAILSCALE_IP:-127.0.0.1}:8200:8200"
+    configs:
+      - source: openbao-hcl
+        target: /openbao/config/openbao.hcl
+    volumes:
+      # The image creates /openbao/file owned by its openbao user, so a new
+      # named volume there is writable. Raft keeps its data in it.
+      - openbao-data:/openbao/file
+      - openbao-logs:/openbao/logs
+      # tls.crt and tls.key, created on the VPS; never in this repo (README.md).
+      - ${BAO_TLS_DIR:-/etc/openbao/tls}:/openbao/tls:ro
+
+configs:
+  openbao-hcl:
+    content: |
+      ui = true
+
+      # No disable_mlock: OpenBao 2.7.1 ignores it with a warning ("unknown or
+      # unsupported field") and does not lock memory, so swap matters
+      # (decisions/open-questions.md, Secrets).
+
+      api_addr     = "https://${TAILSCALE_IP:-127.0.0.1}:8200"
+      cluster_addr = "https://127.0.0.1:8201"
+
+      storage "raft" {
+        path    = "/openbao/file"
+        node_id = "vps"
+      }
+
+      listener "tcp" {
+        address         = "0.0.0.0:8200"
+        cluster_address = "127.0.0.1:8201"
+        tls_cert_file   = "/openbao/tls/tls.crt"
+        tls_key_file    = "/openbao/tls/tls.key"
+        tls_min_version = "tls13"
+      }
+
+volumes:
+  openbao-data:
+  openbao-logs:

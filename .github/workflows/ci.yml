@@ -53,7 +53,7 @@ jobs:
       - name: Validate every compose file in the repo
         run: |
           set -eu
-          mapfile -t files < <(git ls-files | grep -Ei '(^|/)compose[^/]*\.ya?ml$' || true)
+          mapfile -t files < <(git ls-files | grep -Ei '(^|/)(docker-)?compose(\.[^/]*)?\.ya?ml$' || true)
           if [ "${#files[@]}" -eq 0 ]; then
             echo "no compose files yet — nothing to check"
             exit 0

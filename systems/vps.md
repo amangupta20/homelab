@@ -27,11 +27,11 @@ access setup are kept out of this public repo on purpose.
   tier and has no plan to rebuild it (owner, 2026-10-26).
 - **Admin access:** SSH with a key, over Tailscale (Tailscale 1.102.3).
 - **Docker** 29.7.2 in swarm mode (single node), as Dokploy installs it.
-- **Dokploy** v0.30.10 (image tag of the `dokploy` swarm service), with its
-  own Postgres 16 and Redis 7. The owner applies every Dokploy update when the
-  UI offers it (owner, 2026-10-26), so the version here goes stale; read it
-  again before relying on a version-specific feature.
-- **Public traffic** enters through Dokploy's Traefik (v3.6.7, container
+- **Dokploy**, with its own Postgres and Redis (`docker service ls`). The
+  owner applies every Dokploy update when the UI offers it (owner,
+  2026-10-26), so check the running version before relying on a
+  version-specific feature. Versions are not recorded in this public repo.
+- **Public traffic** enters through Dokploy's Traefik (container
   `dokploy-traefik`) on ports 80 and 443; each app's domain is set in Dokploy.
   The Dokploy dashboard is also on a public domain, by the owner's choice
   (owner, 2026-10-26).
@@ -40,9 +40,9 @@ access setup are kept out of this public repo on purpose.
   GitHub repositories, none of them this one. Dokploy checks each app out at
   `/etc/dokploy/compose/<appName>/code`. Moving them into `apps/vps/` is step
   5 of the foundations plan.
-- **Agents reach Dokploy** through Dokploy's API, each with its own API key.
-  The shared Dokploy MCP server that used to run here was removed on
-  2026-10-26 (`journal/2026-10-26-remove-dokploy-mcp.md`).
+- **Agents will reach Dokploy** through Dokploy's API, each with its own API
+  key — not set up yet. The shared Dokploy MCP server that used to run here
+  was removed on 2026-10-26 (`journal/2026-10-26-remove-dokploy-mcp.md`).
 - **Backups** go to Garage at home through a Dokploy destination
   (`systems/backups.md`).
 
@@ -51,10 +51,12 @@ access setup are kept out of this public repo on purpose.
 - Nothing admin-facing on a public port except the Dokploy dashboard, which
   is public by the owner's choice. OpenBao and SSH are tailnet-only.
 - No real domain, public IP or tailnet name in this repo — the commit hook
-  blocks domains and public IPs (`repo/secret-scanning.md`); use placeholders.
+  blocks domains on the local list, public IPs and tailnet names
+  (`repo/secret-scanning.md`); use placeholders.
 - Security findings (exposed ports, missing authentication) do not go in this
   repo while they are unfixed.
 
 ## Open questions
 
-`decisions/open-questions.md`, "Remote VPS (Dokploy)" and "Foundations".
+See [`decisions/open-questions.md`](../decisions/open-questions.md),
+sections "Remote VPS (Dokploy)" and "Foundations".

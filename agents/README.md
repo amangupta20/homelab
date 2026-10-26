@@ -28,8 +28,10 @@ mise run agents:link    # or: sh agents/link.sh
 (Run 2026-10-26 on a machine without Hermes: it reported Hermes as not
 installed and changed nothing.)
 
-Pi asks you to trust a project before it loads project skills; that is
-expected, not an error.
+Pi may ask you to trust the project before it loads project files; that is
+expected, not an error. (Pi 1.4.0 `docs/configuration.md` says project
+configuration loads after project trust; the check in the table used Pi's
+`--approve` flag, so the prompt itself has not been seen yet.)
 
 ## How each harness finds the rules
 
@@ -50,6 +52,7 @@ one-line `CLAUDE.md` that points at it — one copy of the rules, never two.
 
 - Each harness's own memory, sessions and settings stay in its home directory
   and are not a source of truth. Facts an agent learns go into the repo.
-- Credentials never: they come from OpenBao or the environment.
+- Credentials never: they come from OpenBao (`systems/openbao.md`) or the
+  environment.
 - Shared MCP server definitions: none yet. When the first one is added it gets
   one copy in an mcp folder here, with a note on how each harness loads it.

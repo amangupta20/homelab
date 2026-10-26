@@ -8,7 +8,7 @@ The owner would rather accept the risk of an agent breaking something than
 lose convenience to tight lockdown, and relies on backups and documented
 recovery instead (what is backed up, and which restores are proven:
 `systems/backups.md`). With the lab documented properly, a rebuild should be a
-procedure, not the two days lost in July 2026. An agent deleting the system is unlikely;
+procedure, not a repeat of the July 2026 loss (`systems/xcp-ng.md`). An agent deleting the system is unlikely;
 recovering from it is planned for.
 
 So agents get the access a task needs to be done smoothly. Read-only first and

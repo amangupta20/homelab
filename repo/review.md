@@ -89,13 +89,33 @@ the verdict is `needs_owner`, however good the edit is:
 - One commit, one change. Two unrelated changes in one commit is a finding.
 - Subjects are plain prose, present tense, no prefix.
 
+## Blockers and warnings
+
+Report everything you find, strictly. Then sort each finding:
+
+- **Blocker** — fails the check, the change cannot merge as is:
+  - anything under section 1 (should not be public);
+  - anything under section 5 (unsafe for the lab);
+  - a fact that is invented, or contradicts what the repo or the live lab
+    says (section 2) — not merely a missing source.
+- **Needs owner** — section 4: the change is fine to review but the owner has
+  to decide on it. Reported as the `needs_owner` verdict, listed as a blocker.
+- **Warning** — reported, does not block: everything else, including missing
+  sources on harmless claims, duplicated facts, links and paths, template
+  shape (section 3), and commit shape (section 6) — history cannot change
+  after a push, so commit shape is advice for the next change.
+
 ## Output
 
 ```
 verdict: approve | request_changes | needs_owner
-findings:
+blockers:
+- [section number] path:line — what is wrong — what would fix it
+warnings:
 - [section number] path:line — what is wrong — what would fix it
 ```
 
-`approve` only with no findings. Style opinions that break none of the rules
-above are not findings.
+Write `- none` under an empty heading. `approve` means no blockers; warnings
+may still be listed. `request_changes` only when there is at least one
+blocker. Style opinions that break none of the rules above are not findings
+at all.

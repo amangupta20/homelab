@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Review a pull request against repo/review.md with a model behind any
-OpenAI-compatible chat API, and fail unless the verdict is `approve`.
+OpenAI-compatible chat API, and fail unless the verdict is `approve` with no
+blockers. Warnings are reported and do not fail the check.
 
 Configuration (repository settings, never this file):
   REVIEW_API_URL  base URL, or a full /chat/completions or      (variable)
@@ -159,12 +160,27 @@ def main():
     # Models often wrap the line in markdown (`**verdict:** approve`); strip that.
     lines = [line.replace("*", "").replace("`", "").strip().lower() for line in review.splitlines()]
     verdict = next((line.split(":", 1)[1].strip() for line in lines if line.startswith("verdict:")), "")
-    # The checklist allows approve only with no findings; a reply that says
-    # approve and still lists some is treated as asking for changes.
-    after = lines[next((i for i, line in enumerate(lines) if line.startswith("findings:")), len(lines)) + 1 :]
-    findings = [line for line in after if line.startswith("-") and line.strip("- .") not in ("", "none")]
-    if verdict == "approve" and findings:
-        print(f"\nai-review: verdict was approve but {len(findings)} finding(s) were listed.", file=sys.stderr)
+    # Only blockers fail the check; warnings are reported and pass
+    # (repo/review.md, "Blockers and warnings"). A reply in the older single
+    # "findings:" list is treated as all blockers, to fail safe.
+    def section(name):
+        start = next((i for i, line in enumerate(lines) if line.startswith(f"{name}:")), None)
+        if start is None:
+            return []
+        items = []
+        for line in lines[start + 1 :]:
+            if line.endswith(":") and not line.startswith("-"):
+                break  # next heading
+            if line.startswith("-") and line.strip("- .") not in ("", "none"):
+                items.append(line)
+        return items
+
+    blockers = section("blockers") + section("findings")
+    warnings = section("warnings")
+    if warnings:
+        print(f"\nai-review: {len(warnings)} warning(s) — reported, not blocking.", file=sys.stderr)
+    if verdict == "approve" and blockers:
+        print(f"\nai-review: verdict was approve but {len(blockers)} blocker(s) were listed.", file=sys.stderr)
         return 1
     if verdict == "approve" and not truncated:
         return 0

@@ -2,6 +2,12 @@
 
 The current migration, in order. Each step gates the next.
 
+**Status:** in progress — the current step is not recorded. Step 0's restore
+tests are all still open in `systems/backups.md`.
+**Done when** (proposed, owner to confirm): every workload runs on the new
+setup, its definition is in this repo, and the re-hardening pass (step 3) has a
+journal entry.
+
 0. **Backups verified + re-audit.** Confirm snapshots exist and pass the
    restore rule in `systems/backups.md`. Re-audit the current setup first.
 1. **Inventory + read-only security baseline, in parallel.** List what exists

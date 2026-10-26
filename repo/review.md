@@ -7,6 +7,28 @@ CI), and readable by a person doing the same review by hand.
 The reviewer reads the full diff, `AGENTS.md`, and the README of every folder
 the diff touches. It reports; it does not fix.
 
+## Where it runs
+
+- **Before a pull request:** the agent that made the change runs a separate
+  reviewer subagent with this file (`AGENTS.md`, "Before you open a pull
+  request"). Fast feedback, not enforced.
+- **On every pull request:** `.github/workflows/review.yml` sends the diff,
+  the commits, this file, `AGENTS.md` and the touched folders' READMEs to a
+  model, and fails the `ai review` check unless the verdict is `approve`. That
+  check is required on `main`.
+
+The CI reviewer is configured in the repository settings (Settings -> Secrets
+and variables -> Actions), never in code:
+
+| Name | Kind | Example |
+|---|---|---|
+| `REVIEW_API_URL` | variable | any OpenAI-compatible base URL, e.g. `https://api.deepseek.com/v1` |
+| `REVIEW_MODEL` | variable | a model id at that provider |
+| `REVIEW_API_KEY` | secret | the provider's API key |
+
+Until all three are set, the check fails with "not configured" — it never
+passes by default.
+
 ## 1. Nothing that should not be public
 
 The scan (`repo/secret-scanning.md`) catches credentials, public IPs, tailnet

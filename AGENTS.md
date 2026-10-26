@@ -4,22 +4,24 @@ You are an AI agent (or a future-me who forgot context). This file tells you
 how to work here without breaking things.
 
 Read in this order:
-1. `README.md` — what this homelab is
+1. `README.md` — what this homelab is, and the "Find something" map
 2. `decisions/open-questions.md` — what is undecided or unverified; do not
    treat anything listed there as fact
 3. `decisions/docs-layout.md` — which file owns which kind of fact, and who
    may edit what
-4. `inventory/services.md` — what runs here, and what is broken
-5. `inventory/network.md` — IPs and traffic flow
-6. `systems/xcp-ng.md` — VM platform rules, including the one
-   that destroys VMs
-7. The page under `systems/`, `plans/` or `iac/` for whatever you were asked to do
+4. `inventory/` — services, hosts, IPs
+5. `systems/xcp-ng.md` — the platform rule that destroys VMs
+6. The README of the folder you are about to write in — it has the naming
+   rules and the template
+7. The `systems/` page, `plans/` file or `runbooks/` entry for your task
 
 ## What you may edit
 
 | Files | You may |
 |---|---|
-| `inventory/`, `systems/`, `plans/`, `iac/README.md`, `repo/` | edit, as long as every fact you add says how you know it |
+| `inventory/`, `systems/`, `plans/`, `apps/`, `iac/README.md`, `repo/` | edit, as long as every fact you add says how you know it |
+| `journal/` | add a new entry at the end of every task; never edit an old one except to append a follow-up |
+| `runbooks/` | follow; propose changes only |
 | `decisions/open-questions.md` | append; never delete or resolve an item |
 | `decisions/` (everything else), `AGENTS.md`, `README.md` goal and principles | propose only, in a separate commit for the owner to review |
 

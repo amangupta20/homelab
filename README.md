@@ -18,6 +18,8 @@ yet (see Status).
   internet.
 - Edge: Cloudflare (filter) -> Nginx Proxy Manager (routing) -> containers.
   Fail2Ban blocks brute force at the firewall.
+- Remote VPS: the public-facing apps, deployed by Dokploy. Part of this repo,
+  not migrated in yet.
 
 This repo is the source of truth going forward.
 
@@ -33,20 +35,26 @@ without it slowly rewriting the design into something nobody chose.
 No secrets in this repo. Ever. Tokens, passwords, keys stay in a vault,
 never in git. See `systems/openbao.md` for where they live.
 
-## What's where
+## Find something
 
-- `inventory/services.md` — every service, what it does, and whether it is healthy.
-- `inventory/network.md` — IP layout and how traffic flows in.
-- `systems/xcp-ng.md` — how VMs are protected, and the one
-  rule that destroys VMs if you break it.
-- `iac/` — OpenTofu code that creates VMs. Start with `iac/README.md`.
-- `systems/backups.md` — what gets backed up, and what restore is still untested.
-- `plans/migration.md` — what order the current migration runs in.
-- `systems/openbao.md` — where secrets live and how to use them.
-- `repo/secret-scanning.md` — the scan that blocks a commit or push carrying a secret.
-- `decisions/` — what was decided and why, one file per decision, plus
-  `decisions/open-questions.md`: everything undecided or unverified, in one list.
-- `AGENTS.md` — instructions for AI agents working in this repo.
+| I want to know… | Look in |
+|---|---|
+| what runs, where, and whether it is healthy | `inventory/services.md` |
+| which machines exist | `inventory/hosts.md` |
+| an IP, or how traffic gets in | `inventory/network.md` |
+| how a thing works and what never to do to it | `systems/` — one page per thing (`xcp-ng.md`, `backups.md`, `openbao.md`) |
+| what is backed up, and which restores are untested | `systems/backups.md` |
+| how to do a task step by step | `runbooks/` |
+| what is in progress | `plans/` |
+| why something is the way it is | `decisions/` |
+| what is undecided or unverified | `decisions/open-questions.md` |
+| what was done, when, and by whom | `journal/` |
+| a stack's Compose file | `apps/homeserver/`, `apps/vps/` |
+| how VMs are created | `iac/README.md` |
+| how this repo's checks work, setting up a checkout | `repo/` |
+| how an AI agent is expected to work here | `AGENTS.md` |
+
+Every folder has a README saying what goes in it and a template to copy.
 
 ## How I run it
 

@@ -52,7 +52,6 @@ owner file, and is deleted from this list.
 
 ## Remote VPS (Dokploy)
 
-- Where its definitions live: its own folder, or next to the homeserver apps.
 - How Dokploy deploys from this repo, and whether it keeps its own copy of
   each stack.
 - Which apps run on it — not documented yet.

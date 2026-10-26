@@ -73,8 +73,10 @@ the verdict is `needs_owner`, however good the edit is:
 
 ## 5. Safe for the lab
 
-- A change to `iac/` comes with a `tofu plan` pasted in the pull request,
-  from the one checkout that applies.
+- A change to `iac/` that can alter what `tofu plan` shows (resources,
+  providers, variables, backend settings) comes with that plan pasted in the
+  pull request, from the one checkout that applies. Comments, docs and
+  formatting in `iac/` need no plan.
 - A write to infrastructure names the snapshot or verified backup taken first.
 - Nothing deletes or merges an XCP-ng snapshot by hand (`systems/xcp-ng.md`).
 - Compose files hold references (`${VAR}`, secret files), never values.

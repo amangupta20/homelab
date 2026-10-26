@@ -1,12 +1,15 @@
-# Network & hosts
+# Network
+
+This file owns every IP address. Hosts are named as in `hosts.md`; what runs
+on each is in `services.md`.
 
 Private subnet `10.22.33.0/24`.
 
-| IP | What |
+| IP | Host |
 |---|---|
 | `.1` | router / gateway |
-| `.254` | Docker + reverse-proxy host. Also runs apt cache on port 3142 so local VMs don't re-download packages. Clients set it in `/etc/apt/apt.conf.d/00proxy`. |
-| `.160` | TrueNAS storage + BorgWarehouse. Also runs Garage (S3-compatible object store) on port 30188; it holds the OpenTofu state bucket. |
+| `.254` | Docker + proxy host |
+| `.160` | TrueNAS VM |
 
 ## How traffic flows
 

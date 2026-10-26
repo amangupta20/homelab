@@ -27,5 +27,4 @@ Each app folder holds:
 
 ## Apps
 
-None yet. Both host folders exist so the layout is fixed before the first
-stack moves in.
+- `vps/openbao/` — the secret store; defined, not deployed.

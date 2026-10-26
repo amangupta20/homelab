@@ -50,7 +50,8 @@ them and links its journal entry here.
    - `README.md` only if needed: where data lives, ports, quirks.
 2. **Validate locally:** `cp apps/vps/<app>/.env.example /tmp/<app>.env` then
    `docker compose -f apps/vps/<app>/compose.yaml --env-file /tmp/<app>.env config`
-   — expect the resolved config and no error. CI runs the same check.
+   — expect the resolved config and no error (UNTESTED here). CI runs
+   `docker compose config` on every compose file (`.github/workflows/ci.yml`).
 3. **Store the secrets:** in OpenBao at `kv/homelab/<app>/<key>` once it
    runs; until then in the Dokploy service's environment. Never in the repo.
 4. **Open a pull request** and get it through review. The intent is that

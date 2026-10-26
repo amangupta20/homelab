@@ -18,11 +18,12 @@ foundation services (OpenBao, SSO) also live here
 - **Dokploy** deploys every app on the VPS. App definitions move into this
   repo under `apps/vps/<app>/`; how to deploy one is
   `skills/deploy-on-dokploy/`.
-- **Tailscale** joins the VPS and the homelab. Admin access and anything
+- **Tailscale** joins the VPS and the homelab (owner, 2026-10-26; not verified). Admin access and anything
   internal (OpenBao) is reachable only over the tailnet.
 - **Public traffic** reaches public apps through Cloudflare. Whether Dokploy's
   own proxy or something else terminates it is not documented yet.
-- **Backups** go to Garage on TrueNAS at home (`systems/backups.md`).
+- **Backups** go to Garage on TrueNAS at home, per `inventory/services.md`;
+  not verified, part of step 0 of `plans/vps-foundations.md`.
 
 ## Rules
 
@@ -33,4 +34,4 @@ foundation services (OpenBao, SSO) also live here
 
 ## Open questions
 
-`decisions/open-questions.md`, "Remote VPS (Dokploy)".
+`decisions/open-questions.md`, "Remote VPS (Dokploy)" and "Foundations".

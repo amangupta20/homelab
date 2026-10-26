@@ -38,3 +38,4 @@ a change in a separate commit, but does not rewrite an existing one on its own.
 - `docs-layout.md` — facts in owner files, reasons here, no spec graph.
 - `pull-request-gate.md` — what has to pass before a change merges.
 - `remote-vps-in-scope.md` — the Dokploy VPS belongs here and will be migrated in.
+- `vps-outside-opentofu.md` — the VPS itself is not managed by OpenTofu.

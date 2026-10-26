@@ -2,9 +2,9 @@
 
 Everything an agent (or you) needs to know how to do, one folder per skill, in
 the open agentskills.io format. This folder is the only copy: every agent
-harness reads it from here (`agents/README.md` says how), so a skill written
-once works in Claude Code, Pi, omp, Codex, OpenCode, Hermes and whatever comes
-next — on any machine that clones the repo.
+harness is pointed at it, so a skill written once works in every harness that
+reads it, on any machine that clones the repo. Which harnesses have actually
+been checked, and how, is in `agents/README.md`.
 
 Two kinds of skill live here:
 

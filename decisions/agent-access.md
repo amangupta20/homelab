@@ -5,9 +5,10 @@ Decided: 2026-10-26. Status: in force.
 ## Why
 
 The owner would rather accept the risk of an agent breaking something than
-lose convenience to tight lockdown. The lab already has several backups, more
-are planned, and with the lab documented properly a rebuild is a procedure, not
-the two days lost in July 2026. An agent deleting the system is unlikely;
+lose convenience to tight lockdown, and relies on backups and documented
+recovery instead (what is backed up, and which restores are proven:
+`systems/backups.md`). With the lab documented properly, a rebuild should be a
+procedure, not the two days lost in July 2026. An agent deleting the system is unlikely;
 recovering from it is planned for.
 
 So agents get the access a task needs to be done smoothly. Read-only first and
@@ -18,10 +19,12 @@ should be locked down so hard that routine work becomes painful.
 
 Two guards cost no convenience and keep recovery possible:
 
-- **An agent's credentials cannot delete or overwrite backups.** Backups live
-  on a boundary the agent cannot write to. In a widely reported April 2026
-  incident an agent found an API token in a file, deleted a production volume,
-  and the backups on that same volume went with it.
+- **An agent's credentials must not be able to delete or overwrite backups.**
+  Backups have to sit on a boundary the agent cannot write to. In the PocketOS
+  incident (April 2026, reported by Zenity:
+  https://zenity.io/blog/ai-agent-database-deletion-pocketos) an agent found an
+  API token in a file, deleted a production volume, and the backups on that
+  same volume went with it.
 - **No agent deletes or merges an XCP-ng base snapshot by hand**
   (`systems/xcp-ng.md`).
 

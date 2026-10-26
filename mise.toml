@@ -12,8 +12,9 @@ run = "git config core.hooksPath .githooks && echo 'core.hooksPath=.githooks'"
 [tasks.scan]
 description = "Scan the full git history for secrets"
 run = """
+. .githooks/scan-config.sh
 tmp=$(mktemp)
 trap 'rm -f "$tmp"' EXIT
-cp secret-scan.toml "$tmp"
+build_scan_config "$tmp"
 gitleaks git --redact --no-banner -v -c "$tmp"
 """

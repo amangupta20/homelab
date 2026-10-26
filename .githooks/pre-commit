@@ -12,14 +12,11 @@ fi
 root=$(git rev-parse --show-toplevel)
 cd "$root"
 
-# gitleaks exempts the exact path it is handed as -c from being scanned, so the
-# rules file would be the one file no scan can see. Every scan therefore gets a
-# throwaway copy as its config, which makes secret-scan.toml an ordinary target.
-# (The file is also not named .gitleaks.toml: the built-in default config
-# excludes every path matching gitleaks\.toml.)
+# Throwaway config: tracked rules plus your local ones (see scan-config.sh).
+. .githooks/scan-config.sh
 tmp=$(mktemp)
 trap 'rm -f "$tmp"' EXIT
-cp secret-scan.toml "$tmp"
+build_scan_config "$tmp"
 
 # -v names the file, rule and commit on a finding; --redact keeps the value masked.
 gitleaks git --staged --redact --no-banner -v -c "$tmp"

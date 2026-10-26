@@ -21,8 +21,16 @@ branch protection on `main`, if a red result should stop a merge.
 ## Rules file
 
 Rules live in `secret-scan.toml`: gitleaks' built-in ruleset, one extra rule
-that matches AWS key IDs without needing a nearby keyword, and a short list of
-allowlisted placeholder patterns.
+that matches AWS key IDs without needing a nearby keyword, a short list of
+allowlisted placeholder patterns, and two rules that exist because this repo is
+public:
+
+- `public-ipv4` — any internet-routable IPv4 address. Private ranges
+  (`10.x`, `192.168.x`, `172.16–31.x`), Tailscale's `100.64.0.0/10`, loopback,
+  link-local and the documentation ranges (`192.0.2.x`, `198.51.100.x`,
+  `203.0.113.x`) pass. Use a documentation address in examples.
+- `tailscale-hostname` — any `*.ts.net` name, which identifies the tailnet.
+  Write `<host>.<tailnet>.ts.net` instead.
 
 The name is deliberate. gitleaks' built-in default config excludes every path
 matching `gitleaks\.toml` from scanning, so a rules file under the usual
@@ -32,7 +40,33 @@ There is a second trap: gitleaks exempts **the exact path it is handed as `-c`**
 from scanning. Every scan here (both hooks, the `scan` task, CI) therefore
 copies the rules file to a temporary path and passes that copy as the config,
 so `secret-scan.toml` itself is scanned like any other file. Do not "simplify"
-that to `-c secret-scan.toml`.
+that to `-c secret-scan.toml`. The hooks and the `scan` task build that copy
+with `.githooks/scan-config.sh`.
+
+## Private rules (your own domains)
+
+A rule that blocks your real domain has to contain the domain, and committing
+it would publish it. So those rules live in `secret-scan.local.toml`, which is
+git-ignored; the hooks and `mise run scan` append it to the copy of
+`secret-scan.toml` they scan with.
+
+```bash
+cp secret-scan.local.toml.example secret-scan.local.toml   # then edit
+```
+
+- One `[[rules]]` block per domain, dots escaped (`\.`). The file is appended
+  to the tracked one, so it may hold only `[[rules]]` blocks.
+- It exists only where you create it. A checkout without it prints a note on
+  every scan rather than failing, and still runs every tracked rule. Set it up
+  on every machine that commits to this repo, including any agent VM.
+- CI never has it, so CI cannot catch a domain. The local hooks are the only
+  check for those.
+- Your public IP needs no private rule: `public-ipv4` already blocks every
+  public address.
+
+Tested 2026-10-26 against a scratch file: a VPS-style public IP, a public
+DNS resolver's address, a `*.ts.net` name and a domain from a local rule were all caught; private,
+Tailscale and documentation addresses and version numbers were not.
 
 ## Setup (once per checkout)
 

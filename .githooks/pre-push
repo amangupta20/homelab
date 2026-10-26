@@ -15,11 +15,11 @@ fi
 root=$(git rev-parse --show-toplevel)
 cd "$root"
 
-# Same rules-file problem as pre-commit: hand gitleaks a throwaway copy so
-# secret-scan.toml is scanned like any other file.
+# Throwaway config: tracked rules plus your local ones (see scan-config.sh).
+. .githooks/scan-config.sh
 tmp=$(mktemp)
 trap 'rm -f "$tmp"' EXIT
-cp secret-scan.toml "$tmp"
+build_scan_config "$tmp"
 
 # A leak and a scan that could not run both block the push, but they need
 # different instructions, so they are tracked apart.

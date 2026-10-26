@@ -52,8 +52,9 @@ def main():
         diff = diff[:MAX_DIFF_CHARS]
 
     # The reviewer reads the checklist, the agent rules, and the README of every
-    # folder the change touches, because those READMEs hold the templates.
-    folders = sorted({p.split("/")[0] for p in changed if "/" in p})
+    # folder the change touches, at every depth (apps/ and apps/vps/), because
+    # those READMEs hold the templates.
+    folders = sorted({"/".join(p.split("/")[:i]) for p in changed for i in range(1, p.count("/") + 1)})
     readmes = "".join(
         f"\n\n===== {d}/README.md =====\n{read(f'{d}/README.md')}" for d in folders if read(f"{d}/README.md")
     )

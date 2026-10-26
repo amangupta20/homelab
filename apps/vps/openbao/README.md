@@ -33,11 +33,13 @@ Choices that differ from those sources, and why:
 The certificate and key live on the VPS in `/etc/openbao/tls`, as `tls.crt` and `tls.key`, readable by the
 container's `openbao` user. They are not in this repo or in Dokploy. A
 self-signed certificate is fine (`systems/openbao.md`); clients pin it with
-`BAO_CACERT`. **UNTESTED** on the VPS — run it there as `ubuntu`:
+`BAO_CACERT`. The key is ECDSA P-256, not Ed25519, because browsers reject
+Ed25519 certificates and the web UI is on. Run on the VPS as `ubuntu`
+(2026-10-26, with the VPS's tailnet IP):
 
 ```bash
 sudo mkdir -p /etc/openbao/tls && cd /etc/openbao/tls
-sudo openssl req -x509 -newkey ed25519 -nodes -days 3650 \
+sudo openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes -days 3650 \
   -subj "/CN=openbao" -addext "subjectAltName=IP:<VPS tailnet IP>" \
   -keyout tls.key -out tls.crt
 sudo chown 100:root tls.key && sudo chmod 400 tls.key && sudo chmod 644 tls.crt
@@ -45,10 +47,9 @@ sudo chown 100:root tls.key && sudo chmod 400 tls.key && sudo chmod 644 tls.crt
 
 The container runs as user ID 100 (`id` inside `openbao/openbao:2.7.1`), so
 the key is owned by that ID and readable by nobody else; on the VPS that ID is
-a system account that cannot log in (`getent passwd 100`, 2026-10-26). The
-local test used the same `openssl` command with `IP:127.0.0.1` and a key
-readable by everyone (rootless Podman maps user IDs differently), so the
-ownership step itself is untested.
+a system account that cannot log in (`getent passwd 100`, 2026-10-26).
+Whether OpenBao reads the key with that ownership is confirmed by the first
+start on the VPS.
 
 ## Deploying in Dokploy
 

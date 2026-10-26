@@ -24,8 +24,9 @@ OpenTofu state has no backup at all (see "Still to test").
   in Dokploy's list). Read from
   Dokploy's backup list, recon 2026-10-26.
 
-All of the above is what the docs say is configured. Nobody has compared it to
-the live XO schedules yet.
+All of the above except the remote VPS line is what the docs say is
+configured; nobody has compared it to the live XO schedules yet. The VPS line
+was read from Dokploy.
 
 ## The rule
 

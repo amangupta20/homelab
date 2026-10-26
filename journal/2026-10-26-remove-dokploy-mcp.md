@@ -7,8 +7,9 @@
 
 Deleted the Dokploy Compose service that ran `@dokploy/mcp` in HTTP mode for
 Open WebUI and Hermes. It had no authentication of its own and held a Dokploy
-API key. Agents and Hermes now run the MCP themselves (`npx @dokploy/mcp`)
-with their own Dokploy API key, so no shared server holds one.
+API key. Agents and Hermes will run the MCP themselves (`npx @dokploy/mcp`)
+with their own Dokploy API key once the keys are issued, so no shared server
+holds one.
 
 ## Snapshot / backup taken
 

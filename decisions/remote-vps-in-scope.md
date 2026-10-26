@@ -14,8 +14,8 @@ Portainer.
 
 - Nothing about the VPS is documented yet beyond one row in
   `inventory/services.md`.
-- How its definitions sit in the repo (own folder or alongside the homeserver
-  apps) and how Dokploy deploys from this repo are both undecided
+- Its stacks go in `apps/vps/`, next to `apps/homeserver/` (decided
+  2026-10-26). How Dokploy deploys from that folder is undecided
   (`open-questions.md`).
 - The VPS is the public-facing part, so its docs are where a real domain or
   public IP is most likely to slip into this public repo. The leak rules in

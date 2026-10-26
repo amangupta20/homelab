@@ -1,0 +1,29 @@
+# Plans — work in flight
+
+Multi-step work that is under way or next: migrations, moves, rebuilds. A plan
+says where it is going, what gates each step, and how you know it is done. When
+it is finished, the outcome lands in `systems/` and `inventory/`, the story in
+`journal/`, and the plan is marked done (kept, not deleted — it is history).
+
+Naming: `plans/<what>.md` (`migration.md`, `portainer-to-git.md`, `vps-into-repo.md`).
+
+## Template
+
+```markdown
+# <What>
+
+**Status:** not started | in progress (step N) | blocked on <x> | done YYYY-MM-DD
+
+**Goal:** <one sentence>
+**Done when:** <a check someone can run, not a feeling>
+
+## Steps
+1. <step> — gate: <what must be true before the next step starts>
+
+## Links
+<systems pages, decisions, open questions this depends on>
+```
+
+## Plans
+
+- `migration.md` — the current migration, in order, and the Portainer -> git target.

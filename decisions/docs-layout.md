@@ -19,21 +19,33 @@ drifts is the live lab, not code.
 
 So the layout is:
 
-| What | Where | Who edits |
+| Question it answers | Folder | Who edits |
 |---|---|---|
-| Facts: services, hosts, IPs, schedules | `inventory/`, `systems/`, `plans/`, `iac/README.md`, `repo/` — one owner per fact | agent, saying how it verified |
-| Decisions and their reasons | `decisions/` | owner; agent proposes |
-| Undecided or unverified | `decisions/open-questions.md` | agent appends, owner resolves |
-| How agents work here | `AGENTS.md` | owner; agent proposes |
+| What exists? (lookup tables) | `inventory/` | agent, saying how it verified |
+| How does a thing work, what never to do? | `systems/` | agent, saying how it verified |
+| How do I do X, step by step? | `runbooks/` (agentskills.io `SKILL.md`) | owner; agent proposes |
+| What is in flight? | `plans/` | agent updates status; owner sets goals |
+| Why is it this way? | `decisions/` | owner; agent proposes |
+| What is undecided or unverified? | `decisions/open-questions.md` | agent appends, owner resolves |
+| What happened, when? | `journal/` | whoever did the work |
+| What do the stacks look like? | `apps/<host>/<app>/` | agent, through review |
+| How does this repo's tooling work? | `repo/` | agent, through review |
+| How do agents work here? | `AGENTS.md` | owner; agent proposes |
+
+Folders are sorted by the question a person has when they open the repo, not
+by document type, because the first reader is the owner scrolling for
+something. Every folder exists from the start with a README holding its rules
+and a template, so a model picking up the work follows the structure instead
+of inventing one.
 
 ## Cost / what this rules out
 
 - No machine-readable spec tree. The ThinkRail spec pages were removed; their
   open questions moved to `open-questions.md`, their goal to the README, and
   their invariants were already in `AGENTS.md`.
-- Planned additions (runbooks written as agent skills, an operations journal)
-  will get their own folders when they exist, not before.
+- Empty folders (`runbooks/`, `journal/`, `apps/`) exist before their first
+  file, holding only a README.
 
 ## Where it lives
 
-`README.md` ("What's where"), `AGENTS.md`.
+`README.md` ("Find something"), every folder's README, `AGENTS.md`.

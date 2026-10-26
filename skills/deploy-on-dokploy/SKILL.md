@@ -22,10 +22,12 @@ them and links its journal entry here.
 
 ## Before you start
 
-1. Check `plans/vps-foundations.md`. If OpenBao or SSO are not up yet, say so:
-   the app can still be deployed, but its secrets go in Dokploy's environment
-   for now and its sign-in is added later — write both down as follow-ups in
-   the plan, so the app gets revisited.
+1. Check `plans/vps-foundations.md`. Foundations come first
+   (`decisions/foundations-on-vps.md`): if OpenBao or SSO are not up yet,
+   stop and work on the plan instead. Deploy anyway only if the owner says so
+   for this app; then its secrets go in Dokploy's environment for now, and
+   the exception is written into the plan as a follow-up so the app gets
+   revisited.
 2. Decide what data the app keeps and how it will be backed up. No stateful
    app without a backup.
 3. Pick the app's name: lowercase with hyphens. It is the folder name, the
@@ -45,8 +47,10 @@ them and links its journal entry here.
    — expect the resolved config and no error. CI runs the same check.
 3. **Store the secrets:** in OpenBao at `kv/homelab/<app>/<key>` once it
    runs; until then in the Dokploy service's environment. Never in the repo.
-4. **Open a pull request** and get it through review; Dokploy deploys from
-   `main`, so nothing goes live before the merge.
+4. **Open a pull request** and get it through review. The intent is that
+   Dokploy deploys only from `main`, so nothing goes live before the merge —
+   how Dokploy pulls from this repo is still unverified
+   (`decisions/open-questions.md`, Remote VPS); the first deploy confirms it.
 5. **Create the service in Dokploy** (UI, UNTESTED paths): a new Compose
    service in the right project; source = this GitHub repo, branch `main`,
    compose path `apps/vps/<app>/compose.yaml`; environment from step 3;

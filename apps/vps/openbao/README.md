@@ -12,7 +12,7 @@ sources instead of starting over.
 
 | Source | Version read | What was taken |
 |---|---|---|
-| Dokploy template `blueprints/vault` (github.com/Dokploy/templates) | `main`, 2026-10-26 | nothing: it runs HashiCorp Vault in dev mode (in memory, root token in the environment) behind a public domain |
+| Dokploy template `blueprints/vault` (github.com/Dokploy/templates) | commit `084d1cb15ff8` (last change to that folder), read 2026-10-26 | nothing: it runs HashiCorp Vault in dev mode (in memory, root token in the environment) behind a public domain |
 | OpenBao `Dockerfile` and `.release/docker/docker-entrypoint.sh` (github.com/openbao/openbao) | tag `v2.7.1` | image name, `/openbao/{config,file,logs}` folders, the `openbao` user, and that the default command is a dev server |
 | `docker manifest inspect openbao/openbao:2.7.1` | 2026-10-26 | the image is published for `linux/arm64`, which the VPS needs |
 | openbao.org docs: install, Raft storage, TCP listener | 2026-10-26 | Raft `path` and `node_id`, required `cluster_addr`, TLS listener settings, no swap |
@@ -41,18 +41,19 @@ sudo mkdir -p /etc/openbao/tls && cd /etc/openbao/tls
 sudo openssl req -x509 -newkey ed25519 -nodes -days 3650 \
   -subj "/CN=openbao" -addext "subjectAltName=IP:<VPS tailnet IP>" \
   -keyout tls.key -out tls.crt
-sudo chown root:1000 tls.key && sudo chmod 644 tls.crt && sudo chmod 640 tls.key
+sudo chown 100:root tls.key && sudo chmod 400 tls.key && sudo chmod 644 tls.crt
 ```
 
-The container runs as `openbao`, uid 100, gid 1000 (`id` inside
-`openbao/openbao:2.7.1`), so the key is group-readable by gid 1000. On the VPS
-that gid may belong to a real user (often `ubuntu`), who can then read the key
-too. The same commands with `IP:127.0.0.1` and a world-readable key worked in
-the local test.
+The container runs as user ID 100 (`id` inside `openbao/openbao:2.7.1`), so
+the key is owned by that ID and readable by nobody else; on the VPS that ID is
+a system account that cannot log in (`getent passwd 100`, 2026-10-26). The
+local test used the same `openssl` command with `IP:127.0.0.1` and a key
+readable by everyone (rootless Podman maps user IDs differently), so the
+ownership step itself is untested.
 
 ## Deploying in Dokploy
 
-Follows `skills/deploy-on-dokploy/` step 6, with these differences:
+Follows `skills/deploy-on-dokploy/` steps 6 and 7, with these differences:
 
 - **No domain.** A Dokploy domain would route OpenBao through the public
   Traefik.

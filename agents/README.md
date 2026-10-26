@@ -10,9 +10,9 @@ the repo anywhere and the same skills and rules apply.
 
 | Harness | Reads skills from | How it gets there | Checked |
 |---|---|---|---|
-| Pi | `.agents/skills/` (project) | committed link to `skills/` | Pi 1.4.0 `docs/skills.md`, 2026-10-26 |
-| omp | `.agents/skills/`, `.claude/skills/` (project) | committed links | paths in the omp binary, 2026-10-26; may list each skill twice |
-| Claude Code | `.claude/skills/` (project) | committed link to `skills/` | Claude Code docs |
+| Pi | `.agents/skills/` (project) | committed link to `skills/` | Pi 1.4.0 listed `write-a-skill`, 2026-10-26 |
+| omp | `.agents/skills/`, `.claude/skills/` (project) | committed links | paths found in the omp binary, 2026-10-26; not run yet; may list each skill twice |
+| Claude Code | `.claude/skills/` (project) | committed link to `skills/` | a running session picked up `write-a-skill`, 2026-10-26 |
 | Codex, OpenCode, Gemini / Antigravity | `.agents/skills/` (project) | committed link | not checked: the agentskills.io convention |
 | Hermes | `~/.hermes/skills/` (home directory only) | `agents/link.sh` | third-party guides; confirm on the agent VM |
 

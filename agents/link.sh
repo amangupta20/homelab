@@ -55,7 +55,7 @@ while read -r name dir mode; do
     for dest in "$dir"/*; do
       [ -L "$dest" ] && continue
       if [ -f "$dest/SKILL.md" ]; then
-        echo "$name: $(basename "$dest") was written outside the repo; move it to skills/ and propose it (skills/README.md)"
+        echo "$name: $(basename "$dest") was written outside the repo; move it to skills/ and propose it (skills/write-a-skill/)"
         attention=1
       fi
     done

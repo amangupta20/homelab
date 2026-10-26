@@ -21,7 +21,7 @@ Read in this order:
 |---|---|
 | `inventory/`, `systems/`, `plans/`, `apps/`, `iac/README.md`, `repo/` | edit, as long as every fact you add says how you know it |
 | `journal/` | add a new entry at the end of every task; never edit an old one except to append a follow-up |
-| `skills/` | follow; add new skills and propose changes to existing ones |
+| `skills/` | follow; add new skills and propose changes to existing ones (`skills/write-a-skill/`) |
 | `decisions/open-questions.md` | append; never delete or resolve an item |
 | `decisions/` (everything else), `AGENTS.md`, `README.md` goal and principles | propose only, in a separate commit for the owner to review |
 
@@ -92,3 +92,27 @@ owner.
   you verified it, and what is still open.
 - If scope is unclear, ask. Doing nothing is better than doing the wrong
   thing. Never invent busywork to look useful.
+
+## Extending this setup
+
+This setup is meant to grow, and you are expected to grow it — through the
+repo, never only inside your own harness:
+
+- **You did something in several steps, or the owner had to explain how:**
+  write it down as a skill so the next agent, in any harness, does not need
+  the explanation (`skills/write-a-skill/`).
+- **Your harness saved a skill or memory of its own:** it is not part of the
+  setup until it is in `skills/` or the owner file it belongs in. Move it there
+  and propose it. `mise run agents:link` lists the skills it finds outside the
+  repo.
+- **You need access you do not have** (an MCP server, an API, a tool): propose
+  it in `agents/` so every harness gets it, and add the credential it needs to
+  `decisions/open-questions.md`. Do not wire it into your harness's private
+  config only.
+- **Something only works in one harness:** `agents/extensions/<harness>/`.
+- **A new harness is being tried:** `agents/README.md`, "Adding a harness".
+
+Never make a harness's home directory the place of record, copy a skill
+instead of linking it, or put a credential in any of these files. New and
+changed skills arrive as UNTESTED drafts in their own commit and go through
+review like any other change.

@@ -36,8 +36,8 @@ description: Use when adding a new skill to this homelab repo or changing an exi
 7. **Keep it public-safe.** No credentials, public IPs, domains or tailnet
    names — the commit hook blocks them, but write placeholders from the start.
 8. **List it** under "Skills" in `skills/README.md`.
-9. **Make it visible to home-directory harnesses:** `mise run agents:link`.
-   Project-reading harnesses see it immediately.
+9. **Make it visible to every harness:** run `mise run agents:link`; which
+   harnesses need it and which do not is in `agents/README.md`.
 10. **Commit it alone**, Status UNTESTED, and propose it in a pull request.
 
 **Adopting a skill your harness wrote** (e.g. in `~/.hermes/skills/<name>/`):
@@ -53,6 +53,5 @@ wrong when you followed it.
 
 - An agent that never loads your skill usually means the description is too
   vague. Name the situation, not the topic.
-- Pi asks for project trust before loading project skills.
-- omp reads both `.agents/skills` and `.claude/skills`, which point at the
-  same folder, so it may list a skill twice.
+- A harness that does not see the skill at all: check `agents/README.md` for
+  how that harness finds skills.

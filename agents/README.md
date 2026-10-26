@@ -3,8 +3,9 @@
 This repo is meant to be worked on by several agent harnesses — Claude Code,
 Pi, omp, Codex, OpenCode, Hermes, and whatever gets tried next — on more than
 one machine. None of them owns anything: the instructions (`AGENTS.md`) and the
-skills (`skills/`) live in the repo, and each harness is pointed at them. Clone
-the repo anywhere and the same skills and rules apply.
+skills (`skills/`) live in the repo, and each harness is pointed at them. On a
+fresh clone, harnesses that read project folders see them at once; harnesses
+that only read a home-directory folder need one `mise run agents:link`.
 
 ## How each harness finds the skills
 

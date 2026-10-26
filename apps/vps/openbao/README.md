@@ -30,8 +30,7 @@ Choices that differ from those sources, and why:
 
 ## TLS
 
-The certificate and key live on the VPS in `${BAO_TLS_DIR}`
-(`/etc/openbao/tls` by default), as `tls.crt` and `tls.key`, readable by the
+The certificate and key live on the VPS in `/etc/openbao/tls`, as `tls.crt` and `tls.key`, readable by the
 container's `openbao` user. They are not in this repo or in Dokploy. A
 self-signed certificate is fine (`systems/openbao.md`); clients pin it with
 `BAO_CACERT`. **UNTESTED** on the VPS — run it there as `ubuntu`:
@@ -60,8 +59,7 @@ Follows `skills/deploy-on-dokploy/` steps 6 and 7, with these differences:
 - **Auto-deploy off.** Every restart comes back sealed (seen in the local
   test), and there is no auto-unseal, so a deploy on every push to `main`
   would lock every secret until someone unseals it.
-- Environment: `TAILSCALE_IP` and `BAO_TLS_DIR` from `.env.example`. Neither
-  is a secret.
+- Environment: only `TAILSCALE_IP` (`.env.example`).
 
 ## Data and backups
 

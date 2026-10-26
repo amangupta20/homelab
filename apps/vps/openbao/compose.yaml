@@ -21,7 +21,7 @@ services:
       - openbao-data:/openbao/file
       - openbao-logs:/openbao/logs
       # tls.crt and tls.key, created on the VPS; never in this repo (README.md).
-      - ${BAO_TLS_DIR:-/etc/openbao/tls}:/openbao/tls:ro
+      - /etc/openbao/tls:/openbao/tls:ro
 
 configs:
   openbao-hcl:
@@ -29,7 +29,8 @@ configs:
       ui = true
 
       # No disable_mlock: OpenBao 2.7.1 ignores it with a warning ("unknown or
-      # unsupported field") and does not lock memory, so swap matters
+      # unsupported field"). Whether it locks memory is unverified, so swap
+      # matters
       # (decisions/open-questions.md, Secrets).
 
       api_addr     = "https://${TAILSCALE_IP:-127.0.0.1}:8200"

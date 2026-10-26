@@ -52,9 +52,6 @@ owner file, and is deleted from this list.
 
 ## Remote VPS (Dokploy)
 
-- Provider, and whether it has an OpenTofu provider; import the existing VPS
-  into state or rebuild it from code (`plans/vps-foundations.md`, step 1).
-
 - How Dokploy deploys from this repo, and whether it keeps its own copy of
   each stack.
 - Which apps run on it — not documented yet.

@@ -31,4 +31,6 @@ left).
 
 - Revoke the API key the removed service used, in Dokploy's settings (owner).
 - Give each agent its own Dokploy API key, kept in its environment until
-  OpenBao runs.
+  OpenBao runs. A key must not be able to delete or overwrite backups
+  (`decisions/agent-access.md`); whether Dokploy's user permissions can
+  limit a key that way is not checked yet, so no key is issued until it is.

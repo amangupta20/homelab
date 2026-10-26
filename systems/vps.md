@@ -4,7 +4,7 @@ A small rented server outside the home network that runs the lab's
 always-on, shared and overflow services, deployed with Dokploy.
 
 **Status:** running. Step 0 of `plans/vps-foundations.md` documented it on
-2026-10-26 (`journal/2026-10-26-recon-vps.md`). Rows: `inventory/hosts.md`,
+2026-10-26 with a read-only recon. Rows: `inventory/hosts.md`,
 `inventory/services.md`.
 
 ## What goes here
@@ -16,8 +16,10 @@ foundation services (OpenBao, SSO) also live here
 
 ## How it works
 
-Read on 2026-10-26 over SSH and through Dokploy, unless it says otherwise
-(`journal/2026-10-26-recon-vps.md`). Security details of the firewall and
+Read on 2026-10-26 over SSH (`uname`, `/etc/os-release`, `free`, `df`,
+`swapon --show`, `docker info`, `docker service ls`, `docker ps -a`, the OCI
+instance metadata service) and through Dokploy's API, unless it says
+otherwise. Security details of the firewall and
 access setup are kept out of this public repo on purpose.
 
 - **Machine:** Oracle Cloud Infrastructure (OCI), shape `VM.Standard.A1.Flex`
@@ -30,7 +32,8 @@ access setup are kept out of this public repo on purpose.
 - **Dokploy**, with its own Postgres and Redis (`docker service ls`). The
   owner applies every Dokploy update when the UI offers it (owner,
   2026-10-26), so check the running version before relying on a
-  version-specific feature. Versions are not recorded in this public repo.
+  version-specific feature. The Dokploy and Traefik versions are not recorded
+  in this public repo.
 - **Public traffic** enters through Dokploy's Traefik (container
   `dokploy-traefik`) on ports 80 and 443; each app's domain is set in Dokploy.
   The Dokploy dashboard is also on a public domain, by the owner's choice
@@ -59,4 +62,4 @@ access setup are kept out of this public repo on purpose.
 ## Open questions
 
 See [`decisions/open-questions.md`](../decisions/open-questions.md),
-sections "Remote VPS (Dokploy)" and "Foundations".
+sections "Remote VPS (Dokploy)", "Secrets (OpenBao)" and "Foundations".

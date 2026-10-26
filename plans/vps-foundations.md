@@ -25,7 +25,9 @@ Why this order and why on the VPS: `decisions/foundations-on-vps.md`.
    address only, TLS on; initialised with keys kept offline; root token
    deleted; backup to Garage at home; one restore tested
    (`systems/openbao.md`). — gate: restore test in `journal/`.
-3. **Wire secrets into deploys.** Dokploy reads OpenBao (its secret provider,
+3. **Wire secrets into deploys.** Before changing Dokploy's settings: a
+   verified Dokploy backup, or the step-2 snapshot if nothing changed since,
+   named in the journal entry. Then Dokploy reads OpenBao (its secret provider,
    if the running version has one — unverified), and checkouts read it for
    OpenTofu (`iac/vault.tf.example`). — gate: one throwaway app on Dokploy reads
    a test secret from OpenBao.

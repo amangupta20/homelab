@@ -30,7 +30,13 @@ them and links its journal entry here.
    revisited.
 2. Decide what data the app keeps and how it will be backed up. No stateful
    app without a backup.
-3. Pick the app's name: lowercase with hyphens. It is the folder name, the
+3. **Take a snapshot before writing to the VPS.** For a new app: a VPS
+   snapshot from the provider, if it offers one, or a verified Dokploy backup
+   of whatever the deploy could touch. For an app already running in Dokploy:
+   a backup of its volumes and database, verified by restoring it once to a
+   scratch location. Write down which snapshot or backup it was — it goes in
+   the journal entry.
+4. Pick the app's name: lowercase with hyphens. It is the folder name, the
    OpenBao path and the Dokploy service name.
 
 ## Steps

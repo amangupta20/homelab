@@ -20,6 +20,10 @@ Each app folder holds:
   (`__PASTE_ONCE__`) and a comment saying where the real value lives in OpenBao.
 - `README.md` — only if the app needs more than the inventory row says: data
   location, ports, quirks.
+- `host/` — only if the stack needs something on the host that the container
+  manager cannot run: scripts and systemd units installed by hand, with the
+  steps in the app's `README.md` (`vps/openbao/host/` renews OpenBao's
+  certificate).
 
 ## Rules
 

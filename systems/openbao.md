@@ -47,6 +47,21 @@ If a machine without Tailscale ever needs one secret: give it that one secret
 through a narrow relay (Dokploy secret reference, or a CI runner that is on
 the tailnet). Never open the box itself.
 
+## How it is set up (2026-10-26)
+
+- **Unsealing:** initialised with 3 unseal pieces; any 2 unseal it. The
+  pieces are kept offline, apart from each other (where is not written down
+  anywhere in this repo). After every restart someone enters 2 of them with
+  `bao operator unseal`. A leaked or lost piece is replaced by
+  `bao operator rekey`, which needs 2 current pieces.
+- **Root token:** revoked after setup. `bao operator generate-root` makes a
+  new one from 2 pieces when needed.
+- **Logins:** `userpass`, one user per person, `admin` policy for the owner.
+- **Audit log:** declared in the server config
+  (`apps/vps/openbao/compose.yaml`). OpenBao 2.x refuses `bao audit enable`
+  ("use declarative, config-based audit device management instead").
+- **Address and certificate:** `apps/vps/openbao/README.md`, "TLS".
+
 ## Locking it down (once it's running on the tailnet)
 
 - Unseal keys stay offline. Don't store auto-unseal keys next to the data.
@@ -75,13 +90,15 @@ kept as a plausible-looking recipe. The order:
 4. Create the user and per-consumer policies, then delete the root token.
 5. Take a backup and restore it once before trusting it.
 
-## Daily use (each checkout, no .env file) — UNTESTED sketch
+## Daily use (each checkout, no .env file)
 
 Each machine needs only the address, `BAO_ADDR=https://<bao domain>:8200`
 (`apps/vps/openbao/README.md`, "TLS"). The certificate is a public one, so no
 certificate file. On a desktop session that uses systemd, a file in
 `~/.config/environment.d/` sets it for every terminal without touching the
 shell's startup files (done on the owner's workstation, 2026-10-26).
+
+The OpenTofu part below is an **UNTESTED** sketch.
 
 ```bash
 bao login -method=userpass username=<you>  # once per machine; the token is

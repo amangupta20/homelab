@@ -14,6 +14,7 @@ sources instead of starting over.
 | Source | Version read | What was taken |
 |---|---|---|
 | Dokploy template `blueprints/vault` (github.com/Dokploy/templates) | commit `084d1cb15ff8` (last change to that folder), read 2026-10-26 | nothing: it runs HashiCorp Vault in dev mode (in memory, root token in the environment) behind a public domain |
+| lego (github.com/go-acme/lego) | release `v5.5.2`, the latest on 2026-10-26, with an `arm64` image | DNS-01 through Cloudflare (`CF_DNS_API_TOKEN`), v5's `lego run` that both creates and renews, EC256 keys by default |
 | OpenBao `Dockerfile` and `.release/docker/docker-entrypoint.sh` (github.com/openbao/openbao) | tag `v2.7.1` | image name, `/openbao/{config,file,logs}` folders, the `openbao` user, and that the default command is a dev server |
 | `docker manifest inspect openbao/openbao:2.7.1` | 2026-10-26 | the image is published for `linux/arm64`, which the VPS needs |
 | openbao.org docs: install, Raft storage, TCP listener | 2026-10-26 | Raft `path` and `node_id`, required `cluster_addr`, TLS listener settings, no swap |
@@ -58,12 +59,18 @@ Not in this repo, on the VPS only:
 - `/etc/openbao/selfsigned/` — the self-signed certificate used before
   (ECDSA P-256, for the tailnet IP), kept as a fallback
 
-Set up on the VPS, run once by the owner on 2026-10-26:
+Set up on the VPS — the steps the owner ran on 2026-10-26, in the order a
+rebuild needs them. Before: a `DNS only` (not proxied) `A` record for
+`<bao domain>` pointing at the VPS's tailnet IP, and a Cloudflare API token
+with Zone → DNS → Edit on that one zone.
 
 ```bash
 sudo install -m 755 host/openbao-cert /usr/local/sbin/openbao-cert
 sudo install -m 644 host/openbao-cert.service host/openbao-cert.timer /etc/systemd/system/
-echo "BAO_DOMAIN=<bao domain>" | sudo tee /etc/openbao/cert.conf
+sudo install -m 600 /dev/null /etc/openbao/cloudflare.env
+sudoedit /etc/openbao/cloudflare.env     # one line: CF_DNS_API_TOKEN=<token>
+printf 'BAO_DOMAIN=%s\nLEGO_DNS_RESOLVERS=%s\n' '<bao domain>' '<public resolver ip>:53' \
+  | sudo tee /etc/openbao/cert.conf
 sudo systemctl daemon-reload
 sudo openbao-cert --no-random-sleep      # first certificate
 sudo systemctl enable --now openbao-cert.timer

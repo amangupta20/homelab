@@ -23,7 +23,7 @@ So the layout is:
 |---|---|---|
 | What exists? (lookup tables) | `inventory/` | agent, saying how it verified |
 | How does a thing work, what never to do? | `systems/` | agent, saying how it verified |
-| How do I do X, step by step? | `runbooks/` (agentskills.io `SKILL.md`) | owner; agent proposes |
+| How do I do X? | `skills/` (agentskills.io `SKILL.md`, shared by every harness) | agent adds new ones; changes to existing ones are proposed |
 | What is in flight? | `plans/` | agent updates status; owner sets goals |
 | Why is it this way? | `decisions/` | owner; agent proposes |
 | What is undecided or unverified? | `decisions/open-questions.md` | agent appends, owner resolves |
@@ -43,7 +43,7 @@ of inventing one.
 - No machine-readable spec tree. The ThinkRail spec pages were removed; their
   open questions moved to `open-questions.md`, their goal to the README, and
   their invariants were already in `AGENTS.md`.
-- Empty folders (`runbooks/`, `journal/`, `apps/`) exist before their first
+- Empty folders (`journal/`, `apps/`) exist before their first
   file, holding only a README.
 
 ## Where it lives

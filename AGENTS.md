@@ -13,7 +13,7 @@ Read in this order:
 5. `systems/xcp-ng.md` — the platform rule that destroys VMs
 6. The README of the folder you are about to write in — it has the naming
    rules and the template
-7. The `systems/` page, `plans/` file or `runbooks/` entry for your task
+7. The `systems/` page, `plans/` file or `skills/` entry for your task
 
 ## What you may edit
 
@@ -21,7 +21,7 @@ Read in this order:
 |---|---|
 | `inventory/`, `systems/`, `plans/`, `apps/`, `iac/README.md`, `repo/` | edit, as long as every fact you add says how you know it |
 | `journal/` | add a new entry at the end of every task; never edit an old one except to append a follow-up |
-| `runbooks/` | follow; propose changes only |
+| `skills/` | follow; add new skills and propose changes to existing ones |
 | `decisions/open-questions.md` | append; never delete or resolve an item |
 | `decisions/` (everything else), `AGENTS.md`, `README.md` goal and principles | propose only, in a separate commit for the owner to review |
 

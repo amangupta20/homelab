@@ -1,7 +1,10 @@
 # Skills — how to do X
 
 Everything an agent (or you) needs to know how to do, one folder per skill, in
-the open agentskills.io format. This folder is the only copy of each skill.
+the open agentskills.io format. This folder is the only copy: every agent
+harness reads it from here (`agents/README.md` says how), so a skill written
+once works in Claude Code, Pi, omp, Codex, OpenCode, Hermes and whatever comes
+next — on any machine that clones the repo.
 
 Two kinds of skill live here:
 
@@ -28,6 +31,8 @@ skill, so it says what the skill does *and when to use it*.
   Restore", not "restore the backup").
 - Every write step says what to snapshot first, and every runbook ends with
   how to verify and a journal entry.
+- Nothing harness-specific in a skill. If something only works in one
+  harness, it is an extension (`agents/extensions/<harness>/`), not a skill.
 - Agents may write new skills and propose fixes after using one; the owner
   merges them.
 

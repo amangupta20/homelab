@@ -1,0 +1,17 @@
+# Agent harnesses that read skills only from a folder in your home directory,
+# so agents/link.sh has to link this repo's skills into it. One per line:
+#
+#   <name>  <skills folder>  [adopt]
+#
+# "adopt" also reports skills found in that folder that are not in this repo:
+# use it for harnesses that write skills on their own, so those skills get
+# proposed into skills/ instead of living unreviewed on one machine.
+#
+# Harnesses that read a project folder need no line here. They find skills/
+# through the committed .agents/skills and .claude/skills links
+# (agents/README.md lists which harness reads which).
+#
+# Lines for harnesses that are not installed are skipped.
+
+# Path from third-party Hermes guides; confirm on the agent VM.
+hermes  ~/.hermes/skills  adopt

@@ -88,12 +88,20 @@ data "vault_kv_secret_v2" "xo" {
 # then: token = data.vault_kv_secret_v2.xo.data["token"]
 ```
 
-## Dokploy too
+## Two container managers
 
-Dokploy (the container deploy UI) v0.30+ can read from the same box: Settings
--> Secrets -> Add Provider, then use `${{vault...}}` references in container
-env. Resolved at deploy time, never stored in Dokploy's database. Same box,
-same paths — Compose stops needing `.env` files too.
+The lab has two, and they need different answers:
+
+- **Remote VPS — Dokploy.** v0.30+ reads the box natively: Settings -> Secrets ->
+  Add Provider, then `${{vault...}}` references in container env. Resolved at
+  deploy time, never stored in Dokploy's database. Compose stops needing
+  `.env` files.
+- **Homeserver — Portainer today.** Portainer does not read OpenBao, so secrets
+  have to reach the container another way: a sidecar logs in with its own
+  AppRole and writes files into `/run/secrets`, and the stack reads files
+  instead of environment values. Which manager replaces Portainer is still open
+  (Arcane is the likely candidate, not confirmed); if it turns out to have a
+  native vault provider, use that and drop the sidecar for that stack.
 
 ## Rules
 

@@ -1,4 +1,10 @@
-# Secrets — where passwords live (OpenBao)
+# OpenBao — where secrets live
+
+OpenBao is the secret store: every password and token in one place on the
+tailnet, read by machines at deploy time, never written into git.
+
+**Status:** planned, not deployed. No command on this page has been run
+against a real OpenBao server yet.
 
 The problem: this repo gets checked out on 5 machines. Copying a `.env` file
 with passwords to 5 places means 5 copies to leak, 5 copies to rotate, 5
@@ -25,9 +31,6 @@ small always-on VM. Tailscale-only. No public URL (see below why).
 Storage backend: not chosen yet — Raft on local disk is likely, PostgreSQL the
 alternative (`decisions/open-questions.md`). Whichever it is, back it up like
 any database — losing that disk means losing every secret at once.
-
-**Status: not deployed.** No command on this page has been run against a real
-OpenBao server yet.
 
 ## Don't put it on the internet
 

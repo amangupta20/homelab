@@ -3,6 +3,9 @@
 What gets backed up, and — more importantly — what restore is still untested.
 This file owns the backup facts; other pages link here.
 
+**Status:** jobs reported running; no restore test on record, and the
+OpenTofu state has no backup at all (see "Still to test").
+
 - Plain VMs: Xen Orchestra (XO) snapshot + delta backups (only changed
   blocks) go to TrueNAS, then get copied offsite. No per-VM backup agent:
   image backups cover them.

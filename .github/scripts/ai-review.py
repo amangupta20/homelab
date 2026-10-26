@@ -3,7 +3,8 @@
 OpenAI-compatible chat API, and fail unless the verdict is `approve`.
 
 Configuration (repository settings, never this file):
-  REVIEW_API_URL  base URL, e.g. https://api.deepseek.com/v1   (variable)
+  REVIEW_API_URL  base URL, or a full /chat/completions or      (variable)
+                  /responses URL — it is trimmed to the base
   REVIEW_MODEL    model id at that provider                     (variable)
   REVIEW_API_KEY  API key                                       (secret)
 
@@ -80,8 +81,14 @@ def main():
         f"{diff}"
     )
 
+    # Accept a base URL or a full endpoint URL copied from provider docs; the
+    # request is always a chat completion.
+    url = os.environ["REVIEW_API_URL"].rstrip("/")
+    for suffix in ("/chat/completions", "/responses"):
+        if url.endswith(suffix):
+            url = url[: -len(suffix)]
     request = urllib.request.Request(
-        os.environ["REVIEW_API_URL"].rstrip("/") + "/chat/completions",
+        url + "/chat/completions",
         data=json.dumps(
             {
                 "model": os.environ["REVIEW_MODEL"],

@@ -24,9 +24,10 @@ OpenBao and skip the license question. The `bao` command works like `vault`.
 
 ## Where the box runs
 
-It must be always-on and reachable from all 5 checkouts — so not the burst
-agent VM that gets powered off. Good candidates: the TrueNAS VM host, or any
-small always-on VM. Tailscale-only. No public URL (see below why).
+On the VPS, listening only on its Tailscale address
+(`decisions/foundations-on-vps.md`). It must be always-on and reachable from
+every checkout and from both sides of the lab; the VPS is the always-on side,
+and both sides share the tailnet. No public URL (see below why).
 
 Storage backend: not chosen yet — Raft on local disk is likely, PostgreSQL the
 alternative (`decisions/open-questions.md`). Whichever it is, back it up like

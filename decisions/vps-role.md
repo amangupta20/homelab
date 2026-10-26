@@ -4,8 +4,8 @@ Decided: 2026-10-26. Status: in force.
 
 ## Why
 
-The lab is split on purpose: half runs on the physical homelab, half on a
-remote VPS deployed with Dokploy. The VPS gets:
+The lab is split on purpose between the physical homelab and a remote VPS
+deployed with Dokploy. The VPS gets:
 
 - **What must stay up 24/7, no matter what** happens at home (power, ISP,
   hardware, a migration gone wrong).

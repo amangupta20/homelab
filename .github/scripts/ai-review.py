@@ -96,11 +96,21 @@ def main():
                 "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
             }
         ).encode(),
-        headers={"Authorization": f"Bearer {os.environ['REVIEW_API_KEY']}", "Content-Type": "application/json"},
+        # Providers behind Cloudflare answer 403 to Python's default user agent
+        # before they even look at the key, so name the client explicitly.
+        headers={
+            "Authorization": f"Bearer {os.environ['REVIEW_API_KEY']}",
+            "Content-Type": "application/json",
+            "User-Agent": "homelab-ai-review/1.0",
+        },
     )
     try:
         with urllib.request.urlopen(request, timeout=600) as response:
             review = json.load(response)["choices"][0]["message"]["content"].strip()
+    except urllib.error.HTTPError as e:
+        # The provider's own error body says why (bad model id, quota, auth).
+        print(f"ai-review: the provider answered {e.code}: {e.read()[:500].decode(errors='replace')}", file=sys.stderr)
+        return 1
     except (urllib.error.URLError, KeyError, IndexError, json.JSONDecodeError) as e:
         print(f"ai-review: the review could not be obtained: {e}", file=sys.stderr)
         return 1

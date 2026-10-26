@@ -1,0 +1,88 @@
+---
+name: deploy-on-dokploy
+description: Use when deploying an app on the VPS with Dokploy, or moving an app already running in Dokploy into this repo — writes the Compose definition under apps/vps/, wires secrets and sign-in, sets up backups, and records it.
+---
+
+# Deploy an app on Dokploy (VPS)
+
+**Status:** UNTESTED — the Dokploy UI steps are from Dokploy's general
+behaviour, not checked against the running instance. The first deploy fixes
+them and links its journal entry here.
+**Touches:** writes to the VPS (Dokploy) and to this repo.
+
+## When to use / when not to
+
+- Use for any app that belongs on the VPS (`decisions/vps-role.md`): it must
+  stay up when home is down, other people use it, it needs more resources than
+  home has, or it is a quick deploy.
+- Not for home apps: they go in `apps/homeserver/`, and their container
+  manager is still open.
+- OpenBao itself is a foundation with its own steps (`plans/vps-foundations.md`),
+  not an ordinary app.
+
+## Before you start
+
+1. Check `plans/vps-foundations.md`. If OpenBao or SSO are not up yet, say so:
+   the app can still be deployed, but its secrets go in Dokploy's environment
+   for now and its sign-in is added later — write both down as follow-ups in
+   the plan, so the app gets revisited.
+2. Decide what data the app keeps and how it will be backed up. No stateful
+   app without a backup.
+3. Pick the app's name: lowercase with hyphens. It is the folder name, the
+   OpenBao path and the Dokploy service name.
+
+## Steps
+
+1. **Write the definition** in `apps/vps/<app>/` (rules: `apps/README.md`):
+   - `compose.yaml` with image tags pinned (no `latest`), every secret or
+     machine-specific value as `${VAR}`, and no admin port published publicly.
+   - `.env.example` listing every variable with a placeholder
+     (`__PASTE_ONCE__`) and the OpenBao path it comes from,
+     `kv/homelab/<app>/<key>`.
+   - `README.md` only if needed: where data lives, ports, quirks.
+2. **Validate locally:** `cp apps/vps/<app>/.env.example /tmp/<app>.env` then
+   `docker compose -f apps/vps/<app>/compose.yaml --env-file /tmp/<app>.env config`
+   — expect the resolved config and no error. CI runs the same check.
+3. **Store the secrets:** in OpenBao at `kv/homelab/<app>/<key>` once it
+   runs; until then in the Dokploy service's environment. Never in the repo.
+4. **Open a pull request** and get it through review; Dokploy deploys from
+   `main`, so nothing goes live before the merge.
+5. **Create the service in Dokploy** (UI, UNTESTED paths): a new Compose
+   service in the right project; source = this GitHub repo, branch `main`,
+   compose path `apps/vps/<app>/compose.yaml`; environment from step 3;
+   auto-deploy on push if the app should follow `main`. Expect: the first
+   deploy shows the merge commit.
+6. **Public access**, only if people outside the tailnet use it: add the
+   domain in Dokploy and the DNS record in Cloudflare. Admin interfaces stay
+   tailnet-only.
+7. **Sign-in:** once SSO runs, register the app as an OIDC client if it
+   supports it; otherwise put it behind the SSO's forward-auth. Write which in
+   the app's `README.md`.
+8. **Backups:** set up the Dokploy volume or database backup to the Garage
+   destination at home, or the app's own backup, and run it once.
+
+## Verify
+
+- The app answers on its domain (or tailnet address) and its health check is
+  green in Dokploy.
+- Dokploy shows the deployed commit equal to `main`.
+- For a stateful app: a backup exists in Garage **and** one restore was tried
+  (`systems/backups.md` — a backup counts when a restore works).
+
+## Stop if
+
+- The app needs a secret committed to the repo, or an admin port on the
+  public internet.
+- A stateful app has no working backup.
+- Dokploy wants to deploy from somewhere other than this repo's `main`.
+
+Write down what you saw, and ask the owner.
+
+## Afterwards
+
+- Add or update the app's row in `inventory/services.md` (host: remote VPS,
+  state with how it was verified).
+- If the app needs more than a row, a page in `systems/`.
+- Write `journal/YYYY-MM-DD-deploy-<app>.md`.
+- If any step above was wrong, propose the fix to this skill
+  (`skills/write-a-skill/`).

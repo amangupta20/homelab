@@ -91,6 +91,7 @@ description: <What it explains and when to use it, in one or two sentences.>
 
 ## Skills
 
+- `deploy-on-dokploy/` — deploy an app on the VPS, or move a Dokploy app into the repo (runbook, UNTESTED).
 - `write-a-skill/` — how to add or change a skill in this repo (know-how).
 
 First runbooks planned: the read-only recon pass, and moving one stack off

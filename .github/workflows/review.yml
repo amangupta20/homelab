@@ -4,8 +4,14 @@ name: review
 # check unless it approves. It is a required check on main, so nothing merges
 # without it (decisions/pull-request-gate.md). The model and provider are
 # repository settings, not code: see .github/scripts/ai-review.py.
+#
+# pull_request_target, not pull_request: this workflow, the script and the
+# checklist are taken from main, so a pull request cannot rewrite the reviewer
+# that judges it. The pull request's commits are fetched only to be diffed —
+# nothing from them is ever executed. Keep it that way: running any file from
+# the pull request here would hand the review key to whoever opened it.
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize, reopened, edited]
 
 permissions:
@@ -15,10 +21,16 @@ jobs:
   review:
     name: ai review
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4 # main, as pull_request_target defaults to
         with:
           fetch-depth: 0 # the diff and commit list need the base commit
+
+      - name: Fetch the pull request's commits (as data)
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: git fetch --no-tags origin "+refs/pull/${PR_NUMBER}/head:refs/remotes/pr/head"
 
       # The PR title and body come from whoever opened the PR, so they reach the
       # script through the environment, never pasted into the shell line.

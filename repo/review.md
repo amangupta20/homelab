@@ -15,7 +15,10 @@ the diff touches. It reports; it does not fix.
 - **On every pull request:** `.github/workflows/review.yml` sends the diff,
   the commits, this file, `AGENTS.md` and the touched folders' READMEs to a
   model, and fails the `ai review` check unless the verdict is `approve`. That
-  check is required on `main`.
+  check is required on `main`. The workflow, script and this checklist always
+  come from `main`, never from the pull request, so a change to any of them
+  takes effect only after it merges — and the pull request that makes it is
+  reviewed by the old version.
 
 The CI reviewer is configured in the repository settings (Settings -> Secrets
 and variables -> Actions), never in code:

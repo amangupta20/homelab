@@ -49,6 +49,18 @@ first is not automatically right.
   domains, or full configs containing secrets. Examples use placeholders like
   `__PASTE_ONCE__`. See `systems/openbao.md` for where secrets live, and
   `repo/secret-scanning.md` for the scan that blocks a commit or push.
+- Security flaws you find are fixed with the owner, never published. This
+  repo is public: a weakness that is not fixed yet — an exposed port or admin
+  page, a service without authentication, a firewall gap, the versions of
+  public-facing software, a key anyone can read, a tailnet name or address —
+  must not reach a commit, a commit message, a pull request or a CI log.
+  When you find one, stop that part of the task and start an interactive
+  fixing session with the owner in your harness: say what you found and how
+  you know, propose the fix, apply it once the owner agrees, and verify it.
+  Only after it is fixed may the repo mention it, in one line ("removed X:
+  it had no authentication"). If it cannot be fixed now, it stays out of the
+  repo; the owner decides where to track it. `repo/review.md` section 1 is
+  the CI backstop, not the plan.
 - Look before touching. Read-only recon first (list, describe, plan), report
   what you found, then change.
 - Snapshots or verified backups before any write to infrastructure. Say which

@@ -4,6 +4,8 @@ The current migration, in order. Each step gates the next.
 
 **Status:** in progress — the current step is not recorded. Step 0's restore
 tests are all still open in `systems/backups.md`.
+**Goal** (proposed, owner to confirm): move every workload onto the new setup
+without losing data, with each one's definition in this repo.
 **Done when** (proposed, owner to confirm): every workload runs on the new
 setup, its definition is in this repo, and the re-hardening pass (step 3) has a
 journal entry.

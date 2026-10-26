@@ -37,14 +37,13 @@ instead of copying.
 - A base snapshot is never deleted by hand; only Xen Orchestra merges or deletes
   it, and only after a verified backup.
 - Nothing is applied that did not first produce a plan someone read.
+- Exactly one checkout runs `tofu apply`; state lives in the Garage bucket and
+  is never committed. Garage cannot lock, so this is a rule, not a mechanism.
 - One fact, one owner.
 - One commit, one change.
 
 ## Unconfirmed — research needed
 
-- **OpenTofu state.** No backend is configured; state is local and git-ignored.
-  Candidates are S3 on TrueNAS, external S3 with OpenBao transit encryption, or a
-  managed TACOS. Nothing is chosen.
 - **Homeserver container manager.** Portainer today; Arcane is the likely
   replacement; Komodo and anything with native vault support are alternatives.
   Nothing is chosen.

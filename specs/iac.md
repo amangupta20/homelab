@@ -21,8 +21,19 @@ Orchestra token comes from the environment or from OpenBao (`secrets-openbao`).
 
 ## State
 
-Local and git-ignored, one per checkout. Nothing enforces a single writer, and
-nothing stops two checkouts from planning against different states.
+Decided: one S3 bucket in Garage on TrueNAS (`homelab-tofu-state`, key
+`xcp-ng/terraform.tfstate`), declared in `iac/backend.tf`, with credentials from
+the environment rather than the file. The provider is pinned by a committed
+`.terraform.lock.hcl`.
+
+Garage does not implement S3 conditional writes, so OpenTofu's native lockfile
+cannot be used and `use_lockfile` is off. There is no atomic lock: exactly one
+checkout runs `tofu apply`, everything else plans, and the plan is pasted into
+the pull request first. A scheduled `tofu state pull` export goes offsite,
+because losing the bucket loses the mapping between code and real VMs.
+
+This backend has not been exercised against a real bucket. Everything checkable
+locally — fmt, validate, tflint, provider lock — passes.
 
 ## The contradiction to resolve
 
@@ -33,7 +44,6 @@ credentials, but not for topology.
 
 ## Unconfirmed — research needed
 
-- **State backend:** none chosen (see `arch-homelab`).
 - **Ansible:** the README claims it exists; the repo has no playbooks. Whether it
   belongs to this module or gets its own is undecided.
 - **cloud-init:** committed template per VM, or generated — undecided.

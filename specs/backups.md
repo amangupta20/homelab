@@ -27,6 +27,8 @@ A backup counts when a test restore works. A green job log counts for nothing.
 - Xen Orchestra's own config and pool metadata: daily, ten copies, success or
   failure posted to the `xen-orchestra` ntfy topic.
 - Stateful apps (Nextcloud): VM image plus an app-level Borg backup from inside.
+- OpenTofu state: a scheduled `tofu state pull` export offsite, so the bucket
+  holding the code-to-VM mapping is not a single copy.
 
 ## Untested today
 

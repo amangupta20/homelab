@@ -26,7 +26,9 @@ Why this order and why on the VPS: `decisions/foundations-on-vps.md`.
    journal entry. Then: storage backend chosen; listener on the Tailscale
    address only, TLS on; initialised with keys kept offline; root token
    deleted; backup to Garage at home; one restore tested
-   (`systems/openbao.md`). — gate: restore test in `journal/`.
+   (`systems/openbao.md`). — gate: restore test in `journal/`. Installed
+   2026-10-26 (`journal/2026-10-26-install-openbao.md`); backup and restore
+   test still to do.
 3. **Wire secrets into deploys.** Before changing Dokploy's settings: a
    verified Dokploy backup, or the step-2 snapshot if nothing changed since,
    named in the journal entry. Then Dokploy reads OpenBao (its secret provider,

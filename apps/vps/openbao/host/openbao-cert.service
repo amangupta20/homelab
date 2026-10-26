@@ -1,0 +1,8 @@
+[Unit]
+Description=Get or renew OpenBao's Let's Encrypt certificate
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/openbao-cert

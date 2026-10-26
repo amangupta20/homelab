@@ -3,7 +3,8 @@
 How OpenBao works and the rules around it: `systems/openbao.md`. This page is
 only about this stack.
 
-**Status:** not deployed. The stack was started once locally (see "Tested").
+**Status:** running on the VPS since 2026-10-26, unsealed; backup and restore
+test not done yet (`plans/vps-foundations.md`, step 2).
 
 ## Derived from
 
@@ -30,26 +31,47 @@ Choices that differ from those sources, and why:
 
 ## TLS
 
-The certificate and key live on the VPS in `/etc/openbao/tls`, as `tls.crt` and `tls.key`, readable by the
-container's `openbao` user. They are not in this repo or in Dokploy. A
-self-signed certificate is fine (`systems/openbao.md`); clients pin it with
-`BAO_CACERT`. The key is ECDSA P-256, not Ed25519, because browsers reject
-Ed25519 certificates and the web UI is on. Run on the VPS as `ubuntu`
-(2026-10-26, with the VPS's tailnet IP):
+OpenBao serves a Let's Encrypt certificate for a name under the lab's domain
+(`<bao domain>`, kept out of this repo). Its public DNS record points at the
+VPS's tailnet IP and is not proxied, so the name only leads anywhere from the
+tailnet. Clients trust the certificate with no extra file, and `BAO_ADDR` is
+`https://<bao domain>:8200`.
+
+The certificate comes from a DNS-01 challenge: `host/openbao-cert` runs the
+pinned `goacme/lego:v5.5.2` image with a Cloudflare token, so Let's Encrypt
+never has to reach the VPS. The script installs the result in
+`/etc/openbao/tls` (`tls.crt`, and `tls.key` owned by user ID 100, the
+container's `openbao` user — `id` inside the image — and readable by nobody
+else) and sends OpenBao a SIGHUP, which reloads the certificate without a
+restart, so no reseal. `host/openbao-cert.timer` runs it daily; lego renews
+when the certificate is close to expiry.
+
+Not in this repo, on the VPS only:
+
+- `/etc/openbao/cert.conf` — `BAO_DOMAIN=<bao domain>`, and
+  `LEGO_DNS_RESOLVERS=<public resolver ip>:53` (the first certificate used
+  Cloudflare's public resolver; the address is kept out because the scan
+  blocks public IPs)
+- `/etc/openbao/cloudflare.env` — `CF_DNS_API_TOKEN=<token>`, a Cloudflare
+  API token with Zone → DNS → Edit on that one zone, mode 600, root only
+- `/etc/openbao/lego/` — lego's account and certificate store
+- `/etc/openbao/selfsigned/` — the self-signed certificate used before
+  (ECDSA P-256, for the tailnet IP), kept as a fallback
+
+Set up on the VPS, run once by the owner on 2026-10-26:
 
 ```bash
-sudo mkdir -p /etc/openbao/tls && cd /etc/openbao/tls
-sudo openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes -days 3650 \
-  -subj "/CN=openbao" -addext "subjectAltName=IP:<VPS tailnet IP>" \
-  -keyout tls.key -out tls.crt
-sudo chown 100:root tls.key && sudo chmod 400 tls.key && sudo chmod 644 tls.crt
+sudo install -m 755 host/openbao-cert /usr/local/sbin/openbao-cert
+sudo install -m 644 host/openbao-cert.service host/openbao-cert.timer /etc/systemd/system/
+echo "BAO_DOMAIN=<bao domain>" | sudo tee /etc/openbao/cert.conf
+sudo systemctl daemon-reload
+sudo openbao-cert --no-random-sleep      # first certificate
+sudo systemctl enable --now openbao-cert.timer
 ```
 
-The container runs as user ID 100 (`id` inside `openbao/openbao:2.7.1`), so
-the key is owned by that ID and readable by nobody else; on the VPS that ID is
-a system account that cannot log in (`getent passwd 100`, 2026-10-26).
-Whether OpenBao reads the key with that ownership is confirmed by the first
-start on the VPS.
+Checked from a workstation on 2026-10-26: OpenBao presented a Let's Encrypt
+certificate for the name, `curl` with the system trust store got 200 from
+`/v1/sys/health`, and OpenBao stayed unsealed through the reload.
 
 ## Deploying in Dokploy
 

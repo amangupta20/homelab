@@ -3,7 +3,8 @@
 OpenBao is the secret store: every password and token in one place on the
 tailnet, read by machines at deploy time, never written into git.
 
-**Status:** planned, not deployed. No command on this page has been run
+**Status:** running on the VPS since 2026-10-26 (`apps/vps/openbao/`); backup
+and restore test not done yet. Commands not marked as run have not been run
 against a real OpenBao server yet.
 
 The problem: this repo gets checked out on 5 machines. Copying a `.env` file
@@ -76,8 +77,13 @@ kept as a plausible-looking recipe. The order:
 
 ## Daily use (each checkout, no .env file) — UNTESTED sketch
 
+Each machine needs only the address, `BAO_ADDR=https://<bao domain>:8200`
+(`apps/vps/openbao/README.md`, "TLS"). The certificate is a public one, so no
+certificate file. On a desktop session that uses systemd, a file in
+`~/.config/environment.d/` sets it for every terminal without touching the
+shell's startup files (done on the owner's workstation, 2026-10-26).
+
 ```bash
-export VAULT_ADDR='https://10.22.33.X:8200'
 bao login -method=userpass username=<you>  # once per machine; the token is
                                            # stored in ~/.vault-token (git-ignored)
 tofu plan    # OpenTofu reads the secret from the box at runtime

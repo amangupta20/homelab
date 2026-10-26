@@ -1,0 +1,38 @@
+#!/bin/sh
+# Gets or renews OpenBao's Let's Encrypt certificate with a DNS-01 challenge
+# through Cloudflare, installs it where the stack reads it, and tells a running
+# OpenBao to reload it (SIGHUP: no restart, so no reseal). Installed on the VPS
+# as /usr/local/sbin/openbao-cert and run daily by openbao-cert.timer. Extra
+# arguments go to `lego run` (e.g. --no-random-sleep for a manual run).
+#
+# Host files (never in this repo, see ../README.md "TLS"):
+#   /etc/openbao/cert.conf       BAO_DOMAIN=<the name clients use>
+#                                LEGO_DNS_RESOLVERS=<resolver ip>:53 (optional;
+#                                lego uses the system's resolvers without it)
+#   /etc/openbao/cloudflare.env  CF_DNS_API_TOKEN=<token: Zone DNS Edit, one zone>
+set -eu
+
+. /etc/openbao/cert.conf
+lego_image=docker.io/goacme/lego:v5.5.2
+state=/etc/openbao/lego
+tls=/etc/openbao/tls
+
+mkdir -p "$state"
+chmod 700 "$state"
+docker run --rm --env-file /etc/openbao/cloudflare.env \
+  ${LEGO_DNS_RESOLVERS:+-e LEGO_DNS_RESOLVERS="$LEGO_DNS_RESOLVERS"} \
+  -v "$state:/data" "$lego_image" \
+  run --path /data --accept-tos --dns cloudflare -d "$BAO_DOMAIN" "$@"
+
+crt=$(find "$state/certificates" -name "$BAO_DOMAIN.crt" | head -n 1)
+key=${crt%.crt}.key
+[ -f "$crt" ] && [ -f "$key" ] || { echo "openbao-cert: no certificate found under $state" >&2; exit 1; }
+cmp -s "$crt" "$tls/tls.crt" && exit 0
+
+# The container runs as uid 100; only it may read the key (../README.md).
+install -m 644 -o root -g root "$crt" "$tls/tls.crt"
+install -m 400 -o 100 -g root "$key" "$tls/tls.key"
+for c in $(docker ps -q --filter label=com.docker.compose.service=openbao); do
+  docker kill --signal HUP "$c" >/dev/null
+done
+echo "openbao-cert: installed a new certificate for $BAO_DOMAIN"

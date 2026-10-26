@@ -41,35 +41,53 @@ them and links its journal entry here.
 
 ## Steps
 
-1. **Write the definition** in `apps/vps/<app>/` (rules: `apps/README.md`):
+1. **Read the sources, then write your own.** Before writing anything, read
+   Dokploy's template for the app (`blueprints/<app>/` in
+   github.com/Dokploy/templates: `docker-compose.yml` and `template.toml`)
+   and the Compose file or container docs in the app's own repository. Do
+   not copy either as is — templates often run dev modes, generate secrets
+   into the environment, or attach a public domain. Check the image exists
+   for `arm64`: the VPS is ARM (`systems/vps.md`):
+   `docker manifest inspect <image>:<tag>` lists `"architecture": "arm64"`
+   (run for `openbao/openbao:2.7.1`, 2026-10-26).
+2. **Write the definition** in `apps/vps/<app>/` (rules: `apps/README.md`):
    - `compose.yaml` with image tags pinned (no `latest`), every secret or
      machine-specific value as `${VAR}`, and no admin port published publicly.
-   - `.env.example` listing every variable with a placeholder
-     (`__PASTE_ONCE__`) and the OpenBao path it comes from,
-     `kv/homelab/<app>/<key>`.
-   - `README.md` only if needed: where data lives, ports, quirks.
-2. **Validate locally:** `cp apps/vps/<app>/.env.example /tmp/<app>.env` then
+   - `.env.example` listing every variable and the OpenBao path it comes
+     from, `kv/homelab/<app>/<key>`. Secrets get the placeholder
+     `__PASTE_ONCE__`; a non-secret value that Compose checks, such as an IP
+     address, gets a harmless value of the right shape instead, or step 3
+     fails (`invalid IP address: __PASTE_ONCE__`).
+   - `README.md` with a "Derived from" table: each source from step 1, the
+     version or commit read, and what was taken; then the choices that
+     differ from the sources and why. On an upgrade, compare the sources
+     against those versions. Example: `apps/vps/openbao/README.md`. Add data
+     location, ports and quirks as needed.
+3. **Validate locally:** `cp apps/vps/<app>/.env.example /tmp/<app>.env` then
    `docker compose -f apps/vps/<app>/compose.yaml --env-file /tmp/<app>.env config`
-   — expect the resolved config and no error (UNTESTED here). CI runs
+   — expect the resolved config and no error (run for `openbao`,
+   2026-10-26). CI runs
    `docker compose config` on every compose file (`.github/workflows/ci.yml`).
-3. **Store the secrets:** in OpenBao at `kv/homelab/<app>/<key>` once it
+4. **Store the secrets:** in OpenBao at `kv/homelab/<app>/<key>` once it
    runs; until then in the Dokploy service's environment. Never in the repo.
-4. **Open a pull request** and get it through review. The intent is that
+5. **Open a pull request** and get it through review. The intent is that
    Dokploy deploys only from `main`, so nothing goes live before the merge —
    how Dokploy pulls from this repo is still unverified
    (`decisions/open-questions.md`, Remote VPS); the first deploy confirms it.
-5. **Create the service in Dokploy** (UI, UNTESTED paths): a new Compose
-   service in the right project; source = this GitHub repo, branch `main`,
-   compose path `apps/vps/<app>/compose.yaml`; environment from step 3;
+6. **Create the service in Dokploy** (UI, UNTESTED paths): a new Compose
+   service in the right project (an app already in Dokploy: switch its
+   source from `raw`, where the Compose file is stored inside Dokploy, to
+   git); source = this GitHub repo, branch `main`,
+   compose path `apps/vps/<app>/compose.yaml`; environment from step 4;
    auto-deploy on push if the app should follow `main`. Expect: the first
    deploy shows the merge commit.
-6. **Public access**, only if people outside the tailnet use it: add the
+7. **Public access**, only if people outside the tailnet use it: add the
    domain in Dokploy and the DNS record in Cloudflare. Admin interfaces stay
    tailnet-only.
-7. **Sign-in:** once SSO runs, register the app as an OIDC client if it
+8. **Sign-in:** once SSO runs, register the app as an OIDC client if it
    supports it; otherwise put it behind the SSO's forward-auth. Write which in
    the app's `README.md`.
-8. **Backups:** set up the Dokploy volume or database backup to the Garage
+9. **Backups:** set up the Dokploy volume or database backup to the Garage
    destination at home, or the app's own backup, and run it once.
 
 ## Verify

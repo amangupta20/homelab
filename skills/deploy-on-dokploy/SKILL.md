@@ -52,8 +52,10 @@ them and links its journal entry here.
    `docker manifest inspect <image>:<tag>` lists `"architecture": "arm64"`
    (run for `openbao/openbao:2.7.1`, 2026-10-26).
 2. **Write the definition** in `apps/vps/<app>/` (rules: `apps/README.md`):
-   - `compose.yaml` with image tags pinned (no `latest`), every secret or
-     machine-specific value as `${VAR}`, and no admin port published publicly.
+   - `compose.yaml` with image tags pinned (no `latest`), secrets and values
+     that identify the lab (domains, public and tailnet IPs) as `${VAR}`,
+     everything else written in (`apps/README.md`), and no admin port
+     published publicly.
    - `.env.example` listing every variable and the OpenBao path it comes
      from, `kv/homelab/<app>/<key>`. Secrets get the placeholder
      `__PASTE_ONCE__`; a non-secret value that Compose checks, such as an IP

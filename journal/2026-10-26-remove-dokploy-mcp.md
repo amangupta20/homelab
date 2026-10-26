@@ -12,9 +12,12 @@ with their own Dokploy API key, so no shared server holds one.
 
 ## Snapshot / backup taken
 
-The service kept no data. Its Compose file and `.env` were copied from
+No snapshot. The service had no volumes (its Compose file declares none), so
+its whole state was its Compose file and `.env`; both were copied from
 Dokploy's checkout on the VPS to the owner's workstation before the delete
-(not in this repo: the `.env` holds the API key).
+and the copy was listed (`tar -tzf`) to confirm it held both. Not in this
+repo: the `.env` holds the API key. The owner asked for the service to be
+dropped altogether.
 
 ## How it was verified
 

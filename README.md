@@ -37,32 +37,6 @@ never in git. See `docs/secrets-openbao.md` for where they live.
   Drafted from these docs, not from an audit; anything unverified says so inside.
 - `AGENTS.md` — instructions for AI agents working in this repo.
 
-## Quick look
-
-| Service | What it is | State |
-|---|---|---|
-| TrueNAS VM | storage OS, file shares + backup target | stable, clean-import test still to do |
-| Xen Orchestra | web UI to manage all VMs + backups | stable, alerts via ntfy |
-| BorgWarehouse | web UI for Borg backups (app-level, inside apps) | stable on TrueNAS |
-| ntfy | phone/push alerts for backups and deploys | stable |
-| Nextcloud AIO | self-hosted Dropbox replacement | stable, full restore test still to do |
-| Object storage lab | experiment with S3-compatible storage across sites | idea, not funded/built |
-
-Details: `inventory/services.md`
-
-## Network in 30 seconds
-
-Private subnet `10.22.33.0/24`:
-
-- `.1` — router
-- `.254` — Docker/proxies host, also runs apt cache on port 3142
-- `.160` — TrueNAS storage
-
-All admin over Tailscale. Public web traffic comes in via Cloudflare, then
-Nginx Proxy Manager, then to the right container.
-
-Details: `inventory/network.md`
-
 ## How I run it
 
 1. **Isolation first** — one VM per job, GPU passed through only where needed.
@@ -71,9 +45,9 @@ Details: `inventory/network.md`
    Compose runs apps. If a VM rots, I recreate it.
 3. **Zero-trust admin** — Tailscale only, least-privilege ACLs. Edge is
    filtered and logged.
-4. **Backups that can restore** — XO image backups to TrueNAS, then offsite.
-   Stateful apps get an extra app-level backup. A backup only counts when a
-   test restore works.
+4. **Backups that can restore** — a backup only counts when a test restore
+   works. What is backed up and what is still untested:
+   `ops/backup-restore.md`.
 
 ## Status
 

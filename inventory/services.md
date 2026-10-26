@@ -13,14 +13,8 @@ This file owns the service list. Other pages link here, never copy this table.
 | Nextcloud AIO | Self-hosted file sync (Dropbox replacement), all-in-one container. | stable — full restore test still to do |
 | OCI Borgmatic | Planned: run Borg backups on a cheap cloud VM. | design only — do not deploy yet |
 | Object storage lab | Experiment: S3-compatible storage (Garage/SeaweedFS) across two sites. | idea, not built |
-| Base-snapshot rule | Lesson learned, see platforms page. | never delete a base snapshot by hand |
 
-## Backup strategy in one paragraph
-
-Plain VMs are protected by Xen Orchestra image backups (snapshot + delta)
-sent to TrueNAS, then copied offsite. Apps with internal state (Nextcloud)
-get an extra backup from inside the app (Borg). No per-VM Borg agent for
-plain VMs — image backups cover them.
+How each service is backed up: `ops/backup-restore.md`.
 
 ## To do
 

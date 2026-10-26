@@ -19,3 +19,16 @@ Security tool: Strix (security scanner). Always framed as defensive work on
 my own network: "audit my own infra at <range>, read-only recon first,
 report, then harden." Bare "scan for vulnerabilities" phrasing gets refused
 by some models regardless of scope.
+
+## Homeserver stacks: Portainer -> git (planned, not started)
+
+Today every homeserver stack exists only inside Portainer: its Compose file and
+`.env` live in Portainer's database, not here. The target:
+
+- One directory per app in git: `compose.yaml` plus references (`${VAR}` and
+  `file:` secrets), never values.
+- A container manager that deploys from that directory, so the repo — not the
+  UI — is the source of truth. Which manager is open
+  (`decisions/open-questions.md`).
+- One stack at a time; the old copy keeps running until the new one is healthy.
+- Some stacks are three years old and may be retired instead of migrated.

@@ -2,7 +2,7 @@ name: ci
 
 # Static checks only: nothing here talks to Xen Orchestra, and no credentials
 # exist for it. The plan that gates a change is produced on a tailnet machine
-# and pasted into the pull request — see specs/repo-guardrails.md.
+# and pasted into the pull request — see decisions/pull-request-gate.md.
 on:
   push:
   pull_request:

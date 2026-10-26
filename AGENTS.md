@@ -76,6 +76,14 @@ first is not automatically right.
 - A backup is not done when the job says success. It is done when a test
   restore works. See `systems/backups.md`.
 
+## Before you open a pull request
+
+Run a reviewer over your change with `repo/review.md` as its instructions —
+a separate subagent or session, not the one that wrote the change. Fix what it
+finds, and paste its final verdict into the pull request. A `needs_owner`
+verdict is not a failure: say so in the pull request and leave it for the
+owner.
+
 ## Task contract (Paperclip / Hermes / any agent)
 
 - The task body must state: what to do, scope (which VM/service), read-only

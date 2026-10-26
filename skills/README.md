@@ -1,10 +1,12 @@
 # Skills — how to do X
 
 Everything an agent (or you) needs to know how to do, one folder per skill, in
-the open agentskills.io format. This folder is the only copy: every agent
-harness is pointed at it, so a skill written once works in every harness that
-reads it, on any machine that clones the repo. Which harnesses have actually
-been checked, and how, is in `agents/README.md`.
+the open agentskills.io format. This folder is the source of truth for skills.
+Harnesses that read a project skills folder see it as soon as the repo is
+cloned; harnesses that only read a home-directory folder need
+`mise run agents:link` once per machine. A skill an agent saves elsewhere is
+not part of the setup until it is adopted here. Which harnesses read what, and
+which have been checked, is in `agents/README.md`.
 
 Two kinds of skill live here:
 

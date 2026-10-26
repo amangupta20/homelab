@@ -106,9 +106,10 @@ repo, never only inside your own harness:
   and propose it. `mise run agents:link` lists the skills it finds outside the
   repo.
 - **You need access you do not have** (an MCP server, an API, a tool): propose
-  it in `agents/` so every harness gets it, and add the credential it needs to
-  `decisions/open-questions.md`. Do not wire it into your harness's private
-  config only.
+  it in `agents/` so every harness gets it. If it needs a credential, write in
+  `decisions/open-questions.md` that one is needed and that it will live in
+  OpenBao — never the credential itself. Do not wire it into your harness's
+  private config only.
 - **Something only works in one harness:** `agents/extensions/<harness>/`.
 - **A new harness is being tried:** `agents/README.md`, "Adding a harness".
 

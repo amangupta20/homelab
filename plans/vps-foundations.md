@@ -45,9 +45,9 @@ Why this order and why on the VPS: `decisions/foundations-on-vps.md`.
 ## Follow-ups: apps deployed before the foundations
 
 - `apps/vps/hermes-webui/` — public before SSO and before Dokploy reads
-  OpenBao (owner, 2026-10-27). Its secrets are copied into Dokploy by hand
+  OpenBao (owner, 2026-10-27). Its password is copied into Dokploy by hand
   from OpenBao and its own password is the only login. Revisit after steps 3
-  and 4: switch the secrets to OpenBao references and put it behind SSO, or
+  and 4: switch the password to an OpenBao reference and put it behind SSO, or
   move it to tailnet-only.
 
 ## Links

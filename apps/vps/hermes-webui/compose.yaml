@@ -6,52 +6,69 @@
 #
 # What it is not: a second login on the existing WebUI. This WebUI is
 # single-user by design (one shared password, no accounts), so a separate
-# container is the isolation — its sessions, workspace and agent memory never
+# stack is the isolation — its sessions, workspace and agent memory never
 # touch the owner's.
 #
 # Status: defined, not deployed.
-# Source of the shape: nesquena/hermes-webui docker-compose.yml (single
-# container, WebUI runs the agent in-process), read 2026-10-27.
-# Choices that differ from that file, and why, are in this README.
+# Source of the shape: nesquena/hermes-webui docker-compose.two-container.yml
+# at tag v0.52.544, read 2026-10-27. Choices that differ from that file, and
+# why, are in this folder's README.
 
 services:
-  hermes-webui:
-    # Release pair rule (upstream docs/docker.md): WebUI and agent upgrade
-    # together — one image here, so tag it as a pair: never mix this file's
-    # `latest` with a pinned agent elsewhere. `latest` is upstream's stable
-    # channel (docs/docker.md "Available Docker tags").
-    image: ghcr.io/nesquena/hermes-webui:latest
+  hermes-agent:
+    # Release pair (upstream docs/docker.md, "Compatibility policy and version
+    # pinning"): agent and WebUI are upgraded together, both tags in one change.
+    # v0.22.5 is the agent's stable tag on Docker Hub (2026-10-23), the one
+    # WebUI v0.52.544 (2026-10-25) was released against.
+    image: nousresearch/hermes-agent:v0.22.5
+    command: gateway run
     restart: unless-stopped
-    ports:
-      # Bound to loopback only — `docker compose up` outside Dokploy answers
-      # on localhost, never the open port. In production Dokploy's Traefik
-      # is the only ingress, via the domain set in Dokploy.
-      - "127.0.0.1:8787:8787"
+    # No published port: the WebUI reaches the gateway over the stack's own
+    # network, nothing else needs to.
     volumes:
-      # Named volume, fresh for this app. NOT a bind mount of an existing
-      # ~/.hermes: the whole point is a blank home — separate sessions,
-      # separate memory, nothing inherited from the owner's instance.
+      - hermes-webui-home:/home/hermes/.hermes
+      # The agent's source, initialised from this image on first `up`. Docker
+      # keeps the volume on later `up`s even after a new image is pulled, so
+      # an agent upgrade also means removing this volume (upstream
+      # docs/docker.md, "Upgrading the agent container").
+      - hermes-webui-agent-src:/opt/hermes
+    environment:
+      - HERMES_HOME=/home/hermes/.hermes
+      - HERMES_UID=1000
+      - HERMES_GID=1000
+      - API_SERVER_ENABLED=true
+      - API_SERVER_HOST=0.0.0.0
+      # Shared between the two containers. `:?` stops the deploy when it is
+      # unset, instead of starting with an empty or known key.
+      - API_SERVER_KEY=${API_SERVER_KEY:?set in the Dokploy service environment}
+
+  hermes-webui:
+    image: ghcr.io/nesquena/hermes-webui:0.52.544
+    restart: unless-stopped
+    depends_on:
+      - hermes-agent
+    # No published port: Dokploy's Traefik is the only way in, through the
+    # domain set in Dokploy.
+    volumes:
+      # Fresh named volumes, NOT a bind mount of an existing ~/.hermes: the
+      # point is a blank home — nothing inherited from the owner's instance.
       - hermes-webui-home:/home/hermeswebui/.hermes
-      # Workspace, also fresh. Small on purpose: a chat landing folder,
-      # not a window into the lab.
+      - hermes-webui-agent-src:/home/hermeswebui/.hermes/hermes-agent:ro
       - hermes-webui-workspace:/workspace
     environment:
       - HERMES_WEBUI_HOST=0.0.0.0
       - HERMES_WEBUI_PORT=8787
       - HERMES_WEBUI_STATE_DIR=/home/hermeswebui/.hermes/webui
-      # Password auth ON — required, this app has a public domain (upstream
-      # compose leaves it empty for localhost use). Value lives in the
-      # Dokploy service environment, never in this repo. The `:-` default is
-      # the documented placeholder so `docker compose config` passes in CI
-      # (no env file there); Dokploy MUST override it — a deploy keeping
-      # __PASTE_ONCE__ has a publicly known password.
-      - HERMES_WEBUI_PASSWORD=${HERMES_WEBUI_PASSWORD:-__PASTE_ONCE__}
-      # Long-term memory (Hindsight): the bank id is set post-deploy inside
-      # the container's own config, not here — the bank name identifies whose
-      # memory it is, so it stays out of this public repo. Same Hindsight
-      # server as the owner's; banks are the isolation boundary, no second
-      # server needed.
+      - HERMES_API_URL=http://hermes-agent:8642
+      - WANTED_UID=1000
+      - WANTED_GID=1000
+      - HERMES_WEBUI_GATEWAY_API_KEY=${API_SERVER_KEY:?set in the Dokploy service environment}
+      # Required: this app has a public domain (upstream leaves it empty for
+      # localhost use). `:?` stops the deploy when it is unset, so the app
+      # can never come up on the internet without a password.
+      - HERMES_WEBUI_PASSWORD=${HERMES_WEBUI_PASSWORD:?set in the Dokploy service environment}
 
 volumes:
   hermes-webui-home:
+  hermes-webui-agent-src:
   hermes-webui-workspace:

@@ -58,6 +58,11 @@ owner file, and is deleted from this list.
   each stack.
 - Which apps run on it — listed by the recon on 2026-10-26 in
   `inventory/services.md`; for the owner to close.
+- Contradiction, found 2026-10-27 while updating the app lists: `apps/README.md`
+  and `apps/vps/README.md` both call OpenBao "defined, not deployed", while
+  `inventory/services.md` says it is "running, unsealed — verified 2026-10-26"
+  and `journal/2026-10-26-install-openbao.md` records the install. Which is
+  current?
 - Found by the step-0 recon (2026-10-26, `systems/vps.md`):
   - The `odysseus` backup always fails and the `Odyssues` project has no
     containers (`systems/backups.md`, `inventory/services.md`). Retire the

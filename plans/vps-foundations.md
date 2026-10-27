@@ -1,7 +1,7 @@
 # VPS foundations
 
-**Status:** steps 0 and 1 done 2026-10-26 (`systems/vps.md`,
-`decisions/vps-outside-opentofu.md`); step 2 next.
+**Status:** steps 0–2 installed 2026-10-26, step 3 done 2026-10-27; the
+restore test in step 2 and all of step 4 (SSO) are still open.
 **Goal:** OpenBao and SSO running on the VPS with tested backups, so every app
 after them is deployed once with secrets and sign-in already wired.
 **Done when:** OpenBao and SSO each have a restore test in `journal/`, and the
@@ -31,10 +31,15 @@ Why this order and why on the VPS: `decisions/foundations-on-vps.md`.
    test still to do.
 3. **Wire secrets into deploys.** Before changing Dokploy's settings: a
    verified Dokploy backup, or the step-2 snapshot if nothing changed since,
-   named in the journal entry. Then Dokploy reads OpenBao (its secret provider,
-   if the running version has one — unverified), and checkouts read it for
-   OpenTofu (`iac/vault.tf.example`). — gate: one throwaway app on Dokploy reads
-   a test secret from OpenBao.
+   named in the journal entry. Then Dokploy reads OpenBao, and checkouts read
+   it for OpenTofu (`iac/vault.tf.example`). — gate: one throwaway app on
+   Dokploy reads a test secret from OpenBao. Satisfied 2026-10-27 by a real app
+   instead of a throwaway: `apps/vps/hermes-webui/` reads its password from
+   `kv/dokploy/hermes-webui` (gotchas in `systems/openbao.md`). The step's
+   required backup is the boot-volume backup `ui`, named in that journal entry;
+   whether it had finished was not checked, so the "verified" half of the
+   precondition stays open. Still open: a timer that renews Dokploy's provider
+   token, and the OpenTofu half.
 4. **SSO.** Choose one (`decisions/open-questions.md`, Foundations), deploy it
    with `skills/deploy-on-dokploy/`, public login, tailnet-only admin, backup
    tested. — gate: the throwaway app from step 3 signs in through it.
@@ -44,10 +49,10 @@ Why this order and why on the VPS: `decisions/foundations-on-vps.md`.
 
 ## Follow-ups: apps deployed before the foundations
 
-- `apps/vps/hermes-webui/` — public before SSO and before Dokploy reads
-  OpenBao (owner, 2026-10-27). Its password is copied into Dokploy by hand
-  from OpenBao and its own password is the only login. Revisit after steps 3
-  and 4: switch the password to an OpenBao reference and put it behind SSO, or
+- `apps/vps/hermes-webui/` — deployed 2026-10-27 while these foundations were
+  unfinished (owner). Its password does come from OpenBao through Dokploy's
+  provider — the thing step 3 was for — but its own password is still the only
+  login: no SSO, and it is public. Revisit after step 4: put it behind SSO, or
   move it to tailnet-only.
 
 ## Links

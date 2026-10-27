@@ -56,6 +56,9 @@ owner file, and is deleted from this list.
 
 - How Dokploy deploys from this repo, and whether it keeps its own copy of
   each stack.
+  Answered for one app, 2026-10-27: from git, branch `main`, compose path
+  `apps/vps/hermes-webui/compose.yaml`, no copy kept — a merged change reached
+  the container only when the service was deployed by hand (auto-deploy off).
 - Which apps run on it — listed by the recon on 2026-10-26 in
   `inventory/services.md`; for the owner to close.
 - Contradiction, found 2026-10-27 while updating the app lists: `apps/README.md`
@@ -63,6 +66,11 @@ owner file, and is deleted from this list.
   `inventory/services.md` says it is "running, unsealed — verified 2026-10-26"
   and `journal/2026-10-26-install-openbao.md` records the install. Which is
   current?
+  Answered 2026-10-27, on the owner's instruction: OpenBao is deployed. Dokploy
+  read the second Hermes WebUI's password out of `kv/dokploy/hermes-webui` at
+  deploy time that day, which neither a stopped OpenBao nor an absent one can
+  do, so the two `apps/` READMEs were the stale side and now say deployed. The
+  item stays here for the owner to close.
 - Found by the step-0 recon (2026-10-26, `systems/vps.md`):
   - The `odysseus` backup always fails and the `Odyssues` project has no
     containers (`systems/backups.md`, `inventory/services.md`). Retire the

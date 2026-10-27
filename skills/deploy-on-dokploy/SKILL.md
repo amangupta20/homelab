@@ -73,18 +73,23 @@ them and links its journal entry here.
    `docker compose config` on every compose file (`.github/workflows/ci.yml`).
 4. **Store the secrets:** in OpenBao at `kv/dokploy/<app>`, one field per
    key — Dokploy's token reads that folder only (`systems/openbao.md`, "Two
-   container managers"). Never in the repo.
-5. **Open a pull request** and get it through review. The intent is that
-   Dokploy deploys only from `main`, so nothing goes live before the merge —
-   how Dokploy pulls from this repo is still unverified
-   (`decisions/open-questions.md`, Remote VPS); the first deploy confirms it.
-6. **Create the service in Dokploy** (UI, UNTESTED paths): a new Compose
-   service in the right project (an app already in Dokploy: switch its
-   source from `raw`, where the Compose file is stored inside Dokploy, to
-   git); source = this GitHub repo, branch `main`,
+   container managers"). Never in the repo. In Dokploy the value is the
+   reference `${{vault.<provider>.dokploy/<app>:<key>}}`, with the provider's
+   KV Mount set to `kv`. The traps that cost one deploy, and the token's
+   32-day renewal, are `systems/openbao.md`'s to describe.
+5. **Open a pull request** and get it through review: Dokploy deploys these
+   services from this repo's `main`, so nothing here goes live before the merge
+   (verified 2026-10-27 on `apps/vps/hermes-webui/` — a merged compose change
+   reached the container only when the service was deployed by hand, since
+   auto-deploy is off).
+6. **Create the service in Dokploy** (verified 2026-10-27 on
+   `apps/vps/hermes-webui/`): a new Compose service in the right project (an
+   app already in Dokploy: switch its source from `raw`, where the Compose file
+   is stored inside Dokploy, to git); source = this GitHub repo, branch `main`,
    compose path `apps/vps/<app>/compose.yaml`; environment from step 4;
    auto-deploy on push if the app should follow `main`. Expect: the first
-   deploy shows the merge commit.
+   deploy shows the merge commit, and a change merged to `main` only reaches
+   the container when the service is deployed by hand while auto-deploy is off.
 7. **Public access**, only if people outside the tailnet use it: add the
    domain in Dokploy and the DNS record in Cloudflare. Admin interfaces stay
    tailnet-only.

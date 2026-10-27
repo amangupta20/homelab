@@ -135,12 +135,32 @@ The lab has two, and they need different answers:
   OpenBao. Dokploy's own token is kept outside that folder. Reference
   format (Dokploy docs, provider page): `${{vault.<provider>.dokploy/<app>:<key>}}`
   — the path leaves out the `kv/` mount and `data/`.
+  Verified 2026-10-27 by `apps/vps/hermes-webui/`: its password is read from
+  `kv/dokploy/hermes-webui` at deploy time, so the running app starts with a
+  secret that is in neither the service environment nor the repo. Dokploy's own
+  database was not checked. Two things fail before that works, and both were
+  hit on the way:
+  - the provider's **KV Mount** defaults to `secret`. Set it to `kv`; left at
+    the default the deploy stops with a 403 on `secret/data/...`.
+  - the token behind the provider needs `read` on `kv/data/dokploy/*` and
+    `list` on `kv/metadata/dokploy/*` — one policy for the whole folder, not
+    one per app.
+  The provider token was created with `bao token create -orphan
+  -policy=dokploy-read -period=768h` (owner, 2026-10-27), so it dies unless
+  renewed within 32 days (768h); renewing it is still manual
+  (`plans/vps-foundations.md`).
 - **Homeserver — Portainer today.** Portainer does not read OpenBao, so secrets
   have to reach the container another way: a sidecar logs in with its own
   AppRole and writes files into `/run/secrets`, and the stack reads files
   instead of environment values. Which manager replaces Portainer is still open
   (Arcane is the likely candidate, not confirmed); if it turns out to have a
   native vault provider, use that and drop the sidecar for that stack.
+
+## Still to do
+
+Both are gated in `plans/vps-foundations.md`: a backup to the Garage
+destination at home with one restore tried (step 2), and a timer that renews
+Dokploy's provider token before its 32-day period runs out (step 3).
 
 ## Rules
 

@@ -9,20 +9,26 @@
 # container is the isolation — its sessions, workspace and agent memory never
 # touch the owner's.
 #
-# Status: defined, not deployed.
+# Status: deployed on Dokploy 2026-10-27 behind a public domain; the WebUI
+# serves and its password login works, but chat needs the one-time agent
+# install in the volume (README, "First deploy").
 # Source of the shape: nesquena/hermes-webui docker-compose.yml at tag
 # v0.52.544 (single container, WebUI runs the agent in-process), read
-# 2026-10-27. Choices that differ from that file, and why, are in this
-# folder's README.
+# 2026-10-27. The running image is 0.52.561, one build later, for the reason in
+# the image comment below. Choices that differ from that file, and why, are in
+# this folder's README.
 
 services:
   hermes-webui:
-    # Pinned, not `latest`: on 2026-10-27 `latest` carried an experimental
-    # release (README). The image has no agent of its own; it runs the one in
-    # ~/.hermes/hermes-agent, put there once from nousresearch/hermes-agent
-    # v0.22.5 — the release this WebUI version pairs with. Upgrade the two
-    # together (README, "First deploy" and "Upgrading").
-    image: ghcr.io/nesquena/hermes-webui:0.52.544
+    # Pinned tag, not `latest`: on 2026-10-27 `latest` and `experimental`
+    # were the same moving build, hours old. The image has no agent of its
+    # own; it runs the one in ~/.hermes/hermes-agent, put there once from
+    # nousresearch/hermes-agent v0.22.5 — the release this WebUI version pairs
+    # with. Upgrade the two together (README, "First deploy" and "Upgrading").
+    # 0.52.561 is the first pinned build that installs agent v0.22.5 by itself:
+    # it passes the agent's own `[tool.uv]` overrides to uv, which 0.52.544 did
+    # not (upstream #8524, fixed by #8544).
+    image: ghcr.io/nesquena/hermes-webui:0.52.561
     restart: unless-stopped
     # No published port: Dokploy's Traefik is the only way in, through the
     # domain set in Dokploy. `expose` names the port for Traefik; without it

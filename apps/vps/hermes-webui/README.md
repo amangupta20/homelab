@@ -36,7 +36,8 @@ Choices that differ from those sources, and why:
   set the real value — a deploy keeping the placeholder has a publicly
   known password.
 - **Port on loopback only.** Upstream's public variant publishes the port;
-  here Dokploy's Traefik is the only ingress, same as every other VPS app.
+  here the mapping binds loopback and Dokploy's Traefik is the only ingress,
+  same as every other VPS app.
 - **No model or provider choice in the repo.** Model and keys are set inside
   the container after first boot — decided at deploy, recorded in the journal
   entry, not here.
@@ -54,27 +55,30 @@ Follows `skills/deploy-on-dokploy/` steps 4–7 and 9, with these differences:
 - **Environment (step 4):** `HERMES_WEBUI_PASSWORD` only (`.env.example`). Secrets go
   to OpenBao at `kv/homelab/hermes-webui/<key>` once foundations step 3 lands;
   until then the Dokploy service environment.
-- **Domain:** public, Cloudflare DNS, Dokploy-managed. This is the one app
-  in the repo whose admin UI is meant for someone without Tailscale, so the
-  exception is recorded here rather than in `decisions/foundations-on-vps.md`
-  (which stays tailnet-only as the default).
+- **Domain:** public, Cloudflare DNS, Dokploy-managed. Per
+  `decisions/foundations-on-vps.md` the default is tailnet-only admin; this
+  app is the exception because its user has no Tailscale — see that file
+  before changing this.
 - **Post-deploy, inside the container** (recorded in the journal entry, never
   here): pick the model/provider, set the memory bank, confirm the password
   login works from outside the tailnet.
-- **Backups:** the two named volumes to the Garage destination at home
-  (step 9 of the skill), run once. Chat history is the state that matters —
-  losing it to a volume prune is the failure mode.
+- **Backups (UNTESTED):** the plan is the two named volumes to the Garage
+  destination at home (step 9 of the skill), run once, with a restore tried
+  per `systems/backups.md` — a backup counts only when the restore works.
+  Chat history is the state that matters; a volume prune is the failure mode.
 
 ## Data and backups
 
 - `hermes-webui-home` holds the WebUI state: sessions, agent memory,
   config. The thing backed up.
 - `hermes-webui-workspace` holds its files. Small by design.
-- Neither volume is shared with any other stack. A restore touches this chat
-  and nothing else.
+- Neither volume is shared with any other stack. The intent is that a restore
+  touches this chat and nothing else — UNTESTED, never restored yet.
 
 ## Tested
 
-Not deployed, so: `docker compose config` only (CI). The Dokploy steps above
-are UNTESTED — the first deploy corrects them and links its journal entry
-here.
+Not deployed, so: `docker compose config` only (CI — passes with no env
+file because every variable the compose reads carries its placeholder as a
+`:-` default, mirroring `apps/vps/openbao/compose.yaml`). The Dokploy steps
+above are UNTESTED — the first deploy corrects them and links its journal
+entry here.

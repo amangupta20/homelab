@@ -23,9 +23,9 @@ services:
     image: ghcr.io/nesquena/hermes-webui:latest
     restart: unless-stopped
     ports:
-      # No published port. Dokploy's Traefik is the only way in, via the
-      # domain set in Dokploy. The admin UI stays off the open port the same
-      # way as every other VPS app.
+      # Bound to loopback only — `docker compose up` outside Dokploy answers
+      # on localhost, never the open port. In production Dokploy's Traefik
+      # is the only ingress, via the domain set in Dokploy.
       - "127.0.0.1:8787:8787"
     volumes:
       # Named volume, fresh for this app. NOT a bind mount of an existing

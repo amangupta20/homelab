@@ -36,3 +36,5 @@ Each app folder holds:
 ## Apps
 
 - `vps/openbao/` — the secret store; defined, not deployed.
+- `vps/hermes-webui/` — a second Hermes WebUI for someone without lab access;
+  defined, not deployed ([README](vps/hermes-webui/README.md)).

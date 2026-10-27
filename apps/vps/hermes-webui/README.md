@@ -29,9 +29,12 @@ Choices that differ from those sources, and why:
 - **Fresh named volumes, no bind mount of an existing `~/.hermes`.**
   Upstream mounts the operator's home directory in. That would hand over the
   owner's sessions and memory — the exact thing this stack exists to avoid.
-- **Password forced by `:?` in compose.** Upstream defaults it to empty for
+- **Password default is the placeholder, override in Dokploy.** Upstream defaults it to empty for
   localhost use. A public domain with no password is an open chat to the
-  internet, so the compose refuses to start without one.
+  internet; the compose carries `__PASTE_ONCE__` as its default so CI's
+  `docker compose config` passes, and the Dokploy service environment MUST
+  set the real value — a deploy keeping the placeholder has a publicly
+  known password.
 - **Port on loopback only.** Upstream's public variant publishes the port;
   here Dokploy's Traefik is the only ingress, same as every other VPS app.
 - **No model or provider choice in the repo.** Model and keys are set inside

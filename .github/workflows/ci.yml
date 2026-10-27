@@ -60,5 +60,12 @@ jobs:
           fi
           for f in "${files[@]}"; do
             echo "== $f"
-            docker compose -f "$f" config -q
+            # Stacks require their secrets (`${VAR:?}`); validate with the
+            # placeholders from the stack's .env.example when it has one.
+            env_example="$(dirname "$f")/.env.example"
+            if [ -f "$env_example" ]; then
+              docker compose -f "$f" --env-file "$env_example" config -q
+            else
+              docker compose -f "$f" config -q
+            fi
           done

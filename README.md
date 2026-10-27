@@ -79,8 +79,7 @@ Where it actually stands (October 2026):
 - Guardrails working: secret scanning at commit, push and in CI; OpenTofu
   static checks in CI.
 - Not yet true: no VM is defined in code (`vm.tf` is git-ignored), homeserver
-  stacks live only in Portainer, OpenBao is not deployed, nothing configures
-  a VM after first boot.
+  stacks live only in Portainer, nothing configures a VM after first boot.
 
 Migration in progress. Rule: no migration writes until snapshots are verified.
 See `plans/migration.md`.

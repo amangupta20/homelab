@@ -40,9 +40,12 @@ services:
       - HERMES_WEBUI_PORT=8787
       - HERMES_WEBUI_STATE_DIR=/home/hermeswebui/.hermes/webui
       # Password auth ON — required, this app has a public domain (upstream
-      # compose leaves it empty for localhost-only use). Value lives in the
-      # Dokploy service environment, never in this repo.
-      - HERMES_WEBUI_PASSWORD=${HERMES_WEBUI_PASSWORD:?set in Dokploy}
+      # compose leaves it empty for localhost use). Value lives in the
+      # Dokploy service environment, never in this repo. The `:-` default is
+      # the documented placeholder so `docker compose config` passes in CI
+      # (no env file there); Dokploy MUST override it — a deploy keeping
+      # __PASTE_ONCE__ has a publicly known password.
+      - HERMES_WEBUI_PASSWORD=${HERMES_WEBUI_PASSWORD:-__PASTE_ONCE__}
       # Long-term memory (Hindsight): the bank id is set post-deploy inside
       # the container's own config, not here — the bank name identifies whose
       # memory it is, so it stays out of this public repo. Same Hindsight

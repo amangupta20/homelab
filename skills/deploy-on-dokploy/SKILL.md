@@ -57,7 +57,7 @@ them and links its journal entry here.
      everything else written in (`apps/README.md`), and no admin port
      published publicly.
    - `.env.example` listing every variable and the OpenBao path it comes
-     from, `kv/homelab/<app>/<key>`. Secrets get the placeholder
+     from, `kv/dokploy/<app>`, field `<key>`. Secrets get the placeholder
      `__PASTE_ONCE__`; a non-secret value that Compose checks, such as an IP
      address, gets a harmless value of the right shape instead, or step 3
      fails (`invalid IP address: __PASTE_ONCE__`).
@@ -71,8 +71,9 @@ them and links its journal entry here.
    — expect the resolved config and no error (run for `openbao`,
    2026-10-26). CI runs
    `docker compose config` on every compose file (`.github/workflows/ci.yml`).
-4. **Store the secrets:** in OpenBao at `kv/homelab/<app>/<key>` once it
-   runs; until then in the Dokploy service's environment. Never in the repo.
+4. **Store the secrets:** in OpenBao at `kv/dokploy/<app>`, one field per
+   key — Dokploy's token reads that folder only (`systems/openbao.md`, "Two
+   container managers"). Never in the repo.
 5. **Open a pull request** and get it through review. The intent is that
    Dokploy deploys only from `main`, so nothing goes live before the merge —
    how Dokploy pulls from this repo is still unverified

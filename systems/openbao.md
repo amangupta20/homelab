@@ -69,7 +69,7 @@ the tailnet). Never open the box itself.
   other tailnet devices can't sniff or impersonate.
 - Delete the initial root token after setup. Log in with a user account, and
   give each use its own narrow permission: checkouts read `kv/homelab/*` only,
-  Dokploy reads only its own paths.
+  Dokploy reads only `kv/dokploy/*` (below).
 - Turn on the audit log — declared in the server config, since OpenBao 2.x
   refuses `bao audit enable` (`apps/vps/openbao/compose.yaml`) — and actually look at it —
   even just error lines forwarded to ntfy.
@@ -125,7 +125,16 @@ The lab has two, and they need different answers:
 - **Remote VPS — Dokploy.** v0.30+ reads the box natively: Settings -> Secrets ->
   Add Provider, then `${{vault...}}` references in container env. Resolved at
   deploy time, never stored in Dokploy's database. Compose stops needing
-  `.env` files.
+  `.env` files. The running Dokploy is v0.30.10, and its container reaches
+  OpenBao's health endpoint (checked 2026-10-27).
+  Every secret Dokploy deploys lives under `kv/dokploy/<app>`, and
+  Dokploy's token reads that whole folder and nothing else (owner,
+  2026-10-27). Dokploy can see every app's environment and controls every
+  container on the VPS anyway, so a policy per app would protect little; the
+  boundary that matters is between Dokploy's secrets and the rest of
+  OpenBao. Dokploy's own token is kept outside that folder. Reference
+  format (Dokploy docs, provider page): `${{vault.<provider>.dokploy/<app>:<key>}}`
+  — the path leaves out the `kv/` mount and `data/`.
 - **Homeserver — Portainer today.** Portainer does not read OpenBao, so secrets
   have to reach the container another way: a sidecar logs in with its own
   AppRole and writes files into `/run/secrets`, and the stack reads files

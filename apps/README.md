@@ -35,8 +35,8 @@ Each app folder holds:
 
 ## Apps
 
-- `vps/openbao/` — the secret store; defined, not deployed.
+- `vps/openbao/` — the secret store; the stack in this folder is what runs on
+  the VPS (`journal/2026-10-26-install-openbao.md`), see `systems/openbao.md`.
 - `vps/hermes-webui/` — a second Hermes WebUI for someone without lab access;
-  deployed on the VPS 2026-10-27, its WebUI image pinned to `0.52.561` for the
-  agent-install fix (the README there owns the version and the one-time agent
-  step).
+  deployed and in use, its README owns the state, the image pin, the agent step
+  and the upgrade rules.

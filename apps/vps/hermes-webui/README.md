@@ -5,10 +5,11 @@ page over a public domain, no Tailscale or SSH needed. The folder name is the
 same as the upstream project; which Dokploy project it is and who uses it live
 in Dokploy, not in this public repo.
 
-**Status:** deployed on Dokploy 2026-10-27. The container starts, the domain
-routes to it and the password login works; chat does not work yet, because the
-agent has to be put into the volume once ("First deploy"). No `journal/` entry
-yet.
+**Status:** deployed on Dokploy 2026-10-27 and working — password login,
+provider chosen inside the container, chat answers (owner, 2026-10-27). Its
+password comes from OpenBao through Dokploy's secret provider. Backups are not
+set up yet; the deploy is recorded in
+`journal/2026-10-27-deploy-hermes-webui.md`.
 
 ## Derived from
 
@@ -32,10 +33,12 @@ Choices that differ from those sources, and why:
   agent comes from. That would hand over the owner's sessions and memory —
   the thing this stack exists to avoid — so the agent is put into the fresh
   volume once instead ("First deploy").
-- **Pinned tag, not `latest`.** On 2026-10-27, `latest` and `experimental`
-  were the same build, three hours old, and ghcr also published numbered tags
-  for it. This stack pins the number, `0.52.561`, so a redeploy cannot
-  silently change version and a rollback is one line. 0.52.544 was tried
+- **Pinned tag, not `latest` or `experimental`.** Checked in ghcr on
+  2026-10-27: both of those tags resolved to one manifest labelled `0.52.561`
+  (revision `4d975aa`), and ghcr served a numbered `0.52.561` tag for it too.
+  This stack pins the number, so a redeploy cannot silently change version and
+  a rollback is one line. The newest *git* release tag is still `v0.52.544`,
+  which is why the pin came from the registry rather than a release. 0.52.544 was tried
   first and dropped: it installs agent v0.22.5 only with a workaround for
   upstream #8524 (see Troubleshooting). Both images used here are published
   for `arm64` (checked in ghcr 2026-10-27).
@@ -54,10 +57,11 @@ Follows `skills/deploy-on-dokploy/` steps 4–7 and 9, with these differences:
 - **Source:** this repo, branch `main`, compose path
   `apps/vps/hermes-webui/compose.yaml`. Auto-deploy off — downtime on every
   push to `main` helps nobody.
-- **Environment (step 4):** `HERMES_WEBUI_PASSWORD` (`.env.example`). Its
-  value lives in OpenBao at the path named there. Whether Dokploy can read it
-  from OpenBao directly is `plans/vps-foundations.md` step 3, not done yet;
-  until then it is copied into the Dokploy service environment by hand.
+- **Environment (step 4):** `HERMES_WEBUI_PASSWORD` (`.env.example`), whose
+  value lives in OpenBao at the path named there. Dokploy reads it at deploy
+  time through its OpenBao provider, as
+  `${{vault.<provider>.dokploy/hermes-webui:password}}`; nothing is copied into
+  the service environment (`systems/openbao.md`).
 - **Domain:** public, Cloudflare DNS, Dokploy-managed, pointing at port 8787.
   Public for now, possibly tailnet-only later (owner, 2026-10-27). SSO is not
   up yet, so the app's own password is the only login;
@@ -159,16 +163,23 @@ and a redeploy could change version under the person using it.
 ## Tested
 
 - `docker compose config` with `.env.example` only (locally and in CI).
-- Deployed on Dokploy 2026-10-27: the container starts and the domain routes to
-  it — but only once `expose: 8787` is declared, which is why that line is
-  there.
-- The `0.52.561` tag was checked in ghcr, not by running it: its build
-  (revision `4d975aa`, 2026-10-27T16:17Z) labels itself `0.52.561`, and its
-  `docker_init.bash` extracts the agent's override table and installs with
-  `uv pip install --overrides`, which is the upstream fix for #8524. The
-  mechanism was verified offline: with that override, `uv pip install` of
-  agent v0.22.5 resolves cleanly (~100 packages, `pillow==13.0.0`,
-  `python-dotenv`, `ruamel-yaml`); without it, it fails with #8524's error.
-- UNTESTED here: the agent copy as written above, the first boot on 0.52.561,
-  and the backups.
-- No `journal/` entry yet — the deploy is not finished.
+- Deployed on Dokploy 2026-10-27 and answering on its domain. Routing took
+  `expose: 8787`; without it the domain did not route, which is why that line
+  is there.
+- The agent install works end to end. After the copy, the container's first
+  start logged `Downloading cpython-3.14`, `Applying hermes-agent's [tool.uv]
+  override-dependencies (4 entries)`, `Resolved 106 packages`, then
+  `Hermes agent critical imports verified` and `listening on...` (log read
+  2026-10-27, image `0.52.561`). The setup config showed the agent dir `[ok]`
+  and a Python 3.14 venv.
+- The `0.52.561` tag was checked in ghcr before use: revision `4d975aa`,
+  labelled `0.52.561`, and its `docker_init.bash` extracts the agent's override
+  table and installs with `uv pip install --overrides` (the fix for #8524). The
+  mechanism was also checked offline with `uv`: agent v0.22.5 fails without the
+  override and resolves with it.
+- Provider setup: a custom OpenAI-compatible provider is read-only in the WebUI
+  panel ("Edit it from the CLI or config file"), so it was configured with
+  `docker exec -it -u hermeswebui -e HOME=/home/hermeswebui <container>
+  /app/venv/bin/hermes model`, which writes `~/.hermes/config.yaml` and `.env`
+  in the volume (owner, 2026-10-27).
+- Still UNTESTED: upgrading either image, the backups below, and a restore.

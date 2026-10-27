@@ -6,69 +6,43 @@
 #
 # What it is not: a second login on the existing WebUI. This WebUI is
 # single-user by design (one shared password, no accounts), so a separate
-# stack is the isolation — its sessions, workspace and agent memory never
+# container is the isolation — its sessions, workspace and agent memory never
 # touch the owner's.
 #
 # Status: defined, not deployed.
-# Source of the shape: nesquena/hermes-webui docker-compose.two-container.yml
-# at tag v0.52.544, read 2026-10-27. Choices that differ from that file, and
-# why, are in this folder's README.
+# Source of the shape: nesquena/hermes-webui docker-compose.yml at tag
+# v0.52.544 (single container, WebUI runs the agent in-process), read
+# 2026-10-27. Choices that differ from that file, and why, are in this
+# folder's README.
 
 services:
-  hermes-agent:
-    # Release pair (upstream docs/docker.md, "Compatibility policy and version
-    # pinning"): agent and WebUI are upgraded together, both tags in one change.
-    # v0.22.5 is the agent's stable tag on Docker Hub (2026-10-23), the one
-    # WebUI v0.52.544 (2026-10-25) was released against.
-    image: nousresearch/hermes-agent:v0.22.5
-    command: gateway run
-    restart: unless-stopped
-    # No published port: the WebUI reaches the gateway over the stack's own
-    # network, nothing else needs to.
-    volumes:
-      - hermes-webui-home:/home/hermes/.hermes
-      # The agent's source, initialised from this image on first `up`. Docker
-      # keeps the volume on later `up`s even after a new image is pulled, so
-      # an agent upgrade also means removing this volume (upstream
-      # docs/docker.md, "Upgrading the agent container").
-      - hermes-webui-agent-src:/opt/hermes
-    environment:
-      - HERMES_HOME=/home/hermes/.hermes
-      - HERMES_UID=1000
-      - HERMES_GID=1000
-      - API_SERVER_ENABLED=true
-      - API_SERVER_HOST=0.0.0.0
-      # Shared between the two containers. `:?` stops the deploy when it is
-      # unset, instead of starting with an empty or known key.
-      - API_SERVER_KEY=${API_SERVER_KEY:?set in the Dokploy service environment}
-
   hermes-webui:
+    # Pinned, not `latest`: on 2026-10-27 `latest` carried an experimental
+    # release (README). The image has no agent of its own; it runs the one in
+    # ~/.hermes/hermes-agent, put there once from nousresearch/hermes-agent
+    # v0.22.5 — the release this WebUI version pairs with. Upgrade the two
+    # together (README, "First deploy" and "Upgrading").
     image: ghcr.io/nesquena/hermes-webui:0.52.544
     restart: unless-stopped
-    depends_on:
-      - hermes-agent
     # No published port: Dokploy's Traefik is the only way in, through the
     # domain set in Dokploy.
     volumes:
-      # Fresh named volumes, NOT a bind mount of an existing ~/.hermes: the
-      # point is a blank home — nothing inherited from the owner's instance.
+      # Named volume, fresh for this app. NOT a bind mount of an existing
+      # ~/.hermes: the whole point is a blank home — separate sessions,
+      # separate memory, nothing inherited from the owner's instance.
       - hermes-webui-home:/home/hermeswebui/.hermes
-      - hermes-webui-agent-src:/home/hermeswebui/.hermes/hermes-agent:ro
+      # Workspace, also fresh. Small on purpose: a chat landing folder,
+      # not a window into the lab.
       - hermes-webui-workspace:/workspace
     environment:
       - HERMES_WEBUI_HOST=0.0.0.0
       - HERMES_WEBUI_PORT=8787
       - HERMES_WEBUI_STATE_DIR=/home/hermeswebui/.hermes/webui
-      - HERMES_API_URL=http://hermes-agent:8642
-      - WANTED_UID=1000
-      - WANTED_GID=1000
-      - HERMES_WEBUI_GATEWAY_API_KEY=${API_SERVER_KEY:?set in the Dokploy service environment}
       # Required: this app has a public domain (upstream leaves it empty for
       # localhost use). `:?` stops the deploy when it is unset, so the app
       # can never come up on the internet without a password.
-      - HERMES_WEBUI_PASSWORD=${HERMES_WEBUI_PASSWORD:?set in the Dokploy service environment}
+      - HERMES_WEBUI_PASSWORD=${HERMES_WEBUI_PASSWORD:?}
 
 volumes:
   hermes-webui-home:
-  hermes-webui-agent-src:
   hermes-webui-workspace:

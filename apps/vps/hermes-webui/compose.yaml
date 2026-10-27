@@ -1,0 +1,54 @@
+# A second Hermes WebUI on the VPS
+#
+# What it is: one more Hermes WebUI on the VPS, deployed by Dokploy, reached
+# over a public domain behind the WebUI's own password. Whoever uses it needs
+# no Tailscale, no SSH, no lab knowledge — a URL, a login, a chat box.
+#
+# What it is not: a second login on the existing WebUI. This WebUI is
+# single-user by design (one shared password, no accounts), so a separate
+# container is the isolation — its sessions, workspace and agent memory never
+# touch the owner's.
+#
+# Status: defined, not deployed.
+# Source of the shape: nesquena/hermes-webui docker-compose.yml (single
+# container, WebUI runs the agent in-process), read 2026-10-27.
+# Choices that differ from that file, and why, are in this README.
+
+services:
+  hermes-webui:
+    # Release pair rule (upstream docs/docker.md): WebUI and agent upgrade
+    # together — one image here, so tag it as a pair: never mix this file's
+    # `latest` with a pinned agent elsewhere. `latest` is upstream's stable
+    # channel (docs/docker.md "Available Docker tags").
+    image: ghcr.io/nesquena/hermes-webui:latest
+    restart: unless-stopped
+    ports:
+      # No published port. Dokploy's Traefik is the only way in, via the
+      # domain set in Dokploy. The admin UI stays off the open port the same
+      # way as every other VPS app.
+      - "127.0.0.1:8787:8787"
+    volumes:
+      # Named volume, fresh for this app. NOT a bind mount of an existing
+      # ~/.hermes: the whole point is a blank home — separate sessions,
+      # separate memory, nothing inherited from the owner's instance.
+      - hermes-webui-home:/home/hermeswebui/.hermes
+      # Workspace, also fresh. Small on purpose: a chat landing folder,
+      # not a window into the lab.
+      - hermes-webui-workspace:/workspace
+    environment:
+      - HERMES_WEBUI_HOST=0.0.0.0
+      - HERMES_WEBUI_PORT=8787
+      - HERMES_WEBUI_STATE_DIR=/home/hermeswebui/.hermes/webui
+      # Password auth ON — required, this app has a public domain (upstream
+      # compose leaves it empty for localhost-only use). Value lives in the
+      # Dokploy service environment, never in this repo.
+      - HERMES_WEBUI_PASSWORD=${HERMES_WEBUI_PASSWORD:?set in Dokploy}
+      # Long-term memory (Hindsight): the bank id is set post-deploy inside
+      # the container's own config, not here — the bank name identifies whose
+      # memory it is, so it stays out of this public repo. Same Hindsight
+      # server as the owner's; banks are the isolation boundary, no second
+      # server needed.
+
+volumes:
+  hermes-webui-home:
+  hermes-webui-workspace:

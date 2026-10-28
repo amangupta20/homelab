@@ -46,6 +46,24 @@ of inventing one.
 - Empty folders (`journal/`, `apps/`) exist before their first
   file, holding only a README.
 
+## Addendum 2026-10-28: the Obsidian view
+
+The owner reads the repo through Obsidian, not only GitHub: the plain lab
+pages were readable but did not feel like somewhere to browse, and earlier
+Obsidian vaults died because they needed hand-kept notes. So the files stay
+the same and gain a thin layer only Obsidian uses — a property block on every
+page in `systems/`, `inventory/`, `plans/`, tables in `bases/`, and `Home.md`
+as the Obsidian front page. Agents keep it current; the owner only reads.
+How it works and its rules: `repo/obsidian-view.md`.
+
+Cost: each property block restates its own page's status and verification,
+and `hosts` restates host names from `inventory/hosts.md`. That is a second
+copy, which this decision otherwise forbids; it is allowed because the copy
+sits on the same page (or is a name the check verifies against the owner),
+and the page body always wins. `.githooks/check-properties.py` catches a
+broken shape in CI; it cannot catch a stale status.
+
 ## Where it lives
 
-`README.md` ("Find something"), every folder's README, `AGENTS.md`.
+`README.md` ("Find something"), every folder's README, `AGENTS.md`,
+`repo/obsidian-view.md`.

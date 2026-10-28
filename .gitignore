@@ -6,3 +6,4 @@
 vm.tf
 .env
 secret-scan.local.toml
+.obsidian/

@@ -1,3 +1,20 @@
+---
+type: system
+status: "running, stable"
+verified: "no (from docs, not checked against live pool)"
+hosts:
+  - "[XCP-ng host](../inventory/hosts.md)"
+related:
+  - "[Backups](backups.md)"
+  - "[Hosts](../inventory/hosts.md)"
+  - "[Services](../inventory/services.md)"
+tags:
+  - system
+  - hypervisor
+  - xcp-ng
+  - xen-orchestra
+---
+
 # XCP-ng & Xen Orchestra
 
 XCP-ng is the hypervisor (the layer that runs VMs on bare metal). Xen

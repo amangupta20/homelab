@@ -1,3 +1,21 @@
+---
+type: system
+status: "running"
+verified: "yes (recon 2026-10-26 over SSH and Dokploy API)"
+hosts:
+  - "[Remote VPS](../inventory/hosts.md)"
+related:
+  - "[VPS Role Decision](../decisions/vps-role.md)"
+  - "[Foundations on VPS](../decisions/foundations-on-vps.md)"
+  - "[VPS Foundations Plan](../plans/vps-foundations.md)"
+  - "[OpenBao](openbao.md)"
+tags:
+  - system
+  - vps
+  - dokploy
+  - oci
+---
+
 # VPS
 
 A small rented server outside the home network that runs the lab's

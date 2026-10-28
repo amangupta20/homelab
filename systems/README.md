@@ -1,3 +1,16 @@
+---
+type: system-index
+status: active
+verified: "yes (index file)"
+hosts: unknown
+related:
+  - "[Inventory](../inventory/README.md)"
+  - "[Plans](../plans/README.md)"
+tags:
+  - systems
+  - index
+---
+
 # Systems — how each thing works
 
 One page per thing you run, or per concern that spans several (backups). The

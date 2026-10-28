@@ -1,3 +1,22 @@
+---
+type: system
+status: "jobs reported running, restores untested"
+verified: "no (jobs in docs, no restore test on record; VPS read from Dokploy recon 2026-10-26)"
+hosts:
+  - "[XCP-ng host](../inventory/hosts.md)"
+  - "[TrueNAS VM](../inventory/hosts.md)"
+  - "[Remote VPS](../inventory/hosts.md)"
+related:
+  - "[XCP-ng](xcp-ng.md)"
+  - "[OpenBao](openbao.md)"
+  - "[VPS](vps.md)"
+  - "[Services](../inventory/services.md)"
+tags:
+  - system
+  - backups
+  - recovery
+---
+
 # Backup & restore
 
 What gets backed up, and — more importantly — what restore is still untested.

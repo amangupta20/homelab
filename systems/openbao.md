@@ -1,3 +1,21 @@
+---
+type: system
+status: "running on VPS"
+verified: "yes (running unsealed verified 2026-10-26; Dokploy integration verified 2026-10-27; backup/restore untested)"
+hosts:
+  - "[Remote VPS](../inventory/hosts.md)"
+related:
+  - "[VPS](vps.md)"
+  - "[Backups](backups.md)"
+  - "[VPS Foundations Plan](../plans/vps-foundations.md)"
+  - "[OpenBao App Config](../apps/vps/openbao/README.md)"
+tags:
+  - system
+  - openbao
+  - secrets
+  - security
+---
+
 # OpenBao — where secrets live
 
 OpenBao is the secret store: every password and token in one place on the

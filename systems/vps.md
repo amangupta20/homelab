@@ -51,13 +51,14 @@ access setup are kept out of this public repo on purpose.
 
 ## Rules
 
-- Nothing admin-facing on a public port except the Dokploy dashboard, which
-  is public by the owner's choice. OpenBao and SSH are tailnet-only.
-- No real domain, public IP or tailnet name in this repo — the commit hook
-  blocks domains on the local list, public IPs and tailnet names
-  (`repo/secret-scanning.md`); use placeholders.
-- Security findings (exposed ports, missing authentication) do not go in this
-  repo while they are unfixed.
+> [!IMPORTANT]
+> - Nothing admin-facing on a public port except the Dokploy dashboard, which
+>   is public by the owner's choice. OpenBao and SSH are tailnet-only.
+> - No real domain, public IP or tailnet name in this repo — the commit hook
+>   blocks domains on the local list, public IPs and tailnet names
+>   (`repo/secret-scanning.md`); use placeholders.
+> - Security findings (exposed ports, missing authentication) do not go in this
+>   repo while they are unfixed.
 
 ## Open questions
 

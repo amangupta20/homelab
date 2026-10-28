@@ -30,8 +30,9 @@ was read from Dokploy.
 
 ## The rule
 
-A backup counts when a test restore works. A green job log alone counts for
-nothing, and neither does Uptime Kuma saying a service is "up".
+> [!IMPORTANT]
+> A backup counts when a test restore works. A green job log alone counts for
+> nothing, and neither does Uptime Kuma saying a service is "up".
 
 ## Still to test
 

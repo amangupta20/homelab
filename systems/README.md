@@ -1,11 +1,5 @@
 ---
 type: system-index
-status: active
-verified: "yes (index file)"
-hosts: unknown
-related:
-  - "[Inventory](../inventory/README.md)"
-  - "[Plans](../plans/README.md)"
 tags:
   - systems
   - index
@@ -17,6 +11,10 @@ One page per thing you run, or per concern that spans several (backups). The
 inventory row says *what and where*; this page says *how it works and what not
 to do*.
 
+Every page starts with a property block (the Obsidian view reads it); the
+schema and rules are in `repo/obsidian-view.md`, and `mise run check:properties`
+checks it.
+
 Naming: `systems/<thing>.md`, lowercase, the name you would search for
 (`truenas.md`, `edge.md` for Cloudflare + Nginx Proxy Manager, `vps.md`).
 
@@ -26,6 +24,16 @@ before.
 ## Template
 
 ```markdown
+---
+type: system
+status: "<running | planned | broken | …>"
+verified: "<yes | no | partially> (<how>)"
+hosts:
+  - <exact name from inventory/hosts.md>
+tags:
+  - system
+---
+
 # <Thing>
 
 <One line: what it is, for someone who has never heard of it.>

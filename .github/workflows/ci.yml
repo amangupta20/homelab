@@ -44,6 +44,15 @@ jobs:
           tflint --init
           tflint --recursive --format compact
 
+  properties:
+    name: page properties (Obsidian view)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check page properties
+        run: python3 -I .githooks/check-properties.py
+
   compose:
     name: compose config
     runs-on: ubuntu-latest

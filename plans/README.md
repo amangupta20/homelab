@@ -1,11 +1,5 @@
 ---
 type: plan-index
-status: active
-verified: "yes (index file)"
-hosts: unknown
-related:
-  - "[Migration](migration.md)"
-  - "[VPS Foundations](vps-foundations.md)"
 tags:
   - plans
   - index
@@ -18,11 +12,23 @@ says where it is going, what gates each step, and how you know it is done. When
 it is finished, the outcome lands in `systems/` and `inventory/`, the story in
 `journal/`, and the plan is marked done (kept, not deleted — it is history).
 
+Every page starts with a property block (the Obsidian view reads it); the
+schema and rules are in `repo/obsidian-view.md`, and `mise run check:properties`
+checks it.
+
 Naming: `plans/<what>.md` (`migration.md`, `portainer-to-git.md`, `vps-into-repo.md`).
 
 ## Template
 
 ```markdown
+---
+type: plan
+status: "<not started | in progress (step N) | blocked | done>"
+verified: "<yes | no | partially> (<how>)"
+tags:
+  - plan
+---
+
 # <What>
 
 **Status:** not started | in progress (step N) | blocked on <x> | done YYYY-MM-DD

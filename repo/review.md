@@ -65,6 +65,9 @@ cannot:
 - New pages follow the template in their folder's README and open with what
   the thing is and a **Status:** line.
 - Every path mentioned in backticks exists after the change.
+- A page in `systems/`, `inventory/` or `plans/` whose Status line, source or
+  host changed has its property block changed to match, and no property states
+  something the page body does not (`repo/obsidian-view.md`).
 
 ## 4. Within the author's permission
 

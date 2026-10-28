@@ -12,7 +12,7 @@ Obsidian → Open folder as vault → this checkout. Start at `Home.md`.
 
 - Settings → Files and links → turn **Use [[Wikilinks]]** off, so a link
   Obsidian inserts stays a normal relative link GitHub and agents can follow.
-- Obsidian's own settings land in `.obsidian/`, which `.gitignore` keeps out
+- Obsidian writes its own settings to a local .obsidian folder, which `.gitignore` keeps out
   of the repo. They are per person; never commit them.
 
 Tested 2026-10-28 by the owner: the vault opened, `Home.md` and the tables

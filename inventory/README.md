@@ -1,3 +1,17 @@
+---
+type: inventory-index
+status: active
+verified: "yes (index file)"
+hosts: unknown
+related:
+  - "[Services](services.md)"
+  - "[Hosts](hosts.md)"
+  - "[Network](network.md)"
+tags:
+  - inventory
+  - index
+---
+
 # Inventory — what exists
 
 Lookup tables you can scan in seconds. One row per thing; the row says what it

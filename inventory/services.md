@@ -1,3 +1,24 @@
+---
+type: inventory
+status: "documented, partially verified"
+verified: "partially (Dokploy, OpenBao, Hermes WebUI and VPS apps verified 2026-10-26/27; others from docs/memory)"
+hosts:
+  - "[XCP-ng host](hosts.md)"
+  - "[TrueNAS VM](hosts.md)"
+  - "[Docker + proxy host](hosts.md)"
+  - "[Remote VPS](hosts.md)"
+related:
+  - "[Hosts](hosts.md)"
+  - "[Network](network.md)"
+  - "[Backups](../systems/backups.md)"
+  - "[OpenBao](../systems/openbao.md)"
+tags:
+  - inventory
+  - services
+  - docker
+  - apps
+---
+
 # Services — what runs here
 
 This file owns the service list. Other pages link here, never copy this table.

@@ -1,11 +1,10 @@
 filters:
   and:
     - file.inFolder("systems")
-    - 'type == "system"'
-
+    - type == "system"
 views:
   - type: table
-    name: "Systems Table"
+    name: Systems Table
     order:
       - file.name
       - status
@@ -15,9 +14,8 @@ views:
     sort:
       - property: file.name
         direction: ASC
-
   - type: cards
-    name: "Systems Cards"
+    name: Systems Cards
     order:
       - file.name
       - status

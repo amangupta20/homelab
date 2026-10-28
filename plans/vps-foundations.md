@@ -3,12 +3,7 @@ type: plan
 status: "in progress (steps 0-3 completed; restore test and SSO open)"
 verified: "partially (steps 0-3 verified on live VPS 2026-10-26/27)"
 hosts:
-  - "[Remote VPS](../inventory/hosts.md)"
-related:
-  - "[VPS](../systems/vps.md)"
-  - "[OpenBao](../systems/openbao.md)"
-  - "[Foundations on VPS](../decisions/foundations-on-vps.md)"
-  - "[VPS Role](../decisions/vps-role.md)"
+  - Remote VPS
 tags:
   - plan
   - vps

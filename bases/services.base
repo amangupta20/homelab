@@ -1,10 +1,9 @@
 filters:
   and:
     - file.inFolder("inventory")
-
 views:
   - type: table
-    name: "Inventory Overview"
+    name: Inventory Overview
     order:
       - file.name
       - type
@@ -15,9 +14,8 @@ views:
     sort:
       - property: file.name
         direction: ASC
-
   - type: list
-    name: "Inventory List"
+    name: Inventory List
     order:
       - file.name
       - status

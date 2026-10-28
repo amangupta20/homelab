@@ -3,12 +3,7 @@ type: system
 status: "running"
 verified: "yes (recon 2026-10-26 over SSH and Dokploy API)"
 hosts:
-  - "[Remote VPS](../inventory/hosts.md)"
-related:
-  - "[VPS Role Decision](../decisions/vps-role.md)"
-  - "[Foundations on VPS](../decisions/foundations-on-vps.md)"
-  - "[VPS Foundations Plan](../plans/vps-foundations.md)"
-  - "[OpenBao](openbao.md)"
+  - Remote VPS
 tags:
   - system
   - vps

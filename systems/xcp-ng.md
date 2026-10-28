@@ -3,11 +3,7 @@ type: system
 status: "running, stable"
 verified: "no (from docs, not checked against live pool)"
 hosts:
-  - "[XCP-ng host](../inventory/hosts.md)"
-related:
-  - "[Backups](backups.md)"
-  - "[Hosts](../inventory/hosts.md)"
-  - "[Services](../inventory/services.md)"
+  - XCP-ng host
 tags:
   - system
   - hypervisor

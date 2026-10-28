@@ -1,12 +1,5 @@
 ---
 type: inventory-index
-status: active
-verified: "yes (index file)"
-hosts: unknown
-related:
-  - "[Services](services.md)"
-  - "[Hosts](hosts.md)"
-  - "[Network](network.md)"
 tags:
   - inventory
   - index
@@ -17,6 +10,10 @@ tags:
 Lookup tables you can scan in seconds. One row per thing; the row says what it
 is, where it runs, and its state. How a thing works belongs on its page in
 `systems/`, and the row links there once that page exists.
+
+Every page starts with a property block (the Obsidian view reads it); the
+schema and rules are in `repo/obsidian-view.md`, and `mise run check:properties`
+checks it.
 
 | File | One row per | Owns |
 |---|---|---|

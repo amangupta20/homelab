@@ -20,3 +20,7 @@ build_scan_config "$tmp"
 
 # -v names the file, rule and commit on a finding; --redact keeps the value masked.
 gitleaks git --staged --redact --no-banner -v -c "$tmp"
+
+# Page properties the Obsidian view reads (repo/obsidian-view.md). Checks the
+# working tree, so an unstaged fix also counts; CI checks the committed tree.
+python3 -I .githooks/check-properties.py

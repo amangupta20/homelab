@@ -1,24 +1,21 @@
 filters:
   and:
     - file.inFolder("plans")
-    - 'type == "plan"'
-
+    - type == "plan"
 views:
   - type: table
-    name: "Plans Overview"
+    name: Plans Overview
     order:
       - file.name
       - status
       - verified
       - hosts
-      - related
       - tags
     sort:
       - property: file.name
         direction: ASC
-
   - type: kanban
-    name: "Plan Status Kanban"
+    name: Plan Status Kanban
     groupBy:
       property: status
       direction: ASC

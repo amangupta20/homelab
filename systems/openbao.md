@@ -3,12 +3,7 @@ type: system
 status: "running on VPS"
 verified: "yes (running unsealed verified 2026-10-26; Dokploy integration verified 2026-10-27; backup/restore untested)"
 hosts:
-  - "[Remote VPS](../inventory/hosts.md)"
-related:
-  - "[VPS](vps.md)"
-  - "[Backups](backups.md)"
-  - "[VPS Foundations Plan](../plans/vps-foundations.md)"
-  - "[OpenBao App Config](../apps/vps/openbao/README.md)"
+  - Remote VPS
 tags:
   - system
   - openbao

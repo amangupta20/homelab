@@ -3,12 +3,8 @@ type: plan
 status: "in progress"
 verified: "no (current step unrecorded; restore tests open in systems/backups.md)"
 hosts:
-  - "[XCP-ng host](../inventory/hosts.md)"
-  - "[TrueNAS VM](../inventory/hosts.md)"
-related:
-  - "[Backups](../systems/backups.md)"
-  - "[Services](../inventory/services.md)"
-  - "[Open Questions](../decisions/open-questions.md)"
+  - XCP-ng host
+  - TrueNAS VM
 tags:
   - plan
   - migration

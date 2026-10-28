@@ -1,3 +1,16 @@
+---
+type: plan-index
+status: active
+verified: "yes (index file)"
+hosts: unknown
+related:
+  - "[Migration](migration.md)"
+  - "[VPS Foundations](vps-foundations.md)"
+tags:
+  - plans
+  - index
+---
+
 # Plans — work in flight
 
 Multi-step work that is under way or next: migrations, moves, rebuilds. A plan

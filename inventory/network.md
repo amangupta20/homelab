@@ -2,12 +2,6 @@
 type: inventory
 status: "documented, unverified"
 verified: "no (from docs, not verified against router)"
-hosts:
-  - "[Docker + proxy host](hosts.md)"
-  - "[TrueNAS VM](hosts.md)"
-related:
-  - "[Hosts](hosts.md)"
-  - "[Services](services.md)"
 tags:
   - inventory
   - network
@@ -33,23 +27,14 @@ Private subnet `10.22.33.0/24`.
 ## How traffic flows
 
 ```mermaid
-flowchart TD
-    subgraph AdminAccess["Admin Access (Zero-Trust)"]
-        Admin["Admin (owner, agents)"] -->|Encrypted Mesh| Tailscale["Tailscale VPN"]
-        Tailscale -->|Direct secure admin access| Services["Admin Services\n(No public ports / No public SSH)"]
-    end
-
-    subgraph PublicAccess["Public Web Traffic"]
-        Client["Public Web Client"] -->|HTTPS| Cloudflare["Cloudflare\n(Filter / DDOS / Blocks junk)"]
-        Cloudflare --> NPM["Nginx Proxy Manager\n(Routes by domain)"]
-        NPM --> Containers["Application Containers"]
-        Fail2Ban["Fail2Ban\n(Watches logs & bans brute-force)"] -.->|Firewall block| NPM
-    end
-
-    subgraph AppBackends["Backend Services"]
-        Containers -->|Default shared backend| Supabase["Supabase\n(Postgres / Auth / Storage)"]
-        Containers -->|Dedicated storage| LocalDB["App-local Data / Files"]
-    end
+flowchart LR
+    Admin["Admin: owner and agents"] -->|Tailscale only| AdminUI["Admin interfaces<br/>no public SSH"]
+    Visitor["Public visitor"] --> CF["Cloudflare<br/>blocks junk"]
+    CF --> NPM["Nginx Proxy Manager<br/>routes by domain"]
+    NPM --> Apps["App containers"]
+    Apps -->|default| Supabase["Self-hosted Supabase"]
+    Apps -->|data next to files| Local["App's own database"]
+    F2B["Fail2Ban<br/>watches logs"] -.->|bans IPs at the firewall| NPM
 ```
 
 - Admin (me, agents): only over Tailscale, a private mesh VPN between my

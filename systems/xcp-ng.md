@@ -1,6 +1,6 @@
 ---
 type: system
-status: "running, stable"
+status: "running, stable (from docs, not checked live)"
 verified: "no (from docs, not checked against live pool)"
 hosts:
   - XCP-ng host

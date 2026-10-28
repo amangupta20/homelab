@@ -1,0 +1,25 @@
+filters:
+  and:
+    - file.inFolder("systems")
+    - 'type == "system"'
+
+views:
+  - type: table
+    name: "Systems Table"
+    order:
+      - file.name
+      - status
+      - verified
+      - hosts
+      - tags
+    sort:
+      - property: file.name
+        direction: ASC
+
+  - type: cards
+    name: "Systems Cards"
+    order:
+      - file.name
+      - status
+      - verified
+      - hosts

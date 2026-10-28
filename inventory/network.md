@@ -1,3 +1,20 @@
+---
+type: inventory
+status: "documented, unverified"
+verified: "no (from docs, not verified against router)"
+hosts:
+  - "[Docker + proxy host](hosts.md)"
+  - "[TrueNAS VM](hosts.md)"
+related:
+  - "[Hosts](hosts.md)"
+  - "[Services](services.md)"
+tags:
+  - inventory
+  - network
+  - traffic
+  - subnets
+---
+
 # Network
 
 This file owns every IP address. Hosts are named as in `hosts.md`; what runs

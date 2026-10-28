@@ -1,3 +1,19 @@
+---
+type: inventory
+status: "documented, partially verified"
+verified: "partially (Remote VPS verified 2026-10-26 over SSH; other hosts from docs)"
+hosts: unknown
+related:
+  - "[Network](network.md)"
+  - "[Services](services.md)"
+  - "[XCP-ng](../systems/xcp-ng.md)"
+  - "[VPS](../systems/vps.md)"
+tags:
+  - inventory
+  - hosts
+  - infrastructure
+---
+
 # Hosts — every machine
 
 This file owns the host list. IPs live in `network.md`; services in

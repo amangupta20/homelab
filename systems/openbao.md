@@ -38,10 +38,11 @@ losing every secret at once.
 
 ## Don't put it on the internet
 
-OpenBao holds every secret at once, so it's the highest-value target you own.
-Tailscale already gives every checkout encrypted, identity-checked access with
-no open ports. Opening it publicly buys zero uptime and adds login
-brute-force, TLS bugs, and snapshot-theft risk.
+> [!WARNING] Keep OpenBao off the public internet
+> OpenBao holds every secret at once, so it's the highest-value target you own.
+> Tailscale already gives every checkout encrypted, identity-checked access with
+> no open ports. Opening it publicly buys zero uptime and adds login
+> brute-force, TLS bugs, and snapshot-theft risk.
 
 If a machine without Tailscale ever needs one secret: give it that one secret
 through a narrow relay (Dokploy secret reference, or a CI runner that is on
@@ -164,6 +165,7 @@ Dokploy's provider token before its 32-day period runs out (step 3).
 
 ## Rules
 
-- Never commit `.env`, `*.tfvars` with secrets, `*.tfstate`, `.vault-token`.
-- If a secret was ever committed, rotate it in the box. Deleting it from git
-  is not enough — git history keeps it.
+> [!IMPORTANT]
+> - Never commit `.env`, `*.tfvars` with secrets, `*.tfstate`, `.vault-token`.
+> - If a secret was ever committed, rotate it in the box. Deleting it from git
+>   is not enough — git history keeps it.

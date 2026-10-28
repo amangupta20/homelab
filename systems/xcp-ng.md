@@ -11,9 +11,9 @@ How VMs and XO itself are backed up: `systems/backups.md`.
 
 ## The one rule that destroys VMs
 
-> Never delete an XCP-ng base snapshot by hand. It can be a link in the live
-> disk chain. Merge or delete only through the Xen Orchestra web UI, with a
-> verified backup first.
+> [!WARNING] Never delete an XCP-ng base snapshot by hand
+> It can be a link in the live disk chain. Merge or delete only through the Xen
+> Orchestra web UI, with a verified backup first.
 
 What happens if you break it: the VM's disk chain breaks and the VM is
 unbootable. This happened in July 2026 — manual snapshot handling destroyed

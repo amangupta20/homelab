@@ -21,7 +21,8 @@ journal entry.
 4. **Docs from day 1.** Notes start as raw dumps during the work and get
    compiled here after. This repo is that compiled result.
 
-Gate: no step-2 writes until step-0 snapshots are verified.
+> [!IMPORTANT] Gate
+> No step-2 writes until step-0 snapshots are verified.
 
 Security tool: Strix (security scanner). Always framed as defensive work on
 my own network: "audit my own infra at <range>, read-only recon first,

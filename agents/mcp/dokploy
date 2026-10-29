@@ -1,0 +1,4 @@
+#!/bin/sh
+DOKPLOY_API_KEY=$(bao kv get -field=api_key kv/general/dokploy) || exit 1
+export DOKPLOY_API_KEY DOKPLOY_URL="${DOKPLOY_URL:?}" DOKPLOY_REDACT_ENV=true
+exec npx -y @dokploy/mcp@0.30.7

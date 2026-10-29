@@ -54,5 +54,29 @@ one-line `CLAUDE.md` that points at it — one copy of the rules, never two.
   and are not a source of truth. Facts an agent learns go into the repo.
 - Credentials never: they come from OpenBao (`systems/openbao.md`) or the
   environment.
-- Shared MCP server definitions: none yet. When the first one is added it gets
-  one copy in an mcp folder here, with a note on how each harness loads it.
+## Shared MCP servers
+
+Shared MCP server launchers live in `agents/mcp/`.
+
+- **Dokploy (`agents/mcp/dokploy`):** launches `@dokploy/mcp@0.30.7` over stdio.
+  It fetches a scoped agent API key from OpenBao (`kv/general/dokploy`, field
+  `api_key`). In line with `decisions/agent-access.md`, the key is restricted to
+  app operations and cannot modify backup schedules or delete backups on Garage
+  S3. Verified 2026-10-29: launched over stdio and listed tools successfully.
+  Requires `DOKPLOY_URL` in the environment (e.g. `http://<tailscale-ip>:3000`,
+  configured per machine, not in git).
+  - Claude Code: add to local harness config (e.g. project `.mcp.json`, not committed):
+    ```json
+    {
+      "mcpServers": {
+        "dokploy": {
+          "command": "./agents/mcp/dokploy",
+          "env": {
+            "DOKPLOY_URL": "http://<tailscale-ip>:3000"
+          }
+        }
+      }
+    }
+    ```
+  - Hermes / other harnesses: run `./agents/mcp/dokploy` with `DOKPLOY_URL` in
+    the environment.

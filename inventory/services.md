@@ -1,7 +1,7 @@
 ---
 type: inventory
 status: "documented, partially verified"
-verified: "partially (Dokploy, OpenBao, Hermes WebUI and VPS apps verified 2026-10-26/27; others from docs/memory)"
+verified: "partially (Dokploy, OpenBao, Hermes WebUI and VPS apps verified 2026-10-26/27/29; others from docs/memory)"
 tags:
   - inventory
   - services
@@ -34,7 +34,7 @@ document says, and the read-only recon pass has not filled it in yet.
 | Nextcloud AIO | Self-hosted file sync (Dropbox replacement), all-in-one container. | unknown | stable — full restore test still to do |
 | Uptime Kuma | Up/down monitoring. Named once in the old platform page; nothing else mentions it. | unknown | unknown whether it runs |
 | Dokploy | Deploys every app on the VPS (`systems/vps.md`). `apps/vps/openbao/` and `apps/vps/hermes-webui/` are in this repo; the rest are not yet. | remote VPS | running — verified: recon 2026-10-26 |
-| OpenBao | Secret store. See `systems/openbao.md`. | remote VPS | running, unsealed — verified 2026-10-26 (`/v1/sys/health` 200); Dokploy reads it at deploy time, verified 2026-10-27; backup not set up yet |
+| OpenBao | Secret store. See `systems/openbao.md`. | remote VPS | running, unsealed — verified 2026-10-26 (`/v1/sys/health` 200); Dokploy reads it at deploy time, verified 2026-10-27; backup to Garage S3 and restore verified 2026-10-29 (`journal/2026-10-29-restore-test-openbao.md`) |
 | Hermes WebUI (second) | Chat web UI for someone without lab access: own container, volumes and password; `apps/vps/hermes-webui/`. | remote VPS | running — deployed 2026-10-27; login, provider and chat work (owner); backups not set up |
 | OCI Borgmatic | Planned: run Borg backups on a cheap cloud VM. | — | design only — do not deploy yet |
 | Object storage lab | Experiment: S3-compatible storage (Garage/SeaweedFS) across two sites. | — | idea, not built |

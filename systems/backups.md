@@ -1,7 +1,7 @@
 ---
 type: system
-status: "jobs reported running, restores untested"
-verified: "no (jobs in docs, no restore test on record; VPS read from Dokploy recon 2026-10-26)"
+status: "jobs reported running; OpenBao restore tested, others untested"
+verified: "partially (OpenBao restore tested 2026-10-29; others from docs/memory; VPS read from Dokploy recon 2026-10-26)"
 hosts:
   - XCP-ng host
   - TrueNAS VM
@@ -17,8 +17,9 @@ tags:
 What gets backed up, and — more importantly — what restore is still untested.
 This file owns the backup facts; other pages link here.
 
-**Status:** jobs reported running; no restore test on record, and the
-OpenTofu state has no backup at all (see "Still to test").
+**Status:** jobs reported running; OpenBao restore tested 2026-10-29, other
+restores untested, and the OpenTofu state has no backup at all (see "Still to
+test").
 
 - Plain VMs: Xen Orchestra (XO) snapshot + delta backups (only changed
   blocks) go to TrueNAS, then get copied offsite. No per-VM backup agent:
@@ -37,16 +38,28 @@ OpenTofu state has no backup at all (see "Still to test").
   backup of the `odysseus` service (project `Odyssues`) has failed (88 of 88
   in Dokploy's list). Read from
   Dokploy's backup list, recon 2026-10-26.
+- OpenBao Raft snapshot: Dokploy Scheduled Task `openbao-raft-snapshot` (daily
+  02:00 IST), streams Raft snapshot via OpenBao API, uploads to Garage
+  destination `s3://dockploy/openbao/`, and prunes to keep 14 backups (upload
+  verified; retention pruning path configured and tested via S3 ls).
+  Restore tested 2026-10-29 in a throwaway podman container on the workstation
+  (`journal/2026-10-29-restore-test-openbao.md`).
 
-All of the above except the remote VPS line is what the docs say is
-configured; nobody has compared it to the live XO schedules yet. The VPS line
-was read from Dokploy.
+All of the above except the remote VPS and OpenBao lines is what the docs say
+is configured; nobody has compared it to the live XO schedules yet. The VPS apps
+line was read from Dokploy, and the OpenBao backup and restore were tested on
+2026-10-29.
 
 ## The rule
 
 > [!IMPORTANT]
 > A backup counts when a test restore works. A green job log alone counts for
 > nothing, and neither does Uptime Kuma saying a service is "up".
+
+## Tested restores
+
+- [x] OpenBao: Raft snapshot restore from Garage S3 into a fresh throwaway
+  instance on the workstation (`journal/2026-10-29-restore-test-openbao.md`).
 
 ## Still to test
 

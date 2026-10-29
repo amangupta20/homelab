@@ -1,7 +1,7 @@
 ---
 type: system
 status: "running"
-verified: "yes (recon 2026-10-26 over SSH and Dokploy API)"
+verified: "yes (recon 2026-10-26; timezone, agent access and backup verified 2026-10-29)"
 hosts:
   - Remote VPS
 tags:
@@ -39,7 +39,8 @@ access setup are kept out of this public repo on purpose.
   (Ampere, ARM64), from the instance metadata service. 4 CPUs, 23 GiB RAM,
   193 GB disk (68% used), an 8 GB swap file. Ubuntu 24.04.4 LTS. Every image
   deployed here must exist for `arm64`. The owner runs it on the Always Free
-  tier and has no plan to rebuild it (owner, 2026-10-26).
+  tier and has no plan to rebuild it (owner, 2026-10-26). Timezone is
+  `Asia/Kolkata` (timedatectl, set 2026-10-29).
 - **Admin access:** SSH with a key, over Tailscale (Tailscale 1.104.4 since
   an upgrade on 2026-10-28, `/var/log/apt/history.log`).
 - **Docker** 29.9.2 (same upgrade, from 29.7.2) in swarm mode (single node),
@@ -58,11 +59,12 @@ access setup are kept out of this public repo on purpose.
   GitHub repositories, none of them this one. Dokploy checks each app out at
   `/etc/dokploy/compose/<appName>/code`. Moving them into `apps/vps/` is step
   5 of the foundations plan.
-- **Agents will reach Dokploy** through Dokploy's API, each with its own API
-  key — not set up yet. The shared Dokploy MCP server that used to run here
-  was removed on 2026-10-26 (`journal/2026-10-26-remove-dokploy-mcp.md`).
+- **Agents reach Dokploy** through `@dokploy/mcp@0.30.7` via `agents/mcp/dokploy`.
+  The launcher reads a scoped agent API key from OpenBao (`kv/general/dokploy`,
+  field `api_key`).
 - **Backups** go to Garage at home through a Dokploy destination
-  (`systems/backups.md`).
+  (`systems/backups.md`), with OpenBao automated snapshots detailed in
+  `systems/openbao.md`.
 
 ## Firewall
 

@@ -1,7 +1,7 @@
 ---
 type: system
-status: "running on VPS"
-verified: "yes (running unsealed verified 2026-10-26; Dokploy integration verified 2026-10-27; backup/restore untested)"
+status: "running on VPS, backup and restore tested"
+verified: "yes (running unsealed verified 2026-10-26; Dokploy integration verified 2026-10-27; backup to Garage S3 and restore test verified 2026-10-29)"
 hosts:
   - Remote VPS
 tags:
@@ -17,8 +17,9 @@ OpenBao is the secret store: every password and token in one place on the
 tailnet, read by machines at deploy time, never written into git.
 
 **Status:** running on the VPS since 2026-10-26 (`apps/vps/openbao/`); backup
-and restore test not done yet. Commands not marked as run have not been run
-against a real OpenBao server yet.
+and restore tested 2026-10-29 (`journal/2026-10-29-restore-test-openbao.md`).
+Commands not marked as run have not been run against a real OpenBao server
+yet.
 
 The problem: this repo gets checked out on 5 machines. Copying a `.env` file
 with passwords to 5 places means 5 copies to leak, 5 copies to rotate, 5
@@ -161,8 +162,8 @@ The lab has two, and they need different answers:
     one per app.
   The provider token was created with `bao token create -orphan
   -policy=dokploy-read -period=768h` (owner, 2026-10-27), so it dies unless
-  renewed within 32 days (768h); renewing it is still manual
-  (`plans/vps-foundations.md`).
+  renewed within 32 days (768h); renewing it is automated daily by the
+  `openbao-raft-snapshot` scheduled task (`systems/backups.md`).
 - **Homeserver — Portainer today.** Portainer does not read OpenBao, so secrets
   have to reach the container another way: a sidecar logs in with its own
   AppRole and writes files into `/run/secrets`, and the stack reads files
@@ -170,11 +171,19 @@ The lab has two, and they need different answers:
   (Arcane is the likely candidate, not confirmed); if it turns out to have a
   native vault provider, use that and drop the sidecar for that stack.
 
+## Backup and token renewal
+
+- **Daily Raft snapshot and token renewal**: Automated via Dokploy scheduled
+  task running `dokploy-schedule-snapshot.sh` (`apps/vps/openbao/README.md`),
+  which streams a Raft snapshot via OpenBao's HTTP API and renews Dokploy's
+  provider token. Schedule, upload destination, retention and restore test are
+  documented in `systems/backups.md` and
+  `journal/2026-10-29-restore-test-openbao.md`.
+
 ## Still to do
 
-Both are gated in `plans/vps-foundations.md`: a backup to the Garage
-destination at home with one restore tried (step 2), and a timer that renews
-Dokploy's provider token before its 32-day period runs out (step 3).
+The OpenTofu half of step 3 in `plans/vps-foundations.md` (checkouts reading
+OpenBao at runtime).
 
 ## Rules
 

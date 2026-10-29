@@ -4,7 +4,8 @@ How OpenBao works and the rules around it: `systems/openbao.md`. This page is
 only about this stack.
 
 **Status:** running on the VPS since 2026-10-26, unsealed; backup and restore
-test not done yet (`plans/vps-foundations.md`, step 2).
+tested 2026-10-29 (`plans/vps-foundations.md`, step 2;
+`journal/2026-10-29-restore-test-openbao.md`).
 
 ## Derived from
 
@@ -95,9 +96,21 @@ Follows `skills/deploy-on-dokploy/` steps 6 and 7, with these differences:
 
 - `openbao-data` holds the Raft data; `openbao-logs` holds the audit log,
   `/openbao/logs/audit.log`, declared in the config (tested locally 2026-10-27).
-- Back up with `bao operator raft snapshot save`, not by copying the volume
-  while it runs. The snapshot job, its token and its destination are not set
-  up yet — that is part of `plans/vps-foundations.md` step 2.
+- Backup details, schedule, retention and the restore test are owned by
+  `systems/backups.md` and `journal/2026-10-29-restore-test-openbao.md`.
+
+## Host scripts
+
+- `host/dokploy-schedule-snapshot.sh`: automated Raft snapshot backup and
+  token renewal.
+  - Configured in Dokploy Scheduled Tasks as task `openbao-raft-snapshot`
+    (cron `0 2 * * *`, timezone `Asia/Kolkata`, type `dokploy-server`, command
+    `bash ./script.sh`).
+  - Reads `/etc/dokploy/snapshot.env` on the VPS host (mode 600, root only).
+  - Writes the snapshot to a private `/tmp/openbao-backup` folder (mode 700),
+    mounts only that directory read-only into an ephemeral `amazon/aws-cli`
+    container to upload to Garage S3, and cleans it up on exit.
+  - Verified live 2026-10-29 (`journal/2026-10-29-restore-test-openbao.md`).
 
 ## Tested
 

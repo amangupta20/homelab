@@ -69,3 +69,7 @@ How each service is backed up: `systems/backups.md`.
 ## To do
 
 - WUD (What's Up Docker) for container-update notices — replaces Watchtower.
+- When monitoring is set up (`decisions/open-questions.md`, Observability):
+  scrape Mattermost's metrics. Its Performance Monitoring was turned on in the
+  System Console on 2026-10-29 (owner), which serves Prometheus metrics on the
+  container's port 8067. Nothing collects them yet.

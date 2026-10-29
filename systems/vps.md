@@ -27,8 +27,10 @@ access setup are kept out of this public repo on purpose.
   193 GB disk (68% used), an 8 GB swap file. Ubuntu 24.04.4 LTS. Every image
   deployed here must exist for `arm64`. The owner runs it on the Always Free
   tier and has no plan to rebuild it (owner, 2026-10-26).
-- **Admin access:** SSH with a key, over Tailscale (Tailscale 1.102.3).
-- **Docker** 29.7.2 in swarm mode (single node), as Dokploy installs it.
+- **Admin access:** SSH with a key, over Tailscale (Tailscale 1.104.4 since
+  an upgrade on 2026-10-28, `/var/log/apt/history.log`).
+- **Docker** 29.9.2 (same upgrade, from 29.7.2) in swarm mode (single node),
+  as Dokploy installs it.
 - **Dokploy**, with its own Postgres and Redis (`docker service ls`). The
   owner applies every Dokploy update when the UI offers it (owner,
   2026-10-26), so check the running version before relying on a

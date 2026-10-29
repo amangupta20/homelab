@@ -62,6 +62,33 @@ access setup are kept out of this public repo on purpose.
 - **Backups** go to Garage at home through a Dokploy destination
   (`systems/backups.md`).
 
+## Firewall
+
+Oracle's Ubuntu image keeps its firewall in `/etc/iptables/rules.v4` and
+`rules.v6`, which `netfilter-persistent` loads at every boot, before Docker
+starts. Docker then adds its own rules in memory on each start. The boot files
+must hold only Oracle's rules, Tailscale's chains and rules the owner adds on
+purpose — never Docker's.
+
+- **Never run `netfilter-persistent save` or `iptables-save >
+  /etc/iptables/rules.v4` on this VPS.** It saves Docker's live rules too;
+  Docker does not remove copies it did not create (the stale rule behind the
+  2026-10-29 outage survived two months of boots), so they come back at every
+  boot and later block whatever container gets their old addresses. This took
+  Hindsight down on 2026-10-29
+  (`journal/2026-10-29-hindsight-down-stale-firewall-rules.md`).
+- To change a rule for good, edit the file by hand, then check it with
+  `sudo iptables-restore --test < /etc/iptables/rules.v4`.
+- **When a container cannot reach another one on the same network** (the
+  connection times out), look for stale rules first. This lists bridges named
+  in the firewall that no longer exist; it should print nothing (ran clean
+  2026-10-29, after the cleanup):
+
+  ```sh
+  for t in raw nat; do sudo iptables -t $t -S | grep -oE 'br-[0-9a-f]{12}'; done | sort -u |
+    while read b; do ip link show "$b" >/dev/null 2>&1 || echo "stale: $b"; done
+  ```
+
 ## Rules
 
 > [!IMPORTANT]

@@ -37,20 +37,21 @@ uploaded to Garage S3 and retained as the latest backup.
 ## Follow-up 2026-10-30
 
 - The snapshot script now stages the snapshot in `/etc/dokploy/backups/openbao`
-  (mode 700) instead of `/tmp/openbao-backup`. Reason (owner, 2026-10-30): the
-  task's `/tmp` is not the `/tmp` that the host Docker daemon mounts into the
-  `amazon/aws-cli` container, while `/etc/dokploy` is the same path on both
-  sides. The mechanism was not checked on the host. The owner changed the
+  (mode 700) instead of `/tmp/openbao-backup`. Reason, as the owner explained it
+  on 2026-10-30 and not checked on the host: the task's `/tmp` is not the `/tmp`
+  that the host Docker daemon mounts into the `amazon/aws-cli` container, while
+  `/etc/dokploy` is the same path on both sides. The 2026-10-29 test above
+  predates this change; which script version that test ran is not recorded. The owner changed the
   Dokploy task to this version on the VPS before the repo copy was updated.
   Whether a copy of the previous script was kept is not recorded; the `/tmp`
-  version is in commit `80a33c4`. The Dokploy task runs this version: checked
+  version is in commit `80a33c4` (the merge of PR #21). The Dokploy task runs this version: checked
   2026-10-30 by reading the schedule through the Dokploy MCP (`schedule-one`)
   and comparing it with the repo copy (identical).
-- The `/etc/dokploy` version was run and tested by the owner on 2026-10-30
-  (owner's report; the run itself is not recorded here).
+- The owner reports running and testing the `/etc/dokploy` version on
+  2026-10-30; what that test checked is not recorded here.
 - Not verified: whether the 2026-10-29 20:30 UTC cron run (02:00 IST, object
   `openbao-20261029-203000.snap`) used the `/tmp` or the `/etc` version.
   The run log is not readable through the MCP.
-- Not verified: pruning to 14 backups. Six objects existed on 2026-10-30
-  (Dokploy MCP `backup-listBackupFiles` on the Garage destination), so the prune
-  step has not run yet.
+- Nothing has been pruned yet: six objects on 2026-10-30 (Dokploy MCP
+  `backup-listBackupFiles` on the Garage destination), fewer than the 14 kept.
+  Whether the prune step deletes correctly is unverified.

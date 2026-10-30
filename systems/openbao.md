@@ -160,10 +160,12 @@ The lab has two, and they need different answers:
   - the token behind the provider needs `read` on `kv/data/dokploy/*` and
     `list` on `kv/metadata/dokploy/*` — one policy for the whole folder, not
     one per app.
-  The provider token was created with `bao token create -orphan
-  -policy=dokploy-read -period=768h` (owner, 2026-10-27), so it dies unless
-  renewed within 32 days (768h); renewing it is automated daily by the
-  `openbao-raft-snapshot` scheduled task (`systems/backups.md`).
+  The provider token was created on 2026-10-27 as an orphan token with the
+  `dokploy-read` policy and a 1024h period (creation time and period read back
+  with `bao token lookup -accessor` on 2026-10-30; an earlier note here said
+  768h), so it dies unless renewed within about 42 days.
+  Renewing it is automated daily by the `openbao-raft-snapshot` scheduled task
+  (`systems/backups.md`).
 - **Homeserver — Portainer today.** Portainer does not read OpenBao, so secrets
   have to reach the container another way: a sidecar logs in with its own
   AppRole and writes files into `/run/secrets`, and the stack reads files

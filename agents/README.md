@@ -59,12 +59,18 @@ one-line `CLAUDE.md` that points at it — one copy of the rules, never two.
 Shared MCP server launchers live in `agents/mcp/`.
 
 - **Dokploy (`agents/mcp/dokploy`):** launches `@dokploy/mcp@0.30.7` over stdio.
-  It fetches a scoped agent API key from OpenBao (`kv/general/dokploy`, field
-  `api_key`). In line with `decisions/agent-access.md`, the key is restricted to
-  app operations and cannot modify backup schedules or delete backups on Garage
-  S3. Verified 2026-10-29: launched over stdio and listed tools successfully.
-  Requires `DOKPLOY_URL` in the environment (e.g. `http://<tailscale-ip>:3000`,
-  configured per machine, not in git).
+  It fetches an API key from OpenBao (`kv/general/dokploy`, field `api_key`).
+  Agents treat Dokploy as unavailable unless the task explicitly asks for it.
+  Verified 2026-10-29: launched over stdio and listed tools successfully.
+
+  Requirements, all set per machine and none in git:
+  - `DOKPLOY_URL` in the environment (e.g. `http://<tailscale-ip>:3000`); the
+    launcher exits if it is missing.
+  - `BAO_ADDR` in the environment, and the `bao` CLI on `PATH`, logged in so
+    that `bao kv get` can read `kv/general/dokploy` (`systems/openbao.md`,
+    "Daily use").
+
+  Loading it in a harness:
   - Claude Code: add to local harness config (e.g. project `.mcp.json`, not committed):
     ```json
     {

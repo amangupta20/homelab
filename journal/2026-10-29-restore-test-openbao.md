@@ -46,6 +46,8 @@ uploaded to Garage S3 and retained as the latest backup.
   version is in commit `80a33c4`. The Dokploy task runs this version: checked
   2026-10-30 by reading the schedule through the Dokploy MCP (`schedule-one`)
   and comparing it with the repo copy (identical).
+- The `/etc/dokploy` version was run and tested by the owner on 2026-10-30
+  (owner's report; the run itself is not recorded here).
 - Not verified: whether the 2026-10-29 20:30 UTC cron run (02:00 IST, object
   `openbao-20261029-203000.snap`) used the `/tmp` or the `/etc` version.
   The run log is not readable through the MCP.

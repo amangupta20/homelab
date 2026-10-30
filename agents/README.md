@@ -65,7 +65,7 @@ Shared MCP server launchers live in `agents/mcp/`.
 
   Requirements, all set per machine and none in git:
   - `DOKPLOY_URL` in the environment (e.g. `http://<tailscale-ip>:3000`); the
-    launcher exits if it is missing.
+    launcher exits if it is missing (`${DOKPLOY_URL:?}` in the launcher).
   - `BAO_ADDR` in the environment, and the `bao` CLI on `PATH`, logged in so
     that `bao kv get` can read `kv/general/dokploy` (`systems/openbao.md`,
     "Daily use").

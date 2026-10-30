@@ -61,7 +61,8 @@ Shared MCP server launchers live in `agents/mcp/`.
 - **Dokploy (`agents/mcp/dokploy`):** launches `@dokploy/mcp@0.30.7` over stdio.
   It fetches an API key from OpenBao (`kv/general/dokploy`, field `api_key`).
   Agents treat Dokploy as unavailable unless the task explicitly asks for it.
-  Verified 2026-10-29: launched over stdio and listed tools successfully.
+  Verified 2026-10-30 with all three requirements below in place: launched
+  over stdio and listed tools.
 
   Requirements, all set per machine and none in git:
   - `DOKPLOY_URL` in the environment (e.g. `http://<tailscale-ip>:3000`); the

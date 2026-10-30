@@ -110,9 +110,9 @@ Follows `skills/deploy-on-dokploy/` steps 6 and 7, with these differences:
   - Writes the snapshot to a private `/etc/dokploy/backups/openbao` folder
     (mode 700), mounts only that directory read-only into an ephemeral
     `amazon/aws-cli` container to upload to Garage S3, and cleans it up on exit.
-  - Verified live 2026-10-29 with the earlier `/tmp/openbao-backup` staging
-    path (`journal/2026-10-29-restore-test-openbao.md`). The current
-    `/etc/dokploy` path was run and tested by the owner on 2026-10-30.
+  - Verified live 2026-10-29, before the move from `/tmp/openbao-backup`;
+    the owner reports testing the `/etc/dokploy` path on 2026-10-30
+    (`journal/2026-10-29-restore-test-openbao.md`).
 
 ## Tested
 

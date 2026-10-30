@@ -33,3 +33,18 @@ uploaded to Garage S3 and retained as the latest backup.
 ## Still open
 
 - None for OpenBao backups: snapshot creation, upload to Garage, and restore are verified.
+
+## Follow-up 2026-10-30
+
+- The snapshot script now stages the snapshot in `/etc/dokploy/backups/openbao`
+  (mode 700) instead of `/tmp/openbao-backup`. Reason (owner, 2026-10-30): the
+  task's `/tmp` is not the `/tmp` that the host Docker daemon mounts into the
+  `amazon/aws-cli` container, while `/etc/dokploy` is the same path on both
+  sides. The mechanism was not checked on the host. The Dokploy task on the VPS
+  runs this version: checked 2026-10-30 by reading the schedule through the
+  Dokploy MCP (`schedule-one`) and comparing it with the repo copy (identical).
+- Not verified: whether the 2026-10-29 20:30 UTC cron run (02:00 IST, object
+  `openbao-20261029-203000.snap`) used the `/tmp` or the `/etc` version.
+  The run log is not readable through the MCP.
+- Not verified: pruning to 14 backups. Six objects existed on 2026-10-30, so the
+  prune step has not run yet.

@@ -107,9 +107,9 @@ Follows `skills/deploy-on-dokploy/` steps 6 and 7, with these differences:
     (cron `0 2 * * *`, timezone `Asia/Kolkata`, type `dokploy-server`, command
     `bash ./script.sh`).
   - Reads `/etc/dokploy/snapshot.env` on the VPS host (mode 600, root only).
-  - Writes the snapshot to a private `/tmp/openbao-backup` folder (mode 700),
-    mounts only that directory read-only into an ephemeral `amazon/aws-cli`
-    container to upload to Garage S3, and cleans it up on exit.
+  - Writes the snapshot to a private `/etc/dokploy/backups/openbao` folder
+    (mode 700), mounts only that directory read-only into an ephemeral
+    `amazon/aws-cli` container to upload to Garage S3, and cleans it up on exit.
   - Verified live 2026-10-29 (`journal/2026-10-29-restore-test-openbao.md`).
 
 ## Tested

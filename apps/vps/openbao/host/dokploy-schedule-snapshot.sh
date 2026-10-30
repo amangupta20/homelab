@@ -22,11 +22,11 @@ BUCKET="${S3_BUCKET:-dockploy}"
 TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
 SNAP_NAME="openbao-${TIMESTAMP}.snap"
 
-TMP_DIR="/tmp/openbao-backup"
-mkdir -p -m 700 "$TMP_DIR"
-trap 'rm -rf "$TMP_DIR"' EXIT
+BACKUP_DIR="/etc/dokploy/backups/openbao"
+mkdir -p -m 700 "$BACKUP_DIR"
+trap 'rm -rf "$BACKUP_DIR"' EXIT
 
-SNAP_PATH="${TMP_DIR}/${SNAP_NAME}"
+SNAP_PATH="${BACKUP_DIR}/${SNAP_NAME}"
 
 echo "[$(date -u '+%F %TZ')] === Starting OpenBao Raft Snapshot Backup ==="
 
@@ -53,7 +53,7 @@ echo "[$(date -u '+%F %TZ')] 3. Uploading to Garage S3 (s3://$BUCKET/openbao/$SN
 docker run --rm \
   -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
   -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
-  -v "$TMP_DIR:/data:ro" \
+  -v "$BACKUP_DIR:/data:ro" \
   amazon/aws-cli \
   --endpoint-url "$ENDPOINT" s3 cp "/data/$SNAP_NAME" "s3://$BUCKET/openbao/$SNAP_NAME"
 

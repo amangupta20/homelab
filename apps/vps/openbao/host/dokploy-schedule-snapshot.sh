@@ -24,9 +24,9 @@ SNAP_NAME="openbao-${TIMESTAMP}.snap"
 
 BACKUP_DIR="/etc/dokploy/backups/openbao"
 mkdir -p -m 700 "$BACKUP_DIR"
+trap 'rm -rf "$BACKUP_DIR"' EXIT
 
 SNAP_PATH="${BACKUP_DIR}/${SNAP_NAME}"
-trap 'rm -f "$SNAP_PATH"' EXIT
 
 echo "[$(date -u '+%F %TZ')] === Starting OpenBao Raft Snapshot Backup ==="
 

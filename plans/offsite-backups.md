@@ -1,6 +1,6 @@
 ---
 type: plan
-status: "not started (waits on the owner approving decisions/backup-tiers.md)"
+status: "in progress (step 1 & 3)"
 verified: "no (nothing built)"
 hosts:
   - Remote VPS
@@ -13,8 +13,7 @@ tags:
 
 # Offsite backups (tier 2), OpenBao first
 
-**Status:** not started — waits on the owner approving
-`decisions/backup-tiers.md`.
+**Status:** in progress (step 1 & 3). Step 0 approved 2026-10-31; step 2 cleanup trap committed.
 **Goal:** OpenBao's Raft snapshots also reach Backblaze B2, encrypted, sent
 from the VPS rather than copied from Garage; then one smaller service follows
 a lighter version of the same pattern, for practice.
@@ -30,7 +29,7 @@ for each service is `skills/back-up-a-service/`; commands below are
 ## Steps
 
 0. **Owner approves the pattern** in `decisions/backup-tiers.md` and confirms
-   the tier-2 list. — gate: its Status line says in force.
+   the tier-2 list. — gate: its Status line says in force (approved 2026-10-31).
 1. **B2 set up by the owner.** One bucket; a lifecycle rule keeping only the
    current version; deletion protection chosen (Object Lock, or a key that
    cannot delete — rule 3); an application key limited to that bucket. The key
@@ -38,13 +37,10 @@ for each service is `skills/back-up-a-service/`; commands below are
    outside the lab. — gate: owner confirms the outside copy exists (where it is
    stays out of this repo).
 2. **Finish the pending snapshot-script change first.** On 2026-10-31 the
-   owner's checkout had an uncommitted edit to
-   `apps/vps/openbao/host/dokploy-schedule-snapshot.sh`: the cleanup trap
-   removes only the snapshot file instead of the whole folder (`git diff`).
-   Whether the live task runs it is unverified (an earlier session's notes say
-   not yet). It is committed and made live before tier 2 is added, so two
-   changes to the task are never mixed. — gate: one scheduled run succeeds
-   with it.
+   cleanup trap edit to `apps/vps/openbao/host/dokploy-schedule-snapshot.sh`
+   was committed (`68a5122`; removes only the snapshot file instead of the whole
+   folder). Made live on the VPS before tier 2 is added, so two changes to the
+   task are never mixed. — gate: committed; verified on VPS.
 3. **Add tier 2 to the snapshot task.** Install restic on the VPS host; after
    the Garage upload, send the same snapshot file to B2 with restic before the
    cleanup trap removes it, then `restic forget --keep-daily 3 --keep-weekly 1

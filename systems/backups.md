@@ -50,6 +50,11 @@ is configured; nobody has compared it to the live XO schedules yet. The VPS apps
 line was read from Dokploy, and the OpenBao backup and restore were tested on
 2026-10-29.
 
+Proposed, not in force: every service keeps its local tier on Garage, and the
+important ones add an encrypted offsite tier on B2 (`decisions/backup-tiers.md`,
+how: `skills/back-up-a-service/`, OpenBao first: `plans/offsite-backups.md`).
+No service has the offsite tier yet.
+
 ## The rule
 
 > [!IMPORTANT]

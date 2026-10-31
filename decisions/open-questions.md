@@ -22,6 +22,10 @@ owner file, and is deleted from this list.
 
 - Where does the offsite copy land, and is it encrypted at rest?
 - Does OpenBao's backup travel the same offsite path or need its own?
+- Proposal 2026-10-31 for the two items above: `decisions/backup-tiers.md`
+  (encrypted B2 tier sent from the source, OpenBao first). Also open with it:
+  which services besides OpenBao get that tier, and where the offsite
+  encryption keys are kept outside the lab.
 
 ## Provisioning (`iac/`)
 

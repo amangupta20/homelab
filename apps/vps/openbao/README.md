@@ -105,16 +105,18 @@ Follows `skills/deploy-on-dokploy/` steps 6 and 7, with these differences:
 - `host/dokploy-schedule-snapshot.sh`: automated Raft snapshot backup and
   token renewal.
   - Configured in Dokploy Scheduled Tasks as task `openbao-raft-snapshot`
-    (cron `0 2 * * *`, timezone `Asia/Kolkata`, type `dokploy-server`, command
-    `bash ./script.sh`).
+    (type `dokploy-server`, command `bash ./script.sh`). Schedule, destinations,
+    retention, and restore tests are owned by `systems/backups.md`.
   - Reads `/etc/dokploy/snapshot.env` on the VPS host (mode 600, root only).
   - Writes the snapshot to a private `/etc/dokploy/backups/openbao` folder
     (mode 700), mounts only that directory read-only into an ephemeral
     `amazon/aws-cli` container to upload to Garage S3 (Tier 1) and Backblaze B2
     (Tier 2), and cleans it up on exit.
-  - Verified live 2026-10-29, before the move from `/tmp/openbao-backup`;
-    the owner reports testing the `/etc/dokploy` path on 2026-10-30
-    (`journal/2026-10-29-restore-test-openbao.md`).
+  - Verified live 2026-10-31: Raft snapshot streaming, Garage timeout fallback
+    (with homelab offline), and Backblaze B2 upload were verified live
+    (`journal/2026-10-31-restore-test-openbao-b2.md`). Earlier tests on
+    2026-10-29 verified Garage-only upload before moving from `/tmp/openbao-backup`,
+    and the owner tested the `/etc/dokploy` path on 2026-10-30.
 
 ## Tested
 

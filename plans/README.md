@@ -50,3 +50,4 @@ tags:
 
 - `vps-foundations.md` — OpenBao and SSO on the VPS, before any further VPS app.
 - `migration.md` — the current migration, in order, and the Portainer -> git target.
+- `offsite-backups.md` — the encrypted offsite backup tier, OpenBao first (not started).

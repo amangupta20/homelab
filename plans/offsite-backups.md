@@ -1,6 +1,6 @@
 ---
 type: plan
-status: "in progress (step 1 & 3)"
+status: "in progress"
 verified: "no (nothing built)"
 hosts:
   - Remote VPS
@@ -13,7 +13,7 @@ tags:
 
 # Offsite backups (tier 2), OpenBao first
 
-**Status:** in progress (step 1 & 3). Step 0 approved 2026-10-31; step 2 cleanup trap committed.
+**Status:** in progress. Step 0 approved 2026-10-31.
 **Goal:** OpenBao's Raft snapshots also reach Backblaze B2, encrypted, sent
 from the VPS rather than copied from Garage; then one smaller service follows
 a lighter version of the same pattern, for practice.
@@ -36,14 +36,12 @@ for each service is `skills/back-up-a-service/`; commands below are
    and a new restic password go into OpenBao, and the password is also kept
    outside the lab. — gate: owner confirms the outside copy exists (where it is
    stays out of this repo).
-2. **Finish the pending snapshot-script change first.** On 2026-10-31 the
-   cleanup trap edit to `apps/vps/openbao/host/dokploy-schedule-snapshot.sh`
-   was committed (`68a5122`; removes only the snapshot file instead of the whole
-   folder). Made live on the VPS before tier 2 is added, so two changes to the
-   task are never mixed. — gate: committed; verified on VPS.
-3. **Add tier 2 to the snapshot task.** Install restic on the VPS host; after
-   the Garage upload, send the same snapshot file to B2 with restic before the
-   cleanup trap removes it, then `restic forget --keep-daily 3 --keep-weekly 1
+2. **Add tier 2 to the snapshot task.** Install restic (or use `restic/restic`
+   container) on the VPS; after the Garage upload, send the snapshot to B2
+   with restic before the cleanup trap removes it, then `restic forget
+   --keep-daily 3 --keep-weekly 1 --keep-monthly 1 --prune`. Take a Dokploy
+   backup of the task's settings first. — gate: `restic snapshots --tag openbao`
+   lists one snapshot after a run, and the Garage upload still works.
    --keep-monthly 1 --prune`. Take a Dokploy backup of the task's settings
    first. — gate: `restic snapshots --tag openbao` lists one snapshot after a
    scheduled run, and the Garage upload still works.

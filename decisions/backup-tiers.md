@@ -1,7 +1,7 @@
 # Every service gets a local backup tier; the important ones also get an encrypted offsite tier
 
-Proposed: 2026-10-31, by an agent at the owner's request. Status: proposed —
-the owner decides. Not in force until this line says so.
+Proposed: 2026-10-31, by an agent at the owner's request. Status: in force —
+approved 2026-10-31 by the owner.
 
 ## The pattern
 

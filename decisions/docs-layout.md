@@ -25,6 +25,7 @@ So the layout is:
 | How does a thing work, what never to do? | `systems/` | agent, saying how it verified |
 | How do I do X? | `skills/` (agentskills.io `SKILL.md`, shared by every harness) | agent adds new ones; changes to existing ones are proposed |
 | What is in flight? | `plans/` | agent updates status; owner sets goals |
+| What could be tried later? | `ideas/` | owner adds or asks; agent corrects facts, never promotes |
 | Why is it this way? | `decisions/` | owner; agent proposes |
 | What is undecided or unverified? | `decisions/open-questions.md` | agent appends, owner resolves |
 | What happened, when? | `journal/` | whoever did the work |
@@ -62,6 +63,19 @@ copy, which this decision otherwise forbids; it is allowed because the copy
 sits on the same page (or is a name the check verifies against the owner),
 and the page body always wins. `.githooks/check-properties.py` catches a
 broken shape in CI; it cannot catch a stale status.
+
+## Addendum 2026-10-31: `ideas/` (proposed by an agent, at the owner's request)
+
+Research for things to try once there is time or hardware (a database
+replica on the VPS, for example) had nowhere to go: `plans/` promises the work
+will happen in order, and `decisions/open-questions.md` is for what is unknown
+about the lab as it is. Left in a chat or in memory, the research gets
+redone. So `ideas/` holds designs that were researched but not scheduled. An
+idea becomes a plan only when the owner decides, and the idea page stays as
+the research behind it (`ideas/README.md`).
+
+Cost: one more folder to keep honest. Nothing in it describes the live lab, so
+an agent must never treat an idea page as a fact or start work from it.
 
 ## Where it lives
 

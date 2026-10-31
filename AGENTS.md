@@ -20,6 +20,7 @@ Read in this order:
 | Files | You may |
 |---|---|
 | `inventory/`, `systems/`, `plans/`, `apps/`, `iac/README.md`, `repo/` | edit, as long as every fact you add says how you know it |
+| `ideas/` | correct facts and add sources; never promote, drop or act on an idea without the owner (`ideas/README.md`) |
 | `journal/` | add an entry when a task changed the live lab, handled an incident, or tested a restore (`journal/README.md`); never edit an old one except to append a follow-up |
 | `skills/` | follow; add new skills and propose changes to existing ones (`skills/write-a-skill/`) |
 | `decisions/open-questions.md` | append; never delete or resolve an item |

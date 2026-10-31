@@ -28,7 +28,8 @@ journal entry.
 1. **Inventory + read-only security baseline, in parallel.** List what exists
    (done in `inventory/`) and probe what is exposed, without changing
    anything.
-2. **Migrate.** Move workloads to the new setup.
+2. **Migrate.** Move workloads to the new setup. Apps' databases move to the
+   shared server where that fits (`plans/shared-postgres.md`).
 3. **Re-harden.** Audit again after boot — the migrated setup gets its own
    security pass, not the old one's assumptions.
 4. **Docs from day 1.** Notes start as raw dumps during the work and get

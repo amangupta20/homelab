@@ -51,5 +51,5 @@ tags:
 - `vps-foundations.md` — OpenBao and SSO on the VPS, before any further VPS app.
 - `migration.md` — the current migration, in order, and the Portainer -> git target.
 - `shared-postgres.md` — one Pigsty-managed Postgres at home that apps share (not started).
-- `offsite-backups.md` — the encrypted offsite backup tier, OpenBao first (not started).
+- `offsite-backups.md` — the encrypted offsite backup tier, OpenBao first (in progress).
 - `hindsight-d1-reranker.md` — d1-2B on a homelab GPU VM, loaded on demand, in Hindsight's reranker chain (not started).

@@ -96,9 +96,9 @@ Follows `skills/deploy-on-dokploy/` steps 6 and 7, with these differences:
 
 - `openbao-data` holds the Raft data; `openbao-logs` holds the audit log,
   `/openbao/logs/audit.log`, declared in the config (tested locally 2026-10-27).
-- Backup details, schedule, retention and the restore tests are owned by
-  `systems/backups.md`, `journal/2026-10-29-restore-test-openbao.md` (Garage), and
-  `journal/2026-10-31-restore-test-openbao-b2.md` (Backblaze B2).
+- Backup details, schedule, and retention are owned by `systems/backups.md`;
+  restore tests are recorded in `journal/2026-10-29-restore-test-openbao.md` (Garage)
+  and `journal/2026-10-31-restore-test-openbao-b2.md` (Backblaze B2).
 
 ## Host scripts
 
@@ -127,5 +127,7 @@ throwaway self-signed certificate. `bao status` showed Raft storage, not
 initialised. After `operator init` and `unseal` it wrote a kv-v2 secret, took
 a Raft snapshot, came back sealed after a restart, and read the secret again
 after unsealing. The server logged `unknown or unsupported field
-disable_mlock`, so that setting was removed. Dokploy-specific behaviour is
-untested.
+disable_mlock`, so that setting was removed. Live Dokploy scheduled task
+execution was verified on 2026-10-29 (Garage) and 2026-10-31 (Garage timeout
+fallback and B2 offsite backup; see Host scripts above and
+`journal/2026-10-31-restore-test-openbao-b2.md`).

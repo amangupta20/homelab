@@ -17,8 +17,9 @@ OpenBao is the secret store: every password and token in one place on the
 tailnet, read by machines at deploy time, never written into git.
 
 **Status:** running on the VPS since 2026-10-26 (`apps/vps/openbao/`); backup
-and restore tested 2026-10-29 from Garage (`journal/2026-10-29-restore-test-openbao.md`)
-and 2026-10-31 from Backblaze B2 (`journal/2026-10-31-restore-test-openbao-b2.md`).
+details owned by `systems/backups.md`; restore tested 2026-10-29 from Garage
+(`journal/2026-10-29-restore-test-openbao.md`) and 2026-10-31 from Backblaze B2
+(`journal/2026-10-31-restore-test-openbao-b2.md`).
 Commands not marked as run have not been run against a real OpenBao server
 yet.
 

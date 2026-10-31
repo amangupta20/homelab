@@ -17,7 +17,8 @@ tags:
 **Goal:** OpenBao's Raft snapshots also reach Backblaze B2, sent from the VPS
 rather than copied from Garage; then one smaller service follows a lighter
 version of the same pattern, for practice. Snapshots are encrypted at rest by
-OpenBao's internal AES-256-GCM barrier keyring (sealed with Shamir keys), so no
+OpenBao's internal AES-256-GCM barrier keyring (sealed with Shamir keys; source:
+OpenBao architecture docs / `/v1/sys/storage/raft/snapshot`), so no
 additional encryption layer (such as restic) is needed before S3 upload.
 **Done when:** a restore of OpenBao from the B2 copy into a throwaway
 instance is recorded in `journal/`, and `systems/backups.md` lists both tiers
@@ -38,8 +39,10 @@ for each service is `skills/back-up-a-service/`; commands below are
    retention pruning of old snapshots via `s3 rm`; an append-only / Object Lock
    key was evaluated but rejected because it would prevent in-script retention
    pruning and cause storage to grow unbounded). Endpoint, bucket, and keys set
-   in `/etc/dokploy/snapshot.env` on the VPS. — gate: owner confirms B2 bucket
-   and credentials tested in Dokploy. (Done 2026-10-31).
+   in `/etc/dokploy/snapshot.env` on the VPS. For disaster recovery outside the
+   lab, the B2 credentials and endpoint are also recorded in the owner's password
+   manager. — gate: owner confirms B2 bucket and credentials tested in Dokploy.
+   (Done 2026-10-31).
 2. **Add tier 2 to the snapshot task.** Update the snapshot task
    (`apps/vps/openbao/host/dokploy-schedule-snapshot.sh`) to upload the Raft
    snapshot directly to Backblaze B2 via S3 API, and prune old copies (keeping

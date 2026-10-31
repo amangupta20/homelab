@@ -40,10 +40,9 @@ test").
   Dokploy's backup list, recon 2026-10-26.
 - OpenBao Raft snapshot: Dokploy Scheduled Task `openbao-raft-snapshot` (daily
   02:00 IST), streams Raft snapshot via OpenBao API (encrypted at rest by OpenBao's
-  internal AES-256-GCM barrier keyring), uploads to Tier 1 Garage destination
-  `s3://dockploy/openbao/` (10s connection timeout fallback if offline) and Tier 2
-  Backblaze B2 offsite (`s3://<b2-bucket>/openbao/`), pruning to keep 14 backups on
-  each destination.
+  internal AES-256-GCM barrier keyring; source: OpenBao architecture / Raft storage docs),
+  uploads to Tier 1 Garage destination `s3://dockploy/openbao/` (10s connection timeout fallback if offline)
+  and Tier 2 Backblaze B2 offsite (`s3://<b2-bucket>/openbao/`), pruning to keep 14 backups on each destination.
   Restore tested 2026-10-29 from Garage (`journal/2026-10-29-restore-test-openbao.md`)
   and 2026-10-31 from Backblaze B2 (`journal/2026-10-31-restore-test-openbao-b2.md`).
 

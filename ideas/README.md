@@ -65,4 +65,4 @@ tags:
 
 ## Ideas
 
-None yet.
+- `multi-site-postgres.md` — a read-only copy of the database on the VPS that can take over if home is lost, with reads served locally at each site.

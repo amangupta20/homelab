@@ -22,7 +22,7 @@ rendered.
 
 | Piece | Where | What it does |
 |---|---|---|
-| Page properties | the YAML block at the top of every page in `systems/`, `inventory/`, `plans/` | the data the tables are built from |
+| Page properties | the YAML block at the top of every page in `systems/`, `inventory/`, `plans/`, `ideas/` | the data the tables are built from |
 | Tables | `bases/*.base` ([Obsidian Bases](https://obsidian.md/help/bases/syntax)) | one file per table; each defines its filters and views |
 | Front page | `Home.md` | links to every area and embeds the tables with `![[bases/<name>.base]]` |
 | Callouts | `> [!WARNING]`, `> [!NOTE]`, `> [!IMPORTANT]` | boxed warnings that render in Obsidian and on GitHub |
@@ -36,7 +36,7 @@ On GitHub, `Home.md`'s embeds show as plain `![[...]]` text — expected.
 
 ```yaml
 ---
-type: system            # system | inventory | plan; READMEs: system-index, inventory-index, plan-index
+type: system            # system | inventory | plan | idea; READMEs: system-index, inventory-index, plan-index, idea-index
 status: "running"       # the page's own Status line, shortened
 verified: "yes (recon 2026-10-26 over SSH)"   # yes / no / partially, and how — from the page's Source/State lines
 hosts:                  # optional; exact host names from inventory/hosts.md
@@ -62,7 +62,7 @@ the same commit.
   `inventory/hosts.md` / `inventory/services.md`, the property is wrong.
 - **`hosts` must match `inventory/hosts.md` exactly.** The check enforces it.
   A renamed host is renamed in its properties in the same commit.
-- **New page in `systems/`, `inventory/` or `plans/`:** copy the template from
+- **New page in `systems/`, `inventory/`, `plans/` or `ideas/`:** copy the template from
   that folder's README; it includes the property block.
 - **Links stay relative markdown links** (`[text](path.md)`), never
   `[[wikilinks]]`, so GitHub and agents keep working. The one exception is

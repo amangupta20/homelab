@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check the page properties the Obsidian view reads (repo/obsidian-view.md).
 
-Every page in systems/, inventory/ and plans/ starts with a small YAML block.
+Every page in systems/, inventory/, plans/ and ideas/ starts with a small YAML block.
 The Bases tables in bases/ are built from it, so a missing or misspelled
 property silently drops a page from the dashboard. This fails loudly instead.
 
@@ -13,7 +13,7 @@ import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-FOLDERS = {"systems": "system", "inventory": "inventory", "plans": "plan"}
+FOLDERS = {"systems": "system", "inventory": "inventory", "plans": "plan", "ideas": "idea"}
 ALLOWED = {"type", "status", "verified", "hosts", "tags"}
 REQUIRED_PAGE = {"type", "status", "verified", "tags"}
 REQUIRED_INDEX = {"type", "tags"}

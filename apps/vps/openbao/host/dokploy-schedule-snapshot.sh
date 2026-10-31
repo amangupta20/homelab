@@ -50,28 +50,78 @@ if [ "$SIZE" -lt 1000 ]; then
 fi
 
 echo "[$(date -u '+%F %TZ')] 3. Uploading to Garage S3 (s3://$BUCKET/openbao/$SNAP_NAME)..."
-docker run --rm \
+GARAGE_FAILED=0
+if ! docker run --rm \
   -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
   -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
   -v "$BACKUP_DIR:/data:ro" \
   amazon/aws-cli \
-  --endpoint-url "$ENDPOINT" s3 cp "/data/$SNAP_NAME" "s3://$BUCKET/openbao/$SNAP_NAME"
+  --cli-connect-timeout 10 --cli-read-timeout 30 \
+  --endpoint-url "$ENDPOINT" s3 cp "/data/$SNAP_NAME" "s3://$BUCKET/openbao/$SNAP_NAME"; then
+  echo "WARNING: Garage upload failed (is homelab reachable?). Continuing to offsite backup..." >&2
+  GARAGE_FAILED=1
+else
+  echo "[$(date -u '+%F %TZ')] 4. Managing Garage retention (keeping last 14 backups)..."
+  docker run --rm \
+    -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
+    -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
+    amazon/aws-cli \
+    --endpoint-url "$ENDPOINT" s3 ls "s3://$BUCKET/openbao/" | sort | head -n -14 | while read -r line; do
+    old_file=$(echo "$line" | awk '{print $4}')
+    if [ -n "$old_file" ]; then
+      echo "Pruning old backup: s3://$BUCKET/openbao/$old_file"
+      docker run --rm \
+        -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
+        -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
+        amazon/aws-cli \
+        --endpoint-url "$ENDPOINT" s3 rm "s3://$BUCKET/openbao/$old_file"
+    fi
+  done
+fi
 
-echo "[$(date -u '+%F %TZ')] 4. Managing retention (keeping last 14 backups)..."
-docker run --rm \
-  -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
-  -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
-  amazon/aws-cli \
-  --endpoint-url "$ENDPOINT" s3 ls "s3://$BUCKET/openbao/" | sort | head -n -14 | while read -r line; do
-  old_file=$(echo "$line" | awk '{print $4}')
-  if [ -n "$old_file" ]; then
-    echo "Pruning old backup: s3://$BUCKET/openbao/$old_file"
+# Tier 2: Offsite backup to Backblaze B2 (client-side encrypted by OpenBao)
+B2_FAILED=0
+if [ -n "${B2_ENDPOINT_URL:-}" ] && [ -n "${B2_BUCKET:-}" ]; then
+  echo "[$(date -u '+%F %TZ')] 5. Uploading to Backblaze B2 (s3://$B2_BUCKET/openbao/$SNAP_NAME)..."
+  if ! docker run --rm \
+    -e AWS_ACCESS_KEY_ID="${B2_ACCESS_KEY_ID:?}" \
+    -e AWS_SECRET_ACCESS_KEY="${B2_SECRET_ACCESS_KEY:?}" \
+    -e AWS_DEFAULT_REGION="${B2_REGION:-eu-central-003}" \
+    -v "$BACKUP_DIR:/data:ro" \
+    amazon/aws-cli \
+    --endpoint-url "$B2_ENDPOINT_URL" s3 cp "/data/$SNAP_NAME" "s3://$B2_BUCKET/openbao/$SNAP_NAME"; then
+    echo "ERROR: Backblaze B2 upload failed." >&2
+    B2_FAILED=1
+  else
+    echo "[$(date -u '+%F %TZ')] 6. Managing B2 retention (keeping last 14 backups)..."
     docker run --rm \
-      -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
-      -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
+      -e AWS_ACCESS_KEY_ID="${B2_ACCESS_KEY_ID:?}" \
+      -e AWS_SECRET_ACCESS_KEY="${B2_SECRET_ACCESS_KEY:?}" \
+      -e AWS_DEFAULT_REGION="${B2_REGION:-eu-central-003}" \
       amazon/aws-cli \
-      --endpoint-url "$ENDPOINT" s3 rm "s3://$BUCKET/openbao/$old_file"
+      --endpoint-url "$B2_ENDPOINT_URL" s3 ls "s3://$B2_BUCKET/openbao/" | sort | head -n -14 | while read -r line; do
+      old_file=$(echo "$line" | awk '{print $4}')
+      if [ -n "$old_file" ]; then
+        echo "Pruning old B2 backup: s3://$B2_BUCKET/openbao/$old_file"
+        docker run --rm \
+          -e AWS_ACCESS_KEY_ID="${B2_ACCESS_KEY_ID:?}" \
+          -e AWS_SECRET_ACCESS_KEY="${B2_SECRET_ACCESS_KEY:?}" \
+          -e AWS_DEFAULT_REGION="${B2_REGION:-eu-central-003}" \
+          amazon/aws-cli \
+          --endpoint-url "$B2_ENDPOINT_URL" s3 rm "s3://$B2_BUCKET/openbao/$old_file"
+      fi
+    done
   fi
-done
+else
+  echo "[$(date -u '+%F %TZ')] 5. Backblaze B2 not configured in $CONF, skipping Tier 2."
+fi
+
+if [ "$GARAGE_FAILED" -ne 0 ] && [ "$B2_FAILED" -ne 0 ]; then
+  echo "ERROR: Both Garage and Backblaze B2 uploads failed." >&2
+  exit 1
+elif [ "$B2_FAILED" -ne 0 ]; then
+  echo "ERROR: Backblaze B2 offsite backup failed." >&2
+  exit 1
+fi
 
 echo "[$(date -u '+%F %TZ')] === Backup completed successfully ==="

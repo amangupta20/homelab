@@ -30,22 +30,17 @@ for each service is `skills/back-up-a-service/`; commands below are
 
 0. **Owner approves the pattern** in `decisions/backup-tiers.md` and confirms
    the tier-2 list. — gate: its Status line says in force (approved 2026-10-31).
-1. **B2 set up by the owner.** One bucket; a lifecycle rule keeping only the
-   current version; deletion protection chosen (Object Lock, or a key that
-   cannot delete — rule 3); an application key limited to that bucket. The key
-   and a new restic password go into OpenBao, and the password is also kept
-   outside the lab. — gate: owner confirms the outside copy exists (where it is
-   stays out of this repo).
-2. **Add tier 2 to the snapshot task.** Install restic (or use `restic/restic`
-   container) on the VPS; after the Garage upload, send the snapshot to B2
-   with restic before the cleanup trap removes it, then `restic forget
-   --keep-daily 3 --keep-weekly 1 --keep-monthly 1 --prune`. Take a Dokploy
-   backup of the task's settings first. — gate: `restic snapshots --tag openbao`
-   lists one snapshot after a run, and the Garage upload still works.
-   --keep-monthly 1 --prune`. Take a Dokploy backup of the task's settings
-   first. — gate: `restic snapshots --tag openbao` lists one snapshot after a
-   scheduled run, and the Garage upload still works.
-4. **Restore test from B2.** Restore the latest snapshot into a scratch
+1. **B2 set up by the owner.** Bucket created with lifecycle rule keeping only
+   the last version; Application Key limited to that bucket (read/write).
+   Endpoint, bucket, and keys set in `/etc/dokploy/snapshot.env` on the VPS.
+   — gate: owner confirms B2 bucket and credentials tested in Dokploy.
+2. **Add tier 2 to the snapshot task.** Update the snapshot task
+   (`apps/vps/openbao/host/dokploy-schedule-snapshot.sh`) to upload the Raft
+   snapshot directly to Backblaze B2 via S3 API, and prune old copies (keeping
+   14). Decouple Garage and B2 with short timeouts on Garage so that an offline
+   homelab does not prevent B2 offsite backup from running. — gate: script
+   updated in Dokploy and repo; manual execution reaches B2.
+3. **Restore test from B2.** Restore the latest snapshot from B2 into a scratch
    directory on the workstation and load it into a throwaway OpenBao, the way
    `journal/2026-10-29-restore-test-openbao.md` did from Garage. — gate:
    journal entry; `systems/backups.md` updated.

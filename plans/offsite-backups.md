@@ -14,9 +14,11 @@ tags:
 # Offsite backups (tier 2), OpenBao first
 
 **Status:** in progress. Steps 0-3 complete 2026-10-31; OpenBao offsite backup and restore tested.
-**Goal:** OpenBao's Raft snapshots also reach Backblaze B2, encrypted, sent
-from the VPS rather than copied from Garage; then one smaller service follows
-a lighter version of the same pattern, for practice.
+**Goal:** OpenBao's Raft snapshots also reach Backblaze B2, sent from the VPS
+rather than copied from Garage; then one smaller service follows a lighter
+version of the same pattern, for practice. Snapshots are encrypted at rest by
+OpenBao's internal AES-256-GCM barrier keyring (sealed with Shamir keys), so no
+additional encryption layer (such as restic) is needed before S3 upload.
 **Done when:** a restore of OpenBao from the B2 copy into a throwaway
 instance is recorded in `journal/`, and `systems/backups.md` lists both tiers
 for OpenBao.
@@ -31,15 +33,24 @@ for each service is `skills/back-up-a-service/`; commands below are
 0. **Owner approves the pattern** in `decisions/backup-tiers.md` and confirms
    the tier-2 list. — gate: its Status line says in force (approved 2026-10-31).
 1. **B2 set up by the owner.** Bucket created with lifecycle rule keeping only
-   the last version; Application Key limited to that bucket (read/write).
-   Endpoint, bucket, and keys set in `/etc/dokploy/snapshot.env` on the VPS.
-   — gate: owner confirms B2 bucket and credentials tested in Dokploy.
+   the last version; Application Key limited to that bucket with read/write and
+   delete permissions. (Delete permissions are required for script-driven
+   retention pruning of old snapshots via `s3 rm`; an append-only / Object Lock
+   key was evaluated but rejected because it would prevent in-script retention
+   pruning and cause storage to grow unbounded). Endpoint, bucket, and keys set
+   in `/etc/dokploy/snapshot.env` on the VPS. — gate: owner confirms B2 bucket
+   and credentials tested in Dokploy. (Done 2026-10-31).
 2. **Add tier 2 to the snapshot task.** Update the snapshot task
    (`apps/vps/openbao/host/dokploy-schedule-snapshot.sh`) to upload the Raft
    snapshot directly to Backblaze B2 via S3 API, and prune old copies (keeping
    14). Decouple Garage and B2 with short timeouts on Garage so that an offline
-   homelab does not prevent B2 offsite backup from running. — gate: script
-   updated in Dokploy and repo; manual execution reaches B2.
+   homelab does not prevent B2 offsite backup from running. The task uses
+   `trap 'rm -rf "$BACKUP_DIR"' EXIT` because `/etc/dokploy/backups/openbao` is
+   dedicated exclusively to this task and removing the directory on exit ensures
+   no stale snapshots persist on the VPS. Pre-change capture: previous script and
+   settings were tracked in git (`apps/vps/openbao/host/dokploy-schedule-snapshot.sh`
+   at commit `5ed2d2b` and `apps/vps/openbao/README.md`). — gate: script
+   updated in Dokploy and repo; manual execution reaches B2. (Done 2026-10-31).
 3. **Restore test from B2.** Restore the latest snapshot from B2 into a scratch
    directory on the workstation and load it into a throwaway OpenBao, the way
    `journal/2026-10-29-restore-test-openbao.md` did from Garage. — gate:

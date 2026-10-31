@@ -22,8 +22,9 @@
 
 ## Snapshot / backup taken
 
-The snapshot generated during this test (`openbao-20261031-182326.snap`) was
-uploaded to Backblaze B2 and retained as the latest offsite backup.
+- Pre-change capture: the prior Dokploy task settings and script were captured in git (`apps/vps/openbao/host/dokploy-schedule-snapshot.sh` at commit `5ed2d2b` and `apps/vps/openbao/README.md`) prior to deploying changes to the live Dokploy task.
+- Post-change backup: the snapshot generated during this test (`openbao-20261031-182326.snap`) was
+  uploaded to Backblaze B2 and retained as the latest offsite backup.
 
 ## How it was verified
 

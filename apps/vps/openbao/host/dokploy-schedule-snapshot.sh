@@ -79,7 +79,7 @@ else
   done
 fi
 
-# Tier 2: Offsite backup to Backblaze B2 (client-side encrypted by OpenBao)
+# Tier 2: Offsite backup to Backblaze B2 (encrypted at rest by OpenBao's AES-256-GCM barrier keyring)
 B2_FAILED=0
 if [ -n "${B2_ENDPOINT_URL:-}" ] && [ -n "${B2_BUCKET:-}" ]; then
   echo "[$(date -u '+%F %TZ')] 5. Uploading to Backblaze B2 (s3://$B2_BUCKET/openbao/$SNAP_NAME)..."
@@ -127,4 +127,8 @@ elif [ "$B2_FAILED" -ne 0 ]; then
   exit 1
 fi
 
-echo "[$(date -u '+%F %TZ')] === Backup completed successfully ==="
+if [ "$GARAGE_FAILED" -ne 0 ]; then
+  echo "[$(date -u '+%F %TZ')] === Backup completed with warnings (Tier 1 Garage failed, Tier 2 Backblaze B2 succeeded) ==="
+else
+  echo "[$(date -u '+%F %TZ')] === Backup completed successfully (both Tier 1 Garage and Tier 2 Backblaze B2) ==="
+fi

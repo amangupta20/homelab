@@ -86,6 +86,7 @@ if [ -n "${B2_ENDPOINT_URL:-}" ] && [ -n "${B2_BUCKET:-}" ]; then
   if ! docker run --rm \
     -e AWS_ACCESS_KEY_ID="${B2_ACCESS_KEY_ID:?}" \
     -e AWS_SECRET_ACCESS_KEY="${B2_SECRET_ACCESS_KEY:?}" \
+    -e AWS_REGION="${B2_REGION:-eu-central-003}" \
     -e AWS_DEFAULT_REGION="${B2_REGION:-eu-central-003}" \
     -v "$BACKUP_DIR:/data:ro" \
     amazon/aws-cli \
@@ -97,6 +98,7 @@ if [ -n "${B2_ENDPOINT_URL:-}" ] && [ -n "${B2_BUCKET:-}" ]; then
     docker run --rm \
       -e AWS_ACCESS_KEY_ID="${B2_ACCESS_KEY_ID:?}" \
       -e AWS_SECRET_ACCESS_KEY="${B2_SECRET_ACCESS_KEY:?}" \
+      -e AWS_REGION="${B2_REGION:-eu-central-003}" \
       -e AWS_DEFAULT_REGION="${B2_REGION:-eu-central-003}" \
       amazon/aws-cli \
       --endpoint-url "$B2_ENDPOINT_URL" s3 ls "s3://$B2_BUCKET/openbao/" | sort | head -n -14 | while read -r line; do
@@ -106,6 +108,7 @@ if [ -n "${B2_ENDPOINT_URL:-}" ] && [ -n "${B2_BUCKET:-}" ]; then
         docker run --rm \
           -e AWS_ACCESS_KEY_ID="${B2_ACCESS_KEY_ID:?}" \
           -e AWS_SECRET_ACCESS_KEY="${B2_SECRET_ACCESS_KEY:?}" \
+          -e AWS_REGION="${B2_REGION:-eu-central-003}" \
           -e AWS_DEFAULT_REGION="${B2_REGION:-eu-central-003}" \
           amazon/aws-cli \
           --endpoint-url "$B2_ENDPOINT_URL" s3 rm "s3://$B2_BUCKET/openbao/$old_file"

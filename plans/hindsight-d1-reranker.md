@@ -32,8 +32,8 @@ them in one pass without generating text. Question types in llama.cpp:
 `noul` (yes/no, returns P(yes)), `choice` (pick one key from `criteria`),
 `score` (ordered levels, returns the median and the distribution). It is served
 by `llama-server` on the `/v1/systemone` endpoint, and needs llama.cpp b11960
-or newer. Source: the model card on Hugging Face (`LiquidAI/d1-2B`,
-`LiquidAI/d1-2B-GGUF`) as summarised in the owner's notes, 2026-10-31.
+or newer. Source: the model cards on Hugging Face (`LiquidAI/d1-2B`,
+`LiquidAI/d1-2B-GGUF`), as read in 2026-10; recheck before building.
 
 **Where it fits:** Hindsight's reranker chain already uses models of this
 kind (SystemOne decision models): Jev first, Clef as fallback, Mercury Decide
@@ -59,15 +59,15 @@ anything else is built.
 - **Not open to the network.** `llama-server` has no authentication unless
   started with `--api-key`. Listen on the GPU VM's tailnet or LAN address only,
   with an API key that lives in OpenBao and that 9router sends.
-- **GPU.** The owner's notes mention a GTX 1050 Ti: 4 GB VRAM, Pascal, no
-  hardware bfloat16, so the unquantised BF16 weights are out; use a GGUF quant
-  with every layer on the GPU (`-ngl 99`). Which GPU the VM gets is not
-  recorded in `inventory/` yet.
+- **GPU.** Which card the VM gets is not recorded in `inventory/` yet. If it
+  is a 4 GB Pascal card such as a GTX 1050 Ti: no hardware bfloat16, so the
+  unquantised BF16 weights are out; use a GGUF quant with every layer on the
+  GPU (`-ngl 99`).
 
 ## Quantisation: a contradiction to settle by measuring
 
-- The owner's notes table: Q8_0 ~1.8 GB file / ~2.2 GB VRAM ("near-lossless");
-  Q4_K_M ~1.1 GB / ~1.5 GB, suggested for 4 GB cards.
+- Published sizes (model card, unverified): Q8_0 ~1.8 GB file / ~2.2 GB VRAM
+  ("near-lossless"); Q4_K_M ~1.1 GB / ~1.5 GB, suggested for 4 GB cards.
 - An earlier session (2026-10-30) recommended Q8_0 and warned that Q4_K_M
   ships a mismatched vision projector and damages calibration.
 - Step 3 measures both. Calibration matters here because the reranker uses
@@ -77,8 +77,8 @@ anything else is built.
 
 What uses VRAM: the weights (fixed per quant), the KV cache (grows with
 context size `-c`), and the compute buffers (grow with batch `-b` and
-micro-batch `-ub`). The owner's draft runner used `-b 8192 -ub 8192`, which
-may cost more VRAM than the card can spare; measure, don't assume.
+micro-batch `-ub`). Large values such as `-b 8192 -ub 8192` may cost more
+VRAM than a 4 GB card can spare; measure, don't assume.
 
 For each quant, start `llama-server` with one setting changed at a time and
 record `nvidia-smi --query-gpu=memory.used --format=csv` after loading and
@@ -125,14 +125,24 @@ table, not from the model card.
    owner keeps, moves or removes the slot; the outcome goes to `journal/` and
    the running state to `inventory/services.md`.
 
-## Draft scripts
+## What the build needs
 
-The owner's checkout has a `nextinline/` folder (untracked) with a draft
-runner (`run.sh`) and two example clients. They are kept out of this repo. Its
-useful content (the endpoint contract, question types, version requirement
-and quantisation notes) is summarised above. The plan assumes a clean rebuild
-in steps 2–4 that uses the measured defaults; whether to keep the folder as a
-reference until then is the owner's choice.
+Built from scratch in steps 2–4, from the model's documentation and the
+measurements above. No earlier draft is the reference.
+
+- **Server:** `llama-server` (llama.cpp b11960 or newer, CUDA build) serving
+  one GGUF quant of d1-2B, every layer on the GPU (`-ngl 99`), with context
+  size, batch, micro-batch and KV-cache type set from the measurement table.
+- **Listening:** the GPU VM's tailnet or LAN address only, never every
+  interface; `--api-key` set, the key in OpenBao.
+- **On-demand loader:** starts the server on the first request, stops it
+  after the idle ttl chosen in step 4.
+- **Model file:** downloaded once to a fixed path on the VM, with the quant
+  and llama.cpp version pinned in this plan.
+- **Service:** a systemd unit (or the loader's own) that comes back after a
+  reboot.
+- **Smoke test:** one `/v1/systemone` request with a `noul`, a `choice` and a
+  `score` question, checked against the expected answer shape.
 
 ## Links
 

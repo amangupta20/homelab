@@ -80,8 +80,10 @@ else
 fi
 
 # Tier 2: Offsite backup to Backblaze B2 (encrypted at rest by OpenBao's AES-256-GCM barrier keyring)
+B2_CONFIGURED=0
 B2_FAILED=0
 if [ -n "${B2_ENDPOINT_URL:-}" ] && [ -n "${B2_BUCKET:-}" ]; then
+  B2_CONFIGURED=1
   echo "[$(date -u '+%F %TZ')] 5. Uploading to Backblaze B2 (s3://$B2_BUCKET/openbao/$SNAP_NAME)..."
   if ! docker run --rm \
     -e AWS_ACCESS_KEY_ID="${B2_ACCESS_KEY_ID:?}" \
@@ -119,16 +121,26 @@ else
   echo "[$(date -u '+%F %TZ')] 5. Backblaze B2 not configured in $CONF, skipping Tier 2."
 fi
 
-if [ "$GARAGE_FAILED" -ne 0 ] && [ "$B2_FAILED" -ne 0 ]; then
-  echo "ERROR: Both Garage and Backblaze B2 uploads failed." >&2
-  exit 1
-elif [ "$B2_FAILED" -ne 0 ]; then
-  echo "ERROR: Backblaze B2 offsite backup failed." >&2
-  exit 1
-fi
-
 if [ "$GARAGE_FAILED" -ne 0 ]; then
-  echo "[$(date -u '+%F %TZ')] === Backup completed with warnings (Tier 1 Garage failed, Tier 2 Backblaze B2 succeeded) ==="
+  if [ "$B2_CONFIGURED" -eq 1 ] && [ "$B2_FAILED" -eq 0 ]; then
+    echo "[$(date -u '+%F %TZ')] === Backup completed with warnings (Tier 1 Garage failed, Tier 2 Backblaze B2 succeeded) ==="
+    exit 0
+  elif [ "$B2_CONFIGURED" -eq 1 ]; then
+    echo "ERROR: Both Garage and Backblaze B2 uploads failed." >&2
+    exit 1
+  else
+    echo "ERROR: Garage upload failed and Backblaze B2 is not configured." >&2
+    exit 1
+  fi
 else
-  echo "[$(date -u '+%F %TZ')] === Backup completed successfully (both Tier 1 Garage and Tier 2 Backblaze B2) ==="
+  if [ "$B2_CONFIGURED" -eq 1 ] && [ "$B2_FAILED" -eq 0 ]; then
+    echo "[$(date -u '+%F %TZ')] === Backup completed successfully (both Tier 1 Garage and Tier 2 Backblaze B2) ==="
+    exit 0
+  elif [ "$B2_CONFIGURED" -eq 1 ]; then
+    echo "ERROR: Backblaze B2 offsite backup failed (Tier 1 Garage succeeded)." >&2
+    exit 1
+  else
+    echo "[$(date -u '+%F %TZ')] === Backup completed (Tier 1 Garage succeeded; Tier 2 Backblaze B2 not configured) ==="
+    exit 0
+  fi
 fi

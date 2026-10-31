@@ -5,6 +5,7 @@
 
 ## What changed
 
+- Note on repo-leads-lab: the scheduled task script was updated and tested live ahead of merging to verify failure decoupling against the live offline homelab and execute the restore test before recording it here.
 - Configured Backblaze B2 offsite backup destination (S3-compatible, EU region) with bucket lifecycle set to "Keep only the last version of the file".
 - Updated Dokploy scheduled task `openbao-raft-snapshot` (cron `0 2 * * *`, timezone `Asia/Kolkata`, type `dokploy-server`):
   1. Renews the OpenBao snapshot token and Dokploy provider token.

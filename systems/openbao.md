@@ -1,7 +1,7 @@
 ---
 type: system
 status: "running on VPS, backup and restore tested"
-verified: "yes (running unsealed verified 2026-10-26; Dokploy integration verified 2026-10-27; backup to Garage S3 and restore test verified 2026-10-29)"
+verified: "yes (running unsealed verified 2026-10-26; Dokploy integration verified 2026-10-27; backup to Garage S3 and restore test verified 2026-10-29; Tier 2 Backblaze B2 backup and restore test verified 2026-10-31)"
 hosts:
   - Remote VPS
 tags:
@@ -17,7 +17,8 @@ OpenBao is the secret store: every password and token in one place on the
 tailnet, read by machines at deploy time, never written into git.
 
 **Status:** running on the VPS since 2026-10-26 (`apps/vps/openbao/`); backup
-and restore tested 2026-10-29 (`journal/2026-10-29-restore-test-openbao.md`).
+and restore tested 2026-10-29 from Garage (`journal/2026-10-29-restore-test-openbao.md`)
+and 2026-10-31 from Backblaze B2 (`journal/2026-10-31-restore-test-openbao-b2.md`).
 Commands not marked as run have not been run against a real OpenBao server
 yet.
 
@@ -177,10 +178,12 @@ The lab has two, and they need different answers:
 
 - **Daily Raft snapshot and token renewal**: Automated via Dokploy scheduled
   task running `dokploy-schedule-snapshot.sh` (`apps/vps/openbao/README.md`),
-  which streams a Raft snapshot via OpenBao's HTTP API and renews Dokploy's
-  provider token. Schedule, upload destination, retention and restore test are
-  documented in `systems/backups.md` and
-  `journal/2026-10-29-restore-test-openbao.md`.
+  which streams a Raft snapshot via OpenBao's HTTP API, renews Dokploy's
+  provider token, uploads to Tier 1 Garage S3 and Tier 2 Backblaze B2 offsite,
+  and prunes old snapshots. Schedule, upload destinations, retention and restore
+  tests are documented in `systems/backups.md`,
+  `journal/2026-10-29-restore-test-openbao.md` (Garage), and
+  `journal/2026-10-31-restore-test-openbao-b2.md` (Backblaze B2).
 
 ## Still to do
 

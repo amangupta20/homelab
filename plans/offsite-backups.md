@@ -1,7 +1,7 @@
 ---
 type: plan
-status: "in progress"
-verified: "no (nothing built)"
+status: "in progress (OpenBao tier 2 complete; next is learning service)"
+verified: "partially (OpenBao restore tested from B2 2026-10-31; learning service pending)"
 hosts:
   - Remote VPS
   - TrueNAS VM
@@ -13,7 +13,7 @@ tags:
 
 # Offsite backups (tier 2), OpenBao first
 
-**Status:** in progress. Step 0 approved 2026-10-31.
+**Status:** in progress. Steps 0-3 complete 2026-10-31; OpenBao offsite backup and restore tested.
 **Goal:** OpenBao's Raft snapshots also reach Backblaze B2, encrypted, sent
 from the VPS rather than copied from Garage; then one smaller service follows
 a lighter version of the same pattern, for practice.
@@ -43,8 +43,8 @@ for each service is `skills/back-up-a-service/`; commands below are
 3. **Restore test from B2.** Restore the latest snapshot from B2 into a scratch
    directory on the workstation and load it into a throwaway OpenBao, the way
    `journal/2026-10-29-restore-test-openbao.md` did from Garage. — gate:
-   journal entry; `systems/backups.md` updated.
-5. **One learning service, lighter pattern.** The owner picks a small service
+   journal entry (`journal/2026-10-31-restore-test-openbao-b2.md`); `systems/backups.md` updated. (Done 2026-10-31).
+4. **One learning service, lighter pattern.** The owner picks a small service
    (a candidate with little data, suggested in an earlier session: ntfy). Same
    steps with fewer versions, to practise the procedure and correct
    `skills/back-up-a-service/`. — gate:

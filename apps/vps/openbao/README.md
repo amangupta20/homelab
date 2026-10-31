@@ -4,8 +4,8 @@ How OpenBao works and the rules around it: `systems/openbao.md`. This page is
 only about this stack.
 
 **Status:** running on the VPS since 2026-10-26, unsealed; backup and restore
-tested 2026-10-29 (`plans/vps-foundations.md`, step 2;
-`journal/2026-10-29-restore-test-openbao.md`).
+tested 2026-10-29 from Garage (`journal/2026-10-29-restore-test-openbao.md`) and
+2026-10-31 from Backblaze B2 (`journal/2026-10-31-restore-test-openbao-b2.md`).
 
 ## Derived from
 
@@ -96,8 +96,9 @@ Follows `skills/deploy-on-dokploy/` steps 6 and 7, with these differences:
 
 - `openbao-data` holds the Raft data; `openbao-logs` holds the audit log,
   `/openbao/logs/audit.log`, declared in the config (tested locally 2026-10-27).
-- Backup details, schedule, retention and the restore test are owned by
-  `systems/backups.md` and `journal/2026-10-29-restore-test-openbao.md`.
+- Backup details, schedule, retention and the restore tests are owned by
+  `systems/backups.md`, `journal/2026-10-29-restore-test-openbao.md` (Garage), and
+  `journal/2026-10-31-restore-test-openbao-b2.md` (Backblaze B2).
 
 ## Host scripts
 

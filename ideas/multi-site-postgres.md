@@ -61,6 +61,11 @@ though home apps on the LAN could have kept working. A bad ISP day becomes a
 database outage. Keeping etcd at one site avoids that; the network rules for
 etcd are in `plans/shared-postgres.md` ("Network latency").
 
+On 2026-11-01 the owner chose the opposite for the shared cluster: Postgres
+nodes on a second VPS and at home, with an etcd tiebreaker on the Dokploy VPS
+(`plans/shared-postgres.md`, "Topology"). This section stays as the record of
+what that trade costs.
+
 ### Promotion runbook rule: isolate first, then promote
 
 If home is only cut off rather than dead, promoting the VPS creates two

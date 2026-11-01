@@ -5,6 +5,7 @@ verified: "no (design from research 2026-10-31; nothing built)"
 hosts:
   - XCP-ng host
   - TrueNAS VM
+  - Remote VPS
 tags:
   - plan
   - postgres
@@ -14,9 +15,11 @@ tags:
 
 # Shared Postgres
 
-**Status:** not started. Part of the migration (`plans/migration.md`); its
-first step waits on the owner's answers under "Decide before step 1".
-**Goal:** one Postgres server at home, set up with Pigsty, that apps share
+**Status:** not started. Part of the migration (`plans/migration.md`), and
+comes before it: each app's database target shapes how it is migrated. The
+owner chose the topology on 2026-11-01 ("Topology", below); the other answers
+under "Decide before step 1" are still open.
+**Goal:** one Postgres cluster, set up with Pigsty, that apps share
 with one user and one database each — so every app gets the same backups,
 point-in-time restore and monitoring instead of a forgotten database container
 per stack.
@@ -28,6 +31,62 @@ Everything here comes from a research conversation on 2026-10-31. Numbers
 marked as guesses were not measured; commands are **UNTESTED** unless they say
 otherwise. The multi-site parts (a standby on the VPS, reads from the nearest
 copy, FerretDB) are not in this plan: `ideas/multi-site-postgres.md`.
+
+## Topology (owner, 2026-11-01)
+
+Two Postgres nodes on separate hardware and a third etcd member as a
+tiebreaker, built in two phases:
+
+| Phase | Postgres | etcd | When |
+|---|---|---|---|
+| 1 | one node on a second VPS (primary) | see the warning below | once the second VPS exists ("soon", owner) |
+| 2 | adds a node in a home VM, as a replica | three members: second VPS, home VM, and a tiebreaker on the Remote VPS (the Dokploy host) | after the homelab is cleaned up a bit (owner) |
+
+- **Where the primary normally lives is not decided.** It starts on the
+  second VPS because that is the only node; once the home node has caught up,
+  it may move home. The owner expects that to be an easy change: a planned
+  `patronictl switchover` waits for the replica to catch up, and apps that
+  connect through Pigsty's HAProxy follow the new primary on their own,
+  because HAProxy health-checks Patroni (as recalled — check). What does
+  change is which apps pay a round trip per query: with the primary on the
+  VPS, home apps do; with it at home, VPS apps do.
+- **Latency:** home to VPS is below 50 ms (owner's estimate, not measured).
+  That sits in the "defaults usually fine" row under "Network latency";
+  jitter is the real test, so measure with `mtr` over hours before phase 2.
+- **This replaces the rule "every etcd member sits on the home LAN"** that
+  this plan had, and goes against the reasoning in
+  `ideas/multi-site-postgres.md` ("Why etcd must not span home and the VPS").
+  What it means, from that reasoning:
+  - Home internet down: home holds one of three etcd members, so the home
+    node cannot be primary. If the primary is at home, Patroni demotes it and
+    promotes the VPS node; home apps lose their database until the link is
+    back. With asynchronous replication, the last few seconds of writes can
+    be lost in that failover.
+  - Remote VPS or second VPS down: two of three remain; the cluster keeps
+    working.
+  - Jitter on the home link can trigger false elections; tune the heartbeat
+    and election timeout from measured round trips.
+- **Phase 1 warning (agent, not yet discussed with the owner): a two-member
+  etcd is weaker than one.** With two members, losing either loses the
+  majority and stops the primary. In phase 1, run either one etcd member (on
+  the second VPS) or all three from the start; add the tiebreaker together
+  with the third member, not before.
+- **The Dokploy host gains a role.** It already runs OpenBao, which holds
+  Pigsty's passwords; with the tiebreaker it also counts towards the
+  database's quorum. Not a loop, but one more reason that host matters.
+
+Open for this topology (also in `decisions/open-questions.md`):
+
+- How the tiebreaker runs on the Dokploy host: a Pigsty-managed etcd
+  installed on the host over SSH, or a container under Dokploy outside
+  Pigsty's control.
+- Whether Pigsty supports arm64 on Ubuntu 24.04, since both VPSs are Ampere
+  (as recalled it supports aarch64 — check its docs).
+- Where Pigsty's manager (dashboards, alerts, its commands) runs in phase 1,
+  before there is a home VM: on the second VPS node itself, or later at home.
+- pgBackRest's first repository is Garage at home ("Backups"); while home is
+  down or not set up, phase 1 needs the offsite repository, or local
+  backups only.
 
 ## What Pigsty is, and what runs where
 
@@ -100,8 +159,9 @@ trip time (RTT) between members, and the election timeout **at least about
   before giving up; Pigsty sets these from its recovery-time target
   (`pg_rto`, as recalled). Short blips do not demote the primary; a sustained
   outage does.
-- **Rule for this plan: every etcd member sits on the home LAN.** A member on
-  the VPS would make the home primary depend on the home internet connection
+- **etcd spans sites in this plan** (owner, 2026-11-01; "Topology", above).
+  Earlier this plan kept every member on the home LAN, because a member on the
+  VPS makes the home primary depend on the home internet connection
   (`ideas/multi-site-postgres.md`, "Why etcd must not span home and the VPS").
 - **Apps:** a query from an app to a database over the internet pays one round
   trip each time; apps that send many small queries feel it most. Keep each
@@ -182,15 +242,18 @@ upgrade could need a server-side extension upgrade first.
 - Which apps move to the shared server first, and which stay bundled.
 - Where apps that run on the VPS get their database: from this server over the
   tailnet (a round trip per query), or bundled as today.
-- One home database node, or two on separate hardware (automatic failover only
-  helps if they do not share a host).
+- ~~One home database node, or two on separate hardware~~ — answered
+  2026-11-01: two nodes on separate hardware (a second VPS first, a home VM
+  later) and an etcd tiebreaker on the Remote VPS ("Topology").
+- Where the primary normally lives once both nodes exist (home or the second
+  VPS).
 - Whether the database gets the offsite tier (`decisions/backup-tiers.md`).
 
 ## Steps
 
 0. **Answer "Decide before step 1".** — gate: answers recorded in this plan.
-1. **`pg-test` on a throwaway VM** (1 vCPU / 2 GB) plus the manager VM. Run
-   the fio check first. — gate: Pigsty installs, dashboards show the node.
+1. **`pg-test` on a throwaway VM** (1 vCPU / 2 GB) plus the manager, at home or
+   on the second VPS (phase 1 of "Topology"). Run the fio check first. — gate: Pigsty installs, dashboards show the node.
 2. **Restore drill on `pg-test`.** pgBackRest to Garage; write test data,
    create a restore point, break something, restore to the point. — gate:
    journal entry with the restore.

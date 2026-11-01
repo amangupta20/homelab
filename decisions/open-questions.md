@@ -175,3 +175,20 @@ group waits on the first item.
 - Whether the internal proxy sits behind Tailscale, and whether AdGuard
   becomes the tailnet's DNS.
 - Virtual router VM on XCP-ng: owner leaning towards it, deferred.
+
+## Shared Postgres (Pigsty) topology
+
+Chosen by the owner on 2026-11-01 (`plans/shared-postgres.md`, "Topology");
+these parts are open:
+
+- Where the primary normally lives once both nodes exist: home or the second
+  VPS.
+- How the etcd tiebreaker runs on the Dokploy host: Pigsty-managed on the
+  host, or a container under Dokploy outside Pigsty.
+- Phase 1 etcd: one member or three from the start (two members is weaker
+  than one — agent's note, not yet discussed with the owner).
+- Pigsty on arm64 / Ubuntu 24.04: unverified.
+- Where Pigsty's manager runs before there is a home VM.
+- Home-to-VPS round trip: below 50 ms per the owner, not measured; measure
+  jitter with `mtr` over hours before etcd spans sites.
+- The second VPS: not bought yet ("soon", owner, 2026-11-01).

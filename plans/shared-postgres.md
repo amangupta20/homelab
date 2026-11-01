@@ -39,8 +39,8 @@ tiebreaker, built in two phases:
 
 | Phase | Postgres | etcd | When |
 |---|---|---|---|
-| 1 | one node on a second VPS (primary) | see the warning below | once the second VPS exists ("soon", owner) |
-| 2 | adds a node in a home VM, as a replica | three members: second VPS, home VM, and a tiebreaker on the Remote VPS (the Dokploy host) | after the homelab is cleaned up a bit (owner) |
+| 1 | one node on a second VPS (primary) | one member, on the second VPS (owner, 2026-11-01) | once the second VPS exists ("soon", owner) |
+| 2 | adds a node in a home VM, as a replica | three members: second VPS, home VM, and a tiebreaker on the Remote VPS (the Dokploy host), added when the home node starts (owner, 2026-11-01) | after the homelab is cleaned up a bit (owner) |
 
 - **Where the primary normally lives is not decided.** It starts on the
   second VPS because that is the only node; once the home node has caught up,
@@ -66,12 +66,32 @@ tiebreaker, built in two phases:
     working.
   - Jitter on the home link can trigger false elections; tune the heartbeat
     and election timeout from measured round trips.
-- **Phase 1 warning (agent, not yet discussed with the owner): a two-member
-  etcd is weaker than one.** With two members, losing either loses the
-  majority and stops the primary. In phase 1, run either one etcd member (on
-  the second VPS) or all three from the start; add the tiebreaker together
-  with the third member, not before.
-- **The Dokploy host gains a role.** It already runs OpenBao, which holds
+- **Why one etcd member in phase 1:** a two-member etcd is weaker than one —
+  losing either member loses the majority and stops the primary. So phase 1
+  runs one member, and the tiebreaker arrives together with the home member
+  (owner, 2026-11-01).
+- **Going from one member to three passes through two.** etcd adds members
+  one at a time (`etcdctl member add`, then start the new member joining the
+  existing cluster — as recalled, check Pigsty's own command for it). Between
+  the second and the third joining, losing either running member stops the
+  primary. Add both in one quiet window, check `etcdctl endpoint health` on
+  all three, and only then add the home Postgres replica.
+- **Two of the three etcd members would sit with one provider.** If the second
+  VPS is also on Oracle Cloud, the Remote VPS and the second VPS together
+  hold the majority. An Oracle region outage, or a problem with the account
+  (billing, a reclaimed Always Free instance), can take both at once and leave
+  home with one of three: no primary anywhere, even though the home node is
+  healthy. Check whether the second VPS is a separate account or region, or
+  accept this as the known shared risk.
+- **Tailscale carries etcd, Patroni and replication,** so a node whose
+  Tailscale key expires drops out of the cluster. Turn off key expiry for the
+  database and etcd nodes in the Tailscale admin console, or tag them so their
+  keys do not expire. Existing connections survive an outage of Tailscale's
+  coordination server; new ones do not (as recalled — check).
+- **Phase 1 has no failover at all:** one node, so backups are the only
+  protection. With Garage at home not available yet, phase 1 needs
+  pgBackRest's offsite repository from day one ("Backups").
+- **The Dokploy host gains a role.** It already runs OpenBao, which will hold
   Pigsty's passwords; with the tiebreaker it also counts towards the
   database's quorum. Not a loop, but one more reason that host matters.
 

@@ -186,9 +186,17 @@ these parts are open:
 - How the etcd tiebreaker runs on the Dokploy host: Pigsty-managed on the
   host, or a container under Dokploy outside Pigsty.
 - Phase 1 etcd: one member or three from the start (two members is weaker
-  than one — agent's note, not yet discussed with the owner).
+  than one — agent's note; the owner's answer is recorded below).
 - Pigsty on arm64 / Ubuntu 24.04: unverified.
 - Where Pigsty's manager runs before there is a home VM.
 - Home-to-VPS round trip: below 50 ms per the owner, not measured; measure
-  jitter with `mtr` over hours before etcd spans sites.
+  jitter with `mtr` over hours before etcd spans sites (**UNTESTED**).
 - The second VPS: not bought yet ("soon", owner, 2026-11-01).
+- Answered by the owner, 2026-11-01, for the "Phase 1 etcd" item above: one
+  member on the second VPS in phase 1; the tiebreaker on the Dokploy host is
+  added when the home node starts. The item stays for the owner to close.
+- The second VPS and the Remote VPS on one provider would hold two of three
+  etcd members: an Oracle region or account problem stops the database even
+  with home healthy. Separate account or region, or accept?
+- Tailscale key expiry on the database and etcd nodes: turn it off or tag
+  them, so a node does not drop out of the cluster when its key expires.

@@ -38,6 +38,25 @@ journal entry.
 > [!IMPORTANT] Gate
 > No step-2 writes until step-0 snapshots are verified.
 
+## What step 2 waits on (owner, 2026-11-01)
+
+Each service's shape when it moves — where its database lives, how it signs
+in, how it is exposed — comes from three things decided first:
+
+1. **SSO** on the VPS (`plans/vps-foundations.md`, step 4). Not blocked by the
+   edge decision: only forward-auth for apps with no sign-in of their own
+   waits on it.
+2. **Pigsty** (`plans/shared-postgres.md`), so each app's database moves once.
+3. **The edge** (`ideas/edge-and-security-layers.md`), on hold until the
+   Pangolin decision. It only changes how a service is *exposed*: keep
+   routing (labels or proxy entries) out of the Compose file, so internal-only
+   stacks can move before the edge is chosen and public ones get their route
+   last.
+
+Also needed: the homelab running again (down since 2026-10-31 per Hindsight;
+current state not checked) and a little cleanup before the home Pigsty node
+(owner).
+
 Security tool: Strix (security scanner). Always framed as defensive work on
 my own network: "audit my own infra at <range>, read-only recon first,
 report, then harden." Bare "scan for vulnerabilities" phrasing gets refused

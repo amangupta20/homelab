@@ -161,6 +161,11 @@ Nothing in this section is decided, configured or run. It exists so the next
 agent does not re-derive it, and it is the reason the status above is *needs
 more research* rather than *researched*.
 
+The edge-proxy choice itself, with the WAF, ban-tool and sign-in layers that
+come with it, is researched in `ideas/edge-and-security-layers.md` and on hold
+until the Pangolin decision (owner, 2026-11-01). Wakeups on the VPS do not
+wait for it: Dokploy's Traefik stays either way.
+
 ### Can it work with Nginx Proxy Manager, the home edge?
 
 Probably not through NPM itself. NPM is nginx behind a UI: its per-host

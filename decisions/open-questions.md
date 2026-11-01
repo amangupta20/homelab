@@ -151,3 +151,27 @@ owner file, and is deleted from this list.
   refresh, and PR 31 was the first B2 run
   (`journal/2026-11-03-prime-reviewer-b2-migration.md`). Left for the owner
   to close.
+
+## Edge and security layers (on hold until the Pangolin decision)
+
+Research: `ideas/edge-and-security-layers.md`. Owner, 2026-11-01: the whole
+group waits on the first item.
+
+- Pangolin or not: no inbound ports at home through a tunnel to an edge VPS,
+  or keep the static IP and inbound forwards? If yes, on which VPS (an
+  E2.1.Micro or the A1), and Option A (the edge Traefik with CrowdSec AppSec
+  only) or Option B (plus BunkerWeb at home)?
+- The two-NPM split (public and private by listener), approved 2026-10-27, is
+  back to research (owner, 2026-11-01). The home edge candidates are
+  BunkerWeb, NPMplus, Caddy, Traefik or Pangolin's Traefik; the WAF engine
+  follows from it.
+- Origin protection for whichever edge is chosen: Cloudflare-only source
+  ranges, Authenticated Origin Pulls, or no inbound ports.
+- CrowdSec: where its local API lives (VPS or home), and which bouncers run
+  where.
+- Forward-auth for apps with no sign-in of their own: Badger (Pangolin),
+  Authelia, or a helper such as oauth2-proxy. The SSO provider choice itself
+  is not blocked by this.
+- Whether the internal proxy sits behind Tailscale, and whether AdGuard
+  becomes the tailnet's DNS.
+- Virtual router VM on XCP-ng: owner leaning towards it, deferred.

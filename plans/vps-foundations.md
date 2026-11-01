@@ -57,6 +57,10 @@ Why this order and why on the VPS: `decisions/foundations-on-vps.md`.
 4. **SSO.** Choose one (`decisions/open-questions.md`, Foundations), deploy it
    with `skills/deploy-on-dokploy/`, public login, tailnet-only admin, backup
    tested. — gate: the throwaway app from step 3 signs in through it.
+   Choosing and deploying the provider does not wait on the edge decision:
+   all three candidates are OpenID Connect providers that every edge option
+   can use. Forward-auth for apps with no sign-in of their own does wait on
+   it (`ideas/edge-and-security-layers.md`, "Sign-in").
 5. **Apps.** From here, every VPS app goes through
    `skills/deploy-on-dokploy/` with OpenBao and SSO from the start. Apps
    already on Dokploy move into `apps/vps/` one at a time.

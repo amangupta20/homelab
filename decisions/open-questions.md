@@ -96,3 +96,18 @@ owner file, and is deleted from this list.
 - Observability: wanted, not deployed. Prometheus/Grafana is an assumption,
   not a choice. Whether Uptime Kuma runs at all is unknown
   (`inventory/services.md`).
+
+## Reverse proxy (home edge and VPS)
+
+- Which proxy owns the home edge — stay on Nginx Proxy Manager, put a small
+  Caddy behind it for wakeable hosts, or replace it with Caddy or Traefik? Only
+  matters if on-demand wakeups are adopted (`ideas/on-demand-container-wakeups.md`);
+  the edge choice gates that idea, and whether NPM can load the plugin at all
+  is part of this question rather than settled above it.
+- Does the proxy host's nginx have Wasm support? Unverified; one recon command
+  on the host would answer it.
+- Multi-node wakeups: one Traefik with file-provider routes to tailnet
+  addresses, or one Traefik per node with per-route `sablierUrl`? The remote
+  backend address question is untested.
+- Is the Dokploy Traefik on the VPS version 3.6 or newer? `traefik.docker.allownonrunning`
+  needs it, and the running image tag has not been read.

@@ -2,20 +2,24 @@ name: prime review
 
 # Prime Agent reviews the owner's pull requests and acts on the owner's
 # /prime comments: it pushes mechanical fixes, posts one-click suggestions,
-# and raises design issues (repo/prime-reviewer.md). Advisory only: the
-# required check is still `ai review` (review.yml).
+# and raises design issues (repo/prime-reviewer.md).
 #
-# Only the repository owner can start it: their own pull request being
-# opened, or a comment of theirs starting with /prime. Everyone else's events
-# skip the job before it starts, because the job holds a model key and a
-# token that can push.
+# On pull request events the job is named `ai review`, the required check on
+# main (decisions/pull-request-gate.md). It fails on a blocker under
+# repo/review.md section 1 or 5, and on any pull request not opened by the
+# owner. A push by the owner gets a quiet re-review (it comments only when it
+# has something new); a push of the reviewer's own fixes reuses its verdict.
+# On /prime comments the job is named `prime` and is not a check.
 #
-# The rules it judges by (repo/review.md, AGENTS.md) are always read from
-# main. Its prompts, playbook and saved sessions live in the owner's private
-# repo prime-reviewer, read and written with the GitHub App's token.
+# pull_request_target, not pull_request: this workflow and its script always
+# come from main, so a pull request cannot rewrite the gate that judges it.
+# The job checks out the pull request and lets the agent run commands in it,
+# with a model key and a token that can push; that is safe only because the
+# first step stops every pull request and comment not from the owner. Keep
+# that step first.
 on:
-  pull_request:
-    types: [opened]
+  pull_request_target:
+    types: [opened, synchronize, reopened]
   issue_comment:
     types: [created]
   pull_request_review_comment:
@@ -30,11 +34,9 @@ concurrency:
 
 jobs:
   prime:
-    name: prime review
+    name: ${{ github.event_name == 'pull_request_target' && 'ai review' || 'prime' }}
     if: >-
-      (github.event_name == 'pull_request'
-        && github.event.pull_request.user.login == github.repository_owner
-        && github.event.pull_request.head.repo.full_name == github.repository)
+      github.event_name == 'pull_request_target'
       || (github.event_name == 'issue_comment'
         && github.event.issue.pull_request
         && github.event.comment.user.login == github.repository_owner
@@ -49,6 +51,18 @@ jobs:
       PRIME_MODEL: deepseek-v4.1-flash
       PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
     steps:
+      - name: Only the owner's pull requests and comments
+        env:
+          PR_AUTHOR: ${{ github.event.pull_request.user.login || github.event.issue.user.login }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ "$PR_AUTHOR" != "$OWNER" ] || { [ -n "$HEAD_REPO" ] && [ "$HEAD_REPO" != "$REPO" ]; }; then
+            echo "Not reviewed: the Prime reviewer only runs on the owner's own pull requests. The owner reviews this one by hand."
+            exit 1
+          fi
+
       - name: App token
         id: app
         uses: actions/create-github-app-token@v1
@@ -64,10 +78,10 @@ jobs:
           path: rules
           persist-credentials: false
 
-      - name: Workflow scripts (same commit as this workflow)
+      - name: Workflow scripts (from main, like this workflow)
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.repository.default_branch }}
           path: tools
           sparse-checkout: .github/scripts
           persist-credentials: false
@@ -112,6 +126,10 @@ jobs:
           REPO: ${{ github.repository }}
           OWNER: ${{ github.repository_owner }}
           EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action }}
+          SENDER: ${{ github.event.sender.login }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login || github.event.issue.user.login }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           COMMENT_ID: ${{ github.event.comment.id }}
           COMMENT_BODY: ${{ github.event.comment.body }}
           COMMENT_PATH: ${{ github.event.comment.path }}

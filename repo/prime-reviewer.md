@@ -2,8 +2,9 @@
 
 **Status:** built 2026-11-02, **UNTESTED** on GitHub until its first run
 (the same reviewer was run by hand on pull requests 21, 25, 27 and 28 first;
-see "How it was tested"). Advisory only: the required check is still
-`ai review` (`repo/review.md`, `decisions/pull-request-gate.md`).
+see "How it was tested"). It runs the required `ai review` check
+(`decisions/pull-request-gate.md`), replacing the earlier reviewer that sent
+the diff to a model in one call.
 
 ## What it does
 
@@ -23,18 +24,31 @@ wording or style. Never on its own: `iac/`, `decisions/`, `.github/`,
 
 ## When it runs
 
-`.github/workflows/prime-review.yml`, only for the repository owner:
+`.github/workflows/prime-review.yml`. The job's first step stops every pull
+request and comment that is not the owner's: the job holds a model key and a
+token that can push.
 
-- when the owner opens a pull request from a branch of this repo. A line in
-  the pull request body starting with `/prime ` adds a focus for that review;
-- when the owner comments `/prime` or `/prime review [focus]` (a new review)
-  or `/prime <anything else>` (an instruction) on a pull request, in the
-  conversation or on a line.
+| Event | What it does | Comments |
+|---|---|---|
+| the owner opens a pull request | full review, job named `ai review`; a line in the pull request body starting with `/prime ` adds a focus | always |
+| the owner pushes to it | continues the same session and re-reviews the new commits; `ai review` passes or fails on the result | only when it has something new |
+| the reviewer's own fix commits arrive | reuses the verdict of the run that pushed them, no model call | never |
+| the owner comments `/prime` or `/prime review [focus]` | a new full review, job named `prime` (not a check) | always |
+| the owner comments `/prime <anything else>`, in the conversation or on a line | follows the instruction in the same session, for example "do it" on a level 3 | a reply |
+| a pull request someone else opened | `ai review` fails with "not reviewed"; the owner reviews it by hand | none |
 
-Anyone else's pull requests and comments skip the job before it starts: the
-job holds a model key and a token that can push. Its own commits do not start
-it again (it does not listen to pushes). A 👀 reaction on your comment means
-it started; 🚀 that it finished; 😕 that it failed (see the run log).
+`ai review` fails on a blocker under `repo/review.md` sections 1 or 5, or
+when the reviewer produced no result. A 👀 reaction on a `/prime` comment
+means it started, 🚀 that it finished, 😕 that it failed.
+
+## Watching a run
+
+The run's log shows one line per step: the tool call (the command it ran or
+the files it read), and after each model turn the tokens so far and the cost
+so far. Its reasoning and prompts never appear there, because the logs of a
+public repository are readable by anyone. The run's summary page has a table:
+mode, verdict, findings, fixes, duration, turns, tokens, cost and the trace's
+folder.
 
 ## Where it runs and where its state lives
 
@@ -47,7 +61,7 @@ free for a public repository. Nothing runs on the lab.
 | Its prompts, playbook and model settings | the owner's private repo `prime-reviewer` (`main` branch): a fixed core only the owner edits, and a playbook it may improve |
 | Changes it makes to its own playbook | a pull request on `prime-reviewer`, which the owner merges or closes |
 | Each pull request's session (so `/prime <instruction>` continues it) | `prime-reviewer`, `state` branch, `sessions/pr-<n>/` |
-| Each run's trace: every message, tool call, token count and cost | `prime-reviewer`, `state` branch, `traces/<run-id>/` (`meta.json`, `result.json`, `session.jsonl`) |
+| Each run's trace: every message, tool call, token count and cost | `prime-reviewer`, `state` branch, `traces/<run-id>/` (`meta.json`, `result.json`, `session.jsonl`, and `subagents/` for any sub-agent it started); written even when a later step of the run fails |
 
 The prompts and traces are private because workflow artifacts and logs of a
 public repository are readable by anyone; the run log shows only the outcome.

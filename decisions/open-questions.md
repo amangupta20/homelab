@@ -111,3 +111,18 @@ owner file, and is deleted from this list.
   backend address question is untested.
 - Is the Dokploy Traefik on the VPS version 3.6 or newer? `traefik.docker.allownonrunning`
   needs it, and the running image tag has not been read.
+
+## AI reviewer (`plans/ai-reviewer-prime-agent.md`)
+
+- Trace viewer: Phoenix or Langfuse? Phoenix is one container (Elastic
+  License 2.0); Langfuse is six (web, worker, ClickHouse, Redis, Postgres, S3
+  storage; MIT outside its `ee/` folder) and has the stronger workflow for
+  scoring runs. Both publish ARM64 images (`docker buildx imagetools inspect`,
+  2026-11-02). Langfuse's size matters less if it runs only when needed behind
+  Sablier (`ideas/on-demand-container-wakeups.md`), which depends on that
+  idea's open reverse-proxy questions.
+- Where do the reviewer's own instructions live? The plan proposes a private
+  config repo (prompt, skills, tool manifest, `/refine` lessons) and keeps the
+  shared rules public in `repo/review.md` and `AGENTS.md`. `AGENTS.md` says
+  the setup lives in this repo so every harness gets it; is a private repo for
+  one agent's setup within that rule?

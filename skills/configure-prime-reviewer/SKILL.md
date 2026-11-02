@@ -69,3 +69,37 @@ configuration and a caller workflow. The current homelab behavior is owned by
   behavior untested until the first composite-action run.
 - Preserve the existing check and App installation scope unless the owner
   authorizes enrolling additional repositories.
+
+## Runtime state in B2
+
+The B2 implementation and migration helper live in the public action repo;
+credentials live at `kv/general/prime-reviewer-b2` in OpenBao. Use the five
+named Actions secrets in the caller example, with `state-backend: b2` so
+missing credentials fail explicitly. The model subprocess must never receive
+B2 or GitHub credentials. Source: action integration and the live verification
+in `journal/2026-11-03-prime-reviewer-b2-migration.md`.
+
+Before cutover, wait for the last legacy Git-backed run, clone its clean
+`state` branch, and use the action's `migrate_state.py` preflight. Its `--apply`
+mode uploads sessions and traces and downloads them for content comparison.
+`--refresh-imports` updates an earlier import after a later legacy run; it
+refuses to replace state created by a native B2 review. Preserve Git state as
+rollback. Do not silently start a new conversation when a reply has no session.
+
+`observability.md` in the action owns the future importer boundary. Raw Prime
+records are preserved for replay; they are not already OTLP. No viewer must
+be reachable for reviews to work.
+
+Run unfamiliar worker tests under memory, process and time limits. Inspect
+subprocess calls first: a test must never launch a suite that includes itself.
+The 2026-11-03 incident came from two such recursive test launchers; see
+`journal/2026-11-03-recursive-reviewer-tests-oom.md`. A local bounded example
+was run from the action checkout (temporary virtualenv prepared with `uv`):
+
+```sh
+systemd-run --user --pipe --wait --collect --property=MemoryMax=512M --property=TasksMax=24 --property=RuntimeMaxSec=30s --working-directory=/tmp /tmp/prime-reviewer-b2-venv/bin/python -I -m unittest discover -s "$PWD/tests" -v
+```
+
+B2 restoration and a temporary local Prime continuation passed. A live GitHub
+reply after the replacement caller merges remains the final activation check;
+do not promote this whole onboarding skill out of UNTESTED until that passes.

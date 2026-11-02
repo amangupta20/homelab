@@ -59,11 +59,11 @@ free for a public repository. Nothing runs on the lab.
 | What | Where |
 |---|---|
 | The rules it judges by | `repo/review.md` and `AGENTS.md`, always from `main`, so a pull request cannot rewrite them |
-| Shared execution code | public `prime-reviewer-action`, called as a composite action at `v1` by this repo's workflow |
+| Shared execution code | public `prime-reviewer-action`, called as a composite action at `v1.1.0` by this repo's workflow |
 | Its prompts, playbook and model settings | the owner's private repo `prime-reviewer` (`main`): shared `APPEND_SYSTEM.md` and `skills/common-review/`, with homelab settings and playbook in `repos/homelab/` |
 | Changes it makes to its own playbook | a pull request on `prime-reviewer`, which the owner merges or closes |
-| Each pull request's session (so `/prime <instruction>` continues it) | `prime-reviewer`, `state` branch, `sessions/homelab/pr-<n>/` (reads the old path as a fallback) |
-| Each run's trace: every message, tool call, token count and cost | `prime-reviewer`, `state` branch, `traces/<run-id>/` (`meta.json`, `result.json`, `session.jsonl`, and `subagents/` for any sub-agent it started); written even when a later step of the run fails |
+| Each pull request's session (so `/prime <instruction>` continues it) | B2 after this caller merges: `sessions/<owner>/<repo>/<pr>/latest.json` references its saved session archive; the earlier caller uses the private Git `state` branch until cutover |
+| Each run's trace: every message, tool call, token count and cost | B2 after this caller merges: `traces/<owner>/<repo>/<pr>/<run-id>.tar.gz` contains manifest, metadata, result, root transcript and child transcripts; the private Git `state` branch retains earlier records as rollback |
 
 The prompts and traces are private because workflow artifacts and logs of a
 public repository are readable by anyone; the run log shows only the outcome.
@@ -157,3 +157,11 @@ them, and compared session files and root/child transcript contents. All
 comparisons passed. The original Git state remains intact. Details and the
 cutover limitation are recorded in
 `journal/2026-11-03-prime-reviewer-b2-migration.md`.
+
+Release verification, 2026-11-03: the caller pins published action tag
+`v1.1.0`, whose remote Git ref resolves to
+`1ead3e3f070aebbc2963609834f6147df66e589b`. Its `action.yml` declares
+`state-backend` and all five B2 inputs; `state_store.py`, `migrate_state.py`
+and `observability.md` are present at that release (GitHub contents API and
+remote Git refs checked). The earlier review fetched `v1` before its B2
+release was published.

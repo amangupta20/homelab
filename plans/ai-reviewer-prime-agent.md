@@ -1,7 +1,7 @@
 ---
 type: plan
-status: "not started"
-verified: "no (Prime Agent's README and source read 2026-11-02; nothing installed or run)"
+status: "in progress (step 7)"
+verified: "partly (run by hand on pull requests 21, 25, 27, 28 on 2026-11-02; first GitHub run on pull request 29)"
 tags:
   - plan
   - ai-review
@@ -12,7 +12,9 @@ tags:
 
 # AI reviewer on Prime Agent, started on demand
 
-**Status:** not started. Chosen 2026-11-02 by the owner over PR-Agent,
+**Status:** in progress (step 7). Built on 2026-11-02 as a GitHub App run on
+GitHub's hosted runners instead of spot VMs (steps 2 to 6 below were replaced
+by that design; how it works now: `repo/prime-reviewer.md`). Chosen 2026-11-02 by the owner over PR-Agent,
 dsh-superagent and Harness² for this job; dsh-superagent and Harness² are kept
 for the migration agent (`ideas/dsh-superagent-and-harness2.md`).
 
@@ -27,8 +29,8 @@ reply on one level 3 finding produces a commit on that pull request with the
 repo's checks passing, every VM is gone afterwards, and each run's trace can be
 found by the ID in its comment.
 
-This reviewer only advises. The required check stays `ai review`
-(`.github/workflows/review.yml`, `decisions/pull-request-gate.md`).
+It now runs the required `ai review` check itself, replacing the earlier
+single-call reviewer (owner, 2026-11-02; `repo/prime-reviewer.md`).
 
 ## What Prime Agent is, and why it
 

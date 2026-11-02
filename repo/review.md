@@ -19,8 +19,9 @@ reviewer may also push mechanical fixes, under the limits in
   the owner's pull requests against this file and runs the `ai review`
   check, which is required on `main`. It fails on a blocker under sections 1
   and 5 and on any pull request the owner did not open. The workflow, its
-  script and this checklist always come from `main`, never from the pull
-  request, so a change to any of them takes effect only after it merges, and
+  action reference and this checklist always come from `main`, never from the
+  pull request. Execution code comes from the public action at that reference.
+  A change here takes effect only after it merges, and
   the pull request that makes it is reviewed by the old version.
 
 ## 1. Nothing that should not be public

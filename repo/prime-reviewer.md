@@ -1,6 +1,7 @@
 # The Prime reviewer: an agent that reviews and fixes the owner's pull requests
 
-**Status:** built 2026-11-02, **UNTESTED** on GitHub until its first run
+**Status:** built 2026-11-02; shared action migration prepared 2026-11-03,
+**UNTESTED** on GitHub until its first run
 (the same reviewer was run by hand on pull requests 21, 25, 27 and 28 first;
 see "How it was tested"). It runs the required `ai review` check
 (`decisions/pull-request-gate.md`), replacing the earlier reviewer that sent
@@ -58,9 +59,10 @@ free for a public repository. Nothing runs on the lab.
 | What | Where |
 |---|---|
 | The rules it judges by | `repo/review.md` and `AGENTS.md`, always from `main`, so a pull request cannot rewrite them |
-| Its prompts, playbook and model settings | the owner's private repo `prime-reviewer` (`main` branch): a fixed core only the owner edits, and a playbook it may improve |
+| Shared execution code | public `prime-reviewer-action`, called as a composite action at `v1` by this repo's workflow |
+| Its prompts, playbook and model settings | the owner's private repo `prime-reviewer` (`main`): shared `APPEND_SYSTEM.md` and `skills/common-review/`, with homelab settings and playbook in `repos/homelab/` |
 | Changes it makes to its own playbook | a pull request on `prime-reviewer`, which the owner merges or closes |
-| Each pull request's session (so `/prime <instruction>` continues it) | `prime-reviewer`, `state` branch, `sessions/pr-<n>/` |
+| Each pull request's session (so `/prime <instruction>` continues it) | `prime-reviewer`, `state` branch, `sessions/homelab/pr-<n>/` (reads the old path as a fallback) |
 | Each run's trace: every message, tool call, token count and cost | `prime-reviewer`, `state` branch, `traces/<run-id>/` (`meta.json`, `result.json`, `session.jsonl`, and `subagents/` for any sub-agent it started); written even when a later step of the run fails |
 
 The prompts and traces are private because workflow artifacts and logs of a
@@ -83,7 +85,8 @@ names its folder.
   `PRIME_APP_PRIVATE_KEY` and `OPENCODE_API_KEY` (the model provider, OpenCode
   Go). Both secrets are also kept in OpenBao (`systems/openbao.md`).
 - Model: `deepseek-v4.1-flash` through OpenCode Go; Prime Agent version
-  pinned in the workflow (`PRIME_AGENT_VERSION`).
+  pinned by the shared action's `prime-version` input; the model is in the
+  private `repos/homelab/config.toml`.
 
 ## How it was tested
 
@@ -93,3 +96,21 @@ request 21, and on pull request 27 it went from 18 findings in 17 minutes
 (no playbook) to 9 in 6 minutes (with it). It missed version numbers that
 the `ai review` check flags, which led to the playbook's mandatory section 1
 step; whether that step works is not yet tested.
+
+## Shared action and repository folders
+
+Prepared at the owner's request, 2026-11-03: `.github/workflows/prime-review.yml`
+now calls the public composite action, retaining the `ai review` job name and
+owner-only triggers. Its former local script moved to that action. Source:
+workflow and action diff, Python regression tests, and parsed private TOML.
+The private core and common lessons are shared; each repository has its own
+`repos/<repo>/config.toml` and `playbook/SKILL.md`, on one branch. The action's
+README owns its inputs and onboarding steps.
+
+Old homelab sessions are restored on demand and saved under the namespaced
+path on their next run. Trace selection checks the full repository name, so
+another repository's PR with the same number cannot reuse its verdict.
+A `config-ref` input can select an experimental prompt branch; lesson PRs
+then target that branch. No other repository has been enrolled by this change.
+Live validation of the composite action remains **UNTESTED** until this
+workflow merges to the default branch.

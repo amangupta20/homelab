@@ -32,6 +32,10 @@ their own, and never start work from this folder.
 Every page starts with a property block (the Obsidian view reads it); the
 schema is in `repo/obsidian-view.md`, and `mise run check:properties` checks it.
 
+**Backlog list:** `apps-to-try.md` is the exception to "thought through". It
+holds apps the owner found and might host, one line each with no research.
+An entry gets its own idea page once someone researches it.
+
 Naming: `ideas/<what>.md`, lowercase with hyphens (`multi-site-postgres.md`).
 
 ## Template
@@ -73,3 +77,4 @@ tags:
 - `iac-management-ui.md` — a self-hosted web UI to see, and possibly run, OpenTofu and Ansible, with the tools compared and what would make it worth adding.
 - `try-netbird.md` — try NetBird, a self-hostable mesh VPN with its own UI and relay, on the side of Tailscale, with what it would cost and when to migrate.
 - `llm-checked-updates.md` — every 3 days, an LLM reads available updates; clearly safe ones install, anything else waits for the owner, and every run is logged.
+- `apps-to-try.md` — backlog of apps the owner found and might self-host one day (Karakeep, Blinko, DashBeam), one line each; an entry gets its own page once researched.

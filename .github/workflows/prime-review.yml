@@ -11,12 +11,13 @@ name: prime review
 # has something new); a push of the reviewer's own fixes reuses its verdict.
 # On /prime comments the job is named `prime` and is not a check.
 #
-# pull_request_target, not pull_request: this workflow and its script always
-# come from main, so a pull request cannot rewrite the gate that judges it.
+# pull_request_target, not pull_request: this workflow always
+# comes from main and selects the shared action, so a pull request cannot
+# rewrite the gate that judges it.
 # The job checks out the pull request and lets the agent run commands in it,
 # with a model key and a token that can push; that is safe only because the
-# first step stops every pull request and comment not from the owner. Keep
-# that step first.
+# action's first step stops every pull request and comment not from the owner. Keep
+# that guard first in the action.
 on:
   pull_request_target:
     types: [opened, synchronize, reopened]
@@ -46,96 +47,10 @@ jobs:
         && startsWith(github.event.comment.body, '/prime'))
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    env:
-      PRIME_AGENT_VERSION: "0.10.2"
-      PRIME_MODEL: deepseek-v4.1-flash
-      PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
     steps:
-      - name: Only the owner's pull requests and comments
-        env:
-          PR_AUTHOR: ${{ github.event.pull_request.user.login || github.event.issue.user.login }}
-          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
-          OWNER: ${{ github.repository_owner }}
-          REPO: ${{ github.repository }}
-        run: |
-          if [ "$PR_AUTHOR" != "$OWNER" ] || { [ -n "$HEAD_REPO" ] && [ "$HEAD_REPO" != "$REPO" ]; }; then
-            echo "Not reviewed: the Prime reviewer only runs on the owner's own pull requests. The owner reviews this one by hand."
-            exit 1
-          fi
-
-      - name: App token
-        id: app
-        uses: actions/create-github-app-token@v1
+      - name: Review with Prime
+        uses: amangupta20/prime-reviewer-action@v1
         with:
           app-id: ${{ vars.PRIME_APP_ID }}
-          private-key: ${{ secrets.PRIME_APP_PRIVATE_KEY }}
-          repositories: ${{ github.event.repository.name }},prime-reviewer
-
-      - name: Rules from main
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.repository.default_branch }}
-          path: rules
-          persist-credentials: false
-
-      - name: Workflow scripts (from main, like this workflow)
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.repository.default_branch }}
-          path: tools
-          sparse-checkout: .github/scripts
-          persist-credentials: false
-
-      - name: Reviewer config (private)
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ github.repository_owner }}/prime-reviewer
-          token: ${{ steps.app.outputs.token }}
-          path: agent
-          persist-credentials: false
-
-      - name: Cache Prime Agent
-        id: cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.local/share/prime-agent
-            ~/.local/bin/prime-agent
-            ~/.local/bin/uv
-            ~/.local/bin/uvx
-            ~/.prime/agent/kernel-venv
-            ~/.local/share/uv
-          key: prime-agent-${{ runner.os }}-${{ env.PRIME_AGENT_VERSION }}-v1
-
-      - name: Install Prime Agent
-        if: steps.cache.outputs.cache-hit != 'true'
-        env:
-          DO_NOT_TRACK: "1"
-        run: |
-          curl -fsSL https://app.primeintellect.ai/prime-agent/install.sh -o "$RUNNER_TEMP/install.sh"
-          sh "$RUNNER_TEMP/install.sh"
-          ~/.local/bin/prime-agent --version
-
-      # Comment text and the PR body come from the event, so they reach the
-      # script through the environment, never pasted into a shell line.
-      - name: Run the reviewer
-        env:
-          GH_TOKEN: ${{ steps.app.outputs.token }}
-          APP_SLUG: ${{ steps.app.outputs.app-slug }}
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
-          REPO: ${{ github.repository }}
-          OWNER: ${{ github.repository_owner }}
-          EVENT_NAME: ${{ github.event_name }}
-          EVENT_ACTION: ${{ github.event.action }}
-          SENDER: ${{ github.event.sender.login }}
-          PR_AUTHOR: ${{ github.event.pull_request.user.login || github.event.issue.user.login }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          COMMENT_ID: ${{ github.event.comment.id }}
-          COMMENT_BODY: ${{ github.event.comment.body }}
-          COMMENT_PATH: ${{ github.event.comment.path }}
-          COMMENT_LINE: ${{ github.event.comment.line }}
-          COMMENT_REPLY_TO: ${{ github.event.comment.in_reply_to_id }}
-          PR_BODY: ${{ github.event.pull_request.body }}
-          RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: python3 -I tools/.github/scripts/prime-review.py
+          app-private-key: ${{ secrets.PRIME_APP_PRIVATE_KEY }}
+          opencode-api-key: ${{ secrets.OPENCODE_API_KEY }}

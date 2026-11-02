@@ -16,12 +16,23 @@ A pull request is blocked unless:
 - every compose file in the repo passes `docker compose config` (same file),
 - gitleaks passes over the full history (`.github/workflows/secret-scan.yml`),
 - an AI reviewer finds no blocker on public exposure or lab safety
-  (sections 1 and 5 of `repo/review.md`, `.github/workflows/review.yml`);
+  (sections 1 and 5 of `repo/review.md`, `.github/workflows/prime-review.yml`);
   its other findings and `needs_owner` are reported for the owner and do not
   fail the check (changed 2026-10-26: the reviewer kept blocking on wording
   and on owner-only edits the owner approves anyway),
 - a `tofu plan` from the one checkout that applies (see `iac/README.md`) is
   pasted into the pull request, and one review approves it.
+
+## Addendum 2026-11-02: the Prime reviewer runs the `ai review` check
+
+The owner replaced the single-call reviewer (`review.yml`, which sent the
+diff to a model once) with the Prime reviewer (`repo/prime-reviewer.md`): an
+agent that reads the repo around the diff, pushes mechanical fixes and posts
+suggestions. The check keeps its name, so the ruleset is unchanged. It runs
+only on the owner's pull requests: on anyone else's, including an agent's own
+GitHub account, `ai review` fails with "not reviewed", and the owner merges
+it after reviewing it by hand. It also takes minutes per push instead of
+about one and a half.
 
 ## Cost / what this rules out
 

@@ -399,12 +399,16 @@ def diff_lines(base: str, head: str) -> dict[str, set[int]]:
     return out
 
 
+LABELS = {1: "🔧 Fixed", 2: "✏️ Suggested fix", 3: "💡 Design question"}
+
+
 def finding_body(f: dict) -> str:
-    tag = "blocker" if f.get("blocker") else "warning"
-    b = f"**L{f.get('level')} · section {f.get('section')} · {tag}: {f.get('title', '').strip()}**\n\n"
-    b += f.get("body", "").strip()
+    """Plain label first, the short explanation, then the one-click fix."""
+    label = "🛑 Blocker" if f.get("blocker") else LABELS.get(f.get("level"), "Note")
+    b = f"{label} — **{f.get('title', '').strip()}**\n\n{f.get('body', '').strip()}"
     if f.get("level") == 2 and f.get("suggestion") is not None:
         b += "\n\n```suggestion\n" + f["suggestion"].rstrip("\n") + "\n```"
+    b += f"\n\n<sub>level {f.get('level')} · repo/review.md section {f.get('section')}</sub>"
     return b
 
 
@@ -417,8 +421,8 @@ def post_review(ctx: dict, new_head: str, res: dict, commits: list[str], note: s
         if not result["findings"] and not commits and not note and not learn_url:
             log("update review: nothing new to say, no comment posted")
             return
-    footer = (f"\n\n<sub>prime-reviewer · run `{RUN_ID}` · {meta['duration_s']}s · "
-              f"{meta['usage']['output']} output tokens · [log]({RUN_URL})</sub>")
+    footer = (f"\n\n<sub>run `{RUN_ID}` · {meta['duration_s']}s · "
+              f"${meta['usage']['cost']:.3f} · [log]({RUN_URL})</sub>")
     if result is None:
         body = ("Prime finished without a result file. Last lines of its answer:\n\n"
                 + "\n".join("> " + l for l in res["stdout"].strip().splitlines()[-15:]))
@@ -429,9 +433,10 @@ def post_review(ctx: dict, new_head: str, res: dict, commits: list[str], note: s
     if res.get("mode") == "instruct":
         parts.append(result.get("reply", "").strip() or "(no reply)")
     else:
-        parts.append(f"**Verdict: {result.get('verdict', '?')}**\n\n{result.get('summary', '').strip()}")
+        icon = {"approve": "✅", "request_changes": "🛑", "needs_owner": "👤"}.get(result.get("verdict"), "❔")
+        parts.append(f"{icon} **{result.get('verdict', '?').replace('_', ' ')}** — {result.get('summary', '').strip()}")
     if commits:
-        parts.append("**Pushed fixes**\n" + "\n".join(f"- {c}" for c in commits))
+        parts.append("🔧 **Fixed for you**\n" + "\n".join(f"- {c}" for c in commits))
     if note:
         parts.append(f"**Not pushed:** {note}")
 
@@ -450,8 +455,8 @@ def post_review(ctx: dict, new_head: str, res: dict, commits: list[str], note: s
         else:
             rest.append(f)
     if rest:
-        parts.append("**Outside the diff**\n\n" + "\n\n".join(
-            f"`{f.get('path')}:{f.get('line')}` — " + finding_body(f) for f in rest))
+        parts.append("**Elsewhere in the repo**\n\n" + "\n\n---\n\n".join(
+            f"`{f.get('path')}:{f.get('line')}`\n" + finding_body(f) for f in rest))
     if learn_url:
         parts.append(f"I proposed a change to my playbook: {learn_url}")
     body = "\n\n".join(parts) + footer

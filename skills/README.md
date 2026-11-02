@@ -91,6 +91,8 @@ description: <What it explains and when to use it, in one or two sentences.>
 
 ## Skills
 
+- `configure-prime-reviewer/` — configure repository folders and validate the shared action (know-how, UNTESTED draft).
+
 - `deploy-on-dokploy/` — deploy an app on the VPS, or move a Dokploy app into the repo (runbook, UNTESTED).
 - `write-a-skill/` — how to add or change a skill in this repo (know-how).
 - `back-up-a-service/` — give a service its local and offsite backups and prove them with a restore (runbook, UNTESTED).

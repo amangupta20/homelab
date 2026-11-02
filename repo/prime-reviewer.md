@@ -84,9 +84,11 @@ names its folder.
 - Repository settings: variable `PRIME_APP_ID`; secrets
   `PRIME_APP_PRIVATE_KEY` and `OPENCODE_API_KEY` (the model provider, OpenCode
   Go). Both secrets are also kept in OpenBao (`systems/openbao.md`).
-- Model: `deepseek-v4.1-flash` through OpenCode Go; Prime Agent version
-  pinned by the shared action's `prime-version` input; the model is in the
-  private `repos/homelab/config.toml`.
+- Selected model: `muse-spark-1.3-contributor` through OpenCode Go (owner,
+  2026-11-03; local Prime smoke test returned `ok`, exit 0). The private
+  `repos/homelab/config.toml` is updated. The old default-branch caller
+  still hardcodes DeepSeek until this replacement workflow merges.
+  Prime Agent version is pinned by the shared action's `prime-version` input.
 
 ## How it was tested
 
@@ -114,3 +116,44 @@ A `config-ref` input can select an experimental prompt branch; lesson PRs
 then target that branch. No other repository has been enrolled by this change.
 Live validation of the composite action remains **UNTESTED** until this
 workflow merges to the default branch.
+
+## B2 migration and future trace viewers
+
+The owner approved private Backblaze B2 storage on 2026-11-03 after comparing
+it with the Git state branch. This migration is **prepared, not activated**:
+B2 access and upload/download restore tests passed; switching the live
+caller still waits for the workflow merge. The
+current Git state remains intact and is the rollback source. Read-only source
+snapshot `3297851510fa93871fbbb8256d581ca2cd4a2de5` contained two PR sessions
+and two trace bundles (private `state` branch clone and metadata count,
+2026-11-03). Recheck the source after the last legacy run before cutover;
+that count and snapshot are observations, not a permanent inventory.
+
+The replacement caller explicitly requests B2 and fails when its credentials
+are missing, rather than silently saving a new conversation elsewhere. New
+storage restores this PR's session only, writes a complete immutable run
+archive, and updates its latest pointer after the upload succeeds. The old
+Git backend remains available to earlier callers during rollout. No old state
+is deleted by this change, and no retention period is assumed.
+
+Runtime credentials live in OpenBao at `kv/general/prime-reviewer-b2`,
+with the required fields configured as this repository's Actions secrets.
+The supplied endpoint was normalized to HTTPS and its region derived from
+its host name. Read-only B2 authorization and ACL checks confirmed a private
+bucket and a runtime key restricted to that one bucket (2026-11-03).
+The bucket is separate from the lab's backup store. The model subprocess
+receives its model key and review inputs; B2 credentials stay in the wrapper.
+
+The action's `observability.md` owns the future importer boundary: raw root
+and child transcripts, versioned metadata, model/config provenance and run
+boundaries can be replayed later into a chosen viewer. Phoenix, Langfuse and
+OpenObserve expose OpenTelemetry ingestion, but require their own attribute
+and authentication adapters (official ingestion documentation checked
+2026-11-03; links in that file). No viewer or live exporter is deployed yet.
+
+Migration verification, 2026-11-03: `migrate_state.py` imported the two PR
+sessions and two trace bundles from the source snapshot above, downloaded
+them, and compared session files and root/child transcript contents. All
+comparisons passed. The original Git state remains intact. Details and the
+cutover limitation are recorded in
+`journal/2026-11-03-prime-reviewer-b2-migration.md`.

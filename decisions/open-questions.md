@@ -126,3 +126,23 @@ owner file, and is deleted from this list.
   shared rules public in `repo/review.md` and `AGENTS.md`. `AGENTS.md` says
   the setup lives in this repo so every harness gets it; is a private repo for
   one agent's setup within that rule?
+
+## Prime reviewer B2 runtime storage (2026-11-03)
+
+- The owner requested moving reviewer sessions and traces to a dedicated
+  private B2 bucket, keeping prompts and lessons in Git. The existing
+  `kv/dokploy/b2` entry contains only `applicationKey` (field names checked
+  with `bao kv get -format=json`, 2026-11-03); dedicated reviewer access is
+  still needed. Its endpoint, bucket, region and scoped key will live in
+  OpenBao at `kv/general/prime-reviewer-b2`, with a copy of the required
+  runtime fields in the caller repository's Actions secrets. No credentials
+  belong in this repository. Activation and migration restore testing remain
+  pending that access and the caller workflow merge.
+
+- Follow-up, 2026-11-03: the owner supplied the runtime fields; HTTPS endpoint
+  normalization supplied the missing region. A copy at the agreed OpenBao
+  path and five Actions secrets are configured. Read-only B2 authorization
+  verified the key is restricted to the reviewer bucket, whose ACL is private.
+  Two sessions and two traces were uploaded and restored with matching file
+  contents. The remaining rollout step is the caller merge and final refresh
+  after its last legacy review; the owner may close this item after cutover.

@@ -1,36 +1,27 @@
 # Review checklist
 
 What a reviewer checks before a change reaches `main`. Written for an AI
-reviewer (a subagent in whatever harness made the change, or the review job in
-CI), and readable by a person doing the same review by hand.
+reviewer (a subagent in whatever harness made the change, or the Prime
+reviewer in CI), and readable by a person doing the same review by hand.
 
 The reviewer reads the full diff, `AGENTS.md`, and the README of every folder
-the diff touches. It reports; it does not fix.
+the diff touches. A subagent or a person reports and does not fix; the Prime
+reviewer may also push mechanical fixes, under the limits in
+`repo/prime-reviewer.md`.
 
 ## Where it runs
 
 - **Before a pull request:** the agent that made the change runs a separate
   reviewer subagent with this file (`AGENTS.md`, "Before you open a pull
   request"). Fast feedback, not enforced.
-- **On every pull request:** `.github/workflows/review.yml` sends the diff,
-  the commits, this file, `AGENTS.md` and the touched folders' READMEs to a
-  model, and fails the `ai review` check unless the verdict is `approve`. That
-  check is required on `main`. The workflow, script and this checklist always
-  come from `main`, never from the pull request, so a change to any of them
-  takes effect only after it merges — and the pull request that makes it is
-  reviewed by the old version.
-
-The CI reviewer is configured in the repository settings (Settings -> Secrets
-and variables -> Actions), never in code:
-
-| Name | Kind | Example |
-|---|---|---|
-| `REVIEW_API_URL` | variable | any OpenAI-compatible base URL, e.g. `https://api.deepseek.com/v1` |
-| `REVIEW_MODEL` | variable | a model id at that provider |
-| `REVIEW_API_KEY` | secret | the provider's API key |
-
-Until all three are set, the check fails with "not configured" — it never
-passes by default.
+- **On every pull request:** the Prime reviewer
+  (`.github/workflows/prime-review.yml`, `repo/prime-reviewer.md`) reviews
+  the owner's pull requests against this file and runs the `ai review`
+  check, which is required on `main`. It fails on a blocker under sections 1
+  and 5 and on any pull request the owner did not open. The workflow, its
+  script and this checklist always come from `main`, never from the pull
+  request, so a change to any of them takes effect only after it merges, and
+  the pull request that makes it is reviewed by the old version.
 
 ## 1. Nothing that should not be public
 

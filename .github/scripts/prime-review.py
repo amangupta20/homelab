@@ -4,8 +4,10 @@
 Called by .github/workflows/prime-review.yml; documented in
 repo/prime-reviewer.md. Steps:
 
-1. Work out the mode: `review` (PR opened, or `/prime` / `/prime review ...`)
-   or `instruct` (`/prime <anything else>`).
+1. Work out the mode: `review` (PR opened, or `/prime` / `/prime review ...`),
+   `update` (the owner pushed to a reviewed PR), `carry` (the reviewer's own
+   fix commits arrived: reuse its verdict, no model call), or `instruct`
+   (`/prime <anything else>`).
 2. Check out the PR head, restore this PR's saved session from the private
    repo's `state` branch.
 3. Run Prime with a scrubbed environment: it gets the model key and its
@@ -16,6 +18,11 @@ repo/prime-reviewer.md. Steps:
    the summary. In instruct mode, reply to the comment.
 6. Save the session and a per-run trace to the `state` branch, and propose
    any change it made to its own playbook as a PR on the private repo.
+7. On pull_request_target runs (the required `ai review` check), exit
+   non-zero when a blocker under repo/review.md section 1 or 5 is open.
+
+The run log is public: it shows one line per step (tool, what it read or ran,
+tokens, cost), never the model's reasoning or its prompts.
 """
 
 from __future__ import annotations
@@ -49,6 +56,11 @@ RUN_URL = os.environ["RUN_URL"]
 EVENT = os.environ["EVENT_NAME"]
 TOKEN = os.environ["GH_TOKEN"]
 MODEL = os.environ.get("PRIME_MODEL", "deepseek-v4.1-flash")
+ACTION = os.environ.get("EVENT_ACTION", "")
+SENDER = os.environ.get("SENDER", "")
+GATE = EVENT == "pull_request_target"
+SUMMARY = os.environ.get("GITHUB_STEP_SUMMARY")
+BLOCKING_SECTIONS = {1, 5}
 
 # Paths the reviewer may never change by itself (AGENTS.md edit table).
 DENY = re.compile(
@@ -103,12 +115,16 @@ def react(content: str) -> None:
 
 def parse_mode() -> tuple[str, str, str]:
     """Return (mode, instruction, focus)."""
-    if EVENT == "pull_request":
-        focus = "\n".join(
-            l[len("/prime"):].strip() for l in os.environ.get("PR_BODY", "").splitlines()
-            if l.startswith("/prime")
-        )
-        return "review", "", focus
+    if GATE:
+        if SENDER == f"{os.environ['APP_SLUG']}[bot]":
+            return "carry", "", ""
+        if ACTION == "opened" or not (STATE / "sessions" / f"pr-{PR}").exists():
+            focus = "\n".join(
+                l[len("/prime"):].strip() for l in os.environ.get("PR_BODY", "").splitlines()
+                if l.startswith("/prime")
+            )
+            return "review", "", focus
+        return "update", "", ""
     body = os.environ.get("COMMENT_BODY", "")
     text = body[len("/prime"):].strip()
     m = re.match(r"(?is)^review\b(.*)$", text)
@@ -176,6 +192,10 @@ Written only by the `prime review` workflow in the homelab repo.
   - `session.jsonl`: the session file as it was after this run (every
     message, tool call and usage record). The run's own records are the
     lines after `meta.json`'s `session_lines_before`.
+  - `subagents/<child-id>/*.jsonl`: transcripts of sub-agents the run
+    started (same record format). `meta.json`'s usage includes them.
+  - A run that failed after Prime finished still gets its folder;
+    `meta.json`'s `error` says what failed.
 
 `meta.json` and `session.jsonl` are the input for a future trace importer
 (OpenTelemetry to Phoenix, Langfuse or OpenObserve).
@@ -216,6 +236,7 @@ def run_prime(ctx: dict, mode: str, instruction: str, focus: str) -> dict:
         "PRIME_MODE": mode,
         "PRIME_INSTRUCTION": instruction,
         "PRIME_FOCUS": focus,
+        "LAST": ctx.get("last") or ctx["base"],
     }
     if mode == "review":
         prompt = (f"Review pull request #{PR} (diff $BASE..$HEAD). Follow your core and "
@@ -223,36 +244,104 @@ def run_prime(ctx: dict, mode: str, instruction: str, focus: str) -> dict:
                   "$PRIME_OUT/result.json.")
         if focus:
             prompt += " The owner asked for this focus: see $PRIME_FOCUS."
+    elif mode == "update":
+        prompt = (f"The owner pushed new commits to pull request #{PR} since your last run "
+                  "($LAST..$HEAD; the whole change is $BASE..$HEAD). Re-review in update "
+                  "mode as your core describes, fix level 1 findings as commits, and write "
+                  "$PRIME_OUT/result.json.")
     else:
         prompt = (f"The owner left an instruction on pull request #{PR}: read it from "
                   "$PRIME_INSTRUCTION. Do it under your core's rules (the PR's state may "
                   "have changed since your last run: re-read what you need), and write "
                   "$PRIME_OUT/result.json with the reply filled in.")
-    cmd = [str(PRIME), "-p", "--session-dir", str(SESSION), "--provider", "opencode-go",
-           "--model", MODEL, "--thinking", "high"]
+    cmd = [str(PRIME), "-p", "--mode", "json", "--session-dir", str(SESSION),
+           "--provider", "opencode-go", "--model", MODEL, "--thinking", "high"]
     if resume:
         cmd.append("-c")
     cmd.append(prompt)
 
     started = time.time()
-    log(f"running Prime ({mode}, resume={resume})")
-    r = subprocess.run(cmd, cwd=PR_DIR, env=env, text=True, stdin=subprocess.DEVNULL,
-                       stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=2400)
+    log(f"running Prime ({mode}, resume={resume}, model {MODEL})")
+    proc = subprocess.Popen(cmd, cwd=PR_DIR, env=env, text=True, stdin=subprocess.DEVNULL,
+                            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, bufsize=1)
+    final_text = stream_progress(proc, started)
+    try:
+        code = proc.wait(timeout=60)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        code = -9
     subprocess.run([str(PRIME), "shutdown"], env=env, capture_output=True)
     duration = round(time.time() - started)
-    log(f"Prime exited {r.returncode} after {duration}s")
-    # Only the last line of Prime's output reaches the public log.
-    tail = (r.stdout or "").strip().splitlines()[-1:] or ["(no output)"]
-    log(f"Prime said: {tail[0][:300]}")
+    log(f"Prime exited {code} after {duration}s")
 
     result = None
     try:
         result = json.loads((OUT / "result.json").read_text())
     except (OSError, ValueError) as e:
         log(f"no usable result.json ({e.__class__.__name__})")
-    return {"result": result, "exit": r.returncode, "duration": duration,
-            "started": started, "lines_before": lines_before,
-            "stdout": r.stdout or ""}
+    return {"result": result, "exit": code, "duration": duration,
+            "started": started, "lines_before": lines_before, "stdout": final_text}
+
+
+def describe_code(code: str) -> str:
+    """One public-safe line for a tool call: the shell command or first statement."""
+    m = re.search(r"""bash\(\s*(?:f?["']{1,3})(.+?)["']""", code, re.S)
+    if m:
+        return "$ " + " ".join(m.group(1).split())[:150]
+    paths = re.findall(r"""["']([\w./-]+\.(?:md|ya?ml|json|py|toml|sh|txt))["']""", code)
+    if paths:
+        return "read " + ", ".join(dict.fromkeys(paths))[:150]
+    for line in code.splitlines():
+        line = line.strip()
+        if line and not line.startswith(("import ", "from ", "#")):
+            return line[:150]
+    return "(code)"
+
+
+def stream_progress(proc, started: float, deadline: int = 2400) -> str:
+    """Print one line per tool call and per model turn; return the final answer."""
+    step = turn = 0
+    tokens_in = tokens_out = 0
+    cost = 0.0
+    final = ""
+    for raw in proc.stdout:
+        if time.time() - started > deadline:
+            log("time limit reached, stopping Prime")
+            proc.kill()
+            break
+        if raw.startswith('{"type":"message_update"') or '"message_update"' in raw[:40]:
+            continue
+        try:
+            e = json.loads(raw)
+        except ValueError:
+            continue
+        t = e.get("type")
+        el = f"{round(time.time() - started):>4}s"
+        if t == "tool_execution_start":
+            step += 1
+            args = e.get("args") or {}
+            what = describe_code(args.get("code", "")) if "code" in args else e.get("toolName", "?")
+            print(f"{el}  step {step:>2}  {what}", flush=True)
+        elif t == "tool_execution_end":
+            d = (e.get("result") or {}).get("details") or {}
+            if e.get("isError") or d.get("status") not in (None, "ok"):
+                print(f"{el}          ↳ error ({d.get('status', 'failed')})", flush=True)
+        elif t == "turn_end":
+            turn += 1
+            m = e.get("message") or {}
+            u = m.get("usage") or {}
+            tokens_in += u.get("input", 0) or 0
+            tokens_out += u.get("output", 0) or 0
+            c = u.get("cost")
+            cost += c.get("total", 0) if isinstance(c, dict) else 0
+            texts = [x.get("text", "") for x in m.get("content", []) if x.get("type") == "text"]
+            if texts and any(x.strip() for x in texts):
+                final = "\n".join(texts)
+            print(f"{el}  turn {turn:>2}  tokens in {tokens_in:,} · out {tokens_out:,} · "
+                  f"cost ${cost:.4f}", flush=True)
+    if final:
+        print(f"Prime's last words: {final.strip().splitlines()[-1][:200]}", flush=True)
+    return final
 
 
 # -------------------------------------------------------------- commits ----
@@ -322,6 +411,12 @@ def finding_body(f: dict) -> str:
 def post_review(ctx: dict, new_head: str, res: dict, commits: list[str], note: str,
                 meta: dict, learn_url: str) -> None:
     result = res["result"]
+    if result is not None and res.get("mode") == "update":
+        result = dict(result)
+        result["findings"] = [f for f in result.get("findings") or [] if not f.get("carried")]
+        if not result["findings"] and not commits and not note and not learn_url:
+            log("update review: nothing new to say, no comment posted")
+            return
     footer = (f"\n\n<sub>prime-reviewer · run `{RUN_ID}` · {meta['duration_s']}s · "
               f"{meta['usage']['output']} output tokens · [log]({RUN_URL})</sub>")
     if result is None:
@@ -381,13 +476,19 @@ def post_review(ctx: dict, new_head: str, res: dict, commits: list[str], note: s
 
 # ---------------------------------------------------------------- state ----
 
-def usage_since(lines_before: int) -> dict:
-    u = {"turns": 0, "tool_calls": 0, "input": 0, "output": 0, "cache_read": 0, "cost": 0.0}
-    f = next(iter(sorted(SESSION.glob("*.jsonl"))), None)
-    if not f:
-        return u
-    for i, line in enumerate(open(f)):
-        if i < lines_before:
+def child_dirs() -> list[Path]:
+    """Sub-agent transcripts of this run: Prime writes them under the agent
+    folder, session-artifacts/<root session id>/<child id>/*.jsonl."""
+    root = next(iter(sorted(SESSION.glob("*.jsonl"))), None)
+    if not root:
+        return []
+    d = AGENT / "session-artifacts" / root.stem
+    return [d] if d.is_dir() else []
+
+
+def add_usage(u: dict, path: Path, skip: int = 0) -> None:
+    for i, line in enumerate(open(path, errors="replace")):
+        if i < skip:
             continue
         try:
             e = json.loads(line)
@@ -404,6 +505,19 @@ def usage_since(lines_before: int) -> dict:
             u["cache_read"] += x.get("cacheRead", 0) or 0
             c = x.get("cost")
             u["cost"] += c.get("total", 0) if isinstance(c, dict) else 0
+
+
+def usage_since(lines_before: int) -> dict:
+    """Usage of this run: the root session's new lines plus every sub-agent."""
+    u = {"turns": 0, "tool_calls": 0, "input": 0, "output": 0, "cache_read": 0,
+         "cost": 0.0, "subagent_transcripts": 0}
+    root = next(iter(sorted(SESSION.glob("*.jsonl"))), None)
+    if root:
+        add_usage(u, root, lines_before)
+    for d in child_dirs():
+        for f in sorted(d.rglob("*.jsonl")):
+            u["subagent_transcripts"] += 1
+            add_usage(u, f)
     u["cost"] = round(u["cost"], 5)
     return u
 
@@ -421,6 +535,11 @@ def save_state(meta: dict, res: dict) -> None:
     f = next(iter(sorted(SESSION.glob("*.jsonl"))), None)
     if f:
         shutil.copy(f, trace / "session.jsonl")
+    for d in child_dirs():
+        dest = trace / "subagents"
+        if dest.exists():
+            shutil.rmtree(dest)
+        shutil.copytree(d, dest)
     git(["add", "-A"], STATE)
     git(["commit", "--quiet", "-m", f"Run {RUN_ID} on PR {PR} ({meta['mode']})"], STATE)
     for attempt in range(4):
@@ -452,38 +571,123 @@ def propose_learning() -> str:
 
 # ----------------------------------------------------------------- main ----
 
-def main() -> None:
-    mode, instruction, focus = parse_mode()
-    react("eyes")
-    ctx = checkout_pr()
+def pr_traces() -> list[dict]:
+    out = []
+    for f in (STATE / "traces").glob("*/meta.json"):
+        try:
+            m = json.loads(f.read_text())
+        except ValueError:
+            continue
+        if str(m.get("pr")) == str(PR):
+            out.append(m)
+    return sorted(out, key=lambda m: m.get("started", ""))
+
+
+def gate_blockers(result: dict | None) -> list[dict]:
+    if result is None:
+        return [{"section": 0, "title": "the reviewer produced no result"}]
+    return [
+        {"section": f.get("section"), "path": f.get("path"), "line": f.get("line"),
+         "title": f.get("title", "")}
+        for f in result.get("findings") or []
+        if f.get("blocker") and f.get("section") in BLOCKING_SECTIONS
+    ]
+
+
+def write_summary(meta: dict) -> None:
+    if not SUMMARY:
+        return
+    u = meta.get("usage") or {}
+    rows = [
+        ("Mode", meta.get("mode")), ("Verdict", meta.get("verdict")),
+        ("Blocking findings (sections 1, 5)", len(meta.get("gate_blockers") or [])),
+        ("Findings", meta.get("findings")), ("Fixes pushed", meta.get("fixes_pushed")),
+        ("Duration", f"{meta.get('duration_s', 0)} s"),
+        ("Model turns / tool calls", f"{u.get('turns', 0)} / {u.get('tool_calls', 0)}"),
+        ("Tokens in / out / cache read",
+         f"{u.get('input', 0):,} / {u.get('output', 0):,} / {u.get('cache_read', 0):,}"),
+        ("Cost (Prime's estimate)", f"${u.get('cost', 0):.4f}"),
+        ("Model", meta.get("model")), ("Trace", f"`state:traces/{RUN_ID}/`"),
+    ]
+    if meta.get("push_note"):
+        rows.append(("Not pushed", meta["push_note"]))
+    if meta.get("playbook_pr"):
+        rows.append(("Playbook change", meta["playbook_pr"]))
+    with open(SUMMARY, "a") as f:
+        f.write(f"### Prime reviewer · PR #{PR}\n\n| | |\n|---|---|\n")
+        f.writelines(f"| {k} | {v} |\n" for k, v in rows)
+
+
+def main() -> int:
+    if GATE and os.environ.get("PR_AUTHOR") != OWNER:
+        log("not reviewed: only the owner's pull requests are; the owner reviews this one by hand")
+        return 1
     checkout_state()
+    mode, instruction, focus = parse_mode()
+    log(f"mode: {mode} ({EVENT} {ACTION})")
+    react("eyes")
+
+    if mode == "carry":
+        head = os.environ.get("HEAD_SHA", "")
+        prior = [m for m in pr_traces() if m.get("head_after") == head]
+        if prior:
+            blockers = prior[-1].get("gate_blockers") or []
+            log(f"commit {head[:7]} was pushed by the reviewer in run {prior[-1]['run_id']}: "
+                f"reusing its verdict ({len(blockers)} blocking)")
+            for b in blockers:
+                log(f"blocking: section {b.get('section')} {b.get('path')}:{b.get('line')} {b.get('title')}")
+            return 1 if blockers else 0
+        log("no earlier run produced this commit: reviewing the update instead")
+        mode = "update"
+
+    ctx = checkout_pr()
+    traces = pr_traces()
+    ctx["last"] = traces[-1]["head_after"] if traces else None
     git(["remote", "set-url", "origin", f"https://github.com/{CONFIG_REPO}.git"], AGENT)
     res = run_prime(ctx, mode, instruction, focus)
     res["mode"] = mode
-    new_head, commits, note = check_and_push(ctx)
     result = res["result"] or {}
+    blockers = gate_blockers(res["result"])
     meta = {
         "run_id": RUN_ID, "run_url": RUN_URL, "repo": REPO, "pr": int(PR), "mode": mode,
-        "event": EVENT, "model": MODEL, "prime_version": os.environ.get("PRIME_AGENT_VERSION"),
+        "event": EVENT, "action": ACTION, "model": MODEL,
+        "prime_version": os.environ.get("PRIME_AGENT_VERSION"),
         "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(res["started"])),
         "duration_s": res["duration"], "prime_exit": res["exit"],
-        "head_before": ctx["head"], "head_after": new_head, "base": ctx["base"],
+        "head_before": ctx["head"], "head_after": ctx["head"], "base": ctx["base"],
+        "last_reviewed": ctx["last"],
         "verdict": result.get("verdict"),
-        "findings": len(result.get("findings") or []), "fixes_pushed": len(commits),
-        "push_note": note, "session_lines_before": res["lines_before"],
+        "findings": len(result.get("findings") or []), "fixes_pushed": 0,
+        "gate_blockers": blockers, "push_note": "", "playbook_pr": "", "error": "",
+        "session_lines_before": res["lines_before"],
         "usage": usage_since(res["lines_before"]),
     }
-    learn_url = propose_learning()
-    meta["playbook_pr"] = learn_url
-    post_review(ctx, new_head, res, commits, note, meta, learn_url)
-    save_state(meta, res)
+    # The trace is saved whatever happens next: a failed run is the one a
+    # trace viewer is most needed for.
+    try:
+        new_head, commits, note = check_and_push(ctx)
+        meta.update(head_after=new_head, fixes_pushed=len(commits), push_note=note)
+        learn_url = propose_learning()
+        meta["playbook_pr"] = learn_url
+        post_review(ctx, new_head, res, commits, note, meta, learn_url)
+    except Exception as e:
+        meta["error"] = f"{e.__class__.__name__}: {str(e)[:300]}"
+        raise
+    finally:
+        save_state(meta, res)
+        write_summary(meta)
     react("rocket" if res["result"] is not None else "confused")
     log(f"done: {json.dumps({k: meta[k] for k in ('verdict', 'findings', 'fixes_pushed', 'duration_s')})}")
+    if GATE and blockers:
+        for b in blockers:
+            log(f"blocking: section {b.get('section')} {b.get('path')}:{b.get('line')} {b.get('title')}")
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
     try:
-        main()
+        sys.exit(main())
     except Exception as e:  # report, never dump the environment
         log(f"failed: {e.__class__.__name__}: {str(e)[:500]}")
         react("confused")

@@ -49,7 +49,7 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Review with Prime
-        uses: amangupta20/prime-reviewer-action@v1
+        uses: amangupta20/prime-reviewer-action@v1.1.0
         with:
           app-id: ${{ vars.PRIME_APP_ID }}
           app-private-key: ${{ secrets.PRIME_APP_PRIVATE_KEY }}

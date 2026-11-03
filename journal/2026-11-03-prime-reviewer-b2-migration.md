@@ -54,3 +54,13 @@ copy was discarded, so the test did not alter saved PR state. The capped
 process reported 149.9 MiB peak memory and a 6.479-second runtime. The final
 24-test suite also covers refusal to overwrite a native B2 review during
 migration. The GitHub comment-event path still awaits the caller merge.
+
+## Follow-up, 2026-11-03: cutover
+
+The private `state` branch head is `adab215d33c3861e0affe6e723d7f09a1d410019`
+(run `41517182419-1`, the last legacy review on PR 30), with two sessions and
+four trace bundles: the final refresh source recorded in PR 30's description
+(branch listing read 2026-11-03). PR 30 merged at 20:34 UTC on 2026-11-02, and
+no legacy run followed it. The first run on B2 was PR 31: mode `review`, Muse
+Spark, approve, run `41576294219-1`, 157 seconds (job log read through the
+GitHub API). The comment-event path (`/prime` on a PR) has still not run live.

@@ -146,3 +146,8 @@ owner file, and is deleted from this list.
   Two sessions and two traces were uploaded and restored with matching file
   contents. The remaining rollout step is the caller merge and final refresh
   after its last legacy review; the owner may close this item after cutover.
+
+- Follow-up, 2026-11-03: cutover happened. PR 30 merged after the final
+  refresh, and PR 31 was the first B2 run
+  (`journal/2026-11-03-prime-reviewer-b2-migration.md`). Left for the owner
+  to close.

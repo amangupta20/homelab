@@ -1,9 +1,10 @@
 # The Prime reviewer: an agent that reviews and fixes the owner's pull requests
 
-**Status:** built 2026-11-02; shared action migration prepared 2026-11-03,
-**UNTESTED** on GitHub until its first run
-(the same reviewer was run by hand on pull requests 21, 25, 27 and 28 first;
-see "How it was tested"). It runs the required `ai review` check
+**Status:** built 2026-11-02; running through the shared action with B2
+storage since pull request 30 merged. The first run of that setup was pull
+request 31 on 2026-11-03: approve, run `41576294219-1` (job log read through
+the GitHub API). The same reviewer was run by hand on pull requests 21, 25,
+27 and 28 first; see "How it was tested". It runs the required `ai review` check
 (`decisions/pull-request-gate.md`), replacing the earlier reviewer that sent
 the diff to a model in one call.
 
@@ -64,17 +65,17 @@ free for a public repository. Nothing runs on the lab.
 | Shared execution code | public `prime-reviewer-action`, called as a composite action at `v1.1.0` by this repo's workflow |
 | Its prompts, playbook and model settings | the owner's private repo `prime-reviewer` (`main`): shared `APPEND_SYSTEM.md` and `skills/common-review/`, with homelab settings and playbook in `repos/homelab/` |
 | Changes it makes to its own playbook | a pull request on `prime-reviewer`, which the owner merges or closes |
-| Each pull request's session (so `/prime <instruction>` continues it) | B2 after this caller merges: `sessions/<owner>/<repo>/<pr>/latest.json` references its saved session archive; the earlier caller uses the private Git `state` branch until cutover |
-| Each run's trace: every message, tool call, token count and cost | B2 after this caller merges: `traces/<owner>/<repo>/<pr>/<run-id>.tar.gz` contains manifest, metadata, result, root transcript and child transcripts; the private Git `state` branch retains earlier records as rollback |
+| Each pull request's session (so `/prime <instruction>` continues it) | B2: `sessions/<owner>/<repo>/<pr>/latest.json` references its saved session archive; the private Git `state` branch keeps the sessions from before the cutover as rollback |
+| Each run's trace: every message, tool call, token count and cost | B2: `traces/<owner>/<repo>/<pr>/<run-id>.tar.gz` contains manifest, metadata, result, root transcript and child transcripts; the private Git `state` branch retains earlier records as rollback |
 
 The prompts and traces are private because workflow artifacts and logs of a
 public repository are readable by anyone; the run log shows only the outcome.
 Prime's usage telemetry is off (`DO_NOT_TRACK=1`).
 
 A trace viewer (Phoenix, Langfuse or OpenObserve) is not chosen yet
-(`decisions/open-questions.md`, AI reviewer). The `state` branch's trace
-folders are the input for it: each review comment ends with the run ID that
-names its folder.
+(`decisions/open-questions.md`, AI reviewer). The B2 trace archives, plus
+the `state` branch's folders from before the cutover, are the input for it:
+each review comment ends with the run ID that names its trace.
 
 ## Setup (done 2026-11-02)
 
@@ -85,11 +86,11 @@ names its folder.
   pushes made with the workflow's own token would not.
 - Repository settings: variable `PRIME_APP_ID`; secrets
   `PRIME_APP_PRIVATE_KEY` and `OPENCODE_API_KEY` (the model provider, OpenCode
-  Go). Both secrets are also kept in OpenBao (`systems/openbao.md`).
+  Go). Both secrets are also kept in OpenBao (`systems/openbao.md`). Five
+  more `PRIME_B2_*` secrets hold the B2 storage fields (see below).
 - Selected model: `muse-spark-1.3-contributor` through OpenCode Go (owner,
-  2026-11-03; local Prime smoke test returned `ok`, exit 0). The private
-  `repos/homelab/config.toml` is updated. The old default-branch caller
-  still hardcodes DeepSeek until this replacement workflow merges.
+  2026-11-03; local Prime smoke test returned `ok`, exit 0), set in the
+  private `repos/homelab/config.toml`; pull request 31's run used it.
   Prime Agent version is pinned by the shared action's `prime-version` input.
 
 ## How it was tested
@@ -116,26 +117,24 @@ path on their next run. Trace selection checks the full repository name, so
 another repository's PR with the same number cannot reuse its verdict.
 A `config-ref` input can select an experimental prompt branch; lesson PRs
 then target that branch. No other repository has been enrolled by this change.
-Live validation of the composite action remains **UNTESTED** until this
-workflow merges to the default branch.
+The composite action's first live run was pull request 31 (see Status).
 
 ## B2 migration and future trace viewers
 
 The owner approved private Backblaze B2 storage on 2026-11-03 after comparing
-it with the Git state branch. This migration is **prepared, not activated**:
-B2 access and upload/download restore tests passed; switching the live
-caller still waits for the workflow merge. The
-current Git state remains intact and is the rollback source. Read-only source
-snapshot `3297851510fa93871fbbb8256d581ca2cd4a2de5` contained two PR sessions
-and two trace bundles (private `state` branch clone and metadata count,
-2026-11-03). Recheck the source after the last legacy run before cutover;
-that count and snapshot are observations, not a permanent inventory.
+it with the Git state branch. It went live when pull request 30 merged; the
+first run on B2 was pull request 31. The Git state branch is kept intact as
+the rollback source. The first import used snapshot
+`3297851510fa93871fbbb8256d581ca2cd4a2de5` (two PR sessions, two trace
+bundles). The final refresh before cutover used `adab215d33c3861e0affe6e723d7f09a1d410019`,
+the branch's head when it was read on 2026-11-03 (two sessions, four trace
+bundles; private `state` branch listing).
 
 The replacement caller explicitly requests B2 and fails when its credentials
 are missing, rather than silently saving a new conversation elsewhere. New
 storage restores this PR's session only, writes a complete immutable run
-archive, and updates its latest pointer after the upload succeeds. The old
-Git backend remains available to earlier callers during rollout. No old state
+archive, and updates its latest pointer after the upload succeeds. The Git
+backend stays in the action for callers that give no B2 inputs. No old state
 is deleted by this change, and no retention period is assumed.
 
 Runtime credentials live in OpenBao at `kv/general/prime-reviewer-b2`,

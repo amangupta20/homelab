@@ -90,12 +90,27 @@ the verdict is `needs_owner`, however good the edit is:
 
 ## 6. Shaped so it can be reverted
 
-- One commit, one change. Two unrelated changes in one commit is a finding.
-- Subjects are plain prose, present tense, no prefix.
+- One commit, one change. Subjects are plain prose, present tense, no prefix.
+- Commit shape is not reported (see "Blockers and warnings"): history cannot
+  change after a push, so it is advice for the next change.
 
 ## Blockers and warnings
 
-Report everything you find, strictly. Then sort each finding:
+Report a finding only if at least one of these holds (owner, 2026-11-02;
+moved here from the Prime reviewer's private playbook on 2026-11-03):
+
+- it is a blocker under the list below;
+- someone acting on the page would be misled or do the wrong thing: a false
+  or unsourced claim about the live lab, a contradiction with another page or
+  with `decisions/open-questions.md`, an open question stated as decided, a
+  stale line the change left behind elsewhere;
+- a path, link, command or property block is broken or wrong;
+- the change needs the owner (section 4).
+
+Leave out everything else: acronyms, word choice, loose phrasing, a missing
+source on a harmless claim, duplicated wording that does not disagree,
+template headings and commit shape. Borderline means leave it out; an empty
+list is a good result. Then sort each finding:
 
 - **Blocker** — the change should not merge as is. Only blockers under
   sections 1 and 5 fail the CI check; the others are listed for the owner,
@@ -111,10 +126,10 @@ Report everything you find, strictly. Then sort each finding:
 - **Needs owner** — section 4: the change is fine to review but the owner has
   to decide on it. Reported as the `needs_owner` verdict, listed as a blocker;
   it does not fail the check, because the owner's approval is required anyway.
-- **Warning** — reported, does not block: everything else, including missing
-  sources on harmless claims, wording that disagrees with itself, duplicated facts, links and paths, template
-  shape (section 3), and commit shape (section 6) — history cannot change
-  after a push, so commit shape is advice for the next change.
+- **Warning** — reported, does not block: every other finding that meets
+  the bar above, such as a stale copy left elsewhere, wording that disagrees
+  with itself in a way that would mislead, or a broken link, path or property
+  block.
 
 ## Output
 

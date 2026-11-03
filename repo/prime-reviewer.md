@@ -21,7 +21,9 @@ source coding agent) reads the pull request against `repo/review.md` and
 
 It reports only findings that meet the bar in `repo/review.md`
 ("Blockers and warnings"), not wording or style. Never on its own: `iac/`, `decisions/`, `.github/`,
-`.githooks/`, `AGENTS.md`, `README.md` — anything there is level 3.
+`.githooks/`, `skills/`, `journal/`, `AGENTS.md`, `README.md`, `CLAUDE.md`,
+`repo/review.md` — anything there is level 3. Source: `protected` in the
+private `repos/homelab/config.toml`, read 2026-11-03.
 
 ## When it runs
 

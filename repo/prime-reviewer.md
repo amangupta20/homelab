@@ -19,8 +19,8 @@ source coding agent) reads the pull request against `repo/review.md` and
 | 2 | a clear change of a few lines | a suggestion on the line, applied with **Commit suggestion**; lines outside the diff cannot carry one, so those go in the summary |
 | 3 | design | a comment with no code; reply `/prime <instruction>` (for example "do it") and it continues the same session and commits |
 
-It reports only findings that would mislead someone or break a rule, not
-wording or style. Never on its own: `iac/`, `decisions/`, `.github/`,
+It reports only findings that meet the bar in `repo/review.md`
+("Blockers and warnings"), not wording or style. Never on its own: `iac/`, `decisions/`, `.github/`,
 `.githooks/`, `AGENTS.md`, `README.md` — anything there is level 3.
 
 ## When it runs

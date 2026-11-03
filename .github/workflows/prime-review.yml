@@ -53,7 +53,9 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Review with Prime
-        uses: amangupta20/prime-reviewer-action@v1.1.0
+        # A commit, not a tag: a tag can be moved after review. This is
+        # main after v1.1.0 (not yet tagged), with Prime run as its own user.
+        uses: amangupta20/prime-reviewer-action@556e9c4dc6938bf4b5e60c55bb61baf9ce09e682
         with:
           app-id: ${{ vars.PRIME_APP_ID }}
           app-private-key: ${{ secrets.PRIME_APP_PRIVATE_KEY }}

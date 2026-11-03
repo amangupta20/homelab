@@ -62,7 +62,7 @@ free for a public repository. Nothing runs on the lab.
 | What | Where |
 |---|---|
 | The rules it judges by | `repo/review.md` and `AGENTS.md`, always from `main`, so a pull request cannot rewrite them |
-| Shared execution code | public `prime-reviewer-action`, called as a composite action at `v1.1.0` by this repo's workflow |
+| Shared execution code | public `prime-reviewer-action`, called as a composite action at commit `556e9c4dc693` (pinned by full SHA) by this repo's workflow |
 | Its prompts, playbook and model settings | the owner's private repo `prime-reviewer` (`main`): shared `APPEND_SYSTEM.md` and `skills/common-review/`, with homelab settings and playbook in `repos/homelab/` |
 | Changes it makes to its own playbook | a pull request on `prime-reviewer`, which the owner merges or closes |
 | Each pull request's session (so `/prime <instruction>` continues it) | B2: `sessions/<owner>/<repo>/<pr>/latest.json` references its saved session archive; the private Git `state` branch keeps the sessions from before the cutover as rollback |
@@ -142,8 +142,11 @@ with the required fields configured as this repository's Actions secrets.
 The supplied endpoint was normalized to HTTPS and its region derived from
 its host name. Read-only B2 authorization and ACL checks confirmed a private
 bucket and a runtime key restricted to that one bucket (2026-11-03).
-The bucket is separate from the lab's backup store. The model subprocess
-receives its model key and review inputs; B2 credentials stay in the wrapper.
+The bucket is separate from the lab's backup store. From the pin below,
+Prime runs as its own Linux user on copies of the pull request, rules and
+config, and receives only its model key and review inputs (the action
+README's "Isolation"). **UNTESTED** live until a run on that pin passes;
+tested offline and with a local hostile stand-in for Prime.
 
 The action's `observability.md` owns the future importer boundary: raw root
 and child transcripts, versioned metadata, model/config provenance and run
@@ -159,10 +162,13 @@ comparisons passed. The original Git state remains intact. Details and the
 cutover limitation are recorded in
 `journal/2026-11-03-prime-reviewer-b2-migration.md`.
 
-Release verification, 2026-11-03: the caller pins published action tag
-`v1.1.0`, whose remote Git ref resolves to
-`1ead3e3f070aebbc2963609834f6147df66e589b`. Its `action.yml` declares
-`state-backend` and all five B2 inputs; `state_store.py`, `migrate_state.py`
-and `observability.md` are present at that release (GitHub contents API and
-remote Git refs checked). The earlier review fetched `v1` before its B2
-release was published.
+Release verification, 2026-11-03: the caller pins action commit
+`556e9c4dc6938bf4b5e60c55bb61baf9ce09e682`, `main` of `prime-reviewer-action` after pull requests 1 to 3. It adds
+over `v1.1.0` (`1ead3e3f070aebbc2963609834f6147df66e589b`): Prime running as
+its own user, both sides of a moved file checked against protected paths,
+and boto3 installed where the wrapper imports it. The action's offline suite
+(34 tests) passed at that commit. A full SHA is pinned because a tag can be
+moved; the commit is not tagged `v1.2.0` yet. The pull request that sets
+the pin is still reviewed on `v1.1.0`, because the gate takes this workflow
+from `main`; the first run on the pin is the next pull request or `/prime`
+comment after it merges.

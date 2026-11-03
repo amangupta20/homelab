@@ -100,8 +100,9 @@ Open for this topology (also in `decisions/open-questions.md`):
 - How the tiebreaker runs on the Dokploy host: a Pigsty-managed etcd
   installed on the host over SSH, or a container under Dokploy outside
   Pigsty's control.
-- Whether Pigsty supports arm64 on Ubuntu 24.04, since both VPSs are Ampere
-  (as recalled it supports aarch64 — check its docs).
+- Whether Pigsty supports arm64 on Ubuntu 24.04: the Remote VPS is Ampere
+  (`inventory/hosts.md`), and the second VPS is not bought yet, so its shape
+  is open (as recalled Pigsty supports aarch64 — check its docs).
 - Where Pigsty's manager (dashboards, alerts, its commands) runs in phase 1,
   before there is a home VM: on the second VPS node itself, or later at home.
 - pgBackRest's first repository is Garage at home ("Backups"); while home is

@@ -11,9 +11,11 @@ name: prime review
 # has something new); a push of the reviewer's own fixes reuses its verdict.
 # On /prime comments the job is named `prime` and is not a check.
 #
-# pull_request_target, not pull_request: this workflow always
+# pull_request_target, not pull_request: on the gate event this workflow
 # comes from main and selects the shared action, so a pull request cannot
-# rewrite the gate that judges it.
+# rewrite the gate that judges it. issue_comment runs also use main; a
+# pull_request_review_comment run uses the file as it is in the pull request,
+# which is why only the owner's comments start it.
 # The job checks out the pull request and lets the agent run commands in it,
 # with a model key and a token that can push; that is safe only because the
 # action's first step stops every pull request and comment not from the owner. Keep
@@ -29,12 +31,14 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: prime-review-${{ github.event.pull_request.number || github.event.issue.number }}
-  cancel-in-progress: false
-
 jobs:
   prime:
+    # On the job, not the workflow: a skipped run (such as one started by the
+    # reviewer's own review comments) then never joins the group, so it
+    # cannot replace a queued `ai review` run for the same pull request.
+    concurrency:
+      group: prime-review-${{ github.event.pull_request.number || github.event.issue.number }}
+      cancel-in-progress: false
     name: ${{ github.event_name == 'pull_request_target' && 'ai review' || 'prime' }}
     if: >-
       github.event_name == 'pull_request_target'

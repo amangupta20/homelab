@@ -193,3 +193,52 @@ export its log before adding LiteLLM. None of it is checked.
 - The required review check: `repo/review.md`, `decisions/pull-request-gate.md`
 - Backups for the bucket and the viewer: `skills/back-up-a-service/`
 - Undecided parts: `decisions/open-questions.md`, AI reviewer
+
+
+## Next iteration: complete default review experience
+
+**Status:** in progress; owner approved implementation 2026-11-03. Runtime
+activation and live verification remain pending. Source: owner discussion.
+The target is a CodeRabbit-like default experience: opening a PR produces a
+useful review without choosing commands; pushes and replies continue that
+review. This is a product target, not a claim of feature parity.
+
+The review sequence is owned by `repo/review.md`, "Default review sequence":
+intent, correctness, security, usability, verification and continuity. Apply
+it proportionately and refine against real PRs; preserve experimentation,
+useful optional features and the existing concise reporting bar.
+
+Explicit event/command routing and CI awareness are approved directions;
+implementation remains pending. Keep automatic review, incremental update,
+question, requested fix and rerun paths distinct while preserving natural
+language replies. Test bot-loop prevention, queued events, stale commit
+results and retries. Present progress, failure and retry instructions clearly.
+
+Reference inspected 2026-11-03: PR-Agent's reviewer prompt at
+https://github.com/The-PR-Agent/pr-agent/blob/main/pr_agent/settings/pr_reviewer_prompts.toml
+uses concrete triggers, confidence, security checks and structured findings.
+Its optional fields are not all enabled defaults. CodeRabbit's public app
+listing describes automatic incremental reviews, summaries, walkthroughs,
+inline suggestions and chat: https://github.com/apps/coderabbitai.
+These inform the proposal; neither product's internal quality is assumed.
+
+### Observability and cleanup: deferred
+
+The owner explicitly accepts accumulating B2 objects until the observability
+stack is deployed (2026-11-03). Do not implement or enable PR-aware cleanup
+now. Research and refine this proposed strategy during that deployment:
+
+- Keep a PR's sessions and traces while it is open.
+- After closure or merge, delete them only once every run has been imported
+  into the chosen viewer and verified there. A successful send alone is not
+  verification; missing or failed imports retain the source and are retried.
+- A run no longer referenced by `latest.json` is only an older resume point,
+  not evidence that its trace was imported or can be deleted.
+- Define destination-specific import receipts, archive identity/checksums,
+  duplicate handling, partial cleanup recovery and closure/reopen races before
+  enabling deletion. Decide whether a final resumable session must survive:
+  viewer history alone does not guarantee Prime can resume a reopened PR.
+
+The future importer/exporter is the bridge from saved Prime records to the
+chosen viewer's trace format. It is not currently deployed. The public
+action repository's `observability.md` owns its technical integration boundary.

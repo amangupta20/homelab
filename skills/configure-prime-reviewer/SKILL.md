@@ -8,7 +8,8 @@ description: Add a repository to the shared Prime reviewer, change its per-repos
 **Status:** UNTESTED draft; proposed 2026-11-03. Offline checks below were
 run during the folder migration. The composite action with B2 storage has
 run live once, a review on homelab PR 31 (2026-11-03); enrolling a second
-repository and a live `/prime` reply have not been tested.
+repository has not been tested. A live `/prime` reply ran on homelab PR 27
+(2026-11-04) but started a fresh session instead of continuing the saved one.
 
 ## When to use
 
@@ -105,6 +106,7 @@ systemd-run --user --pipe --wait --collect --property=MemoryMax=512M --property=
 ```
 
 B2 restoration and a temporary local Prime continuation passed, and homelab
-PR 31 was a live review on B2. A live `/prime` reply remains the final
-activation check; do not promote this whole onboarding skill out of UNTESTED
+PR 31 was a live review on B2. A live `/prime` reply ran on PR 27 but did
+not continue the saved session; the activation check stays open until a reply
+continues it. Do not promote this whole onboarding skill out of UNTESTED
 until that passes.

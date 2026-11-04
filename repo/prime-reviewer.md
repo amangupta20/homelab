@@ -149,7 +149,9 @@ README's "Isolation"). First live run: the owner's `/prime` comment on pull
 request 27, run `41781483852-1` on 2026-11-04 (job log read through the
 GitHub API): the user was created, Prime ran on the copies, its state saved
 to B2 and its reply was posted. That run also showed that a conversation
-saved before the move did not continue, which the pin below fixes.
+saved before the move did not continue; the pin below is meant to fix that,
+**UNTESTED** live until a `/prime` reply on a pull request whose session was
+saved before the move continues it.
 
 The action's `observability.md` owns the future importer boundary: raw root
 and child transcripts, versioned metadata, model/config provenance and run
@@ -174,7 +176,9 @@ continued after the move to Prime's working folder. Prime's `-c` continues
 only a session whose header records the current folder (Prime 0.10.2,
 `print_runtime.rs`), so the wrapper points the newest saved session there.
 The action's offline suite (37 tests) passes at that commit, and a local run
-as a separate user continued a session saved under the old folder. A full
+as a separate user, with a stand-in that continues sessions the way Prime
+does (not Prime itself), continued a session saved under the old folder. A full
 SHA is pinned because a tag can be moved; the commit is not tagged yet. The
 pull request that sets the pin is still reviewed on the previous pin,
-because the gate takes this workflow from `main`.
+because the gate takes this workflow from `main`; the first run on this pin
+is the next pull request or `/prime` comment after it merges.

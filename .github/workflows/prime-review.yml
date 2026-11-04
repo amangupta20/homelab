@@ -54,8 +54,9 @@ jobs:
     steps:
       - name: Review with Prime
         # A commit, not a tag: a tag can be moved after review. This is
-        # main after v1.1.0 (not yet tagged), with Prime run as its own user.
-        uses: amangupta20/prime-reviewer-action@556e9c4dc6938bf4b5e60c55bb61baf9ce09e682
+        # main after v1.1.0 (not yet tagged), with Prime run as its own user
+        # and saved conversations continued from its working folder.
+        uses: amangupta20/prime-reviewer-action@aca0791870e6564064d8b3a9dfd2f110f87c1067
         with:
           app-id: ${{ vars.PRIME_APP_ID }}
           app-private-key: ${{ secrets.PRIME_APP_PRIVATE_KEY }}

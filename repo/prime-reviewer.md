@@ -62,7 +62,7 @@ free for a public repository. Nothing runs on the lab.
 | What | Where |
 |---|---|
 | The rules it judges by | `repo/review.md` and `AGENTS.md`, always from `main`, so a pull request cannot rewrite them |
-| Shared execution code | public `prime-reviewer-action`, called as a composite action at commit `556e9c4dc693` (pinned by full SHA) by this repo's workflow |
+| Shared execution code | public `prime-reviewer-action`, called as a composite action at commit `aca0791870e6` (pinned by full SHA) by this repo's workflow |
 | Its prompts, playbook and model settings | the owner's private repo `prime-reviewer` (`main`): shared `APPEND_SYSTEM.md` and `skills/common-review/`, with homelab settings and playbook in `repos/homelab/` |
 | Changes it makes to its own playbook | a pull request on `prime-reviewer`, which the owner merges or closes |
 | Each pull request's session (so `/prime <instruction>` continues it) | B2: `sessions/<owner>/<repo>/<pr>/latest.json` references its saved session archive; the private Git `state` branch keeps the sessions from before the cutover as rollback |
@@ -145,8 +145,11 @@ bucket and a runtime key restricted to that one bucket (2026-11-03).
 The bucket is separate from the lab's backup store. From the pin below,
 Prime runs as its own Linux user on copies of the pull request, rules and
 config, and receives only its model key and review inputs (the action
-README's "Isolation"). **UNTESTED** live until a run on that pin passes;
-tested offline and with a local hostile stand-in for Prime.
+README's "Isolation"). First live run: the owner's `/prime` comment on pull
+request 27, run `41781483852-1` on 2026-11-04 (job log read through the
+GitHub API): the user was created, Prime ran on the copies, its state saved
+to B2 and its reply was posted. That run also showed that a conversation
+saved before the move did not continue, which the pin below fixes.
 
 The action's `observability.md` owns the future importer boundary: raw root
 and child transcripts, versioned metadata, model/config provenance and run
@@ -162,13 +165,16 @@ comparisons passed. The original Git state remains intact. Details and the
 cutover limitation are recorded in
 `journal/2026-11-03-prime-reviewer-b2-migration.md`.
 
-Release verification, 2026-11-03: the caller pins action commit
-`556e9c4dc6938bf4b5e60c55bb61baf9ce09e682`, `main` of `prime-reviewer-action` after pull requests 1 to 3. It adds
-over `v1.1.0` (`1ead3e3f070aebbc2963609834f6147df66e589b`): Prime running as
-its own user, both sides of a moved file checked against protected paths,
-and boto3 installed where the wrapper imports it. The action's offline suite
-(34 tests) passed at that commit. A full SHA is pinned because a tag can be
-moved; the commit is not tagged `v1.2.0` yet. The pull request that sets
-the pin is still reviewed on `v1.1.0`, because the gate takes this workflow
-from `main`; the first run on the pin is the next pull request or `/prime`
-comment after it merges.
+Release verification, 2026-11-04: the caller pins action commit
+`aca0791870e6564064d8b3a9dfd2f110f87c1067`, `main` of `prime-reviewer-action` after pull requests 1 to 5. Over
+`v1.1.0` (`1ead3e3f070aebbc2963609834f6147df66e589b`) it adds: Prime running
+as its own user, both sides of a moved file checked against protected paths,
+boto3 installed where the wrapper imports it, and saved conversations
+continued after the move to Prime's working folder. Prime's `-c` continues
+only a session whose header records the current folder (Prime 0.10.2,
+`print_runtime.rs`), so the wrapper points the newest saved session there.
+The action's offline suite (37 tests) passes at that commit, and a local run
+as a separate user continued a session saved under the old folder. A full
+SHA is pinned because a tag can be moved; the commit is not tagged yet. The
+pull request that sets the pin is still reviewed on the previous pin,
+because the gate takes this workflow from `main`.

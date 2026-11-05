@@ -13,12 +13,14 @@ wrote the first encrypted state to B2; a second plan reported no changes
 New resources only. The running VPS stays by-hand
 (`decisions/vps-outside-opentofu.md`; the owner reconfirmed on 2026-11-04).
 
-To make that a permission and not just a habit, OpenTofu's IAM (identity and
-access management) user may only manage one compartment, `homelab-iac`.
-Compartments are OCI's folders for resources, and a policy on one does not reach
-resources outside it, so this key cannot change the VPS as long as the VPS is
-not inside `homelab-iac`. Checked 2026-11-05 from a scratch root: listing instances
-returned none in `homelab-iac` and none in the tenancy root, and the API logged
+This root runs in a separate, new Oracle Cloud account (tenancy), not the one holding
+the running VPS (owner, 2026-11-05). Its key has no access to that other account, so
+it cannot change the VPS.
+
+Inside this account, OpenTofu's IAM (identity and access management) user may only
+manage one compartment, `homelab-iac`. Compartments are OCI's folders for resources,
+and a policy on one does not reach resources outside it. A scratch plan on 2026-11-05
+returned no instances in `homelab-iac` or the root, and the API logged
 `NotAuthorizedOrNotFound`. The provider turns that refusal into an empty list, so a
 data source that returns nothing here may mean "not allowed", not "none exist".
 

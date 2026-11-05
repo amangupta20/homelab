@@ -39,3 +39,10 @@ state itself has no copy outside B2 yet (`plans/oci-state-backup.md`).
 - The new secrets enter OpenBao's backups at the next daily snapshot (cron
   `0 2 * * *`). No offline copy exists, by the owner's choice. No restore has tested
   these secrets.
+
+## Follow-up
+
+Later on 2026-11-05: the owner says this Oracle account is brand new, with nothing in
+its root compartment, so the VPS is in a different account. That answers the first
+"Still open" item: this key cannot reach the VPS because it belongs to another
+account, whichever compartment the VPS is in.

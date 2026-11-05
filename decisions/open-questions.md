@@ -42,6 +42,9 @@ owner file, and is deleted from this list.
   narrower checkout policy would need those paths added. Who updates which?
 - Is the live VPS outside the `homelab-iac` compartment? `iac/oci/README.md`
   relies on it, and the VPS's compartment has not been checked.
+- Answered by the owner, 2026-11-05, for the item above: `iac/oci/` uses a separate,
+  new Oracle account, so the VPS is not in it at all. The item stays for the owner
+  to close.
 
 ## Secrets (OpenBao)
 

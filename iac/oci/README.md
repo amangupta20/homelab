@@ -4,12 +4,9 @@ OpenTofu root for Oracle Cloud Infrastructure (OCI), separate from the Xen
 Orchestra root in `iac/` so the two have separate state and a mistake in one
 cannot plan changes to the other.
 
-**Status:** configured, not applied, and nothing has talked to Oracle yet. `fmt`,
-`validate`, `tflint` and the provider lock ran locally. `tofu init` ran against the
-real bucket on 2026-11-04 with a throwaway passphrase, and the state store was
-tested the same day on a scratch key: encrypted state went up and only ciphertext
-was stored. `run.sh` has not completed a run, because the passphrase and Oracle
-secrets below do not exist yet.
+**Status:** running, with no resources yet. `./run.sh apply` ran on 2026-11-05 and
+wrote the first encrypted state to B2; a second plan reported no changes
+(`journal/2026-11-05-opentofu-on-oracle-cloud.md`).
 
 ## What it manages
 
@@ -20,7 +17,10 @@ To make that a permission and not just a habit, OpenTofu's IAM (identity and
 access management) user may only manage one compartment, `homelab-iac`.
 Compartments are OCI's folders for resources, and a policy on one does not reach
 resources outside it, so this key cannot change the VPS as long as the VPS is
-not inside `homelab-iac`.
+not inside `homelab-iac`. Checked 2026-11-05 from a scratch root: listing instances
+returned none in `homelab-iac` and none in the tenancy root, and the API logged
+`NotAuthorizedOrNotFound`. The provider turns that refusal into an empty list, so a
+data source that returns nothing here may mean "not allowed", not "none exist".
 
 `main.tf` creates nothing yet. The first apply only proves the chain works.
 
@@ -29,39 +29,49 @@ public repo may show before they are written here (`AGENTS.md`, "Security flaws"
 
 ## First-time setup
 
-All **UNTESTED**. The console steps are from memory of the OCI console, so
-labels may differ.
+Done once on 2026-11-05 in the OCI console; labels may change.
 
-1. **Oracle console:** create compartment `homelab-iac`, a user, a group holding
-   that user, and an API key for the user. Download the private key. Add a policy
-   in the tenancy root:
+1. **Compartment:** Identity & Security → Compartments → Create compartment.
+   Name `homelab-iac`, parent the root compartment. Keep its OCID. It must exist
+   before step 4, which refers to it by name.
+2. **Group:** Identity & Security → Domains → Default → User management → Groups →
+   Create group, named `tofu-homelab`.
+3. **User and key:** on the same tab, Users → Create, in that group. Email goes in
+   as `name+tofu@example.com`; the suffix comes before the `@`. Make the key locally,
+   so the private half never passes through a browser, then paste the public half at
+   the user's API keys → Add API key → Paste public key:
 
-   ```text
-   Allow group <group> to manage all-resources in compartment homelab-iac
+   ```bash
+   mkdir -m 700 ~/oci-setup && openssl genrsa -out ~/oci-setup/key.pem 2048
+   openssl rsa -pubout -in ~/oci-setup/key.pem -out ~/oci-setup/pub.pem
    ```
 
-2. **OpenBao:** create the state passphrase, once, and store the Oracle values.
-   They are separate secrets because `bao kv put` replaces a whole secret, so
-   re-running the Oracle command must not be able to erase the passphrase.
-   `@file` keeps the key out of shell history; delete the file afterwards.
+4. **Policy:** Identity & Security → Policies, with the root compartment selected,
+   Create policy, manual editor:
+
+   ```text
+   Allow group 'Default'/'tofu-homelab' to manage all-resources in compartment homelab-iac
+   ```
+
+5. **OpenBao:** create the state passphrase, once, and store the Oracle values. They
+   are separate secrets because `bao kv put` replaces a whole secret, so re-running
+   the Oracle command must not be able to erase the passphrase. Then delete
+   `~/oci-setup`. The bucket and its key are at `kv/general/tofub2` (limited to that
+   one bucket, B2 authorize call, 2026-11-04).
 
    ```bash
    openssl rand -base64 32 | tr -d '\n' | bao kv put -mount=kv general/tofu-state passphrase=-
-   bao kv put -mount=kv general/oci tenancy_ocid=__ID__ user_ocid=__ID__ \
-     fingerprint=__FP__ private_key=@key.pem region=__REGION__ \
-     compartment_ocid=__ID__
+   bao kv put -mount=kv general/oci tenancy_ocid=__ID__ user_ocid=__ID__ fingerprint=__FP__ \
+     private_key=@$HOME/oci-setup/key.pem region=__REGION__ compartment_ocid=__ID__
    ```
 
-   Already in place: the B2 bucket and key at `kv/general/tofub2` (limited to that
-   one bucket, B2 authorize call, 2026-11-04).
-
-3. **Keep a break-glass copy offline** of the API key and the state passphrase.
-   OpenBao runs on the VPS, so if that machine is lost these are needed before
-   OpenBao is back. Losing the passphrase loses the state.
+**Recovery:** there is no offline copy of these (owner's choice, 2026-11-05). If the
+VPS is lost they come back by restoring an OpenBao snapshot (`systems/openbao.md`).
+Losing the passphrase loses the state.
 
 ## Use
 
-**UNTESTED** until the setup above is done.
+All three ran on 2026-11-05.
 
 ```bash
 ./run.sh init

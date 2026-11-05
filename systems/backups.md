@@ -31,7 +31,7 @@ test").
 - OpenTofu state: a `tofu state pull` export offsite is planned but **not
   implemented**, so the state bucket is a single copy today. The Oracle Cloud
   state (`iac/oci/README.md`) is encrypted in Backblaze B2, also a single copy;
-  it does not exist until the first apply. A copy in Garage is planned
+  first written 2026-11-05. A copy in Garage is planned
   (`plans/oci-state-backup.md`).
 - Remote VPS: Dokploy backs up its own database and the volumes or
   databases of 12 service names to one destination, `garage` — the Garage

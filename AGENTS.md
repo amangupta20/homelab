@@ -66,8 +66,11 @@ first is not automatically right.
   what you found, then change.
 - Snapshots or verified backups before any write to infrastructure. Say which
   snapshot you took.
-- Infrastructure changes go through OpenTofu: paste `tofu plan` output in the
-  task before `tofu apply`. Never apply blind.
+- Infrastructure changes go through OpenTofu: read `tofu plan` before
+  `tofu apply`, and never apply blind. This repo is public, so a pull request
+  gets only the plan's summary and its list of resource actions
+  (`iac/README.md`, "Plans in pull requests"). The full plan can show IDs and
+  addresses; it stays in your private task or chat.
 - One fact, one owner. `inventory/services.md` owns the service list,
   `inventory/network.md` owns IPs, `systems/<thing>.md` owns how each thing
   works. Update the owner file, link to it from elsewhere — don't copy the

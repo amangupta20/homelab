@@ -65,7 +65,7 @@ labels may differ.
 
 ```bash
 ./run.sh init
-./run.sh plan    # paste this into the pull request before applying
+./run.sh plan    # read it all; the pull request gets the short form in iac/README.md
 ./run.sh apply
 ```
 

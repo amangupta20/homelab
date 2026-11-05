@@ -50,8 +50,20 @@ Prerequisites before the first `tofu init` works:
 **One writer.** Garage has no S3 conditional writes, so OpenTofu cannot take a
 lock. No command can detect that someone else applied in between: a plan always
 reads whatever is in the bucket now. So the rule is the whole protection — one
-checkout runs `tofu apply`, the plan pasted into the pull request comes from that
+checkout runs `tofu apply`, the plan summarised in the pull request comes from that
 same checkout, produced immediately before the apply.
+
+**Plans in pull requests.** This repo is public and a full plan can show IDs and
+addresses, so paste only the summary and resource actions, and keep the full plan
+out of the repo, pull requests and CI logs. This keeps only those lines (ran
+against a scratch config on 2026-11-05; attribute values did not appear):
+
+```bash
+tofu plan -no-color | grep -E '^ +# |^Plan:|^No changes'
+```
+
+Read the full plan before applying; this short form is for the record, not for
+deciding. Still check what it prints: a resource's name can identify something too.
 
 **Backup:** losing the bucket loses the mapping between code and real VMs.
 Whether it is backed up is tracked in `systems/backups.md`.

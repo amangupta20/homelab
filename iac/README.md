@@ -5,6 +5,9 @@ one, you know the other). The provider `vatesfr/xenorchestra` talks to Xen
 Orchestra's API and creates VMs there, so a VM is a config file, not a
 hand-clicked pet.
 
+Oracle Cloud has its own root and state: `oci/README.md`. The rest of this page
+is the Xen Orchestra root.
+
 ## Files
 
 - `provider.tf` — declares the Xen Orchestra provider. Holds no credentials.

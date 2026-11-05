@@ -28,12 +28,20 @@ jobs:
       - name: Check formatting
         run: tofu fmt -check -recursive -diff
 
+      # One job looping over the roots, not a matrix: a matrix would rename this
+      # job, and decisions/pull-request-gate.md requires it by name.
       - name: Init without a backend
         # No state is touched: this only resolves providers so validate can run.
-        run: tofu init -backend=false -input=false -no-color
+        run: |
+          for root in . oci; do
+            tofu -chdir="$root" init -backend=false -input=false -no-color
+          done
 
       - name: Validate
-        run: tofu validate -no-color
+        run: |
+          for root in . oci; do
+            tofu -chdir="$root" validate -no-color
+          done
 
       - uses: terraform-linters/setup-tflint@v4
         with:

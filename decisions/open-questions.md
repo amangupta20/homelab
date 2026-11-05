@@ -36,6 +36,12 @@ owner file, and is deleted from this list.
 - Ansible: the README named it as the after-boot configuration tool, but the
   repo has no playbooks. Is it still the plan?
 - cloud-init: one committed template per VM, or generated?
+- `iac/oci/run.sh` reads `kv/general/`, where the owner keeps OpenTofu's secrets
+  because they are not specific to one host (2026-11-05). `systems/openbao.md` says
+  checkouts read `kv/homelab/*` only. It works today with an admin token; a
+  narrower checkout policy would need those paths added. Who updates which?
+- Is the live VPS outside the `homelab-iac` compartment? `iac/oci/README.md`
+  relies on it, and the VPS's compartment has not been checked.
 
 ## Secrets (OpenBao)
 

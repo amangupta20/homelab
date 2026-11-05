@@ -29,7 +29,10 @@ test").
 - Apps with internal state (Nextcloud): VM image plus an app-level Borg
   backup from inside the app, managed through BorgWarehouse on TrueNAS.
 - OpenTofu state: a `tofu state pull` export offsite is planned but **not
-  implemented**, so the state bucket is a single copy today.
+  implemented**, so the state bucket is a single copy today. The Oracle Cloud
+  state (`iac/oci/README.md`) is encrypted in Backblaze B2, also a single copy;
+  it does not exist until the first apply. A copy in Garage is planned
+  (`plans/oci-state-backup.md`).
 - Remote VPS: Dokploy backs up its own database and the volumes or
   databases of 12 service names to one destination, `garage` — the Garage
   store at home, addressed by its home LAN IP, presumably through a Tailscale

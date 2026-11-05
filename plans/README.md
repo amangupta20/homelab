@@ -55,3 +55,4 @@ tags:
 - `hindsight-d1-reranker.md` — d1-2B on a homelab GPU VM, loaded on demand, in Hindsight's reranker chain (not started).
 - `package-and-image-cache.md` — apt packages and container images cached once at home, inside a disk budget (not started).
 - `ai-reviewer-prime-agent.md` — Prime Agent reviews the owner's pull requests with three levels of finding, memory and kept traces; built as a GitHub App on GitHub's runners instead of spot VMs (in progress, step 7; how it works: `repo/prime-reviewer.md`).
+- `netbox.md` — NetBox as the lab's inventory, kept current by a sync from the live systems (not started, no date).

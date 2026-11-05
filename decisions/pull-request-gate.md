@@ -20,8 +20,10 @@ A pull request is blocked unless:
   its other findings and `needs_owner` are reported for the owner and do not
   fail the check (changed 2026-10-26: the reviewer kept blocking on wording
   and on owner-only edits the owner approves anyway),
-- a `tofu plan` from the one checkout that applies (see `iac/README.md`) is
-  pasted into the pull request, and one review approves it.
+- the summary and resource actions of a `tofu plan` from the one checkout that
+  applies (see `iac/README.md`) are pasted into the pull request, and one review
+  approves it. The full plan stays out, because this repo is public (proposed
+  2026-11-05).
 
 ## Addendum 2026-11-02: the Prime reviewer runs the `ai review` check
 

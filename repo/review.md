@@ -108,9 +108,11 @@ the verdict is `needs_owner`, however good the edit is:
 ## 5. Safe for the lab
 
 - A change to `iac/` that can alter what `tofu plan` shows (resources,
-  providers, variables, backend settings) comes with that plan pasted in the
-  pull request, from the one checkout that applies. Comments, docs and
-  formatting in `iac/` need no plan.
+  providers, variables, backend settings) comes with that plan's summary and
+  resource actions pasted in the pull request, from the one checkout that
+  applies (`iac/README.md`, "Plans in pull requests"). A pasted full plan is a
+  finding: it can publish IDs and addresses. Comments, docs and formatting in
+  `iac/` need no plan.
 - A write to infrastructure that could lose data names the snapshot or
   verified backup taken first. A service that keeps no data needs only a
   copy of its configuration; that copy needs no restore test.

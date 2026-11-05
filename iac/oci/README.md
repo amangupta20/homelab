@@ -29,6 +29,19 @@ data source that returns nothing here may mean "not allowed", not "none exist".
 Security list and firewall rules for anything public need a decision on what the
 public repo may show before they are written here (`AGENTS.md`, "Security flaws").
 
+## Staying free
+
+This is a pay-as-you-go account that should only use Always Free resources. The
+owner's research (2026-11-05) is that the 2026 Ampere cut applies to free-tier
+accounts, and pay-as-you-go keeps 4 OCPUs and 24 GB.
+
+- **Alerts:** a budget with alert rules, set up by the owner in the console on
+  2026-11-05. It only warns; it does not stop spending. No alert has fired yet, so
+  delivery is untested.
+- **Quotas:** none, by the owner's choice for now. Nothing in Oracle blocks a paid
+  shape or extra disk, so reading each plan is the check: anything outside the free
+  shapes and 200 GB of disk costs money.
+
 ## First-time setup
 
 Done once on 2026-11-05 in the OCI console; labels may change.

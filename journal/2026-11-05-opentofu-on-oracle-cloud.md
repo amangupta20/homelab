@@ -46,3 +46,6 @@ Later on 2026-11-05: the owner says this Oracle account is brand new, with nothi
 its root compartment, so the VPS is in a different account. That answers the first
 "Still open" item: this key cannot reach the VPS because it belongs to another
 account, whichever compartment the VPS is in.
+
+Also on 2026-11-05: the owner set up a budget with alerts in the console and left
+quotas off for now (`iac/oci/README.md`, "Staying free").

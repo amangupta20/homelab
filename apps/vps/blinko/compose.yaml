@@ -1,0 +1,30 @@
+# Blinko: a note-taking app, run to test the shared Postgres (plans/shared-postgres.md).
+# Tailnet only, on its own database on pigsty-1. Source of the shape and what differs: README.
+
+services:
+  blinko:
+    # Pinned, not `latest`. arm64 checked with `docker buildx imagetools inspect`, 2026-11-06.
+    image: blinkospace/blinko:1.8.9
+    restart: unless-stopped
+    ports:
+      # The tailnet address only: never a public port.
+      - "${BLINKO_TAILNET_IP:?}:1111:1111"
+    volumes:
+      # Uploads. The notes themselves are in Postgres.
+      - blinko-data:/app/.blinko
+    environment:
+      NODE_ENV: production
+      NEXTAUTH_URL: "http://${BLINKO_TAILNET_IP:?}:1111"
+      NEXT_PUBLIC_BASE_URL: "http://${BLINKO_TAILNET_IP:?}:1111"
+      NEXTAUTH_SECRET: "${BLINKO_NEXTAUTH_SECRET:?}"
+      # Through Pigsty's service port 5433, so it follows the primary in phase 2.
+      DATABASE_URL: "${BLINKO_DATABASE_URL:?}"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:1111/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  blinko-data:

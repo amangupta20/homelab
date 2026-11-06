@@ -149,24 +149,38 @@ Open for this topology (also in `decisions/open-questions.md`):
   `/etc/os-release`, `nproc`, `free -h` over SSH).
 - **Disk:** one 150 GB ext4 root disk and no separate `/data` (`df -hT`). Pigsty's
   docs recommend a `/data` mount point on xfs (`pigsty.io/docs/deploy/prepare`);
-  whether root is good enough is what the `fio` check is for. `fio` is not
-  installed, and installing it is a write.
-- **SSH to itself:** `ubuntu@127.0.0.1` is refused today (run over SSH). Pigsty
-  needs passwordless SSH and sudo for its admin user; sudo already works.
-- **Install commands, UNTESTED here** (`pigsty.io/docs/setup/install`). The release
-  notes name `./install.yml` where the docs name `./deploy.yml`; read the downloaded
-  copy before running either:
+  the `fio` check below passes on root. Three runs on 2026-11-06 gave `fdatasync` p99
+  of 1.89, 0.72 and 0.68 ms, against etcd's target of under 10 ms.
+- **SSH to itself:** set up 2026-11-06 with a key made on the node; `configure`
+  reports both `127.0.0.1` and the node's address as ok. Sudo already worked.
+- **Install commands:** the download and `configure` steps ran 2026-11-06. `./deploy.yml`
+  is **UNTESTED** here; it exists in v4.5.0, and `install.yml`, named in the release notes,
+  does not:
 
   ```bash
   curl -fsSL https://repo.pigsty.io/get | bash -s v4.5.0
   cd ~/pigsty
-  ./configure -g
+  ./configure -c rich -g -i <the node's Tailscale address> -n
   ./deploy.yml
   ```
 
+- **`bootstrap` replaces the apt sources.** The download script runs it. It moved
+  the Ubuntu and Tailscale sources to `/etc/apt/backup` and wrote a `sources.list` with
+  `trusted=yes`, which skips package signature checks. The originals were restored on
+  2026-11-06 and `apt-get update` worked. `repo_remove: false` and `node_repo_remove: false`
+  stop the deploy doing the same; `./bootstrap --keep` is documented in the script
+  for next time (not run).
+- **`configure` changes things to review:** below 4 CPUs it picks the `tiny` tuning,
+  overridden here to `oltp` (owner). Anonymous Grafana is hard-coded on in
+  `roles/infra/templates/grafana/grafana.ini.j2`, not a parameter as the docs suggest, so
+  that line is edited on the node, and an upgrade would need it again.
+- **Node DNS stays as it is:** `node_dns_method: none`, so Pigsty does not edit
+  `resolv.conf`, which Tailscale and systemd-resolved manage. Its dnsmasq binds only
+  `127.0.0.1` and the node's address (its template), so it should not clash with
+  systemd-resolved.
 - **Passwords:** Pigsty's defaults are public. `./configure -g` generates random
   ones but not pgBackRest's `cipher_pass`, or credentials added by hand
-  (`pigsty.io/docs/setup/install`). Put the generated ones in OpenBao.
+  (`pigsty.io/docs/setup/install`). The generated ones are at `kv/general/pigsty`.
 - **Read the generated config against the "Security checklist" before deploying.**
   Pigsty's docs say its base config opens ports 80 and 443 publicly and allows
   anonymous read access to Grafana (`pigsty.io/docs/setup/security`), and they do

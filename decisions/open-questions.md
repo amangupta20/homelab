@@ -35,6 +35,8 @@ owner file, and is deleted from this list.
   repo?
 - Ansible: the README named it as the after-boot configuration tool, but the
   repo has no playbooks. Is it still the plan?
+- Answered by the owner, 2026-11-05, for the item above: yes, it is the plan;
+  `ansible/` started 2026-11-06. The item stays for the owner to close.
 - cloud-init: one committed template per VM, or generated?
 - `iac/oci/run.sh` reads `kv/general/`, where the owner keeps OpenTofu's secrets
   because they are not specific to one host (2026-11-05). `systems/openbao.md` says
@@ -201,6 +203,9 @@ these parts are open:
 - Home-to-VPS round trip: below 50 ms per the owner, not measured; measure
   jitter with `mtr` over hours before etcd spans sites (**UNTESTED**).
 - The second VPS: not bought yet ("soon", owner, 2026-11-01).
+- For the item above: it exists as `pigsty-1` since 2026-11-06, in a separate Oracle
+  account from the Remote VPS and the same region as far as recalled. The item stays
+  for the owner to close.
 - Answered by the owner, 2026-11-01, for the "Phase 1 etcd" item above: one
   member on the second VPS in phase 1; the tiebreaker on the Dokploy host is
   added when the home node starts. The item stays for the owner to close.
@@ -209,3 +214,5 @@ these parts are open:
   with home healthy. Separate account or region, or accept?
 - Tailscale key expiry on the database and etcd nodes: turn it off or tag
   them, so a node does not drop out of the cluster when its key expires.
+- For the item above: `pigsty-1` joined untagged, so its key expires 2027-05-05 until
+  it is tagged or expiry is turned off (`tailscale status --json`, 2026-11-06).

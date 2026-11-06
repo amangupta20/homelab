@@ -1,6 +1,6 @@
 ---
 type: plan
-status: "not started (node exists, Pigsty not installed)"
+status: "in progress (installed on pigsty-1; drills not done, no apps)"
 verified: "partly (pigsty-1 read over SSH and Pigsty's docs read 2026-11-06; the rest is design from research 2026-10-31)"
 hosts:
   - pigsty-1
@@ -16,7 +16,8 @@ tags:
 
 # Shared Postgres
 
-**Status:** not started; `pigsty-1` exists and Pigsty is not installed on it.
+**Status:** in progress. Pigsty runs on `pigsty-1` since 2026-11-06
+(`journal/2026-11-06-install-pigsty.md`); the drills are next and no app uses it.
 Part of the migration (`plans/migration.md`), and comes before it: each app's
 database target shapes how it is migrated. The owner chose the topology on
 2026-11-01 ("Topology", below) and how phase 1 starts on 2026-11-06 ("Phase 1,
@@ -131,9 +132,12 @@ Open for this topology (also in `decisions/open-questions.md`):
 - **Alerts:** ntfy, the owner's preference, through ntfy's built-in `alertmanager`
   template (`docs.ntfy.sh/publish`). **UNTESTED.** Pigsty does not document receiver
   setup, only the file `/etc/alertmanager.yml`.
-- **TLS:** Postgres accepts it by default. PgBouncer gets `prefer` unless a `pgbench`
-  run during the drills shows a high cost; Patroni's stays off, because the proxy's
-  health checks use that API. Monitoring keeps metrics 30 days and logs 30 days or 20 GB.
+- **TLS:** on where a client asks for it: Postgres by default, PgBouncer with `prefer`.
+  `pgbench` (16 clients, on the node itself, 2026-11-06) showed about 10% fewer
+  transactions a second and 1 ms more latency, which the owner's rule accepts. Opening a new
+  TLS connection costs far more (about 4 times slower through PgBouncer), so apps should
+  keep connections open. Patroni's stays off, because the proxy's health checks use that API.
+  Monitoring keeps metrics 30 days and logs 30 days or 20 GB.
 - **MySQL apps keep their own database in compose:** Pigsty runs one instance per node,
   and its MySQL module refuses Ubuntu on ARM64 (`pigsty.io/docs/mysql`). Redis also stays
   in compose: a cache should sit next to its app.
@@ -153,9 +157,8 @@ Open for this topology (also in `decisions/open-questions.md`):
   of 1.89, 0.72 and 0.68 ms, against etcd's target of under 10 ms.
 - **SSH to itself:** set up 2026-11-06 with a key made on the node; `configure`
   reports both `127.0.0.1` and the node's address as ok. Sudo already worked.
-- **Install commands:** the download and `configure` steps ran 2026-11-06. `./deploy.yml`
-  is **UNTESTED** here; it exists in v4.5.0, and `install.yml`, named in the release notes,
-  does not:
+- **Install commands,** run 2026-11-06. `install.yml`, named in the release notes, does
+  not exist in v4.5.0. To rebuild, use `ansible/pigsty/` instead of hand edits:
 
   ```bash
   curl -fsSL https://repo.pigsty.io/get | bash -s v4.5.0
@@ -308,6 +311,8 @@ with `max_slot_wal_keep_size`. Alert on archive failures and on `pg_wal` size.
 - One `pg_hba` rule for the tailnet range with a password required (owner,
   2026-11-06). Per-source rules add little: containers on one host are expected to
   share its Tailscale address (not checked). Tailnet access rules choose the machines.
+  PgBouncer has its own list, so `pgb_hba_rules` needs the same rule; without it, logins
+  over the tailnet failed with "no authentication method is found".
 - One role and one database per app; `REVOKE CONNECT ON DATABASE <db> FROM PUBLIC`
   for every database; no app gets superuser. Extensions an app needs are
   created by the admin.
@@ -316,6 +321,12 @@ with `max_slot_wal_keep_size`. Alert on archive failures and on `pg_wal` size.
 - App passwords in OpenBao.
 - Dashboards (Grafana) on the LAN or tailnet only, default admin password
   changed before first use.
+
+## Extensions that need more than `CREATE EXTENSION`
+
+Tested in a scratch database 2026-11-06. `pg_cron` can only be created in the `postgres`
+database. `vchord`, `pg_search` and `pg_duckdb` are installed but must be added to `pg_libs`
+first, which restarts Postgres. The rest of the list in `ansible/pigsty/` created normally.
 
 ## Adding an app
 
@@ -374,11 +385,12 @@ bucket, with a lifecycle rule that removes hidden files after 7 days (read throu
 API). This is how it meets rule 3 of that decision. Tested with a throwaway object through
 the S3 API (virtual-hosted addressing): upload, multipart upload and abort work; a delete by
 name only hides the file; a delete of a specific version gets `AccessDenied`. **UNTESTED:**
-pgBackRest itself with this key, including expiring backups. Step 1's gate covers that.
+expiring backups with this key: a full backup and WAL archiving work (2026-11-06), but
+nothing has expired yet. The first expiry follows the second full backup.
 
 ## Steps
 
-1. **Install on `pigsty-1`,** phase 1 of "Topology".
+1. **Install on `pigsty-1`,** phase 1 of "Topology". (Done 2026-11-06.)
    Run the `fio` check first. — gate: Pigsty installs, dashboards show the node,
    the "Security checklist" passes, and `pgbackrest info` lists the B2 repository.
 2. **Restore drill.** Back up to B2; write test data, create a restore point, break

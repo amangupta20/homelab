@@ -8,7 +8,8 @@ name: prime review
 # main (decisions/pull-request-gate.md). It fails on a blocker under
 # repo/review.md section 1 or 5, and on any pull request not opened by the
 # owner. A push by the owner gets a quiet re-review (it comments only when it
-# has something new); a push of the reviewer's own fixes reuses its verdict.
+# has something new); a push of the reviewer's own fixes gets one too. A clean
+# review approves its commit, so the owner can merge without the bypass.
 # On /prime comments the job is named `prime` and is not a check.
 #
 # pull_request_target, not pull_request: on the gate event this workflow
@@ -54,12 +55,14 @@ jobs:
     steps:
       - name: Review with Prime
         # Immutable action revision with explicit commands, review coverage
-        # tracking and a persistent interaction status comment.
-        uses: amangupta20/prime-reviewer-action@59086b8d9a28c8678779016bf4421aca3be6483d
+        # tracking, a persistent interaction status comment and clean-review
+        # approval.
+        uses: amangupta20/prime-reviewer-action@913d747330a6c39f4999afad5a1589832a94cbc2
         with:
           app-id: ${{ vars.PRIME_APP_ID }}
           app-private-key: ${{ secrets.PRIME_APP_PRIVATE_KEY }}
           opencode-api-key: ${{ secrets.OPENCODE_API_KEY }}
+          approve-clean: "true"
           state-backend: b2
           b2-endpoint-url: ${{ secrets.PRIME_B2_ENDPOINT_URL }}
           b2-bucket: ${{ secrets.PRIME_B2_BUCKET }}

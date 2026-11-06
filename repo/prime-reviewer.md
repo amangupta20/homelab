@@ -79,7 +79,7 @@ free for a public repository. Nothing runs on the lab.
 | What | Where |
 |---|---|
 | The rules it judges by | `repo/review.md` and `AGENTS.md`, always from `main`, so a pull request cannot rewrite them |
-| Shared execution code | public `prime-reviewer-action`, called as a composite action at commit `913d747330a6` (pinned by full SHA) by this repo's workflow |
+| Shared execution code | public `prime-reviewer-action`, called as a composite action at commit `6b8319150b91` (pinned by full SHA) by this repo's workflow |
 | Its prompts, playbook and model settings | the owner's private repo `prime-reviewer` (`main`): shared `APPEND_SYSTEM.md` and `skills/common-review/`, with homelab settings and playbook in `repos/homelab/` |
 | Changes it makes to its own playbook | a pull request on `prime-reviewer`, which the owner merges or closes |
 | Each pull request's session (so `/prime <instruction>` continues it) | B2: `sessions/<owner>/<repo>/<pr>/latest.json` references its saved session archive; the private Git `state` branch keeps the sessions from before the cutover as rollback |
@@ -183,6 +183,10 @@ them, and compared session files and root/child transcript contents. All
 comparisons passed. The original Git state remains intact. Details and the
 cutover limitation are recorded in
 `journal/2026-11-03-prime-reviewer-b2-migration.md`.
+
+Since action pull request 9: if Prime exits 0 without `result.json`, the action resumes its session
+once and asks it to finish. Four runs on homelab pull request 41 (2026-11-06) failed that way, the model
+ending its turn by announcing its next step (traces in B2). Tested offline only so far.
 
 Release verification, 2026-11-04: the caller pins action commit
 `aca0791870e6564064d8b3a9dfd2f110f87c1067`, `main` of `prime-reviewer-action` after pull requests 1 to 5. Over

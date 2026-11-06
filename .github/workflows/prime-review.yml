@@ -56,8 +56,8 @@ jobs:
       - name: Review with Prime
         # Immutable action revision with explicit commands, review coverage
         # tracking, a persistent interaction status comment and clean-review
-        # approval.
-        uses: amangupta20/prime-reviewer-action@913d747330a6c39f4999afad5a1589832a94cbc2
+        # approval, and one retry when Prime exits without a result.
+        uses: amangupta20/prime-reviewer-action@6b8319150b910d04c564ecf0e68259319d5afde5
         with:
           app-id: ${{ vars.PRIME_APP_ID }}
           app-private-key: ${{ secrets.PRIME_APP_PRIVATE_KEY }}

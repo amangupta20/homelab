@@ -16,8 +16,7 @@ what they last did, and possibly to start runs from it.
 **Why try it:** infrastructure as code is only visible from a terminal today. A UI
 would make it easy to look at, keep a history of runs, and, if runs go through it,
 make the one-writer rule in `iac/README.md` easier to keep.
-**Needs first:** enough to look at. Nothing has been applied in `iac/oci/` or `iac/`
-yet, and the repo has no Ansible playbooks (`decisions/open-questions.md`).
+**Needs first:** more to look at. `iac/oci/` has applied once (`pigsty-1`, 2026-11-06) and `ansible/base.yml` exists; `iac/` (Xen Orchestra) has not.
 
 ## Design sketch
 

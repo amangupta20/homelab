@@ -1,0 +1,95 @@
+# Pigsty v4.5.0 config for pigsty-1, made from conf/rich.yml and the choices in
+# plans/shared-postgres.md. Secrets and addresses are placeholders: render.sh fills them
+# from kv/general/pigsty. The real file stays on the node.
+all:
+  children:
+    pg-meta:
+      hosts:
+        __TAILSCALE_IP__: {pg_seq: 1, pg_role: primary}
+      vars:
+        pg_cluster: pg-meta
+        pg_extensions: [timescaledb, pg_wait_sampling, pg_cron, pgaudit, pgvector, vchord, pg_search, postgis, pg_partman,
+          pg_uuidv7, pg_jsonschema, pgmq, hypopg, pg_hint_plan, pg_ivm, pg_duckdb]
+        pg_libs: timescaledb, pg_stat_statements, auto_explain, pg_wait_sampling, pg_cron, pgaudit
+        pg_users:
+        - name: dbuser_meta
+          password: __PG_USER_DBUSER_META__
+          pgbouncer: true
+          comment: pigsty admin user
+          roles: [dbrole_admin]
+        - name: dbuser_view
+          password: __GRAFANA_VIEW_PASSWORD__
+          pgbouncer: true
+          roles: [dbrole_readonly]
+          comment: read-only viewer for meta database
+        pg_databases:
+        - name: meta
+          baseline: cmdb.sql
+          schemas: [pigsty]
+          extensions:
+          - vector
+          - postgis
+          - timescaledb
+          - {name: pg_wait_sampling, schema: monitor}
+          comment: pigsty meta database
+        pg_hba_rules:
+        - {user: all, db: all, addr: 100.64.0.0/10, auth: pwd, title: 'tailnet, password required', order: 800}
+        pg_crontab: [00 01 * * 1 /pg/bin/pg-backup full, '00 01 * * 2,3,4,5,6,7 /pg/bin/pg-backup']
+        pgb_hba_rules:
+        - {user: all, db: all, addr: 100.64.0.0/10, auth: pwd, title: 'tailnet, password required', order: 800}
+    infra:
+      hosts:
+        __TAILSCALE_IP__: {infra_seq: 1}
+      vars:
+        repo_enabled: true
+        repo_extra_packages: [pg18-main, pg18-time, pg18-gis, pg18-rag, pg18-fts, pg18-olap, pg18-feat, pg18-lang,
+          pg18-type, pg18-util, pg18-func, pg18-admin, pg18-stat, pg18-sec, pg18-fdw, pg18-sim, pg18-etl]
+    etcd:
+      hosts:
+        __TAILSCALE_IP__: {etcd_seq: 1}
+      vars: {etcd_cluster: etcd, etcd_safeguard: false}
+  vars:
+    version: v4.5.0
+    admin_ip: __TAILSCALE_IP__
+    region: default
+    proxy_env: {no_proxy: 'localhost,127.0.0.1,10.0.0.0/8,192.168.0.0/16,*.pigsty,*.aliyun.com,mirrors.*,*.myqcloud.com,*.tsinghua.edu.cn'}
+    certbot_sign: false
+    infra_portal:
+      home: {domain: i.pigsty}
+    grafana_admin_password: __GRAFANA_ADMIN_PASSWORD__
+    grafana_view_password: __GRAFANA_VIEW_PASSWORD__
+    pg_admin_password: __PG_ADMIN_PASSWORD__
+    pg_monitor_password: __PG_MONITOR_PASSWORD__
+    pg_replication_password: __PG_REPLICATION_PASSWORD__
+    patroni_password: __PATRONI_PASSWORD__
+    haproxy_admin_password: __HAPROXY_ADMIN_PASSWORD__
+    etcd_root_password: __ETCD_ROOT_PASSWORD__
+    nodename_overwrite: false
+    node_tune: oltp
+    node_etc_hosts: ['${admin_ip} i.pigsty']
+    node_repo_modules: local
+    node_repo_remove: false
+    pg_version: 18
+    pg_locale: C.UTF-8
+    pg_lc_collate: C.UTF-8
+    pg_lc_ctype: C.UTF-8
+    pg_conf: oltp.yml
+    pg_safeguard: false
+    pg_packages: [pgsql-main, pgsql-common]
+    pgbackrest_method: b2
+    pgbackrest_repo:
+      b2: {type: s3, s3_endpoint: s3.__REGION__.backblazeb2.com, s3_region: __REGION__, s3_bucket: __BUCKET__,
+        s3_key: __ACCESS_KEY_ID__, s3_key_secret: __SECRET_ACCESS_KEY__, s3_uri_style: host, path: /pgbackrest,
+        block: y, bundle: y, bundle_limit: 20MiB, bundle_size: 128MiB, cipher_type: aes-256-cbc, cipher_pass: __CIPHER_PASS__,
+        retention_full_type: count, retention_full: 1}
+    node_firewall_mode: none
+    node_timezone: Asia/Kolkata
+    pg_io_method: io_uring
+    pg_dummy_filesize: 8GiB
+    pgbouncer_poolmode: transaction
+    node_dns_method: none
+    vmetrics_options: -retentionPeriod=30d -promscrape.fileSDCheckInterval=5s
+    vlogs_options: -retentionPeriod=30d -retention.maxDiskSpaceUsageBytes=20GiB -insert.maxLineSizeBytes=1MB
+    repo_remove: false
+    repo_modules: infra,pgsql
+    pgbouncer_sslmode: prefer

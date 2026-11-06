@@ -214,5 +214,6 @@ these parts are open:
   with home healthy. Separate account or region, or accept?
 - Tailscale key expiry on the database and etcd nodes: turn it off or tag
   them, so a node does not drop out of the cluster when its key expires.
-- For the item above: `pigsty-1` joined untagged, so its key expires 2027-05-05 until
-  it is tagged or expiry is turned off (`tailscale status --json`, 2026-11-06).
+- For the item above: `pigsty-1` is tagged since 2026-11-06, so its key does not expire
+  (`tailscale status --json`). The home node will need the same. The item stays for the
+  owner to close.

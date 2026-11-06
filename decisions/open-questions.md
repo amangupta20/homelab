@@ -218,8 +218,8 @@ these parts are open:
   (`tailscale status --json`). The home node will need the same. The item stays for the
   owner to close.
 - For "Pigsty on arm64 / Ubuntu 24.04": Pigsty v4.5.0's docs list it as supported
-  (`pigsty.io/docs/ref/linux`, read 2026-11-06). Not run here yet. The item stays for
-  the owner to close.
+  (`pigsty.io/docs/ref/linux`, read 2026-11-06), and it has run on `pigsty-1` since then
+  (`journal/2026-11-06-install-pigsty.md`). The item stays for the owner to close.
 - For "Where Pigsty's manager runs": on `pigsty-1` in phase 1 (agent's recommendation,
   2026-11-06, after the owner chose one node only). The item stays for the owner to close.
 - Pigsty's pgBackRest setup makes the one selected repository `repo1`, while
@@ -228,5 +228,9 @@ these parts are open:
   second repository gets added, is untested.
 - `decisions/backup-tiers.md` keeps "3 daily, 1 weekly, 1 monthly" on B2, which
   pgBackRest cannot express; the owner chose one full backup for now
-  (`plans/shared-postgres.md`, "Backups"). Whether a key without `deleteFiles` lets
-  pgBackRest expire backups is untested with pgBackRest itself.
+  (`plans/shared-postgres.md`, "Backups"). Which wording should the decision keep?
+- For later, not now (agent's notes, owner has not decided): `pg_vault_tde` encrypts table values
+  with keys from OpenBao, and OpenBao's Postgres secrets engine can issue short-lived logins per app.
+  Neither is set up. Pigsty's page lists the extension's limits (`pigsty.io/ext/e/pg_vault_tde`).
+- Nothing alerts when a scheduled pgBackRest backup stops running; the rule added on 2026-11-06 covers
+  only WAL archiving. What should watch backup age?

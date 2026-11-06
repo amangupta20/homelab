@@ -12,10 +12,17 @@ It is here to test the shared Postgres with an app nothing depends on (owner, 20
 Dokploy's template was not read. Choices that differ from the sources:
 
 - No bundled Postgres: `DATABASE_URL` points at the shared cluster.
-- The port binds to the tailnet address, and there is no public domain.
+- No published port: Traefik reaches it through the domain set in Dokploy.
 - The `blinko` user uses PgBouncer's `session` mode (`ansible/pigsty/pigsty.yml.template`).
   `transaction` mode can break Prisma migrations (from memory, not tried). The Dokploy host's
   tailnet access reaches ports 5433 and 6432, not 5436.
+
+## Public access
+
+The owner chose a public domain on 2026-11-07, because the notes are not critical. Blinko's own
+login is the only barrier, so: the first account to register becomes superadmin, so register as soon
+as it is up; then turn off registration (`isAllowRegister`, seen in `server/routerTrpc/user.ts`) and
+check that a sign-up is refused. Leave its plugin and MCP features off. Update it promptly.
 
 ## Backups
 

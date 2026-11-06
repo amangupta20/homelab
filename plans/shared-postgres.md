@@ -1,6 +1,6 @@
 ---
 type: plan
-status: "in progress (installed on pigsty-1; drills not done, no apps)"
+status: "in progress (installed on pigsty-1; drills done; first test app next)"
 verified: "partly (pigsty-1 read over SSH and Pigsty's docs read 2026-11-06; the rest is design from research 2026-10-31)"
 hosts:
   - pigsty-1
@@ -17,7 +17,7 @@ tags:
 # Shared Postgres
 
 **Status:** in progress. Pigsty runs on `pigsty-1` since 2026-11-06
-(`journal/2026-11-06-install-pigsty.md`); the drills are next and no app uses it.
+(`journal/2026-11-06-install-pigsty.md`). The restore and alert drills passed, and no app uses it yet.
 Part of the migration (`plans/migration.md`), and comes before it: each app's
 database target shapes how it is migrated. The owner chose the topology on
 2026-11-01 ("Topology", below) and how phase 1 starts on 2026-11-06 ("Phase 1,
@@ -397,13 +397,13 @@ with this key. Expiry only hid the files, as intended (`journal/2026-11-06-insta
    the "Security checklist" passes, and `pgbackrest info` lists the B2 repository.
 2. **Restore drill.** (Done 2026-11-06.) Back up to B2; write test data, create a restore point, break
    something, restore to the point. — gate: journal entry with the restore.
-3. **Alert drill.** Break WAL archiving on purpose (wrong bucket key) and
+3. **Alert drill.** (Done 2026-11-07.) Break WAL archiving on purpose (wrong bucket key) and
    confirm the alert arrives. — gate: alert seen, archiving fixed, `pg_wal`
    back to normal size.
-4. **Clean up the drills.** Drop the test data, so the cluster is ready for real
+4. **Clean up the drills.** (Done 2026-11-07; `pg_safeguard` on.) Drop the test data, so the cluster is ready for real
    data. Oracle has no XO snapshot; the node rebuilds from `iac/oci/` and backups.
    — gate: the "Security checklist" passes again.
-5. **First app.** Answer "Decide before step 5". Migrate one small app's database
+5. **First app.** Blinko first, as a test with nothing to lose (`apps/vps/blinko/`, owner, 2026-11-06). Then answer "Decide before step 5". Migrate one small app's database
    with `pg_dump`/`pg_restore`; the bundled database keeps running until the app
    works on the new one. — gate: the scratch-instance restore in "Done when".
 6. **Remaining apps,** one at a time; record each in `inventory/services.md`.

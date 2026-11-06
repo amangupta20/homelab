@@ -81,7 +81,7 @@ all:
     pg_lc_collate: C.UTF-8
     pg_lc_ctype: C.UTF-8
     pg_conf: oltp.yml
-    pg_safeguard: false
+    pg_safeguard: true
     pg_packages: [pgsql-main, pgsql-common]
     pgbackrest_method: b2
     pgbackrest_repo:

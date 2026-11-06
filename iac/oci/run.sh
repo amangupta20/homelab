@@ -25,7 +25,9 @@ TF_VAR_fingerprint=$(oci fingerprint)
 TF_VAR_private_key=$(oci private_key)
 TF_VAR_region=$(oci region)
 TF_VAR_compartment_ocid=$(oci compartment_ocid)
+TF_VAR_ssh_public_key=$(oci ssh_public_key)
+TF_VAR_tailscale_auth_key=$(bao kv get -mount=kv -field=auth_key general/tailscale-oci)
 export TF_VAR_tenancy_ocid TF_VAR_user_ocid TF_VAR_fingerprint TF_VAR_private_key \
-  TF_VAR_region TF_VAR_compartment_ocid
+  TF_VAR_region TF_VAR_compartment_ocid TF_VAR_ssh_public_key TF_VAR_tailscale_auth_key
 
 exec tofu "$@"

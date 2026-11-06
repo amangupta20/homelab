@@ -24,6 +24,10 @@ Private subnet `10.22.33.0/24`.
 | `.254` | Docker + proxy host |
 | `.160` | TrueNAS VM |
 
+Oracle Cloud network for `iac/oci/`: `10.40.0.0/16`, subnet `10.40.1.0/24`
+(`iac/oci/network.tf`, applied 2026-11-06). Machines there are reached over
+Tailscale; their public addresses are not recorded in this repo.
+
 ## How traffic flows
 
 ```mermaid

@@ -4,9 +4,8 @@ OpenTofu root for Oracle Cloud Infrastructure (OCI), separate from the Xen
 Orchestra root in `iac/` so the two have separate state and a mistake in one
 cannot plan changes to the other.
 
-**Status:** running, with no resources yet. `./run.sh apply` ran on 2026-11-05 and
-wrote the first encrypted state to B2; a second plan reported no changes
-(`journal/2026-11-05-opentofu-on-oracle-cloud.md`).
+**Status:** running. `pigsty-1` and its network were created on 2026-11-06, and a
+second plan reported no changes (`journal/2026-11-06-create-pigsty-node.md`).
 
 ## What it manages
 
@@ -24,7 +23,15 @@ returned no instances in `homelab-iac` or the root, and the API logged
 `NotAuthorizedOrNotFound`. The provider turns that refusal into an empty list, so a
 data source that returns nothing here may mean "not allowed", not "none exist".
 
-`main.tf` creates nothing yet. The first apply only proves the chain works.
+It holds one network (`network.tf`) and the Pigsty node (`pigsty.tf`). Everything
+inside the machines is Ansible's job (`ansible/README.md`).
+
+The only inbound port is UDP 41641, for Tailscale: home is behind CGNAT, so without
+it traffic between home and these machines would stay on relays. Nothing else is
+reachable from the internet; admin access is SSH over Tailscale.
+
+The instance has `prevent_destroy`, so a plan that would destroy it fails, and its
+boot volume survives termination.
 
 Security list and firewall rules for anything public need a decision on what the
 public repo may show before they are written here (`AGENTS.md`, "Security flaws").
@@ -41,6 +48,9 @@ accounts, and pay-as-you-go keeps 4 OCPUs and 24 GB.
 - **Quotas:** none, by the owner's choice for now. Nothing in Oracle blocks a paid
   shape or extra disk, so reading each plan is the check: anything outside the free
   shapes and 200 GB of disk costs money.
+- **Checked 2026-11-06:** Oracle tags the boot volume
+  `orcl-cloud.free-tier-retained = true`. The instance has no such tag. Whether
+  anything is billed has not been read from Cost Analysis yet.
 
 ## First-time setup
 
@@ -70,15 +80,22 @@ Done once on 2026-11-05 in the OCI console; labels may change.
 
 5. **OpenBao:** create the state passphrase, once, and store the Oracle values. They
    are separate secrets because `bao kv put` replaces a whole secret, so re-running
-   the Oracle command must not be able to erase the passphrase. Then delete
-   `~/oci-setup`. The bucket and its key are at `kv/general/tofub2` (limited to that
+   the Oracle command must not be able to erase the passphrase. Add the SSH key and a
+   single-use Tailscale auth key too (below). Then delete `~/oci-setup`. The bucket and its key are at `kv/general/tofub2` (limited to that
    one bucket, B2 authorize call, 2026-11-04).
 
    ```bash
    openssl rand -base64 32 | tr -d '\n' | bao kv put -mount=kv general/tofu-state passphrase=-
    bao kv put -mount=kv general/oci tenancy_ocid=__ID__ user_ocid=__ID__ fingerprint=__FP__ \
      private_key=@$HOME/oci-setup/key.pem region=__REGION__ compartment_ocid=__ID__
+   ssh-keygen -q -t ed25519 -N '' -f ~/.ssh/pigsty -C pigsty-1
+   bao kv patch -mount=kv general/oci ssh_public_key=@$HOME/.ssh/pigsty.pub
+   bao kv put -mount=kv general/tailscale-oci auth_key=-   # paste, Enter, Ctrl-D
    ```
+
+   Generate the auth key as single-use and **tagged**. A tagged device's key does not
+   expire; `pigsty-1` was joined untagged, so its key expires 2027-05-05 unless that
+   is changed in the Tailscale admin console.
 
 **Recovery:** there is no offline copy of these (owner's choice, 2026-11-05). If the
 VPS is lost they come back by restoring an OpenBao snapshot (`systems/openbao.md`).

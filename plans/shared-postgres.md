@@ -1,8 +1,9 @@
 ---
 type: plan
-status: "not started"
-verified: "no (design from research 2026-10-31; nothing built)"
+status: "not started (node exists, Pigsty not installed)"
+verified: "partly (pigsty-1 read over SSH and Pigsty's docs read 2026-11-06; the rest is design from research 2026-10-31)"
 hosts:
+  - pigsty-1
   - XCP-ng host
   - TrueNAS VM
   - Remote VPS
@@ -15,10 +16,11 @@ tags:
 
 # Shared Postgres
 
-**Status:** not started. Part of the migration (`plans/migration.md`), and
-comes before it: each app's database target shapes how it is migrated. The
-owner chose the topology on 2026-11-01 ("Topology", below); the other answers
-under "Decide before step 1" are still open.
+**Status:** not started; `pigsty-1` exists and Pigsty is not installed on it.
+Part of the migration (`plans/migration.md`), and comes before it: each app's
+database target shapes how it is migrated. The owner chose the topology on
+2026-11-01 ("Topology", below) and how phase 1 starts on 2026-11-06 ("Phase 1,
+as decided"). The app questions wait until step 5 ("Decide before step 5").
 **Goal:** one Postgres cluster, set up with Pigsty, that apps share
 with one user and one database each — so every app gets the same backups,
 point-in-time restore and monitoring instead of a forgotten database container
@@ -100,14 +102,76 @@ Open for this topology (also in `decisions/open-questions.md`):
 - How the tiebreaker runs on the Dokploy host: a Pigsty-managed etcd
   installed on the host over SSH, or a container under Dokploy outside
   Pigsty's control.
-- Whether Pigsty supports arm64 on Ubuntu 24.04: the Remote VPS is Ampere
-  (`inventory/hosts.md`), and the second VPS is `pigsty-1` (`inventory/hosts.md`, Ampere too,
-  created 2026-11-06), so this now applies to it (as recalled Pigsty supports aarch64 — check its docs).
-- Where Pigsty's manager (dashboards, alerts, its commands) runs in phase 1,
-  before there is a home VM: on the second VPS node itself, or later at home.
-- pgBackRest's first repository is Garage at home ("Backups"); while home is
-  down or not set up, phase 1 needs the offsite repository, or local
-  backups only.
+- Where Pigsty's manager lives once the home VM exists: stay on `pigsty-1` or move.
+- ~~pgBackRest's first repository~~ — answered 2026-11-06: B2, with Garage added
+  when home is back ("Backups").
+
+## Phase 1, as decided (owner, 2026-11-06)
+
+- **One node only until the lab is up:** one Postgres cluster on `pigsty-1`.
+  When the lab is back, a second node goes in the lab, and an etcd tiebreaker
+  goes on the Dokploy host ("or something", owner; how it runs is still open).
+  So there is no throwaway `pg-test` VM. The drills in steps 2 and 3 run on this
+  cluster before any app data reaches it (agent's reading of "one node only").
+- **The offsite tier comes first.** Backblaze B2 is in place before Garage, the
+  reverse of the usual order in `decisions/backup-tiers.md`, because Garage at
+  home is not available yet ("Backups").
+- **Few versions on B2** ("not too many", owner). The numbers are in "Backups".
+- **The app questions can wait** ("Decide before step 5").
+- **Template:** Pigsty's `rich`, without its Silo object store, Redis and Docker apps.
+  Standard Postgres 18, `oltp` tuning, `C.UTF-8` locale, the node's Tailscale address
+  as its Pigsty address, and Pigsty's firewall management off.
+- **Database UIs:** CloudBeaver and pgAdmin on Dokploy, not on this node. The owner
+  drops whichever gets used less.
+- **Certificates:** Pigsty's own CA first, then a wildcard Let's Encrypt certificate
+  over DNS-01 at the proxy. Pigsty's certbot needs public DNS and a public port 80
+  (`pigsty.io/docs/infra/admin/cert`), which this node does not have.
+- **Proxy:** a small HAProxy container on Dokploy right after the install, so apps
+  there use one address. **UNTESTED:** containers reaching the tailnet through the host.
+- **Alerts:** ntfy, the owner's preference, through ntfy's built-in `alertmanager`
+  template (`docs.ntfy.sh/publish`). **UNTESTED.** Pigsty does not document receiver
+  setup, only the file `/etc/alertmanager.yml`.
+- **TLS:** Postgres accepts it by default. PgBouncer gets `prefer` unless a `pgbench`
+  run during the drills shows a high cost; Patroni's stays off, because the proxy's
+  health checks use that API. Monitoring keeps metrics 30 days and logs 30 days or 20 GB.
+- **MySQL apps keep their own database in compose:** Pigsty runs one instance per node,
+  and its MySQL module refuses Ubuntu on ARM64 (`pigsty.io/docs/mysql`). Redis also stays
+  in compose: a cache should sit next to its app.
+- **Pigsty's manager runs on `pigsty-1`** (agent's recommendation: it is the only
+  node). Dashboards stay on the tailnet (the "Security checklist").
+
+### What the node and Pigsty's docs say (2026-11-06)
+
+- **Support:** Pigsty v4.5.0 lists Ubuntu 24.04 on aarch64 as supported, and
+  Ubuntu 24.04.4 as a recommended version (`pigsty.io/docs/ref/linux`; the release
+  notes list ARM64 in the validated baseline). Not run here yet. `pigsty-1` is
+  Ubuntu 24.04.5 on aarch64 with 3 CPUs and 17 GiB of memory (`uname -m`,
+  `/etc/os-release`, `nproc`, `free -h` over SSH).
+- **Disk:** one 150 GB ext4 root disk and no separate `/data` (`df -hT`). Pigsty's
+  docs recommend a `/data` mount point on xfs (`pigsty.io/docs/deploy/prepare`);
+  whether root is good enough is what the `fio` check is for. `fio` is not
+  installed, and installing it is a write.
+- **SSH to itself:** `ubuntu@127.0.0.1` is refused today (run over SSH). Pigsty
+  needs passwordless SSH and sudo for its admin user; sudo already works.
+- **Install commands, UNTESTED here** (`pigsty.io/docs/setup/install`). The release
+  notes name `./install.yml` where the docs name `./deploy.yml`; read the downloaded
+  copy before running either:
+
+  ```bash
+  curl -fsSL https://repo.pigsty.io/get | bash -s v4.5.0
+  cd ~/pigsty
+  ./configure -g
+  ./deploy.yml
+  ```
+
+- **Passwords:** Pigsty's defaults are public. `./configure -g` generates random
+  ones but not pgBackRest's `cipher_pass`, or credentials added by hand
+  (`pigsty.io/docs/setup/install`). Put the generated ones in OpenBao.
+- **Read the generated config against the "Security checklist" before deploying.**
+  Pigsty's docs say its base config opens ports 80 and 443 publicly and allows
+  anonymous read access to Grafana (`pigsty.io/docs/setup/security`), and they do
+  not mention Tailscale. What its firewall settings do to Oracle's iptables rules
+  (`ansible/base.yml`) is unknown.
 
 ## What Pigsty is, and what runs where
 
@@ -195,14 +259,25 @@ trip time (RTT) between members, and the election timeout **at least about
 
 Follows `decisions/backup-tiers.md` (proposed).
 
-- **pgBackRest**, with `repo1` on Garage (tier 1) and `repo2` encrypted
-  offsite (tier 2, if the owner puts the database there).
+- **pgBackRest, B2 first** (owner, 2026-11-06): encrypted offsite (tier 2) is the
+  only repository until Garage is back, and Garage (tier 1) is added then.
+  **UNTESTED.** Pigsty v4.5.0 writes only the repository `pgbackrest_method`
+  selects, as `repo1` (`pigsty.io/docs/pgsql/backup/repository`), so B2 becomes
+  `repo1`, not the `repo2` that `skills/back-up-a-service/` names. An S3 repository
+  with no local one is not stated as supported in those docs; adding the second
+  repository later may need raw pgBackRest options.
+- **How many on B2 (owner, 2026-11-06):** one. A weekly full backup with daily
+  incrementals, `retention_full_type: count` and `retention_full: 1`, because Garage
+  follows once the lab is up, expected about a week later (owner). So the oldest
+  restore point is only 0 to 7 days back. This does not match the "3 daily, 1 weekly,
+  1 monthly" in `decisions/backup-tiers.md`, which pgBackRest cannot express. Garage
+  keeps 3. Size against B2's 10 GB free tier is not measured.
 - **Point-in-time restore:** a base backup plus the WAL (write-ahead log, the
   record of every change) archived after it lets you restore to any second
   in between, or to a named point (`SELECT pg_create_restore_point('before-x');`).
-- **Retention by days:** `repo1-retention-full-type=time`. Data older than the
-  window remains until the next full backup ages out: oldest kept ≈ window +
-  time between full backups.
+- **Retention by days, for Garage later:** `retention_full_type: time`. Data older
+  than the window remains until the next full backup ages out: oldest kept ≈
+  window + time between full backups.
 - **`archive_timeout = 60`**, so a quiet database still ships its changes at
   least every minute.
 - **Restores cover the whole server, not one database.** To roll back one
@@ -216,8 +291,9 @@ with `max_slot_wal_keep_size`. Alert on archive failures and on `pg_wal` size.
 ## Security checklist
 
 - Listens on the LAN or tailnet only, never a public address.
-- `hostssl` lines with `scram-sha-256` in `pg_hba.conf`, one per app and
-  source address.
+- One `pg_hba` rule for the tailnet range with a password required (owner,
+  2026-11-06). Per-source rules add little: containers on one host are expected to
+  share its Tailscale address (not checked). Tailnet access rules choose the machines.
 - One role and one database per app; `REVOKE CONNECT ON DATABASE <db> FROM PUBLIC`
   for every database; no app gets superuser. Extensions an app needs are
   created by the admin.
@@ -258,7 +334,9 @@ upgrade could need a server-side extension upgrade first.
   `pg_hba` rules and monitoring on the new side; existing pgBackRest backups
   stay readable. Estimated an afternoon for a small lab (guess).
 
-## Decide before step 1 (owner)
+## Decide before step 5 (owner)
+
+Moved from "before step 1" on 2026-11-06 (owner): steps 1 to 4 hold no app data.
 
 - Which apps move to the shared server first, and which stay bundled.
 - Where apps that run on the VPS get their database: from this server over the
@@ -268,26 +346,42 @@ upgrade could need a server-side extension upgrade first.
   later) and an etcd tiebreaker on the Remote VPS ("Topology").
 - Where the primary normally lives once both nodes exist (home or the second
   VPS).
-- Whether the database gets the offsite tier (`decisions/backup-tiers.md`).
+- ~~Whether the database gets the offsite tier~~ — answered 2026-11-06: yes, and
+  before Garage ("Phase 1, as decided").
+
+## B2 for pgBackRest (done 2026-11-06)
+
+The bucket, its key and the encryption passphrase are at `kv/general/pigsty`. The
+owner created the first two; the passphrase is in OpenBao only, by the owner's choice
+(`decisions/backup-tiers.md`, rule 2).
+
+The key has `listBuckets`, `listFiles`, `readFiles` and `writeFiles`, for one private
+bucket, with a lifecycle rule that removes hidden files after 7 days (read through B2's
+API). This is how it meets rule 3 of that decision. Tested with a throwaway object through
+the S3 API (virtual-hosted addressing): upload, multipart upload and abort work; a delete by
+name only hides the file; a delete of a specific version gets `AccessDenied`. **UNTESTED:**
+pgBackRest itself with this key, including expiring backups. Step 1's gate covers that.
 
 ## Steps
 
-0. **Answer "Decide before step 1".** — gate: answers recorded in this plan.
-1. **`pg-test` on a throwaway VM** (1 vCPU / 2 GB) plus the manager, at home or
-   on the second VPS (phase 1 of "Topology"). Run the fio check first. — gate: Pigsty installs, dashboards show the node.
-2. **Restore drill on `pg-test`.** pgBackRest to Garage; write test data,
-   create a restore point, break something, restore to the point. — gate:
-   journal entry with the restore.
+1. **Install on `pigsty-1`,** phase 1 of "Topology".
+   Run the `fio` check first. — gate: Pigsty installs, dashboards show the node,
+   the "Security checklist" passes, and `pgbackrest info` lists the B2 repository.
+2. **Restore drill.** Back up to B2; write test data, create a restore point, break
+   something, restore to the point. — gate: journal entry with the restore.
 3. **Alert drill.** Break WAL archiving on purpose (wrong bucket key) and
    confirm the alert arrives. — gate: alert seen, archiving fixed, `pg_wal`
    back to normal size.
-4. **`pg-prod`** on its own VM with the snapshot rule for VMs (take an XO
-   snapshot of the target first, `systems/xcp-ng.md`). — gate: security
-   checklist above passes.
-5. **First app.** Migrate one small app's database with `pg_dump`/`pg_restore`;
-   the bundled database keeps running until the app works on the new one. —
-   gate: the scratch-instance restore in "Done when".
+4. **Clean up the drills.** Drop the test data, so the cluster is ready for real
+   data. Oracle has no XO snapshot; the node rebuilds from `iac/oci/` and backups.
+   — gate: the "Security checklist" passes again.
+5. **First app.** Answer "Decide before step 5". Migrate one small app's database
+   with `pg_dump`/`pg_restore`; the bundled database keeps running until the app
+   works on the new one. — gate: the scratch-instance restore in "Done when".
 6. **Remaining apps,** one at a time; record each in `inventory/services.md`.
+7. **When the lab is up:** Garage as a second repository, then phase 2 of
+   "Topology". XCP-ng's snapshot rule applies to the home node
+   (`systems/xcp-ng.md`). — gate: a restore from Garage is recorded.
 
 ## Links
 

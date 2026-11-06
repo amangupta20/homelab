@@ -1,7 +1,7 @@
 ---
 type: system
-status: "jobs reported running; OpenBao restore tested (Garage and B2 offsite), others untested"
-verified: "partially (OpenBao restore tested 2026-10-29 from Garage and 2026-10-31 from B2; others from docs/memory; VPS read from Dokploy recon 2026-10-26)"
+status: "jobs reported running; OpenBao (Garage and B2 offsite) and shared Postgres (B2) restores tested, others untested"
+verified: "partially (OpenBao restore tested 2026-10-29 from Garage and 2026-10-31 from B2; shared Postgres restore tested 2026-11-06 from B2; others from docs/memory; VPS read from Dokploy recon 2026-10-26)"
 hosts:
   - XCP-ng host
   - TrueNAS VM
@@ -68,6 +68,8 @@ plan: `plans/offsite-backups.md`). OpenBao has both tiers in place.
 
 - [x] OpenBao (Tier 1 Garage S3): Raft snapshot restore from Garage S3 into a fresh throwaway
   instance on the workstation (`journal/2026-10-29-restore-test-openbao.md`).
+- [x] Shared Postgres (Tier 2 Backblaze B2 offsite): pgBackRest point-in-time restore into a
+  scratch folder on `pigsty-1` (`journal/2026-11-06-install-pigsty.md`).
 - [x] OpenBao (Tier 2 Backblaze B2 offsite): Raft snapshot restore from Backblaze B2 into
   a fresh throwaway instance on the workstation (`journal/2026-10-31-restore-test-openbao-b2.md`).
 

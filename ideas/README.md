@@ -72,3 +72,4 @@ tags:
 - `phone-control-panel.md` — an old Android phone running postmarketOS as a small dashboard at home, with an easy way to shut the server down. Barely explored.
 - `iac-management-ui.md` — a self-hosted web UI to see, and possibly run, OpenTofu and Ansible, with the tools compared and what would make it worth adding.
 - `try-netbird.md` — try NetBird, a self-hostable mesh VPN with its own UI and relay, on the side of Tailscale, with what it would cost and when to migrate.
+- `llm-checked-updates.md` — every 3 days, an LLM reads available updates; clearly safe ones install, anything else waits for the owner, and every run is logged.

@@ -217,3 +217,16 @@ these parts are open:
 - For the item above: `pigsty-1` is tagged since 2026-11-06, so its key does not expire
   (`tailscale status --json`). The home node will need the same. The item stays for the
   owner to close.
+- For "Pigsty on arm64 / Ubuntu 24.04": Pigsty v4.5.0's docs list it as supported
+  (`pigsty.io/docs/ref/linux`, read 2026-11-06). Not run here yet. The item stays for
+  the owner to close.
+- For "Where Pigsty's manager runs": on `pigsty-1` in phase 1 (agent's recommendation,
+  2026-11-06, after the owner chose one node only). The item stays for the owner to close.
+- Pigsty's pgBackRest setup makes the one selected repository `repo1`, while
+  `skills/back-up-a-service/` says `repo1` Garage, `repo2` B2; the owner wants B2
+  first (`plans/shared-postgres.md`, "Backups"). Which numbering wins, and how a
+  second repository gets added, is untested.
+- `decisions/backup-tiers.md` keeps "3 daily, 1 weekly, 1 monthly" on B2, which
+  pgBackRest cannot express; the owner chose one full backup for now
+  (`plans/shared-postgres.md`, "Backups"). Whether a key without `deleteFiles` lets
+  pgBackRest expire backups is untested with pgBackRest itself.

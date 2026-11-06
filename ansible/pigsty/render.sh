@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Writes ~/pigsty/pigsty.yml on the node from pigsty.yml.template and OpenBao, and
-# turns off Grafana's anonymous access, which Pigsty hard-codes in a template.
-# Prints no secret. Needs a token that can read kv/general/pigsty.
+# applies patch-node.sh, for what Pigsty has no setting for.
+# Prints no secret. Needs a token that can read kv/general/pigsty and kv/general/ntfy.
 #
 #   ./render.sh --check   compare with what is on the node; changes nothing
 #   ./render.sh           write it. Applying it is a separate Pigsty playbook run.
@@ -40,5 +40,22 @@ if [[ "${1:-}" == "--check" ]]; then
 fi
 
 remote 'umask 077; cat > ~/pigsty/pigsty.yml' <"$rendered"
-remote "sed -i '/^\[auth.anonymous\]/,/^\[/ s/^enabled = true/enabled = false/' ~/pigsty/roles/infra/templates/grafana/grafana.ini.j2"
+remote 'bash -s' <patch-node.sh
+
+# Alertmanager's receiver. Pigsty has no setting for it, only this template.
+BAO_NTFY=$(bao kv get -mount=kv -format=json general/ntfy) python3 -c '
+import json, os
+n = json.loads(os.environ["BAO_NTFY"])["data"]["data"]
+print(n["url"].rstrip("/") + "/" + n["topic"] + "?template=alertmanager")
+print(n["pigsty_token"])' | remote 'python3 -c "
+import os, re, sys
+url, token = sys.stdin.read().split()
+p = os.path.expanduser(\"~/pigsty/roles/infra/templates/prometheus/alertmanager.yml\")
+t = re.sub(r\"    # ntfy begin.*?    # ntfy end\\n\", \"\", open(p).read(), flags=re.S)
+block = (\"    # ntfy begin\\n    webhook_configs:\\n      - url: \" + repr(url) + \"\\n        send_resolved: true\\n\"
+         \"        http_config:\\n          authorization:\\n            type: Bearer\\n\"
+         \"            credentials: \" + repr(token) + \"\\n    # ntfy end\\n\")
+k = \"  - name: \" + repr(\"default\") + \"\\n\"
+assert t.count(k) == 1
+open(p, \"w\").write(t.replace(k, k + block))"'
 echo "pigsty.yml written"

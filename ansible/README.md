@@ -21,8 +21,9 @@ ansible-playbook base.yml
 
 `pigsty/pigsty.yml.template` is the config on `pigsty-1` with its secrets and address
 replaced by placeholders. `pigsty/render.sh` fills it from `kv/general/pigsty` and writes it
-to the node. `--check` compares without changing anything; it passed on 2026-11-06. A full
-rebuild from it is **UNTESTED**. Change the template, not the file on the node, then run the
+to the node, and applies `pigsty/patch-node.sh` and the alert receiver, for what Pigsty has no
+setting for. `--check` compares `pigsty.yml` without changing anything; it passed on 2026-11-06.
+A full rebuild from it is **UNTESTED**. Change the template, not the file on the node, then run the
 Pigsty playbook for that part. Changing a password means updating OpenBao, rendering and
 running the playbook; that was done once, for HAProxy's, with
 `./node.yml -l all -t haproxy_config,haproxy_reload`.

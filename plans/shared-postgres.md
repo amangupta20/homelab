@@ -391,6 +391,11 @@ the S3 API (virtual-hosted addressing): upload, multipart upload and abort work;
 name only hides the file; a delete of a specific version gets `AccessDenied`. On 2026-11-06 a full backup, WAL archiving, a restore and expiry all worked
 with this key. Expiry only hid the files, as intended (`journal/2026-11-06-install-pigsty.md`).
 
+B2 requests (2026-11-07): one `pgbackrest info` is 4 class C and 2 class B (trace log), and Pigsty's exporter
+runs it every 120 s. A restore reads about one file per class B request. The owner added a card and kept
+the polling, as Backblaze lists these calls as free for pay-as-you-go accounts (pricing page; not yet checked
+against a bill).
+
 ## Steps
 
 1. **Install on `pigsty-1`,** phase 1 of "Topology". (Done 2026-11-06.)

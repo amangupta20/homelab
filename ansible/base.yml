@@ -1,0 +1,28 @@
+# What every machine gets. Run from ansible/: ansible-playbook base.yml
+- name: Base setup
+  hosts: all
+  become: true
+  vars:
+    tailscale_port: "41641"
+  tasks:
+    # Oracle's Ubuntu image rejects inbound traffic in its own firewall, on top of
+    # the cloud firewall in iac/oci/network.tf. Home is behind CGNAT, so Tailscale
+    # needs this port to connect directly and not through a relay.
+    #
+    # The boot file is edited, never saved from the live rules: see systems/vps.md,
+    # "Firewall". That is why this uses two tasks and not netfilter-persistent.
+    - name: Allow Tailscale at every boot
+      ansible.builtin.lineinfile:
+        path: /etc/iptables/rules.v4
+        line: "-A INPUT -p udp -m udp --dport {{ tailscale_port }} -j ACCEPT"
+        insertbefore: "^-A INPUT -j REJECT"
+        validate: iptables-restore --test %s
+
+    - name: Allow Tailscale now
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: udp
+        destination_port: "{{ tailscale_port }}"
+        jump: ACCEPT
+        action: insert
+        rule_num: "2"

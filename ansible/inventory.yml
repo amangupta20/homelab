@@ -1,0 +1,7 @@
+# Short names only. They resolve over the tailnet, so the tailnet's own name and
+# addresses stay out of this public repo.
+all:
+  hosts:
+    pigsty-1:
+      ansible_user: ubuntu
+      ansible_ssh_private_key_file: ~/.ssh/pigsty

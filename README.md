@@ -11,10 +11,10 @@ yet (see Status).
   snapshots, backups.
 - VMs: one per job (storage, proxies, apps). Apps inside VMs run as Docker
   Compose stacks.
-- Provisioning (intended, not in use yet): OpenTofu defines each VM and
-  cloud-init does its first boot (hostname, SSH keys, IP). Today no VM is
-  defined in code, and nothing configures a VM after boot
-  (`decisions/open-questions.md`, Provisioning).
+- Provisioning (partly in use): OpenTofu defines each VM and
+  cloud-init does its first boot (hostname, SSH keys, IP), and Ansible configures
+  it after that. Only `pigsty-1` is defined in code so far (`iac/oci/`,
+  `ansible/`); home VMs are not (`decisions/open-questions.md`, Provisioning).
 - Access: admin only over Tailscale (private mesh VPN). No SSH open to the
   internet.
 - Edge: Cloudflare (filter) -> Nginx Proxy Manager (routing) -> containers.
@@ -53,6 +53,7 @@ never in git. See `systems/openbao.md` for where they live.
 | what was done, when, and by whom | `journal/` |
 | a stack's Compose file | `apps/homeserver/`, `apps/vps/` |
 | how VMs are created | `iac/README.md` |
+| how a machine is configured after it boots | `ansible/README.md` |
 | how this repo's checks work, setting up a checkout | `repo/` |
 | a dashboard view of the lab (Obsidian) | `Home.md`, set up in `repo/obsidian-view.md` |
 | how an AI agent is expected to work here | `AGENTS.md` |

@@ -1,7 +1,7 @@
 ---
 type: inventory
 status: "documented, partially verified"
-verified: "partially (Remote VPS verified 2026-10-26 over SSH; other hosts from docs)"
+verified: "partially (Remote VPS verified 2026-10-26 over SSH; pigsty-1 verified 2026-11-06 over SSH; other hosts from docs)"
 tags:
   - inventory
   - hosts
@@ -24,4 +24,5 @@ names, sizes and the unknowns.
 | Docker + proxy host | unknown | unknown | Docker stacks, Nginx Proxy Manager, apt cache | unknown | in docs, not verified |
 | Xen Orchestra | unknown | unknown | manages VMs and backups | unknown | in docs, not verified |
 | Remote VPS | VPS (Oracle Cloud, Ampere ARM64, 4 CPU / 23 GiB) | Oracle Cloud | always-on, shared and overflow apps via Dokploy; OpenBao and SSO planned (`systems/vps.md`) | Ubuntu 24.04.4 | running — verified: recon 2026-10-26 over SSH |
+| pigsty-1 | VPS (Oracle Cloud, Ampere ARM64, 3 CPU / 18 GB, 150 GB disk, separate account from the Remote VPS) | Oracle Cloud | the second VPS: Pigsty node, nothing installed yet (`plans/shared-postgres.md`, `iac/oci/`) | Ubuntu 24.04.5 | running — verified: 2026-11-06 over SSH |
 | Agent VM | VM | XCP-ng host | runs the maintenance agent | — | planned |

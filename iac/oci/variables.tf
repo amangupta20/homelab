@@ -36,3 +36,14 @@ variable "state_passphrase" {
   type        = string
   sensitive   = true
 }
+
+variable "ssh_public_key" {
+  description = "Public SSH key for the default user, used at first boot."
+  type        = string
+}
+
+variable "tailscale_auth_key" {
+  description = "Single-use, tagged Tailscale auth key, used at first boot."
+  type        = string
+  sensitive   = true
+}

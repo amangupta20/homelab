@@ -1,0 +1,8 @@
+#cloud-config
+# First boot only: name the machine and join the tailnet. Everything else is done
+# later over SSH on the tailnet. If this fails the machine is unreachable except
+# through Oracle's serial console, because no inbound port is open.
+hostname: ${hostname}
+runcmd:
+  - curl -fsSL https://tailscale.com/install.sh | sh
+  - tailscale up --auth-key='${tailscale_auth_key}' --hostname='${hostname}'

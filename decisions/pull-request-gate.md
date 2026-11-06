@@ -34,6 +34,18 @@ GitHub account, `ai review` fails with "not reviewed", and the owner merges
 it after reviewing it by hand. It also takes minutes per push instead of
 about one and a half.
 
+## Addendum 2026-11-06: a clean Prime review gives the approval
+
+The owner is the only person reviewing here and cannot approve their own pull
+request, so the required approval meant using the bypass on every merge, which
+also hid the cases where something had actually been flagged. The owner chose to
+let the Prime reviewer's App approve a commit whose review is clean, over
+dropping the approval requirement, so that the bypass now marks an exception:
+`needs_owner` or a failed run. The approval is only as strong as the `ai review`
+check, and the owner's merge remains the real review. Last-push approval was
+turned off because the App may push the last commit. How it works, and what is
+untested: `repo/prime-reviewer.md`.
+
 ## Cost / what this rules out
 
 - The AI review costs a model call per push to a pull request, and it is
@@ -44,11 +56,13 @@ about one and a half.
   `iac/backend.tf` only shows up at the first real `tofu init`.
 - Enforced by the GitHub ruleset "protect main" (set 2026-10-26): no direct
   pushes, force-pushes or deletion of `main`; a pull request with one approval
-  (re-approval after any new push); and the checks `opentofu (fmt, validate,
+  (re-approval after any new push, no last-push approval since 2026-11-06); and
+  the checks `opentofu (fmt, validate,
   tflint)`, `compose config`, `gitleaks (full history)` and `ai review` must
   pass.
 - GitHub does not let anyone approve their own pull request, so the owner's
-  own changes merge through the admin bypass, which only works through a pull
+  own changes merge on the Prime reviewer's approval (addendum above), or through
+  the admin bypass when it did not approve. The bypass only works through a pull
   request — the checks still run and show, but the owner can choose to merge
   past a red one. An agent with its own GitHub account has no bypass: its
   change needs the owner's approval and every check green.

@@ -36,7 +36,7 @@ token that can push.
 |---|---|---|
 | the owner opens a pull request | full review, job named `ai review`; a line in the pull request body starting with `/prime ` adds a focus | always |
 | the owner pushes to it | continues the same session and re-reviews the new commits; `ai review` passes or fails on the result | only when it has something new |
-| the reviewer's own fix commits arrive | reuses the verdict of the run that pushed them, no model call | never |
+| the reviewer's own fix commits arrive | re-reviews them, because a review only covers the commit it read (action `review_state.py`, read 2026-11-06) | only when it has something new |
 | the owner comments `/prime` or `/prime review [focus]` | a new full review, job named `prime` (not a check) | always |
 | the owner comments `/prime <anything else>`, in the conversation or on a line | follows the instruction in the same session, for example "do it" on a level 3 | a reply |
 | a pull request someone else opened | `ai review` fails with "not reviewed"; the owner reviews it by hand | none |
@@ -44,6 +44,23 @@ token that can push.
 `ai review` fails on a blocker under `repo/review.md` sections 1 or 5, or
 when the reviewer produced no result. A 👀 reaction on a `/prime` comment
 means it started, 🚀 that it finished, 😕 that it failed.
+
+## Approving a clean review
+
+The owner cannot approve their own pull request, and `main` requires one
+approval, so every merge used to need the admin bypass. With `approve-clean`
+set in the workflow, a review or re-review approves its commit as the App when
+the verdict is `approve`, no blocker is open and the run pushed nothing. A later
+review of the pull request that is not clean dismisses that approval, and a
+`/prime` reply leaves it alone. A push dismisses it through the ruleset, and the
+re-review of that push decides again. A normal merge button therefore means Prime
+found nothing for the owner to decide; on `needs_owner` or a failed run the
+owner reads the comments and uses the bypass. The merge stays the owner's.
+
+**UNTESTED live** (action tests only, with fake API calls, 2026-11-06): that
+GitHub counts the App's approval toward the requirement, that the App may
+dismiss its own approval, and how the ruleset's
+`require_extra_approval_for_unattributed_changes` treats the App's commits.
 
 ## Watching a run
 
@@ -62,7 +79,7 @@ free for a public repository. Nothing runs on the lab.
 | What | Where |
 |---|---|
 | The rules it judges by | `repo/review.md` and `AGENTS.md`, always from `main`, so a pull request cannot rewrite them |
-| Shared execution code | public `prime-reviewer-action`, called as a composite action at commit `aca0791870e6` (pinned by full SHA) by this repo's workflow |
+| Shared execution code | public `prime-reviewer-action`, called as a composite action at commit `913d747330a6` (pinned by full SHA) by this repo's workflow |
 | Its prompts, playbook and model settings | the owner's private repo `prime-reviewer` (`main`): shared `APPEND_SYSTEM.md` and `skills/common-review/`, with homelab settings and playbook in `repos/homelab/` |
 | Changes it makes to its own playbook | a pull request on `prime-reviewer`, which the owner merges or closes |
 | Each pull request's session (so `/prime <instruction>` continues it) | B2: `sessions/<owner>/<repo>/<pr>/latest.json` references its saved session archive; the private Git `state` branch keeps the sessions from before the cutover as rollback |

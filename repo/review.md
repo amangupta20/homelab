@@ -56,7 +56,8 @@ sections 5 or 1. This sequence does not introduce new gate categories.
   action reference and this checklist always come from `main`, never from the
   pull request. Execution code comes from the public action at that reference.
   A change here takes effect only after it merges, and
-  the pull request that makes it is reviewed by the old version.
+  the pull request that makes it is reviewed by the old version. A clean
+  review also approves the commit (`repo/prime-reviewer.md`).
 
 ## 1. Nothing that should not be public
 
@@ -150,7 +151,7 @@ list is a good result. Then sort each finding:
 
 - **Blocker** — the change should not merge as is. Only blockers under
   sections 1 and 5 fail the CI check; the others are listed for the owner,
-  who approves every pull request:
+  who decides every merge:
   - anything under section 1 (should not be public);
   - anything under section 5 (unsafe for the lab);
   - a fact that is invented, or a false claim about the live lab that
@@ -161,7 +162,8 @@ list is a good result. Then sort each finding:
     "now" that should be "will"): those are warnings.
 - **Needs owner** — section 4: the change is fine to review but the owner has
   to decide on it. Reported as the `needs_owner` verdict, listed as a blocker;
-  it does not fail the check, because the owner's approval is required anyway.
+  it does not fail the check, but the Prime reviewer does not approve, so the
+  owner has to merge it deliberately through the bypass.
 - **Warning** — reported, does not block: every other finding that meets
   the bar above, such as a stale copy left elsewhere, wording that disagrees
   with itself in a way that would mislead, or a broken link, path or property

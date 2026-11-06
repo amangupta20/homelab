@@ -17,7 +17,7 @@ tags:
 What gets backed up, and — more importantly — what restore is still untested.
 This file owns the backup facts; other pages link here.
 
-**Status:** jobs reported running; OpenBao restore tested 2026-10-29 (Garage) and 2026-10-31 (Backblaze B2 offsite), other
+**Status:** jobs reported running; OpenBao (Garage and B2 offsite) and shared Postgres (B2) restores tested, other
 restores untested, and the OpenTofu state has no backup at all (see "Still to
 test").
 

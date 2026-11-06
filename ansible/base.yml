@@ -5,9 +5,10 @@
   vars:
     tailscale_port: "41641"
   tasks:
-    # Oracle's Ubuntu image rejects inbound traffic in its own firewall, on top of
-    # the cloud firewall in iac/oci/network.tf. Home is behind CGNAT, so Tailscale
-    # needs this port to connect directly and not through a relay.
+    # Oracle's Ubuntu image rejects new inbound traffic in its own firewall, on top
+    # of the cloud firewall in iac/oci/network.tf, so the port opened there does
+    # nothing without this. It gives Tailscale a direct path from networks where hole
+    # punching fails.
     #
     # The boot file is edited, never saved from the live rules: see systems/vps.md,
     # "Firewall". That is why this uses two tasks and not netfilter-persistent.

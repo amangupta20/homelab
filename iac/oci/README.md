@@ -26,8 +26,10 @@ data source that returns nothing here may mean "not allowed", not "none exist".
 It holds one network (`network.tf`) and the Pigsty node (`pigsty.tf`). Everything
 inside the machines is Ansible's job (`ansible/README.md`).
 
-The only inbound port is UDP 41641, for Tailscale: home is behind CGNAT, so without
-it traffic between home and these machines would stay on relays. Nothing else is
+The only inbound port is UDP 41641, for Tailscale. Home connected directly by hole
+punching before it worked (`tailscale netcheck`: `MappingVariesByDestIP: false`,
+2026-11-06), so it is for networks where hole punching fails, and untested on one. It
+needs both this firewall and the machine's own (`ansible/base.yml`). Nothing else is
 reachable from the internet; admin access is SSH over Tailscale.
 
 The instance has `prevent_destroy`, so a plan that would destroy it fails, and its

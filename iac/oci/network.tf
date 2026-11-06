@@ -24,9 +24,10 @@ resource "oci_core_route_table" "public" {
   }
 }
 
-# The only inbound port is Tailscale's. Home is behind CGNAT and cannot accept a
-# connection, so without this port traffic between home and this machine would
-# stay on Tailscale's slower relays. Tailscale's WireGuard traffic is authenticated.
+# The only inbound port is Tailscale's. Home reached this machine directly by hole
+# punching before the port worked, so this is for networks where that fails, and it
+# lets the machine act as a relay later. It only answers authenticated WireGuard
+# traffic. ansible/base.yml opens the same port in the machine's own firewall.
 # A new network's default security list allows SSH from anywhere, so the subnet
 # below uses this list instead.
 resource "oci_core_security_list" "tailscale_only" {

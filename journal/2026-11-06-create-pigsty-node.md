@@ -39,3 +39,11 @@ None: a new machine with no data. The Remote VPS was not touched.
 - Tailscale key expires 2027-05-05: the node joined untagged.
 - Cost Analysis has not been read since the instance started.
 - `~/.ssh/pigsty` has no passphrase and no second copy.
+
+## Follow-up
+
+Later on 2026-11-06: the owner's workstation is at home, so the `tailscale ping` above
+was already home to this node, and "Home to this node has not been tested" is wrong.
+It was direct while the machine's own firewall still rejected new inbound traffic, so
+it came through hole punching and does not show the port is needed. The owner chose to
+keep the port and rule anyway. The home lab itself is what is down.

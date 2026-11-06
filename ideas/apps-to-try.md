@@ -1,6 +1,6 @@
 ---
 type: idea
-status: "list"
+status: "idea"
 verified: "no (one-line notes from each project's README)"
 tags:
   - idea
@@ -9,7 +9,7 @@ tags:
 
 # Apps to try
 
-**Status:** list. These are apps the owner might self-host one day. Nothing here is researched or scheduled.
+**Status:** idea (backlog list). These are apps the owner might self-host one day. Nothing here is researched or scheduled.
 **In one line:** a backlog of apps the owner found and wants to try, one line each.
 **Why try it:** so a find doesn't get lost in browser tabs, and so agents can see what the owner is thinking of hosting (it matters for ideas like [on-demand container wakeups](on-demand-container-wakeups.md)).
 **Needs first:** the migration finishes before anything here starts, unless the owner says otherwise.

@@ -58,8 +58,26 @@ Step 2 of the plan, run the same day.
   98 MB of versions against 8 MB visible, until the 7-day lifecycle rule removes them.
 - The scratch folder and database were removed. The leader is running.
 
+## Alert drill
+
+Step 3 of the plan, finished 2026-11-07.
+
+- Set a wrong B2 key in `/etc/pgbackrest/pgbackrest.conf` and forced a WAL switch every 30 s.
+- `PostgresArchiveFailing` fired after 7 minutes, with `pg_archiver_failed_count` up from 17 to 59, and
+  the message reached the `pigsty-alerts` ntfy topic (read back through its API).
+- Restored the key. Archiving resumed within 90 s with no new failures, `pgbackrest check` passed,
+  and `pg_wal` stood at 753 MB. The alert stays active until the 10-minute window passes.
+- Then set `pg_safeguard: true`, with the drill data gone.
+
+## Other changes that day
+
+- `trusted=yes` removed from Pigsty's apt lists; keys are pinned (`ansible/pigsty/patch-node.sh`).
+- New ntfy user `pigsty-publisher`, write-only on `pigsty-alerts`. Its token is at `kv/general/ntfy`.
+- User and database `blinko`, for the test app. A login and a write worked from a container on the
+  Dokploy host, through port 5433.
+
 ## Still open
 
-- Alerts to ntfy, the WAL archiving alert, the proxy on Dokploy, the database UIs and the wildcard
-  certificate are not started.
+- The proxy on Dokploy, the database UIs and the wildcard certificate are not started.
+- No alert for a backup that stops running; the new rule covers only WAL archiving.
 - Adding Garage as a second pgBackRest repository: untested.

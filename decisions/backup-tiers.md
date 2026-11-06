@@ -19,6 +19,12 @@ broken backup in Garage never reaches B2. The procedure is
 **Tier 2 services (owner to confirm):** OpenBao first. Others get a lighter
 version for learning, chosen one at a time (`plans/offsite-backups.md`).
 
+**Shared Postgres gets tier 2, ahead of its tier 1** (owner, 2026-11-06). Garage at
+home is not available yet, so B2 is its only repository until home is back. It keeps
+few versions, in pgBackRest's own terms (`plans/shared-postgres.md`, "Backups").
+Its encryption passphrase is kept in OpenBao only, an exception to rule 2 below (owner,
+2026-11-06): OpenBao restores from B2 (tested 2026-10-31) with unseal keys kept offline.
+
 ## Why
 
 - **One copy offsite fails when it is needed.** If ransomware encrypts the

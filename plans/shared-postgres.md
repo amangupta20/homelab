@@ -384,16 +384,15 @@ The key has `listBuckets`, `listFiles`, `readFiles` and `writeFiles`, for one pr
 bucket, with a lifecycle rule that removes hidden files after 7 days (read through B2's
 API). This is how it meets rule 3 of that decision. Tested with a throwaway object through
 the S3 API (virtual-hosted addressing): upload, multipart upload and abort work; a delete by
-name only hides the file; a delete of a specific version gets `AccessDenied`. **UNTESTED:**
-expiring backups with this key: a full backup and WAL archiving work (2026-11-06), but
-nothing has expired yet. The first expiry follows the second full backup.
+name only hides the file; a delete of a specific version gets `AccessDenied`. On 2026-11-06 a full backup, WAL archiving, a restore and expiry all worked
+with this key. Expiry only hid the files, as intended (`journal/2026-11-06-install-pigsty.md`).
 
 ## Steps
 
 1. **Install on `pigsty-1`,** phase 1 of "Topology". (Done 2026-11-06.)
    Run the `fio` check first. — gate: Pigsty installs, dashboards show the node,
    the "Security checklist" passes, and `pgbackrest info` lists the B2 repository.
-2. **Restore drill.** Back up to B2; write test data, create a restore point, break
+2. **Restore drill.** (Done 2026-11-06.) Back up to B2; write test data, create a restore point, break
    something, restore to the point. — gate: journal entry with the restore.
 3. **Alert drill.** Break WAL archiving on purpose (wrong bucket key) and
    confirm the alert arrives. — gate: alert seen, archiving fixed, `pg_wal`

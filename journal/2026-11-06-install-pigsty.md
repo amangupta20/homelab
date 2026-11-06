@@ -41,10 +41,25 @@ None: the machine held no data and rebuilds from `iac/oci/`.
 - `ansible/pigsty/render.sh --check`: matches the node. The stored CA key pairs with its certificate
   (`openssl`).
 
+## Restore drill
+
+Step 2 of the plan, run the same day.
+
+- Made a table of 100,000 rows in a scratch database, took its checksum, created a restore point,
+  added 10 rows and dropped the table.
+- `pgbackrest restore --type=name --target-action=promote` from B2 into a scratch folder, started
+  on a private port, so the live cluster was not touched. The log says "recovery stopping at restore
+  point". The table came back with the same count and checksum, and none of the 10 later rows.
+- The restore took 127 s for 45 MB and 1,439 files. Recovery took 11 s more.
+- The first attempt wrongly looked failed: the check ran while the copy was still replaying. Wait
+  for `pg_is_in_recovery()` to be false. Its restore point is gone, as the next item explains.
+- A second full backup expired the first (`retention_full: 1`), so nothing older can be restored from
+  the visible backup. With the key that has no `deleteFiles`, expiry succeeded and only hid the files:
+  98 MB of versions against 8 MB visible, until the 7-day lifecycle rule removes them.
+- The scratch folder and database were removed. The leader is running.
+
 ## Still open
 
-- No restore tested, so the backup does not count yet (`systems/backups.md`). Step 2 of the plan.
 - Alerts to ntfy, the WAL archiving alert, the proxy on Dokploy, the database UIs and the wildcard
   certificate are not started.
-- `pgBackRest` expiring a backup with a key that cannot delete, and adding Garage as a second
-  repository: both untested.
+- Adding Garage as a second pgBackRest repository: untested.

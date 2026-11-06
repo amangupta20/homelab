@@ -96,8 +96,7 @@ Done once on 2026-11-05 in the OCI console; labels may change.
    ```
 
    Generate the auth key as single-use and **tagged**. A tagged device's key does not
-   expire; `pigsty-1` was joined untagged, so its key expires 2027-05-05 unless that
-   is changed in the Tailscale admin console.
+   expire. `pigsty-1` joined untagged and was tagged in the admin console on 2026-11-06.
 
 **Recovery:** there is no offline copy of these (owner's choice, 2026-11-05). If the
 VPS is lost they come back by restoring an OpenBao snapshot (`systems/openbao.md`).

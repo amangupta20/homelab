@@ -47,3 +47,6 @@ was already home to this node, and "Home to this node has not been tested" is wr
 It was direct while the machine's own firewall still rejected new inbound traffic, so
 it came through hole punching and does not show the port is needed. The owner chose to
 keep the port and rule anyway. The home lab itself is what is down.
+
+Also on 2026-11-06: `pigsty-1` was tagged, so its key no longer expires
+(`journal/2026-11-06-tailnet-access-rules.md`).

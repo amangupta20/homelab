@@ -27,3 +27,10 @@
         jump: ACCEPT
         action: insert
         rule_num: "2"
+
+    # Oracle's Ubuntu image ships these for NFS file shares, which nothing here uses.
+    - name: Remove unused NFS packages
+      ansible.builtin.apt:
+        name: [nfs-common, rpcbind]
+        state: absent
+        purge: true

@@ -130,8 +130,9 @@ Open for this topology (also in `decisions/open-questions.md`):
 - **Proxy:** a small HAProxy container on Dokploy right after the install, so apps
   there use one address. **UNTESTED:** containers reaching the tailnet through the host.
 - **Alerts:** ntfy, the owner's preference, through ntfy's built-in `alertmanager`
-  template (`docs.ntfy.sh/publish`). **UNTESTED.** Pigsty does not document receiver
-  setup, only the file `/etc/alertmanager.yml`.
+  template, on topic `pigsty-alerts`. A user that can only write to that topic has the token.
+  A test alert arrived on 2026-11-06. Pigsty has no setting for this, so `render.sh` edits its
+  template. `patch-node.sh` adds a rule for failed WAL archiving, which Pigsty does not ship.
 - **TLS:** on where a client asks for it: Postgres by default, PgBouncer with `prefer`.
   `pgbench` (16 clients, on the node itself, 2026-11-06) showed about 10% fewer
   transactions a second and 1 ms more latency, which the owner's rule accepts. Opening a new
@@ -168,11 +169,13 @@ Open for this topology (also in `decisions/open-questions.md`):
   ```
 
 - **`bootstrap` replaces the apt sources.** The download script runs it. It moved
-  the Ubuntu and Tailscale sources to `/etc/apt/backup` and wrote a `sources.list` with
-  `trusted=yes`, which skips package signature checks. The originals were restored on
-  2026-11-06 and `apt-get update` worked. `repo_remove: false` and `node_repo_remove: false`
-  stop the deploy doing the same; `./bootstrap --keep` is documented in the script
-  for next time (not run).
+  the Ubuntu and Tailscale sources to `/etc/apt/backup` and wrote its own `sources.list`. The
+  originals were restored on 2026-11-06. `repo_remove: false`, `node_repo_remove: false` and
+  `repo_modules: infra,pgsql` stop the deploy doing the same; `./bootstrap --keep` is
+  documented in the script for next time (not run). `ansible/pigsty/patch-node.sh` removed
+  `trusted=yes`, which turned off signature checks, from Pigsty's apt lists: each publisher's key
+  is pinned instead. Only the local repo keeps it, as it has no signature. `apt-get update` is
+  clean, and a rerun of Pigsty's repo tasks kept the lists.
 - **`configure` changes things to review:** below 4 CPUs it picks the `tiny` tuning,
   overridden here to `oltp` (owner). Anonymous Grafana is hard-coded on in
   `roles/infra/templates/grafana/grafana.ini.j2`, not a parameter as the docs suggest, so

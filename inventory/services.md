@@ -30,7 +30,7 @@ document says, and the read-only recon pass has not filled it in yet.
 | Fail2Ban | Bans brute-force IPs at the firewall by watching logs. | unknown | in docs, not verified |
 | Tailscale | Private mesh VPN; the only admin path. | every admin-reachable machine | in docs, not verified |
 | Shared Postgres (Pigsty) | Postgres 18 cluster, with monitoring, for apps to share (`plans/shared-postgres.md`). No app uses it yet. | `pigsty-1` | running since 2026-11-06; restore and alert drills passed |
-| Blinko | Note-taking app, to test the shared Postgres (`apps/vps/blinko/`). Public domain, behind its own login. | remote VPS | not deployed; its database exists on `pigsty-1` |
+| Blinko | Note-taking app, to test the shared Postgres (`apps/vps/blinko/`). Public domain, behind its own login. | remote VPS, database on `pigsty-1` | running since 2026-11-07, as a test |
 | Supabase (self-hosted) | Shared Postgres/auth/storage backend for small apps. | unknown | in docs, not verified |
 | ntfy bus | Push-notification service. Backup jobs, deploys, and security alerts post here. | unknown | stable — offsite "is the host itself down?" check still to do |
 | Nextcloud AIO | Self-hosted file sync (Dropbox replacement), all-in-one container. | unknown | stable — full restore test still to do |

@@ -26,8 +26,10 @@ The owner's flow (2026-11-06), with the rest proposed by an agent:
 1. **Collect**, every 3 days: `apt-get -s dist-upgrade`, and each package's changelog.
 2. **Fixed rules first**, with no LLM. Some packages always escalate: the kernel, anything
    needing a reboot, Tailscale (the only admin path), Docker, Postgres, Patroni and etcd.
-3. **Ask the LLM**, for packages that pass: answer in a fixed format, `safe` or `escalate`,
-   with reasons.
+3. **Ask the LLM**, for packages that pass. It has internet access and does the surface
+   checks nobody has time to do by hand for every update: security advisories, the project's
+   issue tracker, other people's reports of breakage or compromise, and how long the release
+   has been out. It answers in a fixed format, `safe` or `escalate`, with reasons and sources.
 4. **Safe:** install, then run a health check, and alert if it fails.
 5. **Anything else escalates:** a run with no valid answer, a timeout, or the LLM being down.
    The owner gets a notice and decides.
@@ -39,11 +41,14 @@ machine, which makes it a high-value target and needs its own tailnet rule.
 
 ## Risks and costs
 
-- **An LLM cannot spot a malicious update.** A compromised package has a clean changelog, so
-  "safe" here only means nothing looks like it will break. Waiting a few days after a
-  package is published helps more than the LLM does.
-- **Changelogs are untrusted input.** Text in one could try to talk the LLM into answering
-  `safe`. Fixed rules run first for that reason, and the LLM's only power is that one word.
+- **It will not catch everything.** A careful compromise has a clean changelog and no reports
+  yet, so `safe` means nothing visible looks wrong. The owner could not catch that either, and
+  auditing by hand is not realistic (owner, 2026-11-06), so the bar is doing better than no
+  check. Waiting a few days after a release gives other people time to report problems for it
+  to find.
+- **Changelogs and web pages are untrusted input.** Text in either could try to talk the LLM
+  into answering `safe`. Fixed rules run first for that reason, its only power is that one
+  word, and the machine running it should hold no other credentials.
 - **False confidence.** Being told "safe" feels stronger than it is, so the fixed rules must
   stay the real guard for machines that matter.
 - **The log stays out of this repo.** Versions of public-facing software must not be

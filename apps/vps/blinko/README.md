@@ -1,7 +1,7 @@
 # Blinko
 
-**Status:** not deployed. Its database and user exist on `pigsty-1` (`plans/shared-postgres.md`).
-It is here to test the shared Postgres with an app nothing depends on (owner, 2026-11-06).
+**Status:** running on the VPS since 2026-11-07, with its database on `pigsty-1`
+(`plans/shared-postgres.md`, `journal/2026-11-07-deploy-blinko.md`). It is here to test the shared Postgres with an app nothing depends on (owner, 2026-11-06).
 
 ## Derived from
 
@@ -20,9 +20,9 @@ Dokploy's template was not read. Choices that differ from the sources:
 ## Public access
 
 The owner chose a public domain on 2026-11-07, because the notes are not critical. Blinko's own
-login is the only barrier, so: the first account to register becomes superadmin, so register as soon
-as it is up; then turn off registration (`isAllowRegister`, seen in `server/routerTrpc/user.ts`) and
-check that a sign-up is refused. Leave its plugin and MCP features off. Update it promptly.
+login is the only barrier. The first account to register becomes superadmin; after that, a sign-up
+is refused unless `isAllowRegister` is true in its `config` table (`server/routerTrpc/user.ts`), and
+that row does not exist here. Leave its plugin and MCP features off. Update it promptly.
 
 ## Backups
 

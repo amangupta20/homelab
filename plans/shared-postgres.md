@@ -1,6 +1,6 @@
 ---
 type: plan
-status: "in progress (installed on pigsty-1; drills done; first test app next)"
+status: "in progress (installed on pigsty-1; drills done; Blinko running as a test)"
 verified: "partly (pigsty-1 read over SSH and Pigsty's docs read 2026-11-06; the rest is design from research 2026-10-31)"
 hosts:
   - pigsty-1
@@ -17,7 +17,8 @@ tags:
 # Shared Postgres
 
 **Status:** in progress. Pigsty runs on `pigsty-1` since 2026-11-06
-(`journal/2026-11-06-install-pigsty.md`). The restore and alert drills passed, and no app uses it yet.
+(`journal/2026-11-06-install-pigsty.md`). The restore and alert drills passed, and Blinko runs on it as a test
+(`journal/2026-11-07-deploy-blinko.md`). No app has migrated to it.
 Part of the migration (`plans/migration.md`), and comes before it: each app's
 database target shapes how it is migrated. The owner chose the topology on
 2026-11-01 ("Topology", below) and how phase 1 starts on 2026-11-06 ("Phase 1,

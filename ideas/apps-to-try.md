@@ -30,8 +30,9 @@ An app that gets ruled out keeps its row, with the reason in "Waits on / notes",
 |---|---|---|
 | [Karakeep](https://github.com/karakeep-app/karakeep) (formerly Hoarder) | Bookmark-everything app for links, notes and images, with AI tagging and full-text search. Runs on Docker; the README lists Meilisearch for search and OpenAI or local Ollama models for tagging. | migration |
 | [Blinko](https://github.com/blinkospace/blinko) | Self-hosted AI note-taking app focused on privacy. Runs on Docker; "postgres" is one of its repo tags, but the README doesn't say what database it needs. | migration |
+| [Floci](https://github.com/floci-io/floci) | Local AWS emulator for development, testing and CI: no account or auth token, and it presents itself as a drop-in replacement for LocalStack. Has an arm64 image. | later; owner, 2026-11-06 |
 | [DashBeam](https://github.com/tonyantony300/dashbeam) | Peer-to-peer encrypted file transfer between devices (desktop, Android, CLI, browser), with no cloud storage and no accounts. Its relay and discovery servers are the only parts you can self-host (documented in the repo's `infra` folder). | migration; check whether a self-hosted relay is worth running |
 
 ## Sources
 
-- The project READMEs linked in the table, read 2026-11-02. Unverified: none of these apps has been run in the lab.
+- The project READMEs linked in the table, read 2026-11-02 (Floci's 2026-11-06, with `docker buildx imagetools inspect`). Unverified: none of these apps has been run in the lab.

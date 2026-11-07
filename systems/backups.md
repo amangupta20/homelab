@@ -70,6 +70,9 @@ plan: `plans/offsite-backups.md`). OpenBao has both tiers in place.
   instance on the workstation (`journal/2026-10-29-restore-test-openbao.md`).
 - [x] Shared Postgres (Tier 2 Backblaze B2 offsite): pgBackRest point-in-time restore into a
   scratch folder on `pigsty-1` (`journal/2026-11-06-install-pigsty.md`).
+- [x] Shared Postgres, one database (Tier 2 Backblaze B2 offsite): `blinko` restored and copied into a new database, on `pigsty-1`
+  and then on the workstation with only OpenBao and the repo, and compared (`journal/2026-11-07-restore-test-blinko-copy.md`).
+  The app did not run on the copy.
 - [x] OpenBao (Tier 2 Backblaze B2 offsite): Raft snapshot restore from Backblaze B2 into
   a fresh throwaway instance on the workstation (`journal/2026-10-31-restore-test-openbao-b2.md`).
 

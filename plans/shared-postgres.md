@@ -304,6 +304,7 @@ Follows `decisions/backup-tiers.md` (proposed).
   least every minute.
 - **Restores cover the whole server, not one database.** To roll back one
   app, restore to a scratch instance and copy that app's database across.
+  Tried on 2026-11-07, without swapping the app onto the copy (`journal/2026-11-07-restore-test-blinko-copy.md`).
 
 Failure to watch: if archiving fails (offsite down, expired key, full bucket),
 Postgres keeps every WAL file locally until the disk fills and Postgres stops.

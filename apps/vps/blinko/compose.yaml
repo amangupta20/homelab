@@ -13,7 +13,7 @@ services:
     volumes:
       # Uploads. The notes themselves are in Postgres.
       - blinko-data:/app/.blinko
-    # Stops after 10 minutes without traffic, and starts on the next request (plans/sablier-wakeups.md).
+    # Stops after 20 minutes without traffic, and starts on the next request (plans/sablier-wakeups.md).
     # The Dokploy domain names blinko-sablier@docker. A list, because Dokploy appends its own labels.
     labels:
       - sablier.enable=true
@@ -21,7 +21,7 @@ services:
       - traefik.docker.allownonrunning=true
       - traefik.http.middlewares.blinko-sablier.plugin.sablier.sablierUrl=http://sablier:10000
       - traefik.http.middlewares.blinko-sablier.plugin.sablier.group=blinko
-      - traefik.http.middlewares.blinko-sablier.plugin.sablier.sessionDuration=10m
+      - traefik.http.middlewares.blinko-sablier.plugin.sablier.sessionDuration=20m
       - traefik.http.middlewares.blinko-sablier.plugin.sablier.failOpen=true
       - traefik.http.middlewares.blinko-sablier.plugin.sablier.dialTimeout=2s
       # Holds the request instead of showing a waiting page, so API clients get real data.

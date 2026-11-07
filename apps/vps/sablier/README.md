@@ -52,6 +52,12 @@ The idle time is per app. Use `apps/vps/blinko/compose.yaml` as the example:
 
 The app must have a trigger a person opens. Anything waiting on webhooks, or doing work with no HTTP traffic, should stay awake.
 
+## After a deploy that recreates an app
+
+Requests to it get 500 for up to 30 s: Sablier 1.19.1 keeps the temporary name Compose gives a replacement container, until its
+30-second reconciliation corrects it (10 s for Blinko, 2026-11-07). Fixed upstream in issue #1136, not released yet. Do not restart
+Sablier for it; it recovers on its own.
+
 ## If the plugin server is down
 
 Traefik downloads the plugin from `plugins.traefik.io` on every start, even with a copy in the container. Tried on the workstation with

@@ -54,4 +54,47 @@ YAML
 printf '%s\n' "$rule" > files/victoria/rules/pg-archive.yml
 printf '%s\n' "$rule" | sudo tee /infra/rules/pg-archive.yml >/dev/null
 sudo chown victoria /infra/rules/pg-archive.yml 2>/dev/null || true
+
+# Nor has it any for backups that stop. The age metrics vanish when the repository can't be read, and
+# exporter_status stays 1 (tried 2026-11-07), so age alone misses that. Pigsty's AgentDown skips the
+# pgsql job, so a dead exporter needs its own rule. Backups run daily: 30 h allows one run's duration.
+# The incr series counts any backup type; full is weekly, so 8 days allows one day of slack.
+rule=$(cat <<'YAML'
+---
+groups:
+  - name: pg-backup
+    rules:
+      - alert: PgBackRestBackupStale
+        expr: pgbackrest_backup_since_last_completion_seconds{backup_type="incr"} > 108000
+        for: 10m
+        labels: { level: 1, severity: WARN, category: pgsql }
+        annotations:
+          summary: "No pgBackRest backup finished in 30 hours on {{ $labels.ins }}"
+          description: "The last backup of any type finished {{ $value | humanizeDuration }} ago. The daily cron job may have stopped."
+      - alert: PgBackRestFullBackupStale
+        expr: pgbackrest_backup_since_last_completion_seconds{backup_type="full"} > 691200
+        for: 10m
+        labels: { level: 1, severity: WARN, category: pgsql }
+        annotations:
+          summary: "No full pgBackRest backup finished in 8 days on {{ $labels.ins }}"
+          description: "The last full backup finished {{ $value | humanizeDuration }} ago. The weekly run may be failing."
+      - alert: PgBackRestRepoUnhealthy
+        expr: pgbackrest_stanza_status != 0
+        for: 15m
+        labels: { level: 1, severity: WARN, category: pgsql }
+        annotations:
+          summary: "pgBackRest reports a problem on {{ $labels.ins }}"
+          description: "pgbackrest_stanza_status is {{ $value }}, not 0. 99 means pgbackrest info failed, for example because the repository can't be reached or its key is wrong."
+      - alert: PgBackRestExporterMissing
+        expr: absent(pgbackrest_stanza_status)
+        for: 15m
+        labels: { level: 1, severity: WARN, category: pgsql }
+        annotations:
+          summary: "No pgBackRest metrics are arriving"
+          description: "pgbackrest_exporter may be down, so the backup alerts can't fire."
+YAML
+)
+printf '%s\n' "$rule" > files/victoria/rules/pg-backup.yml
+printf '%s\n' "$rule" | sudo tee /infra/rules/pg-backup.yml >/dev/null
+sudo chown victoria /infra/rules/pg-backup.yml 2>/dev/null || true
 sudo systemctl kill -s HUP vmalert 2>/dev/null || sudo systemctl restart vmalert

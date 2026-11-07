@@ -28,3 +28,7 @@ that row does not exist here. Leave its plugin and MCP features off. Update it p
 
 Notes are in the shared cluster's backups. Uploads and embeddings, in `blinko-data`, have no backup: the owner deferred
 that until Garage is back, as they are not critical (2026-11-07).
+
+## Sleeping
+
+It stops after an idle period and starts on the next request (`plans/sablier-wakeups.md`). Its scheduled jobs do not run while it is stopped.

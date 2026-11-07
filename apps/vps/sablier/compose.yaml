@@ -16,6 +16,7 @@ services:
     command:
       - -listenip=0.0.0.0
       - -allowfrom=sablier # only the Sablier container, by its name on this network
+      - -allowhealthcheck # opens port 55555 inside the container for ./healthcheck; without it the check fails
       - -allowHEAD=(/v1\.[0-9]+)?/_ping
       - -allowGET=(/v1\.[0-9]+)?/(_ping|version|events|containers/json|containers/[a-zA-Z0-9_.-]+/json)
       - -allowPOST=(/v1\.[0-9]+)?/containers/[a-zA-Z0-9_.-]+/(start|stop|wait)

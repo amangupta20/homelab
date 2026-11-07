@@ -235,5 +235,8 @@ these parts are open:
   Neither is set up. Pigsty's page lists the extension's limits (`pigsty.io/ext/e/pg_vault_tde`).
 - Nothing alerts when a scheduled pgBackRest backup stops running; the rule added on 2026-11-06 covers
   only WAL archiving. What should watch backup age?
+  Agent's note, 2026-11-07, for the owner to close: `vmalert` now watches it, with the rules in
+  `ansible/pigsty/patch-node.sh` (`journal/2026-11-07-backup-age-alerts.md`). They run on `pigsty-1`, so they
+  say nothing if that node is down.
 - `archive_timeout`: `plans/shared-postgres.md` says 60 s; the live cluster has 300 s, from Pigsty's `oltp`
   template (`pg_settings`, 2026-11-07). A quiet database can lose up to 5 minutes rather than 1. Which is wanted?

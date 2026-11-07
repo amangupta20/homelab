@@ -133,7 +133,8 @@ Open for this topology (also in `decisions/open-questions.md`):
 - **Alerts:** ntfy, the owner's preference, through ntfy's built-in `alertmanager`
   template, on topic `pigsty-alerts`. A user that can only write to that topic has the token.
   A test alert arrived on 2026-11-06. Pigsty has no setting for this, so `render.sh` edits its
-  template. `patch-node.sh` adds a rule for failed WAL archiving, which Pigsty does not ship.
+  template. `patch-node.sh` adds rules for failed WAL archiving and for backups that stop, which Pigsty does not ship
+  (`journal/2026-11-07-backup-age-alerts.md`).
 - **TLS:** on where a client asks for it: Postgres by default, PgBouncer with `prefer`.
   `pgbench` (16 clients, on the node itself, 2026-11-06) showed about 10% fewer
   transactions a second and 1 ms more latency, which the owner's rule accepts. Opening a new

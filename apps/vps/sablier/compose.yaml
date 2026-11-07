@@ -1,0 +1,46 @@
+# Sablier: starts a sleeping app on its first request and stops it after an idle period
+# (plans/sablier-wakeups.md). Only reachable by Traefik, on dokploy-network.
+# Source of the shape and what differs: README.
+
+services:
+  socket-proxy:
+    # Only this container mounts Docker's socket. arm64 checked with `docker buildx imagetools inspect`, 2026-11-07.
+    image: lscr.io/linuxserver/socket-proxy:3.4.5
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /run
+    environment:
+      CONTAINERS: 1 # list and inspect containers
+      EVENTS: 1 # follow container events
+      VERSION: 1 # connection check at startup
+      POST: 1 # start, stop and wait for containers; upstream says no narrower flag covers the wait
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - socket-proxy
+
+  sablier:
+    # Pinned, not `latest`. arm64 checked the same way, 2026-11-07.
+    image: sablierapp/sablier:1.19.1
+    restart: unless-stopped
+    command:
+      - start
+      - --provider.name=docker
+      # Only ever act on containers labelled sablier.enable=true.
+      - --provider.reject-unlabeled-requests=true
+      - --provider.verify-enabled-on-expiration=true
+    environment:
+      DOCKER_HOST: tcp://socket-proxy:2375
+    depends_on:
+      - socket-proxy
+    # No published port: Traefik reaches it as http://sablier:10000 on dokploy-network.
+    networks:
+      - socket-proxy
+      - dokploy-network
+
+networks:
+  socket-proxy:
+    internal: true
+  dokploy-network:
+    external: true

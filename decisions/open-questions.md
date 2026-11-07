@@ -122,6 +122,7 @@ owner file, and is deleted from this list.
   backend address question is untested.
 - Is the Dokploy Traefik on the VPS version 3.6 or newer? `traefik.docker.allownonrunning`
   needs it, and the running image tag has not been read.
+  Agent's note, 2026-11-07, for the owner to close: it runs `traefik:v3.6.7` (`docker ps`).
 
 ## AI reviewer (`plans/ai-reviewer-prime-agent.md`)
 

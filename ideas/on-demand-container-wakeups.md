@@ -1,6 +1,6 @@
 ---
 type: idea
-status: "researched — needs more research on the reverse-proxy choice"
+status: "promoted to plans/sablier-wakeups.md"
 verified: "no (upstream docs and source read 2026-11-01; nothing run on the lab)"
 tags:
   - idea
@@ -11,8 +11,8 @@ tags:
 
 # On-demand container wakeups (scale to zero)
 
-**Status:** researched — needs more research on the reverse-proxy choice
-(see *Research notes* at the end); not scheduled.
+**Status:** promoted to `plans/sablier-wakeups.md` (owner, 2026-11-07), on the VPS only. The research notes at the end
+still apply to the home edge.
 **In one line:** give every rarely-used stack a live URL that starts it on the
 first request and stops it again after a quiet period, so dozens of niche
 services can exist without any of them costing CPU or RAM while forgotten.
@@ -68,7 +68,8 @@ runs the docker provider with `network: dokploy-network` and
 hand-added `experimental.plugins.sablier` block survives panel edits and
 container recreates. Sleepable services need their own router labels plus
 `traefik.docker.allownonrunning=true` (Traefik ≥3.6) — the panel's Domains UI
-creates a router without the wake middleware, so one owner per host. Panel
+creates a router without the wake middleware, so one owner per host (corrected 2026-11-07: Dokploy v0.31.0's domains have a `middlewares` field,
+`packages/server/src/utils/docker/domain.ts`, so the panel can keep the route). Panel
 **Stop** is `docker compose stop` and stays wakeable; **Delete** is
 `compose down` and is not.
 

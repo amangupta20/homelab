@@ -8,12 +8,24 @@
 |---|---|---|
 | `sablierapp/sablier`: `examples/docker/socket-proxy.yml`, `docs/content/providers/docker.md` | `v1.19.1`, 2026-11-07 | both services, the proxy's flags, the internal network |
 | `sablierapp/sablier-traefik-plugin`: `README.md` | `v1.4.0`, 2026-11-07 | the plugin block and the labels an app needs |
+| `wollomatic/socket-proxy`: `README.md` | `1.13.2`, 2026-11-07 | the allow-rule syntax, `-allowfrom`, the health check |
 
 Dokploy's template was not read. Choices that differ from the sources:
 
 - No published port.
 - `dokploy-network` instead of the Compose default network, because Traefik is on it.
 - `--provider.reject-unlabeled-requests` and `--provider.verify-enabled-on-expiration`, so it only acts on labelled containers.
+- wollomatic's socket proxy instead of upstream's example (LinuxServer's). That one needs `POST=1` for the wait call, and with it a
+  request to create a container reached Docker (tried 2026-11-07). These rules allow only what the `stop` strategy calls.
+
+## Upgrading Sablier
+
+A new version may call a Docker endpoint the proxy does not allow. The call fails with 403 and a wake or stop fails, so after an upgrade
+check the socket proxy's log for refused requests, and try a wake. The `pause` and `scale` strategies use other endpoints (`pause`,
+`unpause`, `update` in Sablier's source); switching to one means new rules.
+
+Inspecting a container returns its environment, so Sablier can read other apps' variables. No proxy rule can take that away while it
+needs to inspect containers.
 
 ## What lives outside this stack
 

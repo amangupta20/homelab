@@ -26,5 +26,5 @@ that row does not exist here. Leave its plugin and MCP features off. Update it p
 
 ## Backups
 
-**UNTESTED.** Notes are in the shared cluster's backups. Uploads in `blinko-data` have no backup, which
-is acceptable only while this is a test. To be added if it stays.
+Notes are in the shared cluster's backups. Uploads and embeddings, in `blinko-data`, have no backup: the owner deferred
+that until Garage is back, as they are not critical (2026-11-07).

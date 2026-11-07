@@ -70,7 +70,7 @@ tags:
 ## Ideas
 
 - `multi-site-postgres.md` — a read-only copy of the database on the VPS that can take over if home is lost, with reads served locally at each site.
-- `on-demand-container-wakeups.md` — give rarely-used stacks a live URL that starts them on first request and stops them when idle, so dozens of niche services cost nothing while forgotten. Needs more research: the reverse-proxy choice (NPM, Caddy, Traefik, Proxy-Wasm proxies) and the multi-host path are unresolved.
+- `on-demand-container-wakeups.md` — promoted to `plans/sablier-wakeups.md` (VPS only); the research notes at the end still apply to the home edge.
 - `dsh-superagent-and-harness2.md` — a repo agent that takes work only when the owner asks and has its setup tuned automatically from past jobs; the candidate for the migration agent once the home agent VM exists.
 - `edge-and-security-layers.md` — how public traffic reaches the lab and which security tool sits at which layer (Cloudflare, edge proxy and WAF, CrowdSec, sign-in, DNS, segmentation, detection, penetration testing). On hold until the Pangolin decision.
 - `phone-control-panel.md` — an old Android phone running postmarketOS as a small dashboard at home, with an easy way to shut the server down. Barely explored.

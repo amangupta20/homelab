@@ -31,4 +31,6 @@ that until Garage is back, as they are not critical (2026-11-07).
 
 ## Sleeping
 
-It stops after an idle period and starts on the next request (`plans/sablier-wakeups.md`). Its scheduled jobs do not run while it is stopped.
+It stops after 20 minutes without traffic and starts on the next request, which then takes about 6.5 s (`journal/2026-11-07-deploy-sablier.md`).
+Its scheduled jobs do not run while it is stopped. A deploy that recreates the container gives a few seconds of 500s, up to 30 s
+(`apps/vps/sablier/README.md`).

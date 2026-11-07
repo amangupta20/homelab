@@ -30,12 +30,12 @@ document says, and the read-only recon pass has not filled it in yet.
 | Fail2Ban | Bans brute-force IPs at the firewall by watching logs. | unknown | in docs, not verified |
 | Tailscale | Private mesh VPN; the only admin path. | every admin-reachable machine | in docs, not verified |
 | Shared Postgres (Pigsty) | Postgres 18 cluster, with monitoring, for apps to share (`plans/shared-postgres.md`). Blinko runs on it as a test. | `pigsty-1` | running since 2026-11-06; restore and alert drills passed |
-| Blinko | Note-taking app, to test the shared Postgres (`apps/vps/blinko/`). Public domain, behind its own login. | remote VPS, database on `pigsty-1` | running since 2026-11-07, as a test |
+| Blinko | Note-taking app, to test the shared Postgres (`apps/vps/blinko/`). Public domain, behind its own login. Stops after 20 idle minutes (Sablier). | remote VPS, database on `pigsty-1` | running since 2026-11-07, as a test |
 | Supabase (self-hosted) | Shared Postgres/auth/storage backend for small apps. | unknown | in docs, not verified |
 | ntfy bus | Push-notification service. Backup jobs, deploys, and security alerts post here. | unknown | stable — offsite "is the host itself down?" check still to do |
 | Nextcloud AIO | Self-hosted file sync (Dropbox replacement), all-in-one container. | unknown | stable — full restore test still to do |
 | Uptime Kuma | Up/down monitoring. Named once in the old platform page; nothing else mentions it. | unknown | unknown whether it runs |
-| Sablier | Stops idle apps and starts them on the next request (`plans/sablier-wakeups.md`, `apps/vps/sablier/`). | remote VPS | being set up, 2026-11-07 |
+| Sablier | Stops idle apps and starts them on the next request (`plans/sablier-wakeups.md`, `apps/vps/sablier/`). | remote VPS | running since 2026-11-07; Blinko sleeps behind it |
 | Dokploy | Deploys every app on the VPS (`systems/vps.md`). `apps/vps/openbao/` and `apps/vps/hermes-webui/` are in this repo; the rest are not yet. | remote VPS | running — verified: recon 2026-10-26 |
 | OpenBao | Secret store. See `systems/openbao.md`. | remote VPS | running, unsealed — verified 2026-10-26 (`/v1/sys/health` 200); Dokploy reads it at deploy time, verified 2026-10-27; backup to Garage S3 and restore verified 2026-10-29 (`journal/2026-10-29-restore-test-openbao.md`) |
 | Hermes WebUI (second) | Chat web UI for someone without lab access: own container, volumes and password; `apps/vps/hermes-webui/`. | remote VPS | running — deployed 2026-10-27; login, provider and chat work (owner); backups not set up |

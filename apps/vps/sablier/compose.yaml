@@ -4,17 +4,26 @@
 
 services:
   socket-proxy:
-    # Only this container mounts Docker's socket. arm64 checked with `docker buildx imagetools inspect`, 2026-11-07.
-    image: lscr.io/linuxserver/socket-proxy:3.4.5
+    # Only this container mounts Docker's socket, and it passes only the calls Sablier's stop strategy makes.
+    # Each rule was tried on the VPS with a throwaway proxy, 2026-11-07: these were allowed, and creating
+    # containers, exec, kill, update, delete, images, info, logs and file copies were refused (403).
+    # arm64 checked with `docker buildx imagetools inspect`, 2026-11-07.
+    image: wollomatic/socket-proxy:1.13.2
     restart: unless-stopped
     read_only: true
-    tmpfs:
-      - /run
-    environment:
-      CONTAINERS: 1 # list and inspect containers
-      EVENTS: 1 # follow container events
-      VERSION: 1 # connection check at startup
-      POST: 1 # start, stop and wait for containers; upstream says no narrower flag covers the wait
+    # Nobody, in the host's docker group (`getent group docker` on the VPS, 2026-11-07), so it can open the socket.
+    user: "65534:989"
+    command:
+      - -listenip=0.0.0.0
+      - -allowfrom=sablier # only the Sablier container, by its name on this network
+      - -allowHEAD=(/v1\.[0-9]+)?/_ping
+      - -allowGET=(/v1\.[0-9]+)?/(_ping|version|events|containers/json|containers/[a-zA-Z0-9_.-]+/json)
+      - -allowPOST=(/v1\.[0-9]+)?/containers/[a-zA-Z0-9_.-]+/(start|stop|wait)
+    healthcheck:
+      test: ["CMD", "./healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 2
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
@@ -33,7 +42,8 @@ services:
     environment:
       DOCKER_HOST: tcp://socket-proxy:2375
     depends_on:
-      - socket-proxy
+      socket-proxy:
+        condition: service_healthy
     # No published port: Traefik reaches it as http://sablier:10000 on dokploy-network.
     networks:
       - socket-proxy

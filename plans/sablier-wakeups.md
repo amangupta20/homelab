@@ -30,7 +30,8 @@ Agent's choices:
 
 - The `blocking` strategy rather than a waiting page, so that API clients get data instead of HTML.
 - `failOpen`, so Sablier being down does not block an app that is running.
-- A socket proxy, as in upstream's example. `POST=1` leaves it able to act on containers, so it limits rather than removes what Sablier could do.
+- A socket proxy that allows only the calls Sablier's `stop` strategy makes (owner agreed, 2026-11-07). Upstream's example proxy needed
+  `POST=1`, which let a request to create a container through.
 
 ## Steps
 

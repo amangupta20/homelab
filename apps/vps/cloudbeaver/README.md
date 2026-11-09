@@ -1,6 +1,6 @@
 # CloudBeaver
 
-**Status:** written 2026-11-09; not deployed yet. A web UI for the shared Postgres, reachable from the tailnet only
+**Status:** running since 2026-11-09 (`journal/2026-11-09-deploy-db-admin-uis.md`). A web UI for the shared Postgres, reachable from the tailnet only
 (`plans/shared-postgres.md`, "Database UIs"). The owner keeps whichever of pgAdmin and CloudBeaver gets used more.
 
 ## Derived from
@@ -17,5 +17,5 @@ Dokploy's template was not read. Choices, the same as pgAdmin's (`apps/vps/pgadm
   `postgres`. Its password is in OpenBao (`kv/general/pigsty`, field `pg_user_dbuser_owner`); do not save it in
   CloudBeaver.
 - No backup: the workspace holds CloudBeaver's admin account and saved connections only.
-- **UNTESTED:** whether the auto-configuration still applies to 26.2.4 as read from `main`. If the wizard appears on
-  the first visit, the variables were ignored; finish the wizard with the same values.
+- The auto-configuration works on 26.2.4: after the first start, its API reported `configurationMode` false, so
+  no setup wizard (2026-11-09).

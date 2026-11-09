@@ -243,3 +243,8 @@ these parts are open:
   Agent's note, 2026-11-09, for the owner to close: the owner chose 300 s as the default (600 also acceptable),
   lowered only when an app's usage needs it; `plans/shared-postgres.md` now says so, with the caveat that the
   setting covers the whole server.
+- The `hermes` Dokploy project (agent, WebUI, Hindsight) and its updater schedule are not in this repo;
+  `inventory/services.md` only lists the project. The updater follows `:latest` and, on every new agent
+  image, re-seeds the volume that loses the Hindsight plugin's client
+  (`journal/2026-11-08-hermes-hindsight-plugin-import.md`). Bring the stack in, pin its images, or keep it
+  outside? Agent's note, 2026-11-08.

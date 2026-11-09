@@ -54,6 +54,19 @@ access setup are kept out of this public repo on purpose.
   `dokploy-traefik`) on ports 80 and 443; each app's domain is set in Dokploy.
   The Dokploy dashboard is also on a public domain, by the owner's choice
   (owner, 2026-10-26).
+- **Certificates:** two Let's Encrypt resolvers in `/etc/dokploy/traefik/traefik.yml`.
+  `letsencrypt` (HTTP-01) is the one Dokploy's domains use. `cloudflare` (DNS-01,
+  since 2026-11-09) works for hosts that are not public, such as tailnet-only admin
+  pages, and gives a wildcard for the zone: a router asks for it with
+  `tls.certresolver=cloudflare` and `tls.domains[0].main=<zone>`,
+  `tls.domains[0].sans=*.<zone>`. Its token is a Cloudflare API token with DNS edit
+  on that one zone (OpenBao `kv/general/cloudflare`, field `zonedns`), copied to
+  `/etc/dokploy/traefik/dynamic/.cf-dns-token` (root, mode 600) and read through
+  Traefik's env `CF_DNS_API_TOKEN_FILE`, set with Dokploy's `settings.writeTraefikEnv`
+  so the token is not in the container's environment. Certificates are kept in
+  `dynamic/acme-cloudflare.json`. Verified 2026-11-09 with a throwaway router: the
+  wildcard was issued and served, and existing sites kept their own certificates
+  (`journal/2026-11-09-traefik-dns-challenge.md`).
 - **How apps are defined:** each Dokploy app is a Compose service. Most store
   their Compose file inside Dokploy (source type `raw`); a few pull it from
   GitHub repositories, none of them this one. Dokploy checks each app out at

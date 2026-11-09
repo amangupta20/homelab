@@ -126,7 +126,8 @@ Open for this topology (also in `decisions/open-questions.md`):
 - **Database UIs:** CloudBeaver and pgAdmin on Dokploy, not on this node. The owner
   drops whichever gets used less.
 - **Certificates:** Pigsty's own CA first, then a wildcard Let's Encrypt certificate
-  over DNS-01 at the proxy. Pigsty's certbot needs public DNS and a public port 80
+  over DNS-01 at the proxy. Traefik's `cloudflare` resolver does this since 2026-11-09 (`systems/vps.md`,
+  "Certificates"). Pigsty's certbot needs public DNS and a public port 80
   (`pigsty.io/docs/infra/admin/cert`), which this node does not have.
 - **Proxy:** a small HAProxy container on Dokploy right after the install, so apps
   there use one address: `pg-proxy:5432`, defined in `apps/vps/pg-proxy/`. Containers reach the

@@ -31,6 +31,13 @@ On 2026-11-09, this file's rendered config in a throwaway `haproxy:3.2.26-alpine
 the `nc` health check passed, and `psql -h <container> -U blinko` from another container there got
 `fe_sendauth: no password supplied`, so the path reaches the database. The container was removed.
 
+## The admin port, 5436
+
+`pg-proxy:5436` goes to Pigsty's `default` service on pigsty-1, which is the primary's Postgres without PgBouncer.
+It is for the database UIs only (`apps/vps/pgadmin/`, `apps/vps/cloudbeaver/`): PgBouncer lists only the app
+databases and users, and refuses `dbuser_dba` from the tailnet. Needs the tailnet rule for `tag:db-client` to
+`tag:pigsty` to include `tcp:5436` (policy in the private repo). Apps stay on 5432.
+
 ## Pointing an app at it
 
 Its database URL uses `pg-proxy:5432` instead of pigsty-1's address and port 5433, for example

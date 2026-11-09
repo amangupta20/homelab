@@ -10,6 +10,7 @@ services:
     # No published port: only containers on dokploy-network reach it.
     expose:
       - "5432"
+      - "5436"
     configs:
       - source: haproxy-cfg
         target: /usr/local/etc/haproxy/haproxy.cfg
@@ -50,6 +51,15 @@ configs:
         # Pigsty's primary service on each node: its own HAProxy sends it to whichever node is primary.
         # Containers cannot resolve tailnet names, so the address comes from the environment.
         server pigsty-1 ${PIGSTY_1_ADDRESS:?}:5433 check inter 5s fall 3 rise 2
+
+      # For the database UIs only (apps/vps/pgadmin/, apps/vps/cloudbeaver/): Pigsty's "default" service,
+      # straight to the primary's Postgres without PgBouncer, which knows only the app databases and users.
+      frontend postgres-admin
+        bind :5436
+        default_backend primary-direct
+
+      backend primary-direct
+        server pigsty-1 ${PIGSTY_1_ADDRESS:?}:5436 check inter 5s fall 3 rise 2
 
 networks:
   dokploy-network:

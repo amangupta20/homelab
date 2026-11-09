@@ -11,7 +11,8 @@
 
 Dokploy's template was not read. Choices that differ from the sources:
 
-- No bundled Postgres: `DATABASE_URL` points at the shared cluster.
+- No bundled Postgres: `DATABASE_URL` points at the shared cluster through `pg-proxy:5432`
+  (`apps/vps/pg-proxy/`), since 2026-11-09; before that, at pigsty-1's port 5433 directly.
 - No published port: Traefik reaches it through the domain set in Dokploy.
 - The `blinko` user uses PgBouncer's `session` mode (`ansible/pigsty/pigsty.yml.template`).
   `transaction` mode can break Prisma migrations (from memory, not tried). The Dokploy host's

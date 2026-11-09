@@ -31,7 +31,7 @@ services:
       NEXTAUTH_URL: "https://${BLINKO_DOMAIN:?}"
       NEXT_PUBLIC_BASE_URL: "https://${BLINKO_DOMAIN:?}"
       NEXTAUTH_SECRET: "${BLINKO_NEXTAUTH_SECRET:?}"
-      # Through Pigsty's service port 5433, so it follows the primary in phase 2.
+      # Through pg-proxy (apps/vps/pg-proxy/), which forwards to Pigsty's primary service, since 2026-11-09.
       DATABASE_URL: "${BLINKO_DATABASE_URL:?}"
     healthcheck:
       # 127.0.0.1, not localhost: localhost resolves to ::1 first here and the app listens on

@@ -36,7 +36,7 @@ the `nc` health check passed, and `psql -h <container> -U blinko` from another c
 `pg-proxy:5436` goes to Pigsty's `default` service on pigsty-1, which is the primary's Postgres without PgBouncer.
 It is for the database UIs only (`apps/vps/pgadmin/`, `apps/vps/cloudbeaver/`): PgBouncer lists only the app
 databases and users, and refuses `dbuser_dba` from the tailnet. Needs the tailnet rule for `tag:db-client` to
-`tag:pigsty` to include `tcp:5436` (policy in the private repo). Apps stay on 5432.
+`tag:pigsty` to include `tcp:5436` (policy in the private repo; added by the owner 2026-11-09). Apps stay on 5432.
 
 ## Pointing an app at it
 

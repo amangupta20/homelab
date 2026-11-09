@@ -1,0 +1,56 @@
+# pg-proxy: one fixed address on the VPS for the shared Postgres (plans/shared-postgres.md, "Proxy").
+# Apps on dokploy-network connect to pg-proxy:5432; when a second node arrives, only this file changes.
+# Source of the shape and what differs: README.
+
+services:
+  pg-proxy:
+    # Pinned, not `latest`. 3.2 is HAProxy's long-term-support branch. arm64 listed on Docker Hub, 2026-11-09.
+    image: haproxy:3.2.26-alpine
+    restart: unless-stopped
+    # No published port: only containers on dokploy-network reach it.
+    expose:
+      - "5432"
+    configs:
+      - source: haproxy-cfg
+        target: /usr/local/etc/haproxy/haproxy.cfg
+    healthcheck:
+      # BusyBox nc, in the image. Checks HAProxy listens, not that Postgres answers: the backend check does that.
+      test: ["CMD", "nc", "-z", "127.0.0.1", "5432"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - dokploy-network
+
+configs:
+  haproxy-cfg:
+    content: |
+      global
+        log stdout format raw local0 info
+
+      defaults
+        mode tcp
+        log global
+        option tcplog
+        # Logs failed or refused connections only, not every normal one.
+        option dontlog-normal
+        timeout connect 5s
+        # Apps keep pooled connections open between queries (plans/shared-postgres.md, "TLS"), so idle
+        # connections must outlive these; keepalives stop the tailnet path dropping them silently.
+        timeout client 30m
+        timeout server 30m
+        option clitcpka
+        option srvtcpka
+
+      frontend postgres
+        bind :5432
+        default_backend primary
+
+      backend primary
+        # Pigsty's primary service on each node: its own HAProxy sends it to whichever node is primary.
+        # Containers cannot resolve tailnet names, so the address comes from the environment.
+        server pigsty-1 ${PIGSTY_1_ADDRESS:?}:5433 check inter 5s fall 3 rise 2
+
+networks:
+  dokploy-network:
+    external: true

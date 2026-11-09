@@ -129,7 +129,9 @@ Open for this topology (also in `decisions/open-questions.md`):
   over DNS-01 at the proxy. Pigsty's certbot needs public DNS and a public port 80
   (`pigsty.io/docs/infra/admin/cert`), which this node does not have.
 - **Proxy:** a small HAProxy container on Dokploy right after the install, so apps
-  there use one address. **UNTESTED:** containers reaching the tailnet through the host.
+  there use one address: `pg-proxy:5432`, defined in `apps/vps/pg-proxy/`. Containers reach the
+  tailnet through the host (Blinko connects to pigsty-1's tailnet address, 2026-11-07), but cannot
+  resolve tailnet names, so addresses come from the environment (2026-11-09).
 - **Alerts:** ntfy, the owner's preference, through ntfy's built-in `alertmanager`
   template, on topic `pigsty-alerts`. A user that can only write to that topic has the token.
   A test alert arrived on 2026-11-06. Pigsty has no setting for this, so `render.sh` edits its
@@ -338,7 +340,8 @@ first, which restarts Postgres. The rest of the list in `ansible/pigsty/` create
 
 1. Create its role and database, plus any extension it needs (as admin).
 2. Store the password in OpenBao.
-3. Remove the bundled database from its compose file and point it at HAProxy.
+3. Remove the bundled database from its compose file and point it at `pg-proxy:5432`
+   (`apps/vps/pg-proxy/README.md`).
 4. Add its `pg_hba.conf` line.
 5. Removing an app later: drop its database and role.
 

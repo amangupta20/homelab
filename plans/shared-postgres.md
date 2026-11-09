@@ -300,8 +300,13 @@ Follows `decisions/backup-tiers.md` (proposed).
 - **Retention by days, for Garage later:** `retention_full_type: time`. Data older
   than the window remains until the next full backup ages out: oldest kept ≈
   window + time between full backups.
-- **`archive_timeout = 60`**, so a quiet database still ships its changes at
-  least every minute.
+- **`archive_timeout = 300` by default (owner, 2026-11-09)**, so a quiet database
+  still ships its changes at least every 5 minutes; 600 is also acceptable. Lowered
+  only when an app's usage needs a smaller loss window. 300 is what Pigsty's `oltp`
+  template sets and what runs on `pigsty-1` (`pg_settings`, 2026-11-07). The setting
+  covers the whole server, not one database: a busy app fills 16 MB WAL segments and
+  ships them sooner anyway, and one app that needs less than 5 minutes means lowering
+  it for every database or giving that app its own cluster.
 - **Restores cover the whole server, not one database.** To roll back one
   app, restore to a scratch instance and copy that app's database across.
   Tried on 2026-11-07, without swapping the app onto the copy (`journal/2026-11-07-restore-test-blinko-copy.md`).

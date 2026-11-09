@@ -35,7 +35,7 @@ document says, and the read-only recon pass has not filled it in yet.
 | ntfy bus | Push-notification service. Backup jobs, deploys, and security alerts post here. | unknown | stable — offsite "is the host itself down?" check still to do |
 | Nextcloud AIO | Self-hosted file sync (Dropbox replacement), all-in-one container. | unknown | stable — full restore test still to do |
 | Uptime Kuma | Up/down monitoring. Named once in the old platform page; nothing else mentions it. | unknown | unknown whether it runs |
-| Sablier | Stops idle apps and starts them on the next request (`plans/sablier-wakeups.md`, `apps/vps/sablier/`). | remote VPS | running since 2026-11-07; Blinko sleeps behind it |
+| Sablier | Stops idle apps and starts them on the next request (`plans/sablier-wakeups.md`, `apps/vps/sablier/`). | remote VPS | running since 2026-11-07; Blinko, pgAdmin and CloudBeaver sleep behind it |
 | pg-proxy | One address on the VPS for the shared Postgres (`apps/vps/pg-proxy/`): 5432 for apps, 5436 for the database UIs. | remote VPS | running since 2026-11-09 — verified: a login as `blinko` through `pg-proxy:5432` reached the primary, and `dbuser_owner` through 5436 |
 | pgAdmin | Web UI for the shared Postgres (`apps/vps/pgadmin/`). Tailnet only. | remote VPS | running since 2026-11-09 — verified: 200 over the tailnet, 403 from the public address |
 | CloudBeaver | Web UI for the shared Postgres (`apps/vps/cloudbeaver/`). Tailnet only. | remote VPS | running since 2026-11-09 — verified: 200 over the tailnet, 403 from the public address, setup wizard skipped |

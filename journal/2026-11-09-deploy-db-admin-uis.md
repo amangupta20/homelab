@@ -37,3 +37,15 @@ Pigsty config on the node matched the repo before the change (`render.sh --check
 
 - The owner's own test: logging in to each UI and opening the database (credentials in OpenBao, `apps/vps/*/README.md`).
 - The owner drops whichever UI gets used less.
+
+## Follow-up, 2026-11-09: both asleep when idle
+
+- Redeployed from `main` with Sablier's labels and health checks (`apps/vps/pgadmin/`, `apps/vps/cloudbeaver/`).
+- Test, for each: `docker stop`, then a request from the public address, then one over the tailnet. CloudBeaver: 403,
+  still stopped, then woken in 11.6 s. pgAdmin: 403, then 16.4 s to wake. pgAdmin was already starting before the
+  tailnet request: Traefik's access log shows a pgAdmin tab on a tailnet device polling
+  `/dashboard/dashboard_stats` every 5 s, and that poll woke it. The public request got 403 and woke nothing.
+- So an open pgAdmin tab keeps it awake, and after a wake that tab answers 401 until it logs in again.
+- For about 20 s after the redeploy, requests got 500 while Sablier still knew the old container names (the
+  reconciliation trap in `apps/vps/sablier/README.md`); its log then shows the new instance added to the group.
+- CloudBeaver's saved connection got "Show all databases" (`apps/vps/cloudbeaver/README.md`).

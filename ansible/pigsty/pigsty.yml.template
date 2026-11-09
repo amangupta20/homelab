@@ -28,6 +28,12 @@ all:
           pool_mode: session
           roles: [dbrole_admin]
           comment: test app; session pooling for its Prisma migrations
+        - name: dbuser_owner
+          password: __PG_USER_DBUSER_OWNER__
+          pgbouncer: false
+          # One app role per app database: membership gives that database's access (each has revokeconn).
+          roles: [dbrole_admin, blinko]
+          comment: the owner's login for pgAdmin and CloudBeaver; not a superuser
         pg_databases:
         - name: meta
           baseline: cmdb.sql

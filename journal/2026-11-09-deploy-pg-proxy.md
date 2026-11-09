@@ -29,5 +29,12 @@ which only gained one entry. The provider's connection test passed after the cha
 
 ## Still open
 
-- Blinko still connects to pigsty-1 directly; moving it to `pg-proxy:5432` is the next change.
 - The backend check is TCP only (README); revisit in phase 2.
+
+## Follow-up, 2026-11-09: Blinko moved onto it
+
+- OpenBao `kv/dokploy/blinko`, field `database_url`: host changed to `pg-proxy:5432` (version 3; version 2 holds the
+  direct address, so `bao kv rollback -version=2 kv/dokploy/blinko` and a redeploy undo it). Redeployed through the MCP.
+- Verified: Blinko's public page answered 200, the container is `healthy`, its `DATABASE_URL` host reads
+  `pg-proxy:5432`, three connections from Blinko are established on pg-proxy's port 5432 (`ss` inside pg-proxy's
+  network namespace), and Blinko's log since the deploy shows no database errors.

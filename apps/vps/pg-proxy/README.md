@@ -1,6 +1,6 @@
 # pg-proxy
 
-**Status:** running since 2026-11-09 (`journal/2026-11-09-deploy-pg-proxy.md`); no app uses it yet. One HAProxy container that gives apps on the VPS one address for
+**Status:** running since 2026-11-09 (`journal/2026-11-09-deploy-pg-proxy.md`); Blinko connects through it since the same day. One HAProxy container that gives apps on the VPS one address for
 the shared Postgres, `pg-proxy:5432` on `dokploy-network` (`plans/shared-postgres.md`, "Proxy"). It keeps no data.
 
 ## Derived from

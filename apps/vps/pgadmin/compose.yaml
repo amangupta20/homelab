@@ -1,0 +1,63 @@
+# pgAdmin: a web UI for the shared Postgres (plans/shared-postgres.md, "Database UIs").
+# Tailnet only: Traefik refuses any client outside the tailnet range. Source of the shape: README.
+
+services:
+  pgadmin:
+    # Pinned, not `latest`. arm64 listed on Docker Hub, 2026-11-09.
+    image: dpage/pgadmin4:9.19.0
+    restart: unless-stopped
+    environment:
+      # The pgAdmin login, used to create the account on the first start only.
+      PGADMIN_DEFAULT_EMAIL: "${PGADMIN_EMAIL:?}"
+      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_PASSWORD:?}"
+      PGADMIN_DISABLE_POSTFIX: "true"
+      # Never offer to save database passwords in pgAdmin; they are typed per session.
+      PGADMIN_CONFIG_ALLOW_SAVE_PASSWORD: "False"
+    configs:
+      - source: servers-json
+        target: /pgadmin4/servers.json
+    volumes:
+      # Its own settings and the login account. No database data.
+      - pgadmin-data:/var/lib/pgadmin
+    expose:
+      - "80"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=dokploy-network
+      - traefik.http.routers.pgadmin.rule=Host(`${PGADMIN_HOST:?}`)
+      - traefik.http.routers.pgadmin.entrypoints=websecure
+      - traefik.http.routers.pgadmin.middlewares=pgadmin-tailnet
+      # The zone's wildcard certificate, over DNS-01 (systems/vps.md, "Certificates").
+      - traefik.http.routers.pgadmin.tls.certresolver=cloudflare
+      - traefik.http.routers.pgadmin.tls.domains[0].main=${ZONE:?}
+      - traefik.http.routers.pgadmin.tls.domains[0].sans=*.${ZONE:?}
+      - traefik.http.services.pgadmin.loadbalancer.server.port=80
+      # The tailnet's address range (Tailscale's CGNAT block); anyone else gets 403.
+      - traefik.http.middlewares.pgadmin-tailnet.ipallowlist.sourcerange=100.64.0.0/10
+    networks:
+      - dokploy-network
+
+configs:
+  servers-json:
+    # Read on the first start only. The owner's login (dbuser_owner) is not a superuser; see README.
+    content: |
+      {
+        "Servers": {
+          "1": {
+            "Name": "pigsty-1 (shared Postgres)",
+            "Group": "Servers",
+            "Host": "pg-proxy",
+            "Port": 5436,
+            "MaintenanceDB": "postgres",
+            "Username": "dbuser_owner",
+            "SSLMode": "prefer"
+          }
+        }
+      }
+
+volumes:
+  pgadmin-data:
+
+networks:
+  dokploy-network:
+    external: true

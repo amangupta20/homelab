@@ -23,6 +23,9 @@ Dokploy's template was not read. Choices:
   (`apps/vps/pg-proxy/README.md`). `dbuser_owner` is in `dbrole_admin` and in each app's role, not a superuser
   (`ansible/pigsty/pigsty.yml.template`). Its password is in OpenBao (`kv/general/pigsty`, field
   `pg_user_dbuser_owner`) and is typed at connect time: `ALLOW_SAVE_PASSWORD` is off.
+- **Asleep when idle,** behind Sablier (`apps/vps/sablier/README.md`, "Making an app sleep"): stopped after 30 minutes
+  without requests, started by the next one, which waits up to 2 minutes. The tailnet allowlist runs before Sablier's
+  middleware, so a request from outside the tailnet gets 403 and wakes nothing.
 - **No backup.** The volume holds pgAdmin's own login and preferences, nothing that cannot be recreated from this
   folder and OpenBao.
 

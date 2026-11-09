@@ -21,12 +21,25 @@ services:
       - pgadmin-data:/var/lib/pgadmin
     expose:
       - "80"
+    healthcheck:
+      # Traefik drops an unhealthy container, so Sablier's wake waits for this. wget is in the image.
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:80/misc/ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+      start_interval: 3s
     labels:
       - traefik.enable=true
+      # Asleep when idle (plans/sablier-wakeups.md): stopped after 30 minutes without requests, started on the next.
+      - sablier.enable=true
+      - sablier.group=pgadmin
+      - traefik.docker.allownonrunning=true
       - traefik.docker.network=dokploy-network
       - traefik.http.routers.pgadmin.rule=Host(`${PGADMIN_HOST:?}`)
       - traefik.http.routers.pgadmin.entrypoints=websecure
-      - traefik.http.routers.pgadmin.middlewares=pgadmin-tailnet
+      # The allowlist runs first, so nobody outside the tailnet can wake it.
+      - traefik.http.routers.pgadmin.middlewares=pgadmin-tailnet,pgadmin-sablier
       # The zone's wildcard certificate, over DNS-01 (systems/vps.md, "Certificates").
       - traefik.http.routers.pgadmin.tls.certresolver=cloudflare
       - traefik.http.routers.pgadmin.tls.domains[0].main=${ZONE:?}
@@ -34,6 +47,13 @@ services:
       - traefik.http.services.pgadmin.loadbalancer.server.port=80
       # The tailnet's address range (Tailscale's CGNAT block); anyone else gets 403.
       - traefik.http.middlewares.pgadmin-tailnet.ipallowlist.sourcerange=100.64.0.0/10
+      - traefik.http.middlewares.pgadmin-sablier.plugin.sablier.sablierUrl=http://sablier:10000
+      - traefik.http.middlewares.pgadmin-sablier.plugin.sablier.group=pgadmin
+      - traefik.http.middlewares.pgadmin-sablier.plugin.sablier.sessionDuration=30m
+      - traefik.http.middlewares.pgadmin-sablier.plugin.sablier.failOpen=true
+      - traefik.http.middlewares.pgadmin-sablier.plugin.sablier.dialTimeout=2s
+      # Holds the request while it starts, instead of a waiting page.
+      - traefik.http.middlewares.pgadmin-sablier.plugin.sablier.blocking.timeout=2m
     networks:
       - dokploy-network
 

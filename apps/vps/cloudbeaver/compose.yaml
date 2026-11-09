@@ -17,12 +17,25 @@ services:
       - cloudbeaver-workspace:/opt/cloudbeaver/workspace
     expose:
       - "8978"
+    healthcheck:
+      # The image has no curl, wget or nc; bash's /dev/tcp checks the port. Sablier's wake waits for this.
+      test: ["CMD", "bash", "-c", "</dev/tcp/127.0.0.1/8978"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+      start_interval: 3s
     labels:
       - traefik.enable=true
+      # Asleep when idle (plans/sablier-wakeups.md): stopped after 30 minutes without requests, started on the next.
+      - sablier.enable=true
+      - sablier.group=cloudbeaver
+      - traefik.docker.allownonrunning=true
       - traefik.docker.network=dokploy-network
       - traefik.http.routers.cloudbeaver.rule=Host(`${CLOUDBEAVER_HOST:?}`)
       - traefik.http.routers.cloudbeaver.entrypoints=websecure
-      - traefik.http.routers.cloudbeaver.middlewares=cloudbeaver-tailnet
+      # The allowlist runs first, so nobody outside the tailnet can wake it.
+      - traefik.http.routers.cloudbeaver.middlewares=cloudbeaver-tailnet,cloudbeaver-sablier
       # The zone's wildcard certificate, over DNS-01 (systems/vps.md, "Certificates").
       - traefik.http.routers.cloudbeaver.tls.certresolver=cloudflare
       - traefik.http.routers.cloudbeaver.tls.domains[0].main=${ZONE:?}
@@ -30,6 +43,13 @@ services:
       - traefik.http.services.cloudbeaver.loadbalancer.server.port=8978
       # The tailnet's address range (Tailscale's CGNAT block); anyone else gets 403.
       - traefik.http.middlewares.cloudbeaver-tailnet.ipallowlist.sourcerange=100.64.0.0/10
+      - traefik.http.middlewares.cloudbeaver-sablier.plugin.sablier.sablierUrl=http://sablier:10000
+      - traefik.http.middlewares.cloudbeaver-sablier.plugin.sablier.group=cloudbeaver
+      - traefik.http.middlewares.cloudbeaver-sablier.plugin.sablier.sessionDuration=30m
+      - traefik.http.middlewares.cloudbeaver-sablier.plugin.sablier.failOpen=true
+      - traefik.http.middlewares.cloudbeaver-sablier.plugin.sablier.dialTimeout=2s
+      # Holds the request while it starts, instead of a waiting page.
+      - traefik.http.middlewares.cloudbeaver-sablier.plugin.sablier.blocking.timeout=2m
     networks:
       - dokploy-network
 

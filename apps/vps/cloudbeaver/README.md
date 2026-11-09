@@ -16,6 +16,13 @@ Dokploy's template was not read. Choices, the same as pgAdmin's (`apps/vps/pgadm
 - The connection is added by hand once, in the UI: host `pg-proxy`, port `5436`, user `dbuser_owner`, database
   `postgres`. Its password is in OpenBao (`kv/general/pigsty`, field `pg_user_dbuser_owner`); do not save it in
   CloudBeaver.
+- **"Show all databases"** is off by default, so only `postgres` appears. It is the provider property
+  `@dbeaver-show-non-default-db@` on the connection; on 2026-11-09 it was set in the workspace's
+  `GlobalConfiguration/.dbeaver/data-sources.json` with CloudBeaver stopped (backup `data-sources.json.bak-20261109`
+  beside it). A new connection needs it again.
+- **Asleep when idle,** behind Sablier (`apps/vps/sablier/README.md`, "Making an app sleep"): stopped after 30 minutes
+  without requests, started by the next one, which waits up to 2 minutes. The tailnet allowlist runs before Sablier's
+  middleware, so a request from outside the tailnet gets 403 and wakes nothing.
 - No backup: the workspace holds CloudBeaver's admin account and saved connections only.
 - **UNTESTED:** whether the auto-configuration still applies to 26.2.4 as read from `main`. If the wizard appears on
   the first visit, the variables were ignored; finish the wizard with the same values.

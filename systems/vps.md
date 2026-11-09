@@ -43,6 +43,10 @@ access setup are kept out of this public repo on purpose.
   `Asia/Kolkata` (timedatectl, set 2026-10-29).
 - **Admin access:** SSH with a key, over Tailscale (Tailscale 1.104.4 since
   an upgrade on 2026-10-28, `/var/log/apt/history.log`).
+- **Oracle's security list** for the VPS's subnet (owner's console, not OpenTofu) allows in UDP 41641 for
+  Tailscale direct connections, stateful, from anywhere (added 2026-11-09), besides TCP 80 and 443 and ICMP.
+  Without it, every peer outside Oracle reached the VPS through a Tailscale relay
+  (`journal/2026-11-09-vps-tailscale-direct.md`).
 - **Docker** 29.9.2 (same upgrade, from 29.7.2) in swarm mode (single node),
   as Dokploy installs it.
 - **Dokploy**, with its own Postgres and Redis (`docker service ls`). The

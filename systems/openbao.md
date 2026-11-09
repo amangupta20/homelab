@@ -162,6 +162,13 @@ The lab has two, and they need different answers:
   - the token behind the provider needs `read` on `kv/data/dokploy/*` and
     `list` on `kv/metadata/dokploy/*` — one policy for the whole folder, not
     one per app.
+  - the provider is assigned per Dokploy project. A new project has to be added to
+    its assignments (Settings → Secrets Providers), or the deploy stops with
+    `Vault provider "openbao" is not enabled for this project/environment`
+    (pg-proxy, 2026-11-09). Through the API, `vaultProvider.update` needs the whole
+    config back: send the token as Dokploy's mask `********`, which keeps the stored
+    one (`mergeVaultProviderConfig`, Dokploy v0.31.0). The Dokploy MCP shows the token
+    as `[REDACTED]`; sending that back would store it as the token.
   The provider token was created on 2026-10-27 as an orphan token with the
   `dokploy-read` policy and a 1024h period (creation time and period read back
   with `bao token lookup -accessor` on 2026-10-30; an earlier note here said

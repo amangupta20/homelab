@@ -1,0 +1,41 @@
+# CloudBeaver: a web UI for the shared Postgres (plans/shared-postgres.md, "Database UIs").
+# Tailnet only: Traefik refuses any client outside the tailnet range. Source of the shape: README.
+
+services:
+  cloudbeaver:
+    # Pinned, not `latest`. arm64 listed on Docker Hub, 2026-11-09.
+    image: dbeaver/cloudbeaver:26.2.4
+    restart: unless-stopped
+    environment:
+      # First-start setup without the wizard (CBApplication.performAutoConfiguration). The admin account is
+      # CloudBeaver's own; database logins are separate.
+      CB_SERVER_NAME: "CloudBeaver"
+      CB_ADMIN_NAME: "${CLOUDBEAVER_ADMIN_NAME:?}"
+      CB_ADMIN_PASSWORD: "${CLOUDBEAVER_ADMIN_PASSWORD:?}"
+    volumes:
+      # Its settings, users and saved connections. No database data.
+      - cloudbeaver-workspace:/opt/cloudbeaver/workspace
+    expose:
+      - "8978"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=dokploy-network
+      - traefik.http.routers.cloudbeaver.rule=Host(`${CLOUDBEAVER_HOST:?}`)
+      - traefik.http.routers.cloudbeaver.entrypoints=websecure
+      - traefik.http.routers.cloudbeaver.middlewares=cloudbeaver-tailnet
+      # The zone's wildcard certificate, over DNS-01 (systems/vps.md, "Certificates").
+      - traefik.http.routers.cloudbeaver.tls.certresolver=cloudflare
+      - traefik.http.routers.cloudbeaver.tls.domains[0].main=${ZONE:?}
+      - traefik.http.routers.cloudbeaver.tls.domains[0].sans=*.${ZONE:?}
+      - traefik.http.services.cloudbeaver.loadbalancer.server.port=8978
+      # The tailnet's address range (Tailscale's CGNAT block); anyone else gets 403.
+      - traefik.http.middlewares.cloudbeaver-tailnet.ipallowlist.sourcerange=100.64.0.0/10
+    networks:
+      - dokploy-network
+
+volumes:
+  cloudbeaver-workspace:
+
+networks:
+  dokploy-network:
+    external: true

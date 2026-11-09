@@ -124,7 +124,9 @@ Open for this topology (also in `decisions/open-questions.md`):
   Standard Postgres 18, `oltp` tuning, `C.UTF-8` locale, the node's Tailscale address
   as its Pigsty address, and Pigsty's firewall management off.
 - **Database UIs:** CloudBeaver and pgAdmin on Dokploy, not on this node. The owner
-  drops whichever gets used less.
+  drops whichever gets used less. Tailnet only, through `pg-proxy:5436` as `dbuser_owner`, a
+  non-superuser member of each app's role (`apps/vps/pgadmin/`, `apps/vps/cloudbeaver/`; owner,
+  2026-11-09).
 - **Certificates:** Pigsty's own CA first, then a wildcard Let's Encrypt certificate
   over DNS-01 at the proxy. Traefik's `cloudflare` resolver does this since 2026-11-09 (`systems/vps.md`,
   "Certificates"). Pigsty's certbot needs public DNS and a public port 80
@@ -348,7 +350,8 @@ first, which restarts Postgres. The rest of the list in `ansible/pigsty/` create
 2. Store the password in OpenBao.
 3. Remove the bundled database from its compose file and point it at `pg-proxy:5432`
    (`apps/vps/pg-proxy/README.md`).
-4. Add its `pg_hba.conf` line.
+4. Add its `pg_hba.conf` line, and its role to `dbuser_owner`'s `roles` so the database
+   UIs can open it (`apps/vps/pgadmin/README.md`).
 5. Removing an app later: drop its database and role.
 
 Apps that pin unusual database versions or extensions stay bundled. Immich is

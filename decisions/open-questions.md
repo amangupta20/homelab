@@ -240,3 +240,6 @@ these parts are open:
   say nothing if that node is down.
 - `archive_timeout`: `plans/shared-postgres.md` says 60 s; the live cluster has 300 s, from Pigsty's `oltp`
   template (`pg_settings`, 2026-11-07). A quiet database can lose up to 5 minutes rather than 1. Which is wanted?
+  Agent's note, 2026-11-09, for the owner to close: the owner chose 300 s as the default (600 also acceptable),
+  lowered only when an app's usage needs it; `plans/shared-postgres.md` now says so, with the caveat that the
+  setting covers the whole server.

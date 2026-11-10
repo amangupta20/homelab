@@ -133,6 +133,8 @@ owner file, and is deleted from this list.
   2026-11-02). Langfuse's size matters less if it runs only when needed behind
   Sablier (`ideas/on-demand-container-wakeups.md`), which depends on that
   idea's open reverse-proxy questions.
+  - 2026-11-10: the owner chose Phoenix in a working session, to deploy
+    next after Authentik (`plans/ai-reviewer-prime-agent.md`, step 6).
 - Where do the reviewer's own instructions live? The plan proposes a private
   config repo (prompt, skills, tool manifest, `/refine` lessons) and keeps the
   shared rules public in `repo/review.md` and `AGENTS.md`. `AGENTS.md` says

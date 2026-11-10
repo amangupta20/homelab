@@ -63,7 +63,9 @@ Why this order and why on the VPS: `decisions/foundations-on-vps.md`.
    it (`ideas/edge-and-security-layers.md`, "Sign-in").
 5. **Apps.** From here, every VPS app goes through
    `skills/deploy-on-dokploy/` with OpenBao and SSO from the start. Apps
-   already on Dokploy move into `apps/vps/` one at a time.
+   already on Dokploy move into `apps/vps/` one at a time. The first new one
+   is the reviewer's trace viewer, Phoenix, right after SSO (owner,
+   2026-11-10; `plans/ai-reviewer-prime-agent.md`, step 6).
 
 ## Follow-ups: apps deployed before the foundations
 

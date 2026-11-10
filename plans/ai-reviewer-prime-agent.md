@@ -116,8 +116,9 @@ carries only a trace ID, never a link, because traces hold whole diffs and the
 private instructions. A one-line summary (pull request, duration, cost, result,
 trace ID) goes to ntfy.
 
-Which tool shows the traces, Phoenix or Langfuse, is undecided
-(`decisions/open-questions.md`, AI reviewer).
+Which tool shows the traces: Phoenix, chosen by the owner on 2026-11-10
+(step 6). The entry in `decisions/open-questions.md`, AI reviewer, stays
+until the owner closes it.
 
 ### Model calls: direct or through a proxy
 
@@ -179,9 +180,19 @@ export its log before adding LiteLLM. None of it is checked.
    review, save the session folder and trace files to the bucket, post the
    result, shut down. — gate: a review on the scratch copy completes, and a
    second run resumes it from a "go ahead" reply.
-6. **Trace viewer.** Phoenix or Langfuse, once the open question is decided,
-   loaded from the bucket. — gate: a run's trace is found by the ID in its
-   comment.
+6. **Trace viewer.** Next after Authentik is up (`plans/vps-foundations.md`,
+   step 4); the owner put it there on 2026-11-10, because the run log shows
+   one line per step and the owner cannot see what the reviewer read, called
+   or said. Phoenix, by the owner's choice of the same day: one container, so
+   it can run all the time without Sablier. On the VPS through
+   `skills/deploy-on-dokploy/`, its database on the shared Postgres
+   (`plans/shared-postgres.md`), sign-in through Authentik. An importer reads
+   the finished run archives from B2 with a read-only key and sends them as
+   OpenTelemetry spans; its boundary is the action's `observability.md`.
+   Following a run live, while it runs, comes after the importer works.
+   — gate: a run's trace, with its messages, tool calls and files read, is
+   found by the ID in its comment; one successful, one failed and one resumed
+   run imported with matching token totals (`observability.md`).
 7. **This repo.** Point the trigger at this repo, levels 2 and 3 only at
    first; level 1 auto-fixes once the owner trusts the findings. — gate: the
    Done when line above.

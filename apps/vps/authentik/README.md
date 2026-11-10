@@ -9,7 +9,7 @@
 |---|---|---|
 | Authentik's `docker-compose.yml` (`goauthentik.io/docker-compose.yml`) | `2026.8.5`, 2026-11-10 | image, `server` and `worker` commands, `shm_size`, `/data`, the `AUTHENTIK_POSTGRESQL__*` variables |
 | Authentik's configuration docs (`website/docs/install-config/configuration/configuration.mdx`) | tag `version/2026.8.5`, 2026-11-10 | `AUTHENTIK_WEB__BASE_URL`, the pooler section ("Use a PostgreSQL connection pooler"), `AUTHENTIK_LISTEN__TRUSTED_PROXY_CIDRS` defaults, error reporting off by default |
-| Authentik's `lifecycle/ak` | tag `version/2026.8.5`, 2026-11-10 | `ak healthcheck` for the health check; the image itself has none (`docker buildx imagetools inspect`) |
+| Authentik's `lifecycle/ak` and `lifecycle/container/Dockerfile` | tag `version/2026.8.5`, 2026-11-10 | the health check (`ak healthcheck`, as the image's own `HEALTHCHECK`, with a faster `start_interval`); what the root start does; `TMPDIR=/dev/shm/`, the reason for `shm_size` |
 | Dokploy's template (`blueprints/authentik/` in `Dokploy/templates`) | commit `084d1cb15f`, 2026-10-15 | the worker starting after the server, to avoid a race filling the fresh `/data` volume |
 | `ghcr.io/goauthentik/server` | `2026.8.5`, 2026-11-10 | arm64 image (`docker buildx imagetools inspect`) |
 
@@ -23,12 +23,15 @@ Choices that differ from the sources:
   advice for session pooling. Why shared and not bundled: the cluster's B2 backups have a tested restore, and the
   tailnet round trip from pigsty-1 to the Dokploy VPS is 1 ms over a direct path (`tailscale ping`, 2026-11-10).
   The cost: SSO is down whenever pigsty-1 is.
-- **No Docker socket, and the worker does not run as root.** Upstream mounts `/var/run/docker.sock` into the worker,
-  as root, so Authentik can create outpost containers itself. Access to the socket is root on the VPS, and this is
+- **No Docker socket, and the worker does not run as root.** Upstream mounts `/var/run/docker.sock` into the worker
+  so Authentik can create outpost containers itself, and starts it as root only to join the socket's group and
+  `chown` `/data`, then drops to the `authentik` user (`lifecycle/ak`). Access to the socket is root on the VPS, and this is
   the most exposed service on it. Without the socket, the embedded outpost inside `server` still serves forward-auth
   for every app; any other outpost (LDAP, RADIUS, a proxy elsewhere) is a small Compose service deployed by hand once,
-  with a token made in the admin interface. Running the worker as the image's user (uid 1000) is untested on the
-  `/data` volume's permissions; check on the first deploy.
+  with a token made in the admin interface. Without root, the `chown` is skipped; a fresh named
+  volume takes the image's ownership (uid 1000), so it should not be needed. Untested; check on the first deploy.
+- **`shm_size: 512mb` kept.** The image puts its temporary files in `/dev/shm`, and Docker's default is 64 MB.
+  It is a ceiling, not memory set aside.
 - **No published ports, no port 9443.** Traefik reaches port 9000; TLS ends at Traefik.
 - **Three routers instead of one domain** (next section).
 - **No `custom-templates` or `certs` volumes.** Nothing uses them yet.

@@ -50,3 +50,11 @@ gained an entry.
   (`apps/vps/authentik/README.md`).
 - No app signs in through it yet, the gate of `plans/vps-foundations.md` step 4.
 - Whether its idle `LISTEN` connections survive pg-proxy's 30-minute idle timeout.
+
+## Follow-up, 2026-11-10
+
+- Mail through Resend and the extra setup-path block deployed (commit `7fc18c0`); both containers healthy, and
+  `curl` gets 403 on all four refused public paths.
+- Recovery flow, the tailnet-only rule for superusers, and the owner's TOTP device set in Authentik
+  (`apps/vps/authentik/README.md`, "Set in Authentik, not in this repo"). The owner's test reset went through.
+- Still open from the list above: the database restore test, and an app signing in through it.

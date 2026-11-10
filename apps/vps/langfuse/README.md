@@ -51,9 +51,13 @@ is not tried yet.
 
 Password logins are off, so the sign-up page offers only Authentik. A first Authentik login creates the Langfuse
 account. `AUTH_DISABLE_SIGNUP` is not set because it refuses that too (`auth.ts`, `createUser`). So **who may use
-Langfuse is decided in Authentik**: the `langfuse` application is bound to the group `langfuse-users`, whose only
-member is `akadmin`. Add a person to that group to let them in. Without a binding, every Authentik user could create
-a Langfuse account.
+Langfuse is decided in Authentik**, and by the owner's rule every Authentik user may use every app unless it is
+restricted (`apps/vps/authentik/README.md`). The `langfuse` application has no binding (the `langfuse-users` group it
+had at first was removed on 2026-11-10). A new Langfuse account sees no organisation or project until someone adds
+it to one, because `LANGFUSE_DEFAULT_ORG_ID` is not set. To restrict Langfuse to a group, bind that group to the
+application in Authentik.
+
+`akadmin` cannot sign in here from outside the tailnet (Authentik refuses superusers there); use a non-admin account.
 
 Checked on the public domain, 2026-11-10: `POST /api/auth/signup` answers 422 "Sign up with email and password is
 disabled for this instance", and a password login answers 401.

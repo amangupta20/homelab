@@ -48,7 +48,7 @@ and secret into OpenBao. A provider made through the API gets an empty `grant_ty
 every sign-in with "Invalid grant_type for provider" (Langfuse shows "The request is otherwise malformed"; first
 sign-in, 2026-11-10). Made through Authentik's API
 on 2026-11-10; the sign-in button leads to Authentik's authorize page with that redirect URI (`curl`). The owner's first sign-in through Authentik
-worked on 2026-11-10 (a user row in Langfuse's database; no organisation or project yet).
+worked on 2026-11-10 (a user row in Langfuse's database; the organisation, project and keys were made later that day).
 
 Password logins are off, so the sign-up page offers only Authentik. A first Authentik login creates the Langfuse
 account. `AUTH_DISABLE_SIGNUP` is not set because it refuses that too (`auth.ts`, `createUser`). So **who may use

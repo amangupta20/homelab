@@ -62,6 +62,18 @@ application in Authentik.
 Checked on the public domain, 2026-11-10: `POST /api/auth/signup` answers 422 "Sign up with email and password is
 disabled for this instance", and a password login answers 401.
 
+## Sending traces
+
+- **OpenTelemetry only.** Langfuse 4.77 runs in `events_only` mode: `POST /api/public/ingestion` takes scores only
+  and answers 400 for `trace-create` and `span-create`; traces go to `POST /api/public/otel/v1/traces` (OTLP, JSON
+  or protobuf) and are read back with `GET /api/public/v2/observations?traceId=...`; `/api/public/traces/<id>`
+  answers 404 for reads but still deletes. Basic auth with the project's public and secret key.
+- The reviewer project's keys are in OpenBao at `kv/general/langfuseprime`, fields `publickey` and `secret_key`
+  (owner, 2026-11-10).
+- Tried 2026-11-10 with a two-span OTLP JSON trace: accepted (200), both spans read back within seconds, one 821-byte
+  event file under `events/otel/` in the B2 bucket. Deleting the trace removed it from Langfuse, but the event file
+  was still in B2 30 s later and was deleted by hand. Whether Langfuse cleans these up later is not known.
+
 ## Asleep when idle
 
 How it works: `apps/vps/sablier/README.md`. What is different here:

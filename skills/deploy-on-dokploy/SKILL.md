@@ -92,7 +92,11 @@ them and links its journal entry here.
    the container when the service is deployed by hand while auto-deploy is off.
 7. **Public access**, only if people outside the tailnet use it: add the
    domain in Dokploy and the DNS record in Cloudflare. Admin interfaces stay
-   tailnet-only.
+   tailnet-only. Name it `<app>.app.<zone>`: the DNS-only `*.app.<zone>`
+   wildcard already points at the VPS, so no new record is needed (Authentik,
+   Blinko, Langfuse). A name directly under the zone falls under the
+   Cloudflare-proxied wildcard instead and answered 522
+   (`journal/2026-11-10-deploy-langfuse.md`).
 8. **Sign-in:** once SSO runs, register the app as an OIDC client if it
    supports it; otherwise put it behind the SSO's forward-auth. Write which in
    the app's `README.md`.

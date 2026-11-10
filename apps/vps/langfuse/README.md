@@ -1,8 +1,8 @@
 # Langfuse
 
-**Status:** defined, not deployed. The AI reviewer's trace viewer and the place to learn evaluation on
-(`plans/ai-reviewer-prime-agent.md`, step 6; the owner chose Langfuse on 2026-11-10). The stack started on the
-workstation with a throwaway Postgres ("Tried on the workstation"); nothing here has run on the VPS.
+**Status:** running on the VPS since 2026-11-10 (`journal/2026-11-10-deploy-langfuse.md`). The AI reviewer's trace
+viewer and the place to learn evaluation on (`plans/ai-reviewer-prime-agent.md`, step 6; the owner chose Langfuse on
+2026-11-10). Nobody has signed in yet, no trace has been sent, and ClickHouse has no backup.
 
 ## Derived from
 
@@ -41,22 +41,30 @@ Choices that differ from the sources:
 
 Through Authentik's OIDC, with Langfuse's built-in Authentik provider: in Authentik, an OAuth2/OpenID provider and
 an application with the slug `langfuse` (the issuer is `https://<authentik domain>/application/o/langfuse/`), the
-redirect URI `https://<langfuse domain>/api/auth/callback/authentik`, and the client ID and secret into OpenBao.
-**UNTESTED.**
+redirect URI `https://<langfuse domain>/api/auth/callback/authentik` (strict), the implicit-consent authorization
+flow, scopes `openid`, `email` and `profile`, and the client ID and secret into OpenBao. Made through Authentik's API
+on 2026-11-10; the sign-in button leads to Authentik's authorize page with that redirect URI (`curl`). A full login
+is not tried yet.
 
 Password logins are off, so the sign-up page offers only Authentik. A first Authentik login creates the Langfuse
 account. `AUTH_DISABLE_SIGNUP` is not set because it refuses that too (`auth.ts`, `createUser`). So **who may use
-Langfuse is decided in Authentik**: bind a policy to the `langfuse` application that allows the owner only (a user
-or group binding). Without one, every Authentik user could create a Langfuse account.
+Langfuse is decided in Authentik**: the `langfuse` application is bound to the group `langfuse-users`, whose only
+member is `akadmin`. Add a person to that group to let them in. Without a binding, every Authentik user could create
+a Langfuse account.
+
+Checked on the public domain, 2026-11-10: `POST /api/auth/signup` answers 422 "Sign up with email and password is
+disabled for this instance", and a password login answers 401.
 
 ## Asleep when idle
 
 How it works: `apps/vps/sablier/README.md`. What is different here:
 
-- A wake starts ClickHouse, Redis, web and worker together; Sablier answers once all four are healthy. The web
-  container waits for ClickHouse and Redis only when Compose starts it; Sablier starts containers directly, so web
-  fails once and is restarted. 14 s on the workstation ("Tried on the workstation"); on the VPS untested, against
-  the 2-minute blocking limit.
+- A wake starts ClickHouse, Redis, web and worker together; Sablier answers once all four are healthy. Twice on the
+  VPS (2026-11-10, all four stopped by hand, then one `GET` through the public domain): 35 s and 27 s, no container
+  restarted. On the workstation web restarted once ("Tried on the workstation"), so that can still happen.
+- **The first answer after a wake is `302` to the same path**, not the page itself; the request after it gets the
+  real answer. A client following that redirect for a `POST` would usually resend it as a `GET`, so the importer
+  should wake Langfuse with a `GET /api/public/health` (following redirects) before it sends traces.
 - The worker sleeps too, so evaluations that a model runs on new traces, and Langfuse's other background jobs, run
   only while someone uses it. Traces sent to the API wake it, and the worker works through them while awake.
 - Back to always on: remove the router's `middlewares=langfuse-sablier` label and every `sablier.*` label, then
@@ -66,14 +74,16 @@ How it works: `apps/vps/sablier/README.md`. What is different here:
 
 1. Pigsty: put the role's password in OpenBao (`kv/general/pigsty`, field `pg_user_langfuse`; letters and digits,
    because it goes into a URL), run `ansible/pigsty/render.sh`, then on the node `bin/pgsql-user pg-meta langfuse`,
-   `bin/pgsql-db pg-meta langfuse` and `bin/pgsql-user pg-meta dbuser_owner`. **UNTESTED** for this app; Authentik
-   went the same way.
-2. B2: a private bucket and an application key for that bucket only, read and write. **UNTESTED.**
+   `bin/pgsql-db pg-meta langfuse` and `bin/pgsql-user pg-meta dbuser_owner` (done 2026-11-10, each `failed=0`).
+2. B2: a private bucket and an application key for that bucket only, read and write (made by the owner in B2's
+   console, 2026-11-10). No key in OpenBao can make keys.
 3. Authentik: the provider, application and policy binding in "Sign-in".
 4. OpenBao: the fields of `.env.example` at `kv/dokploy/langfuse`.
 5. Dokploy: a Compose service from this repo's `main`, path `apps/vps/langfuse/compose.yaml`, no domain set in
    Dokploy (the routers are labels here), environment from OpenBao, and the project added to the OpenBao
-   provider's assignments (`systems/openbao.md`). The existing DNS-only wildcard should already cover the domain.
+   provider's assignments (`systems/openbao.md`). The domain goes under `*.app.<zone>`, the DNS-only wildcard to
+   the VPS, as `langfuse.app.<zone>`; a name directly under the zone hits the Cloudflare-proxied wildcard and got
+   522 (2026-11-10).
 6. The first Authentik login, then an organisation, a project and its API keys for the importer.
 
 ## Backups
@@ -103,7 +113,8 @@ container named `pg-proxy` and placeholder values for everything else; B2 and Au
 
 ## Things to watch
 
-- Memory on the VPS while awake and under load; about 1.4 GB idle on the workstation. Measure with `docker stats`.
-- The wake time against Sablier's 2-minute limit, and whether the first request after a wake gets 500 (the Sablier
-  rename issue in its README).
+- Memory under load. Just after the first start on the VPS: worker 620 MB, ClickHouse 359 MB, web 241 MB, Redis 9 MB
+  (`docker stats`, 2026-11-10).
+- The idle stop after 20 minutes is not observed yet, and whether the first request after a redeploy gets 500 (the
+  Sablier rename issue in its README).
 - `pg-proxy` closes connections idle for 30 minutes; with the stack asleep after 20 that should not matter.

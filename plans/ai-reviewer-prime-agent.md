@@ -202,7 +202,8 @@ export its log before adding LiteLLM. None of it is checked.
      only, and asleep when idle behind Sablier (`plans/sablier-wakeups.md`)
      from the start, back to always on if that causes trouble. A cold start
      took 14 s on the workstation; on the VPS untested.
-   - On the VPS through `skills/deploy-on-dokploy/`. ClickHouse, which holds
+   - Deployed on the VPS on 2026-11-10 (`journal/2026-11-10-deploy-langfuse.md`);
+     a wake took 27–35 s there. ClickHouse, which holds
      the hand-made scores, has no backup yet (`apps/vps/langfuse/README.md`).
      An importer reads the finished run archives from B2 with a read-only key
      and sends them as OpenTelemetry spans; its boundary is the action's

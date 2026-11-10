@@ -6,7 +6,7 @@ Standard library only. README: apps/vps/langfuse/README.md, "Importer".
 
     python3 import_runs.py loop            check B2 every IMPORT_INTERVAL seconds (the container's command)
     python3 import_runs.py once            one pass, then exit
-    python3 import_runs.py convert FILE    print the OTLP JSON for one local .tar.gz archive (no network)
+    python3 import_runs.py convert FILE    print the conversion summary for one local .tar.gz archive (no network)
     python3 import_runs.py verify KEY      compare a run's imported usage with its metadata
 """
 

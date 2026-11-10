@@ -74,8 +74,24 @@ These live in Authentik's database. Set through its API on 2026-11-10, with the 
   the recovery flow on the public domain, as `akadmin`, stopped at the deny stage and sent no mail. Authentik sees
   the real client address: the owner's logins were logged with a tailnet address.
 - `akadmin` has a TOTP device.
+- **Every user may use every app, unless an app is restricted** (owner, 2026-11-10: "give default users access to
+  all the apps since that was the point of SSO, unless I restrict some apps"). Authentik already works this way: an
+  application with no policy binding is open to every user. To restrict an app, bind a group (or a policy) to its
+  application; then only the bound group gets in. No app is restricted yet.
+- **Invite-only sign-up:** the enrollment flow `invite-enrollment` (stages, in order: invitation, with "continue
+  without invitation" off; a form for username, name, email and password, checked by
+  `default-password-change-password-policy`; create the user as an active internal user, in no group; log in). It is
+  not linked from the login page, so the only way in is an invitation link. Tested 2026-11-10 on the public domain
+  through the flow API: without an invitation it answered "Invalid invite/invite not found"; with a single-use one
+  it created the user, who had access to `langfuse` (`check_access`), and the invitation was used up. The test user
+  and invitation were deleted.
 
-Use a separate, non-admin account for signing in to apps: `akadmin` is refused everywhere outside the tailnet.
+  To invite someone: on the admin hostname, **Directory → Invitations → Create**, flow `invite-enrollment`,
+  single use, an expiry date. Copy the link and send it yourself; Authentik does not mail invitations. A new user
+  has no second factor until they add one at `/if/user/`; nothing forces it yet.
+
+Use a separate, non-admin account for signing in to apps: `akadmin` is refused everywhere outside the tailnet. An
+invitation is the way to make that account.
 
 ## Deploying
 

@@ -14,6 +14,14 @@ x-authentik-env: &authentik-env
   # Copied into the Base URL system setting on the first start only (configuration docs, 2026.8).
   AUTHENTIK_WEB__BASE_URL: "https://${AUTHENTIK_DOMAIN:?}"
   AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
+  # Mail for password recovery and notifications, through Resend's SMTP server (README, "Email").
+  # The worker sends it; the server reads the same settings for its admin pages.
+  AUTHENTIK_EMAIL__HOST: smtp.resend.com
+  AUTHENTIK_EMAIL__PORT: "465"
+  AUTHENTIK_EMAIL__USE_SSL: "true"
+  AUTHENTIK_EMAIL__USERNAME: resend
+  AUTHENTIK_EMAIL__PASSWORD: "${AUTHENTIK_SMTP_PASSWORD:?}"
+  AUTHENTIK_EMAIL__FROM: "${AUTHENTIK_EMAIL_FROM:?}"
 
 services:
   server:

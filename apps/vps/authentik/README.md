@@ -73,6 +73,18 @@ Choices that differ from the sources:
    Dokploy (the routers are labels here), environment from OpenBao.
 5. On the admin hostname: the initial setup, then the policy and second factor above.
 
+## Email
+
+Through Resend's SMTP server (`smtp.resend.com`, port 465, implicit TLS, user `resend`), from the mail subdomain
+that Resend had already verified for Mattermost. The key is Authentik's own, named `authentik` in Resend, with
+sending access to that one domain (made through Resend's API, 2026-11-10; SMTP login answered `235`). The account's
+full-access key, used only to make it, is in OpenBao at `kv/general/resend`, field `apikey`.
+
+Used for password recovery and Authentik's notifications. Recovery is the example blueprint
+`flows-recovery-email-mfa-verification.yaml`, set as the brand's recovery flow: it asks for the second factor as
+well as the emailed link, so access to the mailbox alone does not reset the `akadmin` password. **UNTESTED** until
+a test reset arrives.
+
 ## Backups
 
 The database is in the shared cluster's backups (`systems/backups.md`). The `authentik-data` volume holds uploaded

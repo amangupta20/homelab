@@ -170,10 +170,35 @@ services:
     networks:
       - langfuse
 
+  importer:
+    # Sends finished reviewer runs from the reviewer's B2 bucket to Langfuse (README, "Importer"). The script is
+    # mounted from this repo, so there is nothing to build. Stays awake (no Sablier labels): it wakes Langfuse
+    # through the public domain only when B2 has a run it has not imported.
+    image: docker.io/python:3.13.9-slim
+    restart: unless-stopped
+    command: ["python3", "-u", "-B", "/app/import_runs.py", "loop"]
+    read_only: true
+    environment:
+      B2_KEY_ID: "${IMPORTER_B2_KEY_ID:?}"
+      B2_APPLICATION_KEY: "${IMPORTER_B2_APPLICATION_KEY:?}"
+      B2_BUCKET: "${IMPORTER_B2_BUCKET:?}"
+      LANGFUSE_HOST: "https://${LANGFUSE_DOMAIN:?}"
+      LANGFUSE_PUBLIC_KEY: "${IMPORTER_LANGFUSE_PUBLIC_KEY:?}"
+      LANGFUSE_SECRET_KEY: "${IMPORTER_LANGFUSE_SECRET_KEY:?}"
+      IMPORT_INTERVAL: "900"
+      IMPORT_STATE: /state/imported.json
+    volumes:
+      - ./importer:/app:ro
+      # Which archives were sent. Losing it is safe: the importer asks Langfuse before sending a run again.
+      - importer-state:/state
+    networks:
+      - langfuse
+
 volumes:
   clickhouse-data:
   clickhouse-logs:
   redis-data:
+  importer-state:
 
 networks:
   dokploy-network:

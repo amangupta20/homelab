@@ -55,7 +55,9 @@ services:
 
       # Public, refused: the admin interface and the first-start setup flow. Explicit priority so it
       # always beats the public router above. The allowlist of 127.0.0.1 alone answers 403 to everyone.
-      - traefik.http.routers.authentik-deny.rule=Host(`${AUTHENTIK_DOMAIN:?}`) && (PathPrefix(`/if/admin`) || PathPrefix(`/if/flow/initial-setup`))
+      # The setup flow is refused at its page, its API and the /setup redirect, so it can only run on the
+      # admin hostname. Once akadmin has a password, Authentik refuses the flow itself as well.
+      - traefik.http.routers.authentik-deny.rule=Host(`${AUTHENTIK_DOMAIN:?}`) && (PathPrefix(`/if/admin`) || PathPrefix(`/if/flow/initial-setup`) || PathPrefix(`/api/v3/flows/executor/initial-setup`) || Path(`/setup`))
       - traefik.http.routers.authentik-deny.priority=1000
       - traefik.http.routers.authentik-deny.entrypoints=websecure
       - traefik.http.routers.authentik-deny.tls.certresolver=letsencrypt

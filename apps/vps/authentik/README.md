@@ -42,12 +42,15 @@ Choices that differ from the sources:
 
 | Hostname | Who reaches it | What it serves |
 |---|---|---|
-| `AUTHENTIK_DOMAIN` | anyone; Let's Encrypt over HTTP-01 | everything except the two paths below |
-| `AUTHENTIK_DOMAIN`, paths `/if/admin` and `/if/flow/initial-setup` | nobody: 403 | — |
+| `AUTHENTIK_DOMAIN` | anyone; Let's Encrypt over HTTP-01 | everything except the paths below |
+| `AUTHENTIK_DOMAIN`, paths `/if/admin`, `/if/flow/initial-setup`, `/api/v3/flows/executor/initial-setup` and `/setup` | nobody: 403 | — |
 | `AUTHENTIK_ADMIN_HOST` | the tailnet only (`100.64.0.0/10`, as `apps/vps/pgadmin/`); DNS-only record to the VPS's tailnet address, zone wildcard certificate | everything |
 
 - The **first-start setup** (`/if/flow/initial-setup/`), which sets the `akadmin` password, is refused publicly so
   nobody else can claim the instance between the deploy and the owner's first visit. Do it on the admin hostname.
+  The page alone is not enough: it runs through the flow API, and 2026.8 redirects `/` to `/setup` before setup,
+  so all three are refused (first deploy, 2026-11-10). After setup Authentik refuses the flow itself: the public
+  API answered with its access-denied step (`curl`, 2026-11-10).
   No bootstrap password is set in the environment for the same reason the docs warn against it: it would sit in
   plain text in the container's environment.
 - **This blocks the admin pages, not admin rights.** The API (`/api/v3/`) has to stay public, because the login

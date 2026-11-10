@@ -206,7 +206,8 @@ export its log before adding LiteLLM. None of it is checked.
      a wake took 27–35 s there. ClickHouse, which holds
      the hand-made scores, has no backup yet (`apps/vps/langfuse/README.md`).
      The importer (`apps/vps/langfuse/importer/`, 2026-11-10) reads the
-     finished run archives from B2 with a read-only key and sends them as
+     finished run archives from B2 with the reviewer's own key (owner's choice
+     over a read-only one, 2026-11-10) and sends them as
      OpenTelemetry spans; its boundary is the action's `observability.md`. The
      76 runs in B2 were imported with matching token and cost totals; 37 were
      resumed, none failed yet. The ClickHouse backup waits for Garage (owner,

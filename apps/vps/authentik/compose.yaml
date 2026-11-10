@@ -1,0 +1,110 @@
+# Authentik: the lab's single sign-on (plans/vps-foundations.md, step 4).
+# Login is public; the admin interface and first-start setup answer on a tailnet-only hostname.
+# Its database is on the shared Postgres (pigsty-1) through pg-proxy. Source of the shape and what differs: README.
+
+x-authentik-env: &authentik-env
+  AUTHENTIK_SECRET_KEY: "${AUTHENTIK_SECRET_KEY:?}"
+  # Through pg-proxy (apps/vps/pg-proxy/) to PgBouncer in session mode. Session mode keeps the LISTEN
+  # connections and advisory locks Authentik needs (README), so no AUTHENTIK_POSTGRESQL__DIRECT__* endpoint.
+  AUTHENTIK_POSTGRESQL__HOST: pg-proxy
+  AUTHENTIK_POSTGRESQL__PORT: "5432"
+  AUTHENTIK_POSTGRESQL__NAME: authentik
+  AUTHENTIK_POSTGRESQL__USER: authentik
+  AUTHENTIK_POSTGRESQL__PASSWORD: "${AUTHENTIK_PG_PASSWORD:?}"
+  # Copied into the Base URL system setting on the first start only (configuration docs, 2026.8).
+  AUTHENTIK_WEB__BASE_URL: "https://${AUTHENTIK_DOMAIN:?}"
+  AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
+
+services:
+  server:
+    # Pinned, not `latest`. arm64 checked with `docker buildx imagetools inspect`, 2026-11-10.
+    image: ghcr.io/goauthentik/server:2026.8.5
+    command: server
+    restart: unless-stopped
+    shm_size: 512mb
+    environment: *authentik-env
+    volumes:
+      # Uploaded media (icons, branding). Everything else is in Postgres.
+      - authentik-data:/data
+    # No published port: Traefik is the only way in, through the routers below.
+    expose:
+      - "9000"
+    healthcheck:
+      # The image has no HEALTHCHECK of its own; `ak healthcheck` is its lifecycle command for this.
+      test: ["CMD", "ak", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+      start_interval: 5s
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=dokploy-network
+      - traefik.http.services.authentik.loadbalancer.server.port=9000
+
+      # Public: login, flows, the user interface, the API and OIDC endpoints.
+      - traefik.http.routers.authentik.rule=Host(`${AUTHENTIK_DOMAIN:?}`)
+      - traefik.http.routers.authentik.entrypoints=websecure
+      - traefik.http.routers.authentik.tls.certresolver=letsencrypt
+      - traefik.http.routers.authentik.service=authentik
+      - traefik.http.routers.authentik-http.rule=Host(`${AUTHENTIK_DOMAIN:?}`)
+      - traefik.http.routers.authentik-http.entrypoints=web
+      - traefik.http.routers.authentik-http.middlewares=authentik-https
+      - traefik.http.routers.authentik-http.service=authentik
+      - traefik.http.middlewares.authentik-https.redirectscheme.scheme=https
+
+      # Public, refused: the admin interface and the first-start setup flow. Explicit priority so it
+      # always beats the public router above. The allowlist of 127.0.0.1 alone answers 403 to everyone.
+      - traefik.http.routers.authentik-deny.rule=Host(`${AUTHENTIK_DOMAIN:?}`) && (PathPrefix(`/if/admin`) || PathPrefix(`/if/flow/initial-setup`))
+      - traefik.http.routers.authentik-deny.priority=1000
+      - traefik.http.routers.authentik-deny.entrypoints=websecure
+      - traefik.http.routers.authentik-deny.tls.certresolver=letsencrypt
+      - traefik.http.routers.authentik-deny.middlewares=authentik-nobody
+      - traefik.http.routers.authentik-deny.service=authentik
+      - traefik.http.middlewares.authentik-nobody.ipallowlist.sourcerange=127.0.0.1/32
+
+      # Tailnet only: everything, including the admin interface. Same pattern as apps/vps/pgadmin/.
+      - traefik.http.routers.authentik-admin.rule=Host(`${AUTHENTIK_ADMIN_HOST:?}`)
+      - traefik.http.routers.authentik-admin.entrypoints=websecure
+      - traefik.http.routers.authentik-admin.middlewares=authentik-tailnet
+      - traefik.http.routers.authentik-admin.service=authentik
+      # The zone's wildcard certificate, over DNS-01 (systems/vps.md, "Certificates").
+      - traefik.http.routers.authentik-admin.tls.certresolver=cloudflare
+      - traefik.http.routers.authentik-admin.tls.domains[0].main=${ZONE:?}
+      - traefik.http.routers.authentik-admin.tls.domains[0].sans=*.${ZONE:?}
+      # The tailnet's address range (Tailscale's CGNAT block); anyone else gets 403.
+      - traefik.http.middlewares.authentik-tailnet.ipallowlist.sourcerange=100.64.0.0/10
+    networks:
+      - dokploy-network
+
+  worker:
+    image: ghcr.io/goauthentik/server:2026.8.5
+    command: worker
+    restart: unless-stopped
+    shm_size: 512mb
+    environment: *authentik-env
+    # No Docker socket and not root, unlike the upstream file: the socket would give a public-facing
+    # service root on the VPS. Outposts other than the embedded one are deployed by hand (README).
+    volumes:
+      - authentik-data:/data
+    healthcheck:
+      test: ["CMD", "ak", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+      start_interval: 5s
+    depends_on:
+      # Started after the server, so the two do not fill the fresh data volume from the image at the
+      # same time (Dokploy's template notes a race on /data/media).
+      server:
+        condition: service_started
+    networks:
+      - dokploy-network
+
+volumes:
+  authentik-data:
+
+networks:
+  dokploy-network:
+    external: true

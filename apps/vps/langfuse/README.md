@@ -3,8 +3,8 @@
 **Status:** running on the VPS since 2026-11-10 (`journal/2026-11-10-deploy-langfuse.md`). The AI reviewer's trace
 viewer and the place to learn evaluation on (`plans/ai-reviewer-prime-agent.md`, step 6; the owner chose Langfuse on
 2026-11-10). The owner signed in and made the reviewer's organisation, project and API keys on 2026-11-10; one
-probe trace went through end to end ("Sending traces"). The reviewer's 76 runs so far were imported from the
-workstation the same day ("Importer"); ClickHouse has no backup.
+probe trace went through end to end ("Sending traces"). The reviewer's runs are imported by the stack's `importer`
+service since 2026-11-11 ("Importer"); ClickHouse has no backup.
 
 ## Derived from
 
@@ -109,6 +109,11 @@ The backfill then ran once from the workstation with this image and script: 76 r
 totals equal to each run's metadata (input tokens, output tokens, cost, observation count). No failed run and no
 subagent transcript existed in B2 yet, so those paths are untested on real data.
 
+Deployed 2026-11-11: on its first pass the service reached Langfuse through the public domain from inside the VPS,
+found the 76 backfilled runs already there and sent none of them again, and imported the 5 runs made since
+(81 in its state). `verify` inside the container on one of them: 86 of 86 observations, 36 of 36 model calls, input
+and output tokens equal to the run's metadata, cost 0.035269 against 0.03527 (rounding).
+
 It reads B2 with the reviewer's own key, which can also write and delete in that bucket. `observability.md` asks
 for a read-only key; the owner chose the existing key instead (2026-11-10: a separate key is "unnecessary
 complications for homelab"). The importer only lists and downloads.
@@ -175,6 +180,9 @@ container named `pg-proxy` and placeholder values for everything else; B2 and Au
 
 - Memory under load. Just after the first start on the VPS: worker 620 MB, ClickHouse 359 MB, web 241 MB, Redis 9 MB
   (`docker stats`, 2026-11-10).
+- A Langfuse tab left open keeps the stack awake: it polls `/api/auth/session` about every 5 minutes, which renews
+  Sablier's 20-minute session. From 12:00 to 17:00 UTC on 2026-11-10 there were 12 to 14 such requests an hour
+  and no other traffic (Traefik's access log), and the stack never slept. Close the tab to let it sleep.
 - The idle stop after 20 minutes is not observed yet, and whether the first request after a redeploy gets 500 (the
   Sablier rename issue in its README).
 - `pg-proxy` closes connections idle for 30 minutes; with the stack asleep after 20 that should not matter.

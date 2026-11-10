@@ -50,3 +50,17 @@ last backup was checked: incremental from 01:00 on 2026-11-10, status `ok` (`pgb
 - No ClickHouse backup; needed before hand-made scores start.
 - The 20-minute idle stop is not observed yet.
 - The importer for the reviewer's run archives (plan, step 6).
+
+## Follow-up 2026-11-11: the importer
+
+- **Changed:** the Langfuse stack was redeployed from `main` with the `importer` service (PRs #67/#68). Its
+  variables come from `kv/dokploy/langfuse`: the reviewer's own B2 key (owner's choice over a read-only one) and the
+  reviewer project's Langfuse keys, copied from `kv/general/langfuseprime`. The 76 runs then in B2 had been imported
+  from the workstation the day before, with the same image and script.
+- **Verified:** the service's first pass reached Langfuse through the public domain from inside the VPS, skipped
+  the 76 runs already there ("already in Langfuse, not sent again"), and imported 5 new runs. `verify` on one of them
+  matched the run's metadata (`apps/vps/langfuse/README.md`, "Importer").
+- **Found:** the stack had not slept for about 10 hours. Traefik's access log showed only a browser tab's polling
+  (12 to 14 requests an hour, mostly `/api/auth/session`), which keeps renewing Sablier's session. Not a fault.
+- **Still open:** the ClickHouse backup (waits for Garage, owner); a failed run and a run with subagents, when they
+  occur, to test those paths.

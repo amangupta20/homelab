@@ -101,6 +101,9 @@ owner file, and is deleted from this list.
 - SSO: which one. Per the owner (2026-10-26), Authentik was tried around 2024 and found too heavy, but
   that was early in learning self-hosting, so dropping it is not final.
   Lighter candidates (Authelia, Pocket ID, Kanidm) have not been compared.
+- Answered by the owner, 2026-11-10, for the item above: Authentik, without
+  comparing the lighter candidates (`decisions/sso-authentik.md`,
+  `apps/vps/authentik/`).
 
 ## Not planned yet
 

@@ -205,9 +205,13 @@ export its log before adding LiteLLM. None of it is checked.
    - Deployed on the VPS on 2026-11-10 (`journal/2026-11-10-deploy-langfuse.md`);
      a wake took 27–35 s there. ClickHouse, which holds
      the hand-made scores, has no backup yet (`apps/vps/langfuse/README.md`).
-     An importer reads the finished run archives from B2 with a read-only key
-     and sends them as OpenTelemetry spans; its boundary is the action's
-     `observability.md`. Following a run live comes after the importer works.
+     The importer (`apps/vps/langfuse/importer/`, 2026-11-10) reads the
+     finished run archives from B2 with a read-only key and sends them as
+     OpenTelemetry spans; its boundary is the action's `observability.md`. The
+     76 runs in B2 were imported with matching token and cost totals; 37 were
+     resumed, none failed yet. The ClickHouse backup waits for Garage (owner,
+     2026-11-10: ClickHouse's own `BACKUP` to S3, in a couple of days).
+     Following a run live comes after the importer works.
    - Evaluation grows from the reviewer's own runs, no prepared data set: (1)
      read traces; (2) mark runs and findings by hand (useful, noise, missed
      something); (3) a model scores each new run against a question such as

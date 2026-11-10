@@ -55,11 +55,27 @@ Choices that differ from the sources:
   No bootstrap password is set in the environment for the same reason the docs warn against it: it would sit in
   plain text in the container's environment.
 - **This blocks the admin pages, not admin rights.** The API (`/api/v3/`) has to stay public, because the login
-  flows and the user interface use it, so a stolen superuser session could still change settings from anywhere.
-  Planned on top, in the admin interface, **UNTESTED**: an expression policy on the authentication flow that refuses
-  superusers whose client address is outside the tailnet, and a second factor (TOTP or WebAuthn) required for every
-  admin account. The client address comes from Traefik's `X-Forwarded-For`, which Authentik trusts only from private
-  ranges (its default `TRUSTED_PROXY_CIDRS`); if Cloudflare's proxy ever sits in front, that address changes.
+  flows and the user interface use it. So superusers are also refused at sign-in outside the tailnet (next section).
+
+## Set in Authentik, not in this repo
+
+These live in Authentik's database. Set through its API on 2026-11-10, with the owner's token (OpenBao
+`kv/general/authentik`, field `api`; it acts as `akadmin` and has an expiry date).
+
+- **Recovery:** a blueprint instance of the example `flows-recovery-email-mfa-verification.yaml`, which makes
+  `default-recovery-flow`, set as the default brand's recovery flow and as the `recovery_flow` of the stage
+  `default-authentication-identification` (that is what puts the link on the login page). A `PATCH` of that stage
+  with only `recovery_flow` is refused ("at least one source must be selected"); send its `user_fields` and
+  `sources` with it. The owner's test reset on 2026-11-10 sent the mail, and the link was used (event log).
+- **Superusers sign in from the tailnet only:** expression policy `superuser-outside-tailnet` (passes for a pending
+  user who is a superuser and whose `ak_client_ip` is outside `100.64.0.0/10`), gating the deny stage
+  `deny-superuser-outside-tailnet`. It is bound at order 25 in `default-authentication-flow` (after the password,
+  before the second factor) and at 15 in `default-recovery-flow` (before the mail is sent). Verified 2026-11-10:
+  the recovery flow on the public domain, as `akadmin`, stopped at the deny stage and sent no mail. Authentik sees
+  the real client address: the owner's logins were logged with a tailnet address.
+- `akadmin` has a TOTP device.
+
+Use a separate, non-admin account for signing in to apps: `akadmin` is refused everywhere outside the tailnet.
 
 ## Deploying
 

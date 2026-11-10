@@ -82,7 +82,7 @@ Use a separate, non-admin account for signing in to apps: `akadmin` is refused e
 1. Pigsty: put the role's password in OpenBao (`kv/general/pigsty`, field `pg_user_authentik`), run
    `ansible/pigsty/render.sh`, then on the node `bin/pgsql-user pg-meta authentik`,
    `bin/pgsql-db pg-meta authentik` and `bin/pgsql-user pg-meta dbuser_owner` (the database UIs' access,
-   `apps/vps/pgadmin/README.md`). **UNTESTED** for this app; Blinko went the same way.
+   `apps/vps/pgadmin/README.md`). Ran on 2026-11-10; each reported OK (journal).
 2. OpenBao: the fields of `.env.example` at `kv/dokploy/authentik`.
 3. DNS: the public record for `AUTHENTIK_DOMAIN`, and a DNS-only record for `AUTHENTIK_ADMIN_HOST` to the VPS's
    tailnet address.
@@ -101,8 +101,8 @@ full-access key, used only to make it, is in OpenBao at `kv/general/resend`, fie
 
 Used for password recovery and Authentik's notifications. Recovery is the example blueprint
 `flows-recovery-email-mfa-verification.yaml`, set as the brand's recovery flow: it asks for the second factor as
-well as the emailed link, so access to the mailbox alone does not reset the `akadmin` password. **UNTESTED** until
-a test reset arrives.
+well as the emailed link, so access to the mailbox alone does not reset the `akadmin` password. The owner's test
+reset on 2026-11-10 went through.
 
 ## Backups
 

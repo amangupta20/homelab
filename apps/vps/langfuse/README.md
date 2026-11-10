@@ -78,7 +78,7 @@ disabled for this instance", and a password login answers 401.
 ## Importer
 
 `importer/import_runs.py`, the stack's `importer` service: the path `prime-reviewer-action`'s `observability.md`
-sets out. Every 15 minutes it lists `traces/` in the reviewer's B2 bucket with its own read-only key; for an archive
+sets out. Every 15 minutes it lists `traces/` in the reviewer's B2 bucket; for an archive
 it has not imported, it wakes Langfuse with a `GET` through the public domain, converts the archive and sends it to
 the OTLP endpoint (gzipped JSON). Python's standard library only, mounted from this repo into `python:3.13.9-slim`, so
 nothing is built.
@@ -106,8 +106,11 @@ Tried 2026-11-10, before the service was deployed: every one of the 76 archives 
 output and input tokens, cache reads, cost and turn counts equal to its `meta.json` (37 of them resumed sessions).
 The backfill then ran once from the workstation with this image and script: 76 runs, 2,253 observations, and Langfuse's
 totals equal to each run's metadata (input tokens, output tokens, cost, observation count). No failed run and no
-subagent transcript existed in B2 yet, so those paths are untested on real data. The backfill read B2 with the
-reviewer's own key; the service uses a read-only key of its own.
+subagent transcript existed in B2 yet, so those paths are untested on real data.
+
+It reads B2 with the reviewer's own key, which can also write and delete in that bucket. `observability.md` asks
+for a read-only key; the owner chose the existing key instead (2026-11-10: a separate key is "unnecessary
+complications for homelab"). The importer only lists and downloads.
 
 ## Asleep when idle
 
@@ -139,7 +142,7 @@ How it works: `apps/vps/sablier/README.md`. What is different here:
    the VPS, as `langfuse.app.<zone>`; a name directly under the zone hits the Cloudflare-proxied wildcard and got
    522 (2026-11-10).
 6. The first Authentik login, then an organisation, a project and its API keys for the importer.
-7. The importer: a B2 key that can only read the reviewer's bucket, and the reviewer project's Langfuse keys, in
+7. The importer: the reviewer's B2 key and the reviewer project's Langfuse keys, copied into
    `kv/dokploy/langfuse` (`.env.example`).
 
 ## Backups

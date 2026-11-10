@@ -1,6 +1,6 @@
 """Import finished Prime reviewer runs from B2 into Langfuse as OpenTelemetry spans.
 
-The boundary is prime-reviewer-action's observability.md: read completed run archives with a read-only key,
+The boundary is prime-reviewer-action's observability.md: read completed run archives (here with the reviewer's own key, README),
 convert the Prime JSONL records into spans, send them to Langfuse's OTLP endpoint, and remember what was imported.
 Standard library only. README: apps/vps/langfuse/README.md, "Importer".
 
@@ -213,7 +213,7 @@ def convert(archive_bytes, key):
                   "failed": failed, "usage": meta.get("usage")}
 
 
-# ---------- B2 (native API, read only) ----------
+# ---------- B2 (native API; the importer only lists and downloads) ----------
 
 class B2:
     def __init__(self, key_id, key):

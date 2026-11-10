@@ -116,7 +116,7 @@ carries only a trace ID, never a link, because traces hold whole diffs and the
 private instructions. A one-line summary (pull request, duration, cost, result,
 trace ID) goes to ntfy.
 
-Which tool shows the traces: Phoenix, chosen by the owner on 2026-11-10
+Which tool shows the traces: Langfuse, chosen by the owner on 2026-11-10
 (step 6). The entry in `decisions/open-questions.md`, AI reviewer, stays
 until the owner closes it.
 
@@ -180,20 +180,42 @@ export its log before adding LiteLLM. None of it is checked.
    review, save the session folder and trace files to the bucket, post the
    result, shut down. — gate: a review on the scratch copy completes, and a
    second run resumes it from a "go ahead" reply.
-6. **Trace viewer.** Next after the SSO from `plans/vps-foundations.md`,
-   step 4, is up — Authentik, chosen by the owner on 2026-11-10, recorded in
-   PR #61; the owner put it there on 2026-11-10, because the run log shows
-   one line per step and the owner cannot see what the reviewer read, called
-   or said. Phoenix, by the owner's choice of the same day: one container, so
-   it can run all the time without Sablier. On the VPS through
-   `skills/deploy-on-dokploy/`, its database on the shared Postgres
-   (`plans/shared-postgres.md`), sign-in through that SSO. An importer reads
-   the finished run archives from B2 with a read-only key and sends them as
-   OpenTelemetry spans; its boundary is the action's `observability.md`.
-   Following a run live, while it runs, comes after the importer works.
+6. **Trace viewer and evaluation.** Next after the SSO from
+   `plans/vps-foundations.md`, step 4, is up — Authentik, chosen by the owner
+   on 2026-11-10, recorded in PR #61. The owner put it there on 2026-11-10,
+   because the run log shows one line per step and the owner cannot see what
+   the reviewer read, called or said.
+   - **Langfuse**, by the owner's choice of 2026-11-10, over Phoenix and Opik:
+     it also scores and evaluates runs, which the owner wants to learn, and
+     the VPS has the room. Its MIT edition has tracing, scores, datasets and
+     model-run evaluation; a license key adds team and admin features, of
+     which only data retention matters here (old traces are then deleted
+     through its API instead). Its own login takes an OIDC provider; Opik's
+     self-hosted edition has no login at all. Sources, read 2026-11-10:
+     Langfuse's `LICENSE` (copyright now ClickHouse, Inc.) and its
+     "Enterprise License Key" self-hosting page; Opik's FAQ.
+   - Langfuse v4's Compose file has web, worker, an AI gateway, ClickHouse,
+     MinIO, Redis and Postgres (read 2026-11-10). Postgres is the shared
+     cluster (`plans/shared-postgres.md`); the gateway may be optional and
+     object storage may be B2 instead of MinIO, both unchecked. Asleep when
+     idle behind Sablier (`plans/sablier-wakeups.md`): ClickHouse's start
+     time against the 2-minute wake limit is untested.
+   - On the VPS through `skills/deploy-on-dokploy/`, sign-in through that SSO.
+     An importer reads the finished run archives from B2 with a read-only key
+     and sends them as OpenTelemetry spans; its boundary is the action's
+     `observability.md`. Following a run live comes after the importer works.
+   - Evaluation grows from the reviewer's own runs, no prepared data set: (1)
+     read traces; (2) mark runs and findings by hand (useful, noise, missed
+     something); (3) a model scores each new run against a question such as
+     "does each finding cite a rule"; (4) the pull requests where the reviewer
+     missed something become a data set, re-run before a playbook change.
+     Each stage is useful without the next.
+   - Also seen 2026-11-10: a `/prime` reply on a line comment answers only in
+     that thread, so nothing in the pull request's conversation shows it ran.
    — gate: a run's trace, with its messages, tool calls and files read, is
    found by the ID in its comment; one successful, one failed and one resumed
-   run imported with matching token totals (`observability.md`).
+   run imported with matching token totals (`observability.md`); one run
+   scored by hand.
 7. **This repo.** Point the trigger at this repo, levels 2 and 3 only at
    first; level 1 auto-fixes once the owner trusts the findings. — gate: the
    Done when line above.

@@ -3,7 +3,8 @@
 **Status:** running on the VPS since 2026-11-10 (`journal/2026-11-10-deploy-langfuse.md`). The AI reviewer's trace
 viewer and the place to learn evaluation on (`plans/ai-reviewer-prime-agent.md`, step 6; the owner chose Langfuse on
 2026-11-10). The owner signed in and made the reviewer's organisation, project and API keys on 2026-11-10; one
-probe trace went through end to end ("Sending traces"). No real traces yet, and ClickHouse has no backup.
+probe trace went through end to end ("Sending traces"). The reviewer's 76 runs so far were imported from the
+workstation the same day ("Importer"); ClickHouse has no backup.
 
 ## Derived from
 

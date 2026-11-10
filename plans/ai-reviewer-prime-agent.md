@@ -282,6 +282,7 @@ now. Research and refine this proposed strategy during that deployment:
   enabling deletion. Decide whether a final resumable session must survive:
   viewer history alone does not guarantee Prime can resume a reopened PR.
 
-The future importer/exporter is the bridge from saved Prime records to the
-chosen viewer's trace format. It is not currently deployed. The public
-action repository's `observability.md` owns its technical integration boundary.
+The importer (`apps/vps/langfuse/importer/`) is the bridge from saved Prime
+records to Langfuse; the runs up to 2026-11-10 are imported, and it runs as a
+service once its stack is redeployed. The public action repository's
+`observability.md` owns its technical integration boundary.

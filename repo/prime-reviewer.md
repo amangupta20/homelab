@@ -175,7 +175,9 @@ and child transcripts, versioned metadata, model/config provenance and run
 boundaries can be replayed later into a chosen viewer. Phoenix, Langfuse and
 OpenObserve expose OpenTelemetry ingestion, but require their own attribute
 and authentication adapters (official ingestion documentation checked
-2026-11-03; links in that file). No viewer or live exporter is deployed yet.
+2026-11-03; links in that file). The viewer is Langfuse, on the VPS since
+2026-11-10 (`apps/vps/langfuse/`), fed by the importer in that stack; nothing
+exports live from a run.
 
 Migration verification, 2026-11-03: `migrate_state.py` imported the two PR
 sessions and two trace bundles from the source snapshot above, downloaded

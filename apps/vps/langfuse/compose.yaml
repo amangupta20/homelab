@@ -1,0 +1,182 @@
+# Langfuse: the AI reviewer's trace viewer and evaluation tool (plans/ai-reviewer-prime-agent.md, step 6).
+# Public, signed in through Authentik only (owner's choice, 2026-11-10). Asleep when idle behind Sablier.
+# Postgres is the shared cluster (pigsty-1) through pg-proxy; object storage is a B2 bucket.
+# Source of the shape and what differs: README.
+
+x-langfuse-env: &langfuse-env
+  NEXTAUTH_URL: "https://${LANGFUSE_DOMAIN:?}"
+  # Through pg-proxy (apps/vps/pg-proxy/) to PgBouncer in session mode, which Prisma's migrations need.
+  DATABASE_URL: "postgresql://langfuse:${LANGFUSE_PG_PASSWORD:?}@pg-proxy:5432/langfuse"
+  SALT: "${LANGFUSE_SALT:?}"
+  ENCRYPTION_KEY: "${LANGFUSE_ENCRYPTION_KEY:?}"
+  TELEMETRY_ENABLED: "false"
+  CLICKHOUSE_MIGRATION_URL: clickhouse://clickhouse:9000
+  CLICKHOUSE_URL: http://clickhouse:8123
+  CLICKHOUSE_USER: langfuse
+  CLICKHOUSE_PASSWORD: "${LANGFUSE_CLICKHOUSE_PASSWORD:?}"
+  CLICKHOUSE_CLUSTER_ENABLED: "false"
+  # One private B2 bucket for the raw event batches and media, with a key for that bucket only (README).
+  LANGFUSE_S3_EVENT_UPLOAD_BUCKET: "${LANGFUSE_S3_BUCKET:?}"
+  LANGFUSE_S3_EVENT_UPLOAD_REGION: "${LANGFUSE_S3_REGION:?}"
+  LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: "${LANGFUSE_S3_ENDPOINT:?}"
+  LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: "${LANGFUSE_S3_ACCESS_KEY_ID:?}"
+  LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: "${LANGFUSE_S3_SECRET_ACCESS_KEY:?}"
+  LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: "true"
+  LANGFUSE_S3_EVENT_UPLOAD_PREFIX: events/
+  LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: "${LANGFUSE_S3_BUCKET:?}"
+  LANGFUSE_S3_MEDIA_UPLOAD_REGION: "${LANGFUSE_S3_REGION:?}"
+  LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: "${LANGFUSE_S3_ENDPOINT:?}"
+  LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: "${LANGFUSE_S3_ACCESS_KEY_ID:?}"
+  LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: "${LANGFUSE_S3_SECRET_ACCESS_KEY:?}"
+  LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: "true"
+  LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: media/
+  LANGFUSE_S3_BATCH_EXPORT_ENABLED: "false"
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"
+  REDIS_AUTH: "${LANGFUSE_REDIS_PASSWORD:?}"
+
+# Every container in the stack sleeps and wakes together as the group `langfuse` (apps/vps/sablier/README.md).
+x-sablier-labels: &sablier-labels
+  - sablier.enable=true
+  - sablier.group=langfuse
+
+services:
+  web:
+    # Pinned, not `latest`. arm64 checked with `docker buildx imagetools inspect`, 2026-11-10.
+    image: docker.langfuse.com/langfuse/langfuse:4.77.0
+    restart: unless-stopped
+    depends_on: &langfuse-depends-on
+      clickhouse:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      <<: *langfuse-env
+      NEXTAUTH_SECRET: "${LANGFUSE_NEXTAUTH_SECRET:?}"
+      # Next.js binds to the container's hostname otherwise, and Traefik could not reach it (Dokploy's template).
+      HOSTNAME: 0.0.0.0
+      # Sign-in through Authentik only: no password logins, so the public sign-up page offers nothing else.
+      # Who may sign in is decided by the Authentik application's policy binding (README, "Sign-in").
+      AUTH_AUTHENTIK_CLIENT_ID: "${LANGFUSE_OIDC_CLIENT_ID:?}"
+      AUTH_AUTHENTIK_CLIENT_SECRET: "${LANGFUSE_OIDC_CLIENT_SECRET:?}"
+      AUTH_AUTHENTIK_ISSUER: "https://${AUTHENTIK_DOMAIN:?}/application/o/langfuse/"
+      AUTH_DISABLE_USERNAME_PASSWORD: "true"
+    # No published port: Traefik is the only way in, through the router below.
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/api/public/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+      start_interval: 5s
+    labels:
+      - sablier.enable=true
+      - sablier.group=langfuse
+      - traefik.enable=true
+      - traefik.docker.network=dokploy-network
+      # Lets Traefik keep the route while the container is stopped, so a request can wake it.
+      - traefik.docker.allownonrunning=true
+      - traefik.http.services.langfuse.loadbalancer.server.port=3000
+      - traefik.http.routers.langfuse.rule=Host(`${LANGFUSE_DOMAIN:?}`)
+      - traefik.http.routers.langfuse.entrypoints=websecure
+      - traefik.http.routers.langfuse.tls.certresolver=letsencrypt
+      - traefik.http.routers.langfuse.middlewares=langfuse-sablier
+      - traefik.http.routers.langfuse.service=langfuse
+      - traefik.http.routers.langfuse-http.rule=Host(`${LANGFUSE_DOMAIN:?}`)
+      - traefik.http.routers.langfuse-http.entrypoints=web
+      - traefik.http.routers.langfuse-http.middlewares=langfuse-https
+      - traefik.http.routers.langfuse-http.service=langfuse
+      - traefik.http.middlewares.langfuse-https.redirectscheme.scheme=https
+      # Stops after 20 minutes without traffic, and starts on the next request (plans/sablier-wakeups.md).
+      - traefik.http.middlewares.langfuse-sablier.plugin.sablier.sablierUrl=http://sablier:10000
+      - traefik.http.middlewares.langfuse-sablier.plugin.sablier.group=langfuse
+      - traefik.http.middlewares.langfuse-sablier.plugin.sablier.sessionDuration=20m
+      - traefik.http.middlewares.langfuse-sablier.plugin.sablier.failOpen=true
+      - traefik.http.middlewares.langfuse-sablier.plugin.sablier.dialTimeout=2s
+      # Holds the request instead of showing a waiting page, so the importer's API calls get real answers.
+      - traefik.http.middlewares.langfuse-sablier.plugin.sablier.blocking.timeout=2m
+    networks:
+      - dokploy-network
+      - langfuse
+
+  worker:
+    image: docker.langfuse.com/langfuse/langfuse-worker:4.77.0
+    restart: unless-stopped
+    depends_on: *langfuse-depends-on
+    environment:
+      <<: *langfuse-env
+      # Like web, it listens on the container's hostname otherwise, and its health check on 127.0.0.1 fails
+      # (tried on the workstation, 2026-11-10).
+      HOSTNAME: 0.0.0.0
+    expose:
+      - "3030"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3030/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+      start_interval: 5s
+    labels: *sablier-labels
+    networks:
+      # dokploy-network for pg-proxy and B2; langfuse for ClickHouse and Redis.
+      - dokploy-network
+      - langfuse
+
+  clickhouse:
+    image: docker.io/clickhouse/clickhouse-server:26.3.62.3 # gitleaks:allow (an image tag shaped like an IPv4 address)
+    restart: unless-stopped
+    user: "101:101"
+    # ClickHouse sizes its memory from the container's limit. 4 GB is a guess for one reviewer's traces,
+    # not measured; it keeps a heavy query from crowding the rest of the VPS.
+    mem_limit: 4g
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: langfuse
+      CLICKHOUSE_PASSWORD: "${LANGFUSE_CLICKHOUSE_PASSWORD:?}"
+    volumes:
+      # The traces, observations and scores. No backup yet (README, "Backups").
+      - clickhouse-data:/var/lib/clickhouse
+      - clickhouse-logs:/var/log/clickhouse-server
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8123/ping || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    labels: *sablier-labels
+    networks:
+      - langfuse
+
+  redis:
+    image: docker.io/redis:7.4.7
+    restart: unless-stopped
+    # Langfuse's queues; noeviction because BullMQ loses jobs if Redis evicts keys (upstream file).
+    command: >
+      --requirepass ${LANGFUSE_REDIS_PASSWORD:?}
+      --maxmemory-policy noeviction
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" --no-auth-warning ping | grep -q PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    environment:
+      REDIS_PASSWORD: "${LANGFUSE_REDIS_PASSWORD:?}"
+    labels: *sablier-labels
+    networks:
+      - langfuse
+
+volumes:
+  clickhouse-data:
+  clickhouse-logs:
+  redis-data:
+
+networks:
+  dokploy-network:
+    external: true
+  # ClickHouse and Redis only, kept off dokploy-network so no other app on the VPS can reach them.
+  langfuse:

@@ -34,11 +34,17 @@ all:
           pool_mode: session
           roles: [dbrole_admin]
           comment: single sign-on; session pooling for its LISTEN connections and advisory locks
+        - name: langfuse
+          password: __PG_USER_LANGFUSE__
+          pgbouncer: true
+          pool_mode: session
+          roles: [dbrole_admin]
+          comment: reviewer trace viewer; session pooling for its Prisma migrations
         - name: dbuser_owner
           password: __PG_USER_DBUSER_OWNER__
           pgbouncer: false
           # One app role per app database: membership gives that database's access (each has revokeconn).
-          roles: [dbrole_admin, blinko, authentik]
+          roles: [dbrole_admin, blinko, authentik, langfuse]
           comment: the owner's login for pgAdmin and CloudBeaver; not a superuser
         pg_databases:
         - name: meta
@@ -52,6 +58,7 @@ all:
           comment: pigsty meta database
         - {name: blinko, owner: blinko, revokeconn: true, comment: test app}
         - {name: authentik, owner: authentik, revokeconn: true, comment: single sign-on}
+        - {name: langfuse, owner: langfuse, revokeconn: true, comment: reviewer trace viewer}
         pg_hba_rules:
         - {user: all, db: all, addr: 100.64.0.0/10, auth: pwd, title: 'tailnet, password required', order: 800}
         pg_crontab: [00 01 * * 1 /pg/bin/pg-backup full, '00 01 * * 2,3,4,5,6,7 /pg/bin/pg-backup']

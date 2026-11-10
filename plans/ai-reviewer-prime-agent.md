@@ -195,12 +195,15 @@ export its log before adding LiteLLM. None of it is checked.
      Langfuse's `LICENSE` (copyright now ClickHouse, Inc.) and its
      "Enterprise License Key" self-hosting page; Opik's FAQ.
    - Langfuse v4's Compose file has web, worker, an AI gateway, ClickHouse,
-     MinIO, Redis and Postgres (read 2026-11-10). Postgres is the shared
-     cluster (`plans/shared-postgres.md`); the gateway may be optional and
-     object storage may be B2 instead of MinIO, both unchecked. Asleep when
-     idle behind Sablier (`plans/sablier-wakeups.md`): ClickHouse's start
-     time against the 2-minute wake limit is untested.
-   - On the VPS through `skills/deploy-on-dokploy/`, sign-in through that SSO.
+     MinIO, Redis and Postgres (read 2026-11-10). The stack is
+     `apps/vps/langfuse/` (owner's choices, 2026-11-10): Postgres on the shared
+     cluster (`plans/shared-postgres.md`), a private B2 bucket instead of
+     MinIO, no AI gateway, a public domain with sign-in through Authentik
+     only, and asleep when idle behind Sablier (`plans/sablier-wakeups.md`)
+     from the start, back to always on if that causes trouble. A cold start
+     took 14 s on the workstation; on the VPS untested.
+   - On the VPS through `skills/deploy-on-dokploy/`. ClickHouse, which holds
+     the hand-made scores, has no backup yet (`apps/vps/langfuse/README.md`).
      An importer reads the finished run archives from B2 with a read-only key
      and sends them as OpenTelemetry spans; its boundary is the action's
      `observability.md`. Following a run live comes after the importer works.

@@ -180,13 +180,14 @@ export its log before adding LiteLLM. None of it is checked.
    review, save the session folder and trace files to the bucket, post the
    result, shut down. — gate: a review on the scratch copy completes, and a
    second run resumes it from a "go ahead" reply.
-6. **Trace viewer.** Next after Authentik is up (`plans/vps-foundations.md`,
-   step 4); the owner put it there on 2026-11-10, because the run log shows
+6. **Trace viewer.** Next after the SSO from `plans/vps-foundations.md`,
+   step 4, is up — Authentik, chosen by the owner on 2026-11-10, recorded in
+   PR #61; the owner put it there on 2026-11-10, because the run log shows
    one line per step and the owner cannot see what the reviewer read, called
    or said. Phoenix, by the owner's choice of the same day: one container, so
    it can run all the time without Sablier. On the VPS through
    `skills/deploy-on-dokploy/`, its database on the shared Postgres
-   (`plans/shared-postgres.md`), sign-in through Authentik. An importer reads
+   (`plans/shared-postgres.md`), sign-in through that SSO. An importer reads
    the finished run archives from B2 with a read-only key and sends them as
    OpenTelemetry spans; its boundary is the action's `observability.md`.
    Following a run live, while it runs, comes after the importer works.

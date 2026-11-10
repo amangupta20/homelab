@@ -42,7 +42,10 @@ Choices that differ from the sources:
 Through Authentik's OIDC, with Langfuse's built-in Authentik provider: in Authentik, an OAuth2/OpenID provider and
 an application with the slug `langfuse` (the issuer is `https://<authentik domain>/application/o/langfuse/`), the
 redirect URI `https://<langfuse domain>/api/auth/callback/authentik` (strict), the implicit-consent authorization
-flow, scopes `openid`, `email` and `profile`, and the client ID and secret into OpenBao. Made through Authentik's API
+flow, scopes `openid`, `email` and `profile`, grant types `authorization_code` and `refresh_token`, and the client ID
+and secret into OpenBao. A provider made through the API gets an empty `grant_types` list, and Authentik then refuses
+every sign-in with "Invalid grant_type for provider" (Langfuse shows "The request is otherwise malformed"; first
+sign-in, 2026-11-10). Made through Authentik's API
 on 2026-11-10; the sign-in button leads to Authentik's authorize page with that redirect URI (`curl`). A full login
 is not tried yet.
 

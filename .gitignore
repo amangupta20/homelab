@@ -7,3 +7,4 @@ vm.tf
 .env
 secret-scan.local.toml
 .obsidian/
+__pycache__/

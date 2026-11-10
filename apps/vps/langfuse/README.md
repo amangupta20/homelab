@@ -75,6 +75,40 @@ disabled for this instance", and a password login answers 401.
   event file under `events/otel/` in the B2 bucket. Deleting the trace removed it from Langfuse, but the event file
   was still in B2 30 s later and was deleted by hand. Whether Langfuse cleans these up later is not known.
 
+## Importer
+
+`importer/import_runs.py`, the stack's `importer` service: the path `prime-reviewer-action`'s `observability.md`
+sets out. Every 15 minutes it lists `traces/` in the reviewer's B2 bucket with its own read-only key; for an archive
+it has not imported, it wakes Langfuse with a `GET` through the public domain, converts the archive and sends it to
+the OTLP endpoint (gzipped JSON). Python's standard library only, mounted from this repo into `python:3.13.9-slim`, so
+nothing is built.
+
+What a run becomes:
+
+| Prime record | Langfuse observation |
+|---|---|
+| the run (`meta.json`, `result.json`) | trace `prime-review`, root span of type agent; session `<repo>#<pr>`, so a PR's runs group together; tags: mode, verdict, `failed`; metadata: all of `meta.json` with `usage_*` totals; input: the first user message; output: `result.json` |
+| an assistant message | generation: model, input and output tokens, cache reads and writes, and Prime's own cost per call (so Langfuse needs no model prices); input: the tool results and user text since the previous reply; output: thinking, text and tool calls; timed from the previous record to the reply |
+| a tool call | tool span from `tool_started` to its result; level ERROR when the result is an error |
+| a subagent transcript | an agent span under the root (Prime does not record which call started it), records from before the run's start skipped |
+
+- Only root records after `session_lines_before` are imported, so a resumed session's earlier runs are not counted again.
+- Inputs and outputs longer than 100,000 characters are cut, and say so.
+- Trace and span IDs are hashes of the run's `trace_id` and record IDs, the same on every import.
+- **Never send a run twice:** Langfuse 4 appends, and a replay showed every span twice (2026-11-10). The importer
+  keeps the keys it sent in its `importer-state` volume, and before sending asks Langfuse whether the trace exists;
+  with an empty state it found three already-imported runs and sent nothing (2026-11-10). To re-import a run, delete
+  its trace in Langfuse first, then its line in `/state/imported.json`.
+- Commands: `loop` (the service), `once`, `convert <file>` (offline), `verify <key>` (compares Langfuse's totals with
+  the run's metadata).
+
+Tried 2026-11-10, before the service was deployed: every one of the 76 archives then in B2 converted offline with
+output and input tokens, cache reads, cost and turn counts equal to its `meta.json` (37 of them resumed sessions).
+The backfill then ran once from the workstation with this image and script: 76 runs, 2,253 observations, and Langfuse's
+totals equal to each run's metadata (input tokens, output tokens, cost, observation count). No failed run and no
+subagent transcript existed in B2 yet, so those paths are untested on real data. The backfill read B2 with the
+reviewer's own key; the service uses a read-only key of its own.
+
 ## Asleep when idle
 
 How it works: `apps/vps/sablier/README.md`. What is different here:
@@ -105,6 +139,8 @@ How it works: `apps/vps/sablier/README.md`. What is different here:
    the VPS, as `langfuse.app.<zone>`; a name directly under the zone hits the Cloudflare-proxied wildcard and got
    522 (2026-11-10).
 6. The first Authentik login, then an organisation, a project and its API keys for the importer.
+7. The importer: a B2 key that can only read the reviewer's bucket, and the reviewer project's Langfuse keys, in
+   `kv/dokploy/langfuse` (`.env.example`).
 
 ## Backups
 

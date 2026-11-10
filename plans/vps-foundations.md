@@ -1,6 +1,6 @@
 ---
 type: plan
-status: "in progress (steps 0-2 completed, step 3 partially; SSO open)"
+status: "in progress (steps 0-2 completed, step 3 partially; SSO running, its gate open)"
 verified: "partially (steps 0-3 verified on live VPS 2026-10-26/27; step 2 restore tested on workstation 2026-10-29)"
 hosts:
   - Remote VPS
@@ -14,7 +14,9 @@ tags:
 # VPS foundations
 
 **Status:** steps 0–2 completed; step 3 partially completed (Dokploy reads
-OpenBao and token renewal automated; OpenTofu half open); step 4 (SSO) is open.
+OpenBao and token renewal automated; OpenTofu half open); step 4: Authentik
+runs since 2026-11-10 (`apps/vps/authentik/`), but its gate (an app signing in
+through it, a tested backup) is open.
 **Goal:** OpenBao and SSO running on the VPS with tested backups, so every app
 after them is deployed once with secrets and sign-in already wired.
 **Done when:** OpenBao and SSO each have a restore test in `journal/`, and the

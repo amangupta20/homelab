@@ -1,7 +1,8 @@
 # Authentik
 
-**Status:** not deployed yet. Written 2026-11-10 as the single sign-on (SSO) provider of
-`plans/vps-foundations.md`, step 4 (the owner chose Authentik on 2026-11-10). Nothing here has run on the VPS.
+**Status:** running on the VPS since 2026-11-10 (`journal/2026-11-10-deploy-authentik.md`), the single sign-on (SSO)
+provider of `plans/vps-foundations.md`, step 4 (the owner chose Authentik on 2026-11-10). No app signs in through it
+yet, and its database restore is not tested.
 
 ## Derived from
 
@@ -29,7 +30,7 @@ Choices that differ from the sources:
   the most exposed service on it. Without the socket, the embedded outpost inside `server` still serves forward-auth
   for every app; any other outpost (LDAP, RADIUS, a proxy elsewhere) is a small Compose service deployed by hand once,
   with a token made in the admin interface. Without root, the `chown` is skipped; a fresh named
-  volume takes the image's ownership (uid 1000), so it should not be needed. Untested; check on the first deploy.
+  volume takes the image's ownership (uid 1000). On the first deploy both containers came up healthy without it.
 - **`shm_size: 512mb` kept.** The image puts its temporary files in `/dev/shm`, and Docker's default is 64 MB.
   It is a ceiling, not memory set aside.
 - **No published ports, no port 9443.** Traefik reaches port 9000; TLS ends at Traefik.
@@ -70,7 +71,9 @@ Choices that differ from the sources:
 3. DNS: the public record for `AUTHENTIK_DOMAIN`, and a DNS-only record for `AUTHENTIK_ADMIN_HOST` to the VPS's
    tailnet address.
 4. Dokploy: a Compose service from this repo's `main`, path `apps/vps/authentik/compose.yaml`, no domain set in
-   Dokploy (the routers are labels here), environment from OpenBao.
+   Dokploy (the routers are labels here), environment from OpenBao, and the project added to the OpenBao
+   provider's assignments (`systems/openbao.md`). Dokploy named it `compose-reboot-optical-matrix-gsjyeo`; renaming
+   it through the API did not take, so its containers and volume carry that name.
 5. On the admin hostname: the initial setup, then the policy and second factor above.
 
 ## Email

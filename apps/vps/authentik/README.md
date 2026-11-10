@@ -86,8 +86,10 @@ These live in Authentik's database. Set through its API on 2026-11-10, with the 
   it created the user, who had access to `langfuse` (`check_access`), and the invitation was used up. The test user
   and invitation were deleted.
 
-  To invite someone: on the admin hostname, **Directory → Invitations → Create**, flow `invite-enrollment`,
-  single use, an expiry date. Copy the link and send it yourself; Authentik does not mail invitations. A new user
+  To invite someone: on the admin hostname, **Directory → Invitations → Create**, flow `invite-enrollment` (not
+  `default-source-enrollment`, which is listed too but is for external sources and answers "Flow does not apply to
+  current user"), single use, an expiry date. Open the link in a private window: the flow refuses anyone already
+  signed in. Copy the link and send it yourself; Authentik does not mail invitations. A new user
   has no second factor until they add one at `/if/user/`; nothing forces it yet.
 
 Use a separate, non-admin account for signing in to apps: `akadmin` is refused everywhere outside the tailnet. An

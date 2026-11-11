@@ -130,8 +130,14 @@ on the VPS was not touched, and it does not resend what it already lists. Afterw
 1,190 tool calls, cost $0.8339 and output tokens 1,521,806, the same as before and as the runs' metadata. 77 runs
 have an output and 78 an input; the rest have none in their archive: 5 runs (PR #41's four updates and one of
 PR #61's reviews) wrote no `result.json` although each exited 0 without an error, and 4 early PR #27 runs have no
-records after `session_lines_before`. New runs get the root input and output once the stack is redeployed from
-`main`, because the service reads the script from Dokploy's checkout.
+records after `session_lines_before`.
+
+A script change reaches the service only when the `importer` container restarts: the loop holds the script it
+started with, and a Dokploy redeploy leaves the container running because its configuration did not change
+(2026-11-11: the redeploy took 2 s, the importer stayed "Up 12 hours" and imported one more run with
+`prime-langfuse/1`). Restart it after the redeploy (Dokploy API `docker.restartContainer`, or the container's
+restart button); its log then starts with `prime-langfuse/2: checking every 900s`. That one run was deleted and
+imported again with the fix.
 
 It reads B2 with the reviewer's own key, which can also write and delete in that bucket. `observability.md` asks
 for a read-only key; the owner chose the existing key instead (2026-11-10: a separate key is "unnecessary

@@ -70,6 +70,16 @@ disabled for this instance", and a password login answers 401.
   and answers 400 for `trace-create` and `span-create`; traces go to `POST /api/public/otel/v1/traces` (OTLP, JSON
   or protobuf) and are read back with `GET /api/public/v2/observations?traceId=...`; `/api/public/traces/<id>`
   answers 404 for reads but still deletes. Basic auth with the project's public and secret key.
+- **Reading back (2026-11-11):** `/api/public/v2/observations` (choose `fields`, e.g. `core,basic,io,usage,metadata`;
+  filter a run by its Prime ID with `filter=[{"type":"stringObject","column":"metadata","key":"trace_id",
+  "operator":"=","value":"<repo>#<pr>/<run>"}]`) and `/api/public/v2/metrics` (totals by model, type, tags or session;
+  `sessionId` needs `orderBy` and `config.row_limit`). `/api/public/traces`, `/sessions`, `/scores`, `/v2/scores`
+  and `/metrics` answer 404 in `events_only` mode, so hand-made scores read back only as totals, through the
+  metrics views `scores-numeric`, `scores-categorical` and `scores-boolean`.
+- **No trace-level input or output:** `langfuse.trace.input` and `langfuse.trace.output` on the root span were
+  accepted but read back as `null` for all 82 runs (2026-11-11); `langfuse.trace.metadata` did reach the root
+  observation's metadata. The importer therefore sets `langfuse.observation.input`/`output` on the root span too.
+  Checked through the API only, not in the web UI.
 - The reviewer project's keys are in OpenBao at `kv/general/langfuseprime`, fields `publickey` and `secret_key`
   (owner, 2026-11-10).
 - Tried 2026-11-10 with a two-span OTLP JSON trace: accepted (200), both spans read back within seconds, one 821-byte
@@ -88,7 +98,7 @@ What a run becomes:
 
 | Prime record | Langfuse observation |
 |---|---|
-| the run (`meta.json`, `result.json`) | trace `prime-review`, root span of type agent; session `<repo>#<pr>`, so a PR's runs group together; tags: mode, verdict, `failed`; metadata: all of `meta.json` with `usage_*` totals; input: the first user message; output: `result.json` |
+| the run (`meta.json`, `result.json`) | trace `prime-review`, root span of type agent; session `<repo>#<pr>`, so a PR's runs group together; tags: mode, verdict, `failed`; metadata: all of `meta.json` with `usage_*` totals; input: the first user message; output: `result.json` (both on the root observation since `prime-langfuse/2`) |
 | an assistant message | generation: model, input and output tokens, cache reads and writes, and Prime's own cost per call (so Langfuse needs no model prices); input: the tool results and user text since the previous reply; output: thinking, text and tool calls; timed from the previous record to the reply |
 | a tool call | tool span from `tool_started` to its result; level ERROR when the result is an error |
 | a subagent transcript | an agent span under the root (Prime does not record which call started it), records from before the run's start skipped |
@@ -113,6 +123,15 @@ Deployed 2026-11-11: on its first pass the service reached Langfuse through the 
 found the 76 backfilled runs already there and sent none of them again, and imported the 5 runs made since
 (81 in its state). `verify` inside the container on one of them: 86 of 86 observations, 36 of 36 model calls, input
 and output tokens equal to the run's metadata, cost 0.035269 against 0.03527 (rounding).
+
+Re-imported 2026-11-11 with `prime-langfuse/2` (the root span's input and output): all 82 traces deleted through the
+API (each gone within 15 s), then sent again from the workstation with a state file of its own; the service's state
+on the VPS was not touched, and it does not resend what it already lists. Afterwards: 82 runs, 1,184 generations,
+1,190 tool calls, cost $0.8339 and output tokens 1,521,806, the same as before and as the runs' metadata. 77 runs
+have an output and 78 an input; the rest have none in their archive: 5 runs (PR #41's four updates and one of
+PR #61's reviews) wrote no `result.json` although each exited 0 without an error, and 4 early PR #27 runs have no
+records after `session_lines_before`. New runs get the root input and output once the stack is redeployed from
+`main`, because the service reads the script from Dokploy's checkout.
 
 It reads B2 with the reviewer's own key, which can also write and delete in that bucket. `observability.md` asks
 for a read-only key; the owner chose the existing key instead (2026-11-10: a separate key is "unnecessary

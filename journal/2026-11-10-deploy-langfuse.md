@@ -64,3 +64,15 @@ last backup was checked: incremental from 01:00 on 2026-11-10, status `ok` (`pgb
   (12 to 14 requests an hour, mostly `/api/auth/session`), which keeps renewing Sablier's session. Not a fault.
 - **Still open:** the ClickHouse backup (waits for Garage, owner); a failed run and a run with subagents, when they
   occur, to test those paths.
+
+## Follow-up 2026-11-11: root input and output re-imported
+
+- **Found:** through the API, every run's root observation had `null` input and output; Langfuse 4 keeps no
+  trace-level input or output (`apps/vps/langfuse/README.md`, "Sending traces").
+- **Changed:** the importer (`prime-langfuse/2`) sets them on the root span. All 82 traces were deleted through the
+  API and sent again from the workstation; no scores existed (the metrics API's score views counted 0), so nothing
+  was lost. The service on the VPS was not changed.
+- **Verified:** PR #69's run first, then all: counts, cost and output tokens equal to before; `verify` on #69 equal
+  to its metadata.
+- **Still open:** redeploy the stack from `main` so the service imports new runs with the fix; why five runs
+  (PR #41, #61) ended without `result.json` although they exited 0.

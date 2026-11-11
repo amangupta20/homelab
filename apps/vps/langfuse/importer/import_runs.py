@@ -23,7 +23,7 @@ import time
 import urllib.parse
 import urllib.request
 
-ADAPTER = "prime-langfuse/1"
+ADAPTER = "prime-langfuse/2"  # 2: the root span carries the run's input and output (README, "Importer")
 STATE_FILE = os.environ.get("IMPORT_STATE", "/state/imported.json")
 MAX_TEXT = 100_000  # characters kept per input or output; a longer value is cut and says so
 
@@ -185,6 +185,10 @@ def convert(archive_bytes, key):
         "langfuse.release": meta.get("prime_version"),
         "langfuse.trace.input": _cut(first_user) if first_user else None,
         "langfuse.trace.output": _cut(result) if result is not None else None,
+        # Langfuse 4 (events_only) stores no trace input or output of its own; the API returns null for the root
+        # observation unless these are set too (checked 2026-11-11).
+        "langfuse.observation.input": _cut(first_user) if first_user else None,
+        "langfuse.observation.output": _cut(result) if result is not None else None,
         "langfuse.trace.metadata": json.dumps(meta_out),
         "langfuse.observation.type": "agent",
         "langfuse.observation.level": "ERROR" if failed else None,

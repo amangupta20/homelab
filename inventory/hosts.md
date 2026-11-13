@@ -1,7 +1,7 @@
 ---
 type: inventory
 status: "documented, partially verified"
-verified: "partially (Remote VPS verified 2026-10-26 over SSH; pigsty-1 verified 2026-11-06 over SSH; Home router verified 2026-11-13 over SSH; other hosts from docs)"
+verified: "partially (Remote VPS verified 2026-10-26 over SSH; pigsty-1 verified 2026-11-06 over SSH; XCP-ng host hardware verified 2026-11-13 at the console; Home router verified 2026-11-13 over SSH; other hosts from docs)"
 tags:
   - inventory
   - hosts
@@ -19,7 +19,7 @@ names, sizes and the unknowns.
 
 | Host | Kind | Runs on | Role | OS | State |
 |---|---|---|---|---|---|
-| XCP-ng host | bare-metal server | — | hypervisor for every VM | XCP-ng | in docs, not verified |
+| XCP-ng host | bare-metal server (Gigabyte B450M DS3H, AMD Ryzen 5 1600, 40 GB RAM; `systems/xcp-ng.md`, "Hardware") | — | hypervisor for every VM | XCP-ng | hardware verified: 2026-11-13 by the owner at the console; role and OS in docs, not verified |
 | TrueNAS VM | VM | XCP-ng host | storage, VM backup target, Garage, BorgWarehouse | TrueNAS | in docs, not verified |
 | Docker + proxy host | unknown | unknown | Docker stacks, Nginx Proxy Manager, apt cache | unknown | in docs, not verified |
 | Xen Orchestra | unknown | unknown | manages VMs and backups | unknown | in docs, not verified |

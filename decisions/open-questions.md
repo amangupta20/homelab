@@ -110,6 +110,9 @@ owner file, and is deleted from this list.
 - Observability: wanted, not deployed. Prometheus/Grafana is an assumption,
   not a choice. Whether Uptime Kuma runs at all is unknown
   (`inventory/services.md`).
+  Owner, 2026-11-14: when this is planned, include the Home router. The
+  package `prometheus-node-exporter-lua` is in its feed and not installed
+  (`apk search`, 2026-11-14).
 
 ## Reverse proxy (home edge and VPS)
 
@@ -308,6 +311,10 @@ Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
   fall back on (`systems/router.md`, "Why IPv6 matters"). Send only those
   hosts through a tunnel to the VPS (policy routing on the router), or live
   with it?
+  Agent's note, 2026-11-14, for the owner to close: set up as a tailnet
+  route advertised by the VPS (`systems/router.md`, "Detour for GitHub
+  downloads"), waiting for approval and untested. Every tailnet device that
+  accepts routes will use it too.
 - The router's package database names a Wi-Fi daemon that is not the one on
   disk (`systems/router.md`, Rules). Leave it until the next firmware image,
   or take another short Wi-Fi outage to put the database right?

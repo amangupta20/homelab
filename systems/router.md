@@ -79,17 +79,23 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
   package feed: its two `.apk` files come from the theme project's GitHub
   releases and are installed with `apk add --allow-untrusted`.
 
-- **Tailscale:** the router is signed in to the tailnet and advertises the
-  home subnet as a subnet router (`tailscale debug prefs`, 2026-11-14), so
-  tailnet devices can reach LAN machines that do not run Tailscale
-  themselves. It does not take DNS settings or routes from the tailnet. A
-  firewall zone `tailscale` on `tailscale0` accepts traffic from the tailnet
-  and forwards between it and the LAN; who on the tailnet may use that is
-  set by the tailnet's access rules, kept in the private repo. The route
-  must be approved in the tailnet's admin console before it carries traffic;
-  on 2026-11-14 it was advertised and not yet approved
-  (`tailscale status --json`). Reaching a LAN machine through it is
-  **UNTESTED**.
+- **Tailscale:** the router is signed in to the tailnet and is the subnet
+  router for the home subnet: it advertises the subnet and the route is
+  approved (`tailscale status --json`, 2026-11-14), so tailnet devices can
+  reach LAN machines that do not run Tailscale themselves. It does not take
+  DNS settings from the tailnet. A firewall zone `tailscale`, attached to
+  the device `tailscale0`, accepts traffic from the tailnet and forwards
+  between it and the LAN; who on the tailnet may use that is set by the
+  tailnet's access rules, kept in the private repo. Reaching a LAN machine
+  from outside through it is **UNTESTED**.
+- **Detour for GitHub downloads:** the router accepts routes from the
+  tailnet, and the Remote VPS advertises the address range GitHub serves
+  release and raw files from, so that traffic would leave through the VPS
+  instead of the slow IPv4 path (see "Why IPv6 matters"). On 2026-11-14 the
+  VPS advertised the range and it was not yet approved in the admin console,
+  so the router still sent that traffic out of its own WAN (`ip route get`).
+  **UNTESTED.** The range itself is not written here: the secret scan
+  rejects public addresses.
 
 ### Why the Wi-Fi settings are what they are
 
@@ -146,6 +152,12 @@ Measured on the router on 2026-11-13 (`iw dev <radio> scan`, `logread`).
   (`apk list -I`, `apk add --simulate`), and the swap worked. Before any such
   change: compare versions, archive the current daemon's files, and have a
   script restore them if the radios do not come back.
+- **Attach the Tailscale firewall zone to the device, not to a network
+  interface.** Declaring `tailscale0` as an interface in `/etc/config/network`
+  made the next `network reload` empty Tailscale's routing table, and the
+  router then sent tailnet traffic out of its WAN until Tailscale was
+  restarted (`ip route show table 52`, 2026-11-14). With the zone's `device`
+  option instead, the routes survived a reload (checked the same day).
 - **Do not run `apk upgrade`.** It pulls everything to the feed's newer
   versions, the same mismatch on a larger scale. Kernel modules never come
   from the feed: this build's kernel does not match it, and the release

@@ -55,8 +55,11 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
   Bandwidth Monitor; its database is in RAM and is written to flash once a
   day, so a reboot can lose up to a day), `luci-ssl`,
   `luci-app-attendedsysupgrade` and `owut` (upgrade helpers, **UNTESTED** on
-  this build), `tailscale` (installed, not logged in), `iperf3`, `htop`, and
-  the Argon LuCI theme.
+  this build), `tailscale` (installed, not logged in), `luci-app-statistics`
+  (history graphs of load, memory, interfaces and Wi-Fi under Statistics;
+  kept in RAM, so a reboot clears them), `luci-app-sqm` (traffic shaping,
+  installed and switched off), `luci-app-adblock-fast` (DNS ad blocking,
+  installed and switched off), `iperf3`, `htop`, and the Argon LuCI theme.
 
 ### Why the Wi-Fi settings are what they are
 
@@ -97,6 +100,13 @@ Measured on the router on 2026-11-13 (`iw dev <radio> scan`, `logread`).
 - **Leave 802.11r (fast roaming) off.** A tester on the upstream pull request
   reports it fails with this driver (#26498, comment of 2026-11-11); not
   tried here.
+- **Do not install the full `wpad` Wi-Fi daemon from the package feed.** The
+  image ships the reduced `wpad-basic-mbedtls`. The feed's `wpad-mbedtls` is
+  built against newer core libraries than this image has
+  (`apk info -R`, 2026-11-13: `libucode` and `libubus` of October against
+  the image's July and September ones), and a Wi-Fi daemon that fails to
+  start leaves only the cable and the serial console. Get it by building it
+  into the next firmware image instead. Not tried.
 - **An upgrade drops every added package** unless the upgrade helper rebuilds
   the image with them, and that is untested on this build. Reinstall from the
   list above.

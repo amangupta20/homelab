@@ -35,8 +35,10 @@ checked in the session that wrote this entry.
   reasons are in `systems/router.md`.
 - SSH password sign-in is off (`uci show dropbear`); the flashing session's notes had it on, so it was changed between the two sessions.
 - Packages installed with `apk add`: `luci-app-nlbwmon`, `luci-ssl`,
-  `luci-app-attendedsysupgrade`, `owut`, `tailscale`, `iperf3`. `htop` was
-  already present. The web server was restarted so it created its
+  `luci-app-attendedsysupgrade`, `owut`, `tailscale`, `iperf3`,
+  `luci-app-statistics`, `luci-app-sqm`, `luci-app-adblock-fast`. `htop` was
+  already present. Traffic shaping and ad blocking were left switched off
+  (`uci show`: `enabled='0'` for both). The web server was restarted so it created its
   certificate.
 - IPv6 on the WAN turned back on (`network.wan.ipv6`, `network.wan6.disabled`
   and `dhcp.lan.ra_default` removed), after a 20-second runtime-only test

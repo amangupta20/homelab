@@ -43,6 +43,11 @@ access setup are kept out of this public repo on purpose.
   `Asia/Kolkata` (timedatectl, set 2026-10-29).
 - **Admin access:** SSH with a key, over Tailscale (Tailscale 1.104.4 since
   an upgrade on 2026-10-28, `/var/log/apt/history.log`).
+- **Tailnet route for GitHub files:** since 2026-11-14 the VPS advertises
+  the address range GitHub serves release and raw files from, so home devices
+  can fetch them through the VPS (`systems/router.md`, "Detour for GitHub
+  downloads"). Set with `tailscale set --advertise-routes`; it was empty
+  before. Not approved in the admin console yet, and **UNTESTED**.
 - **Docker** 29.9.2 (same upgrade, from 29.7.2) in swarm mode (single node),
   as Dokploy installs it.
 - **Dokploy**, with its own Postgres and Redis (`docker service ls`). The

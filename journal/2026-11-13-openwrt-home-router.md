@@ -78,8 +78,18 @@ checked in the session that wrote this entry.
   the home subnet, without taking DNS or routes from the tailnet
   (`tailscale set`), and a firewall zone for `tailscale0` with forwarding to
   and from the LAN was added (`uci`). A config backup was taken first. The
-  router's DNS and IPv4 were checked afterwards. The route still needs the
-  owner's approval in the admin console, so nothing was tested through it.
+  router's DNS and IPv4 were checked afterwards. The owner approved the
+  route, turned off key expiry for the router and removed the stale machine
+  that had advertised the same range.
+- The first firewall setup declared `tailscale0` as a network interface;
+  the reload that followed emptied Tailscale's routing table, so the router
+  could not reach the tailnet until Tailscale was restarted. The zone now
+  names the device instead, and the routes survived a second reload.
+- For slow GitHub downloads: the Remote VPS was set to advertise GitHub's
+  file-serving address range to the tailnet (`tailscale set
+  --advertise-routes`, previously none), and the router to accept tailnet
+  routes. The VPS already forwarded packets (`sysctl`) and fetched a release
+  file at 2.4 MB/s. The route awaits the owner's approval; untested.
 
 ## Snapshot / backup taken
 

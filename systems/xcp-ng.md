@@ -57,10 +57,10 @@ has two channels, A and B, with two slots on each.
 
 | Slot (BIOS name) | Position, counting from the CPU | Holds |
 |---|---|---|
-| DDR4_A1 | 1st | 16 GB |
-| DDR4_A2 | 2nd | 16 GB |
-| DDR4_B1 | 3rd | empty |
-| DDR4_B2 | 4th | 8 GB |
+| DDR4_A1 | 1st | 8 GB |
+| DDR4_A2 | 2nd | empty |
+| DDR4_B1 | 3rd | 16 GB |
+| DDR4_B2 | 4th | 16 GB |
 
 The BIOS and the manual name the slots differently. The manual's order from
 the CPU is DDR4_4, DDR4_2, DDR4_3, DDR4_1, with channel A being DDR4_4 and
@@ -76,7 +76,8 @@ layouts; three sticks is outside what it documents.
 > If it shares a channel with either 16 GB stick, the board cannot start that
 > channel. It then drops both sticks on it and hands the operating system
 > only 16 GB, while the BIOS still lists the full 40 GB. Tried on 2026-11-13
-> with the 8 GB stick in A1 and in B1, with the same result.
+> with the 8 GB stick sharing channel A and sharing channel B, each time with
+> one 16 GB stick, with the same result.
 
 - **The BIOS total is not the usable total.** It adds up the sticks it
   detects. Read the real figure from Memtest86+ or from an operating system.

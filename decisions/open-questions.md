@@ -313,7 +313,7 @@ Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
   with it?
   Agent's note, 2026-11-14, for the owner to close: set up as a tailnet
   route advertised by the VPS (`systems/router.md`, "Detour for GitHub
-  downloads"), waiting for approval and untested. Every tailnet device that
+  downloads"), approved and measured the same day. Every tailnet device that
   accepts routes will use it too.
 - The router's package database names a Wi-Fi daemon that is not the one on
   disk (`systems/router.md`, Rules). Leave it until the next firmware image,

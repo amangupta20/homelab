@@ -89,7 +89,9 @@ checked in the session that wrote this entry.
   file-serving address range to the tailnet (`tailscale set
   --advertise-routes`, previously none), and the router to accept tailnet
   routes. The VPS already forwarded packets (`sysctl`) and fetched a release
-  file at 2.4 MB/s. The route awaits the owner's approval; untested.
+  file at 2.4 MB/s. The owner approved the route; a 19 MB release file then
+  downloaded through the router at 4.6–4.7 MB/s, against 3.7 MB in 500
+  seconds before (`curl`, same laptop, same file).
 
 ## Snapshot / backup taken
 

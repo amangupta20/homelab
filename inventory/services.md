@@ -1,7 +1,7 @@
 ---
 type: inventory
 status: "documented, partially verified"
-verified: "partially (Dokploy, OpenBao, Hermes WebUI and VPS apps verified 2026-10-26/27/29; others from docs/memory)"
+verified: "partially (Dokploy, OpenBao, Hermes WebUI and VPS apps verified 2026-10-26/27/29; Home network DHCP and DNS verified 2026-11-13 over SSH; others from docs/memory)"
 tags:
   - inventory
   - services

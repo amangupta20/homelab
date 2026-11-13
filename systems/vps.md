@@ -50,6 +50,9 @@ access setup are kept out of this public repo on purpose.
   2026-10-26), so check the running version before relying on a
   version-specific feature. The Dokploy and Traefik versions are not recorded
   in this public repo.
+- **Docker cleanup:** Dokploy's own daily cleanup is off (`enableDockerCleanup` false, read through
+  Dokploy's API on 2026-11-13) and must stay off; the Dokploy schedule `docker-cleanup` prunes instead.
+  Why and what it prunes: `apps/vps/sablier/README.md`.
 - **Public traffic** enters through Dokploy's Traefik (container
   `dokploy-traefik`) on ports 80 and 443; each app's domain is set in Dokploy.
   The Dokploy dashboard is also on a public domain, by the owner's choice

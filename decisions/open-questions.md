@@ -293,6 +293,11 @@ Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
   that subnet today? The laptop lost its route to the router once in the
   flashing session because it accepted a subnet route for the same range from
   the tailnet.
+  Agent's note, 2026-11-14, for the owner to close: the router is signed in
+  and advertises the home subnet (`systems/router.md`). The route is not
+  approved yet, an older approval for the same range may still exist on
+  another machine, and a laptop that accepts routes will send home-subnet
+  traffic through the tailnet even when it is at home.
 - `inventory/network.md` lists `.254` and `.160` from the docs. Both answer on
   the router's LAN (`ip neigh`, 2026-11-13), but which machines they are was
   not checked.

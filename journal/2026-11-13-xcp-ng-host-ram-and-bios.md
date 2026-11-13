@@ -5,7 +5,7 @@
 
 ## What changed
 
-- **Memory layout.** The two 16 GB sticks now share channel A and the 8 GB stick sits alone on channel B. All 40 GB is usable. The
+- **Memory layout.** The two 16 GB sticks now share channel B and the 8 GB stick sits alone on channel A. All 40 GB is usable. The
   layout, and the rule behind it, are in [`systems/xcp-ng.md`](../systems/xcp-ng.md), "Memory layout".
 - **BIOS updated** with the board's own flashing tool (Q-Flash) from a USB stick. Before flashing, the file on the stick was compared
   with the download (`sha256sum`, identical) and its checksum matched the one the maker lists for that release. The version is not

@@ -61,6 +61,18 @@ checked in the session that wrote this entry.
   to `relay` on `wan6` and `lan`), because the ISP router delegates no
   prefix and downloads from one content network are slow over IPv4.
 
+- Firmware upgraded to the community release v1.0.1 (kernel 6.18.60) with
+  `sysupgrade`, at the owner's request. The image was checked against the
+  release notes' SHA-256 and with `sysupgrade -T` first. The router was back
+  after about 70 seconds with its settings kept. This also cleared the wrong
+  package database left by the failed swap.
+- Added packages reinstalled, except the Argon theme, which the feed does not
+  carry; the web interface is on the stock theme.
+- The full Wi-Fi daemon installed in place of the image's mesh variant: both
+  were the same release this time, and both radios came back in 38 seconds.
+  802.11v turned on for both radios (`bss_transition`), 802.11r set off, and
+  `usteer` installed.
+
 ## Snapshot / backup taken
 
 - 2026-11-12: the stock flash partitions, before flashing (flashing session
@@ -71,6 +83,8 @@ checked in the session that wrote this entry.
 - 2026-11-13, 23:55: a second `sysupgrade -b`, and an archive of the Wi-Fi
   daemon's files, before the daemon swap. The archive was used twice to roll
   back.
+- 2026-11-14, 00:28: a third `sysupgrade -b` and the installed-package list,
+  right before the firmware upgrade.
 
 Both are outside this repo (credentials, factory calibration data). Neither
 was restored.
@@ -84,6 +98,13 @@ All on 2026-11-13, over SSH or from a laptop on the LAN.
   to a public host 0% loss, no prefix delegated. After relay mode: the laptop
   has a global IPv6 address and a default route, `ping -6` 0% loss, and the
   `curl` download comparison in `systems/router.md`.
+- After the upgrade: `/etc/openwrt_release` and `uname -r` show the new
+  build, both radios are on their channels, IPv4 and IPv6 work from the
+  router and the laptop, the relay settings and SSH key-only setting are
+  still in the config, and the kernel log has no `ath11k` failure.
+- After the second daemon swap: `apk list -I` shows `wpad-mbedtls`, the
+  running configuration has `bss_transition=1` on both radios, and
+  `ubus call usteer local_info` lists both.
 - After the daemon rollback: both radios on their channels (`iw dev`), the
   daemon's script file matches its checksum from before, and the laptop
   reconnected.

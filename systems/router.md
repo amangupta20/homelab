@@ -31,11 +31,12 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
   on the device: 4 cores (`/proc/cpuinfo`), 446 MB usable RAM (`free`), and
   two Wi-Fi 6 radios driven by `ath11k`, 2.4 GHz on the main chip and 5 GHz
   on a separate card, each advertising four antennas (`iw phy`). No Wi-Fi 7.
-- **Firmware:** a community OpenWrt snapshot build, revision
-  `r35553+1410-fdb162fb81`, kernel 6.18.55, target `qualcommbe/ipq95xx`,
-  board name `jiorouter,ax6000-jidu6j11`. The device is not in official
-  OpenWrt yet: pull requests `openwrt/openwrt` #26498 and #26551 were both
-  open on 2026-11-13 (`gh pr view`).
+- **Firmware:** the community OpenWrt build for this device, release v1.0.1:
+  revision `r35553+2591-fdb162fb81`, kernel 6.18.60, target
+  `qualcommbe/ipq95xx`, board name `jiorouter,ax6000-jidu6j11`
+  (`/etc/openwrt_release`, `uname -r`, 2026-11-14). The device is not in
+  official OpenWrt yet: pull requests `openwrt/openwrt` #26498 and #26551
+  were both open on 2026-11-14 (`gh pr view`), and neither publishes images.
 - **LAN:** `10.22.33.1/24`, DHCP from dnsmasq, leases 12 hours. Addresses are
   in `inventory/network.md`.
 - **WAN:** the `wan` port takes a private address by DHCP from the ISP
@@ -59,7 +60,11 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
   stayed under 1 Mbit/s.
 - **Wi-Fi:** one network name on both radios, WPA2-PSK. 2.4 GHz on channel 6,
   20 MHz wide; 5 GHz on channel 149, 80 MHz wide. "Disassociate on low
-  acknowledgement" is off on both (see Rules).
+  acknowledgement" is off on both (see Rules). The full Wi-Fi daemon
+  (`wpad-mbedtls`) replaced the image's `wpad-mesh-mbedtls` on 2026-11-14,
+  with 802.11k and 802.11v on and 802.11r off. `usteer` runs on top of it
+  and sees both radios (`ubus call usteer local_info`); it moves devices
+  between the two bands. How well it does that here is untested.
 - **Admin access:** SSH with a key only, and the LuCI web interface over HTTP
   and HTTPS (self-signed certificate), both reachable from the LAN only.
 - **Added packages:** `luci-app-nlbwmon` (traffic per device, under Status →
@@ -69,7 +74,9 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
   this build), `tailscale` (installed, not logged in), `luci-app-statistics`
   (history graphs of load, memory, interfaces and Wi-Fi under Statistics;
   kept in RAM, so a reboot clears them), `luci-app-sqm` (traffic shaping,
-  installed and switched off), `iperf3`, `htop`, and the Argon LuCI theme.
+  installed and switched off), `wpad-mbedtls`, `usteer` with
+  `luci-app-usteer`, `iperf3` and `htop`. The Argon theme from the first
+  install is not in the package feed and was not put back after the upgrade.
 
 ### Why the Wi-Fi settings are what they are
 
@@ -94,7 +101,13 @@ Measured on the router on 2026-11-13 (`iw dev <radio> scan`, `logread`).
   3.3 V UART adapter (voltage from #26551) and the boot loader's console login, which is kept with
   the factory backup (see Backups). **UNTESTED.**
 - **Take a config backup before changing firmware or packages:**
-  `sysupgrade -b <file>` on the router (run 2026-11-13).
+  `sysupgrade -b <file>` on the router (run 2026-11-13 and 2026-11-14).
+- **Upgrading between community releases:** copy the release's
+  `squashfs-sysupgrade.bin` to `/tmp`, compare its SHA-256 with the release
+  notes, run `sysupgrade -T` on it, then `sysupgrade -v`. Run once,
+  2026-11-14, from the 2026-09 build to v1.0.1: the router answered again
+  after about 70 seconds with its settings kept. Afterwards reinstall the
+  added packages; `/root` is wiped too.
 - **Set the netmask whenever the LAN address is changed.** Setting only
   `network.lan.ipaddr` produced a `/32` address, and every IPv4 packet to the
   router was dropped. The way back in was SSH to the router's IPv6
@@ -110,27 +123,20 @@ Measured on the router on 2026-11-13 (`iw dev <radio> scan`, `logread`).
 - **Leave 802.11r (fast roaming) off.** A tester on the upstream pull request
   reports it fails with this driver (#26498, comment of 2026-11-11); not
   tried here.
-- **Do not install or upgrade the Wi-Fi daemon (`wpad`, `hostapd-common`,
-  `wifi-scripts`) from the package feed, and do not run `apk fix` or
-  `apk upgrade`.** The feed is a moving snapshot, newer than this image. On
-  2026-11-14 the feed's full daemon, `wpad-mbedtls`, was installed to replace
-  the image's reduced `wpad-basic-mbedtls`; it would not start (`logread`:
-  "common.uc does not export 'macaddr_keep'", a script from the image's older
-  `wifi-scripts`), and both radios were down for about 75 seconds until the
-  old files were put back from an archive. The feed's reduced daemon is the
-  same newer release, so the image's own version cannot be reinstalled from
-  the feed either.
-- **The package database is wrong about the Wi-Fi daemon.** Since that
-  attempt `apk list -I` shows `wpad-mbedtls` and `hostapd-common` at the
-  feed's release, while the files on disk are the image's original ones
-  (`md5sum` of `hostapd.uc` matched the copy taken before). Anything that
-  re-lays package files will break Wi-Fi again. The archive of the original
-  files is on the router at `/root/wpad-rollback/r4-files.tar.gz`; restore
-  with `tar xzf` from `/`, then `/etc/init.d/wpad restart` and `wifi up`
-  (run once, 2026-11-14). The clean fix is the next firmware image.
-- **No fast roaming or band steering until then.** 802.11v and 802.11r need
-  the full daemon, and `usteer` without them can only steer by
-  disconnecting devices; it is not installed.
+- **Install Wi-Fi packages (`wpad`, `hostapd-common`, `wifi-scripts`) from
+  the feed only when their versions match the image's.** The feed is a
+  moving snapshot. On the previous firmware it had moved ahead of the image,
+  and on 2026-11-14 the feed's full daemon would not start there (`logread`:
+  "common.uc does not export 'macaddr_keep'"); both radios were down for
+  about 75 seconds, twice, until the old files were put back from an
+  archive. On v1.0.1 the image and the feed carried the same release
+  (`apk list -I`, `apk add --simulate`), and the swap worked. Before any such
+  change: compare versions, archive the current daemon's files, and have a
+  script restore them if the radios do not come back.
+- **Do not run `apk upgrade`.** It pulls everything to the feed's newer
+  versions, the same mismatch on a larger scale. Kernel modules never come
+  from the feed: this build's kernel does not match it, and the release
+  ships its own module archive.
 - **An upgrade drops every added package** unless the upgrade helper rebuilds
   the image with them, and that is untested on this build. Reinstall from the
   list above.

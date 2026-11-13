@@ -18,13 +18,26 @@ source coding agent) reads the pull request against `repo/review.md` and
 |---|---|---|
 | 1 | mechanical: a broken path, a status value outside the vocabulary, a stale index line | it commits the fix to the pull request's branch itself; the workflow pushes it only if the commit avoids protected paths and the properties check still passes |
 | 2 | a clear change of a few lines | a suggestion on the line, applied with **Commit suggestion**; lines outside the diff cannot carry one, so those go in the summary |
-| 3 | design | a comment with no code; reply `/prime <instruction>` (for example "do it") and it continues the same session and commits |
+| 3 | design, or anything in a protected path | a comment with no code; reply `/prime <instruction>` (for example "do it") and it continues the same session and commits |
 
 It reports only findings that meet the bar in `repo/review.md`
 ("Blockers and warnings"), not wording or style. Never on its own: `iac/`, `decisions/`, `.github/`,
 `.githooks/`, `skills/`, `journal/`, `AGENTS.md`, `README.md`, `CLAUDE.md`,
 `repo/review.md` — anything there is level 3. Source: `protected` in the
-private `repos/homelab/config.toml`, read 2026-11-03.
+private `repos/homelab/config.toml`, read 2026-11-14.
+
+Those paths are closed only to what the reviewer does by itself. Since action
+pull request 10, a `/prime fix <request>` or a natural `/prime <instruction>`
+from the owner may change them, because the owner asked for that change.
+`.github/` stays closed to every run. Before that, the workflow dropped any
+commit touching a protected path: on pull request 73 (2026-11-13) an
+instruction to correct a journal entry ran and was then not pushed (run
+`43487063105-1`, read from the pull request's comments). Source: `check_and_push` in the action's
+`prime-review.py` at the pinned commit, read 2026-11-14; its offline tests
+pass. A live instruction on a protected path is **UNTESTED**. The private
+core's rule against committing to protected paths needs the matching exception
+(`prime-reviewer` pull request 10, open on 2026-11-14); until it merges the
+reviewer may still decline such an instruction.
 
 ## When it runs
 
@@ -79,7 +92,7 @@ free for a public repository. Nothing runs on the lab.
 | What | Where |
 |---|---|
 | The rules it judges by | `repo/review.md` and `AGENTS.md`, always from `main`, so a pull request cannot rewrite them |
-| Shared execution code | public `prime-reviewer-action`, called as a composite action at commit `6b8319150b91` (pinned by full SHA) by this repo's workflow |
+| Shared execution code | public `prime-reviewer-action`, called as a composite action at commit `ad4457383e89` (pinned by full SHA) by this repo's workflow |
 | Its prompts, playbook and model settings | the owner's private repo `prime-reviewer` (`main`): shared `APPEND_SYSTEM.md` and `skills/common-review/`, with homelab settings and playbook in `repos/homelab/` |
 | Changes it makes to its own playbook | a pull request on `prime-reviewer`, which the owner merges or closes |
 | Each pull request's session (so `/prime <instruction>` continues it) | B2: `sessions/<owner>/<repo>/<pr>/latest.json` references its saved session archive; the private Git `state` branch keeps the sessions from before the cutover as rollback |

@@ -52,6 +52,17 @@ The idle time is per app. Use `apps/vps/blinko/compose.yaml` as the example:
 
 The app must have a trigger a person opens. Anything waiting on webhooks, or doing work with no HTTP traffic, should stay awake.
 
+## Dokploy's Docker cleanup stays off
+
+Dokploy's "Daily Docker Cleanup" (Settings → Server) removes every stopped container, and a sleeping app is a stopped container. Once
+it is removed, Traefik has no route for it (404) and Sablier has nothing to start; only a redeploy brings it back. This happened on
+2026-11-08, -09, -10 and -12 (`journal/2026-11-13-cleanup-removed-sleeping-apps.md`).
+
+`host/dokploy-schedule-docker-cleanup.sh` replaces it: the Dokploy schedule `docker-cleanup` (type `dokploy-server`, command
+`bash ./script.sh`, daily 05:20 IST). It prunes stopped containers except those labelled `sablier.enable=true`, then unused images and
+the build cache. Every container of a sleeping stack therefore needs that label, not only the one Traefik routes to. A change to the
+script is pasted into the schedule by hand; Dokploy does not read it from this repo.
+
 ## After a deploy that recreates an app
 
 Requests to it get 500 for up to 30 s: Sablier 1.19.1 keeps the temporary name Compose gives a replacement container, until its

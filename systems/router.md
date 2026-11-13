@@ -42,10 +42,21 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
   router. The firewall masquerades LAN traffic and rejects everything
   arriving on the WAN side. The ISP uses carrier-grade NAT, so nothing is
   forwarded inward (owner, 2026-11-13).
-- **IPv6:** on for the router itself since 2026-11-13: it gets an address and
-  reaches the internet over IPv6 (`ping -6`, 0% loss). The ISP router does
-  not delegate a prefix (`ifstatus wan6` shows none), so LAN devices are
-  still IPv4-only. See the open questions.
+- **IPv6:** on since 2026-11-13. The ISP router does not delegate a prefix
+  (`ifstatus wan6` shows none), so the router runs in relay mode: `odhcpd`
+  passes the ISP router's address announcements and neighbour discovery
+  through to the LAN (`dhcp.wan6` as master, `ra`, `dhcpv6` and `ndp` set to
+  `relay` on both `wan6` and `lan`). A laptop on the LAN got a global address
+  and reached a public host with 0% loss (`ping -6`, 2026-11-14). LAN devices
+  therefore sit directly on the ISP's IPv6 network; the router's firewall
+  still filters what is forwarded to them.
+- **Why IPv6 matters on this line:** downloads from the Fastly content
+  network are slow over IPv4 and normal over IPv6. Measured from a laptop on
+  2026-11-14 with `curl`, 12 seconds each: an OpenWrt image at 49 kB/s over
+  IPv4 and 851 kB/s over IPv6; a crates.io file at 1 kB/s and 999 kB/s. In
+  the same hour Cloudflare and Google gave 27–40 Mbit/s over either
+  (`wget` on the router). GitHub release downloads have no IPv6 address and
+  stayed under 1 Mbit/s.
 - **Wi-Fi:** one network name on both radios, WPA2-PSK. 2.4 GHz on channel 6,
   20 MHz wide; 5 GHz on channel 149, 80 MHz wide. "Disassociate on low
   acknowledgement" is off on both (see Rules).
@@ -99,13 +110,27 @@ Measured on the router on 2026-11-13 (`iw dev <radio> scan`, `logread`).
 - **Leave 802.11r (fast roaming) off.** A tester on the upstream pull request
   reports it fails with this driver (#26498, comment of 2026-11-11); not
   tried here.
-- **Do not install the full `wpad` Wi-Fi daemon from the package feed.** The
-  image ships the reduced `wpad-basic-mbedtls`. The feed's `wpad-mbedtls` is
-  built against newer core libraries than this image has
-  (`apk info -R`, 2026-11-13: `libucode` and `libubus` of October against
-  the image's July and September ones), and a Wi-Fi daemon that fails to
-  start leaves only the cable and the serial console. Get it by building it
-  into the next firmware image instead. Not tried.
+- **Do not install or upgrade the Wi-Fi daemon (`wpad`, `hostapd-common`,
+  `wifi-scripts`) from the package feed, and do not run `apk fix` or
+  `apk upgrade`.** The feed is a moving snapshot, newer than this image. On
+  2026-11-14 the feed's full daemon, `wpad-mbedtls`, was installed to replace
+  the image's reduced `wpad-basic-mbedtls`; it would not start (`logread`:
+  "common.uc does not export 'macaddr_keep'", a script from the image's older
+  `wifi-scripts`), and both radios were down for about 75 seconds until the
+  old files were put back from an archive. The feed's reduced daemon is the
+  same newer release, so the image's own version cannot be reinstalled from
+  the feed either.
+- **The package database is wrong about the Wi-Fi daemon.** Since that
+  attempt `apk list -I` shows `wpad-mbedtls` and `hostapd-common` at the
+  feed's release, while the files on disk are the image's original ones
+  (`md5sum` of `hostapd.uc` matched the copy taken before). Anything that
+  re-lays package files will break Wi-Fi again. The archive of the original
+  files is on the router at `/root/wpad-rollback/r4-files.tar.gz`; restore
+  with `tar xzf` from `/`, then `/etc/init.d/wpad restart` and `wifi up`
+  (run once, 2026-11-14). The clean fix is the next firmware image.
+- **No fast roaming or band steering until then.** 802.11v and 802.11r need
+  the full daemon, and `usteer` without them can only steer by
+  disconnecting devices; it is not installed.
 - **An upgrade drops every added package** unless the upgrade helper rebuilds
   the image with them, and that is untested on this build. Reinstall from the
   list above.

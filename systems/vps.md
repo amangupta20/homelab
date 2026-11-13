@@ -47,7 +47,8 @@ access setup are kept out of this public repo on purpose.
   the address range GitHub serves release and raw files from, so home devices
   can fetch them through the VPS (`systems/router.md`, "Detour for GitHub
   downloads"). Set with `tailscale set --advertise-routes`; it was empty
-  before. Not approved in the admin console yet, and **UNTESTED**.
+  before. Approved by the owner and tested from home on 2026-11-14; the
+  figures are on the router's page.
 - **Docker** 29.9.2 (same upgrade, from 29.7.2) in swarm mode (single node),
   as Dokploy installs it.
 - **Dokploy**, with its own Postgres and Redis (`docker service ls`). The

@@ -91,10 +91,12 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
 - **Detour for GitHub downloads:** the router accepts routes from the
   tailnet, and the Remote VPS advertises the address range GitHub serves
   release and raw files from, so that traffic would leave through the VPS
-  instead of the slow IPv4 path (see "Why IPv6 matters"). On 2026-11-14 the
-  VPS advertised the range and it was not yet approved in the admin console,
-  so the router still sent that traffic out of its own WAN (`ip route get`).
-  **UNTESTED.** The range itself is not written here: the secret scan
+  instead of the slow IPv4 path (see "Why IPv6 matters"). Tested
+  2026-11-14 after the owner approved the route: a 19 MB release file took
+  4 seconds from the router (`wget -4`) and ran at 4.6–4.7 MB/s from a
+  laptop whose traffic went through the router (`curl --interface`). Before
+  the detour the same file had reached 3.7 MB in 500 seconds from that
+  laptop. The range itself is not written here: the secret scan
   rejects public addresses.
 
 ### Why the Wi-Fi settings are what they are

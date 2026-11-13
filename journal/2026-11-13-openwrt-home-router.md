@@ -66,8 +66,9 @@ checked in the session that wrote this entry.
   release notes' SHA-256 and with `sysupgrade -T` first. The router was back
   after about 70 seconds with its settings kept. This also cleared the wrong
   package database left by the failed swap.
-- Added packages reinstalled, except the Argon theme, which the feed does not
-  carry; the web interface is on the stock theme.
+- Added packages reinstalled. The Argon theme is not in the feed; it was
+  installed from its project's release files and the login page was checked
+  to serve it (`curl`).
 - The full Wi-Fi daemon installed in place of the image's mesh variant: both
   were the same release this time, and both radios came back in 38 seconds.
   802.11v turned on for both radios (`bss_transition`), 802.11r set off, and

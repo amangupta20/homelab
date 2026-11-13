@@ -67,7 +67,7 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
   between the two bands. How well it does that here is untested.
 - **Admin access:** SSH with a key only, and the LuCI web interface over HTTP
   and HTTPS (self-signed certificate), both reachable from the LAN only.
-- **Added packages:** `luci-app-nlbwmon` (traffic per device, under Status →
+- **Added packages:** `luci-app-nlbwmon` (traffic per device, under Services →
   Bandwidth Monitor; its database is in RAM and is written to flash once a
   day, so a reboot can lose up to a day), `luci-ssl`,
   `luci-app-attendedsysupgrade` and `owut` (upgrade helpers, **UNTESTED** on
@@ -75,8 +75,9 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
   (history graphs of load, memory, interfaces and Wi-Fi under Statistics;
   kept in RAM, so a reboot clears them), `luci-app-sqm` (traffic shaping,
   installed and switched off), `wpad-mbedtls`, `usteer` with
-  `luci-app-usteer`, `iperf3` and `htop`. The Argon theme from the first
-  install is not in the package feed and was not put back after the upgrade.
+  `luci-app-usteer`, `iperf3` and `htop`. The Argon LuCI theme (3.1.4) is not in the
+  package feed: its two `.apk` files come from the theme project's GitHub
+  releases and are installed with `apk add --allow-untrusted`.
 
 ### Why the Wi-Fi settings are what they are
 

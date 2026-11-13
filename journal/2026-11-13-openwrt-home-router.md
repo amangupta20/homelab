@@ -74,6 +74,13 @@ checked in the session that wrote this entry.
   802.11v turned on for both radios (`bss_transition`), 802.11r set off, and
   `usteer` installed.
 
+- Tailscale: the owner signed the router in; it was then set to advertise
+  the home subnet, without taking DNS or routes from the tailnet
+  (`tailscale set`), and a firewall zone for `tailscale0` with forwarding to
+  and from the LAN was added (`uci`). A config backup was taken first. The
+  router's DNS and IPv4 were checked afterwards. The route still needs the
+  owner's approval in the admin console, so nothing was tested through it.
+
 ## Snapshot / backup taken
 
 - 2026-11-12: the stock flash partitions, before flashing (flashing session

@@ -71,13 +71,25 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
   Bandwidth Monitor; its database is in RAM and is written to flash once a
   day, so a reboot can lose up to a day), `luci-ssl`,
   `luci-app-attendedsysupgrade` and `owut` (upgrade helpers, **UNTESTED** on
-  this build), `tailscale` (installed, not logged in), `luci-app-statistics`
+  this build), `tailscale` (see Tailscale below), `luci-app-statistics`
   (history graphs of load, memory, interfaces and Wi-Fi under Statistics;
   kept in RAM, so a reboot clears them), `luci-app-sqm` (traffic shaping,
   installed and switched off), `wpad-mbedtls`, `usteer` with
   `luci-app-usteer`, `iperf3` and `htop`. The Argon LuCI theme (3.1.4) is not in the
   package feed: its two `.apk` files come from the theme project's GitHub
   releases and are installed with `apk add --allow-untrusted`.
+
+- **Tailscale:** the router is signed in to the tailnet and advertises the
+  home subnet as a subnet router (`tailscale debug prefs`, 2026-11-14), so
+  tailnet devices can reach LAN machines that do not run Tailscale
+  themselves. It does not take DNS settings or routes from the tailnet. A
+  firewall zone `tailscale` on `tailscale0` accepts traffic from the tailnet
+  and forwards between it and the LAN; who on the tailnet may use that is
+  set by the tailnet's access rules, kept in the private repo. The route
+  must be approved in the tailnet's admin console before it carries traffic;
+  on 2026-11-14 it was advertised and not yet approved
+  (`tailscale status --json`). Reaching a LAN machine through it is
+  **UNTESTED**.
 
 ### Why the Wi-Fi settings are what they are
 

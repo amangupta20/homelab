@@ -263,6 +263,9 @@ Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
   delegates no prefix (`ifstatus wan6`, 2026-11-13), so devices behind it are
   IPv4-only. Relay mode on the Home router, bridge mode on the ISP router, or
   stay IPv4-only on the LAN?
+  Agent's note, 2026-11-14, for the owner to close: relay mode is on and a
+  laptop gets IPv6 through it (`systems/router.md`). It has run for minutes,
+  not days.
 - IPv6 on the ISP line was measured dead on 2026-11-12 (address and default
   route present, 100% loss to two public hosts, from the router and a laptop;
   flashing session notes) and working on 2026-11-13 (`ping -6`, 0% loss). The
@@ -293,4 +296,10 @@ Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
 - The hourly channel-scan script from the flashing session is still on the
   router with its cron line commented out. Delete it, or keep it for manual
   runs?
-
+- GitHub release downloads are slow on this line and have no IPv6 address to
+  fall back on (`systems/router.md`, "Why IPv6 matters"). Send only those
+  hosts through a tunnel to the VPS (policy routing on the router), or live
+  with it?
+- The router's package database names a Wi-Fi daemon that is not the one on
+  disk (`systems/router.md`, Rules). Leave it until the next firmware image,
+  or take another short Wi-Fi outage to put the database right?

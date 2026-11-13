@@ -47,6 +47,20 @@ checked in the session that wrote this entry.
 - The hourly channel-scan cron line commented out: each scan takes the
   2.4 GHz radio off its channel for a few seconds.
 
+**2026-11-14, just after midnight, same session:**
+
+- Tried to replace the reduced Wi-Fi daemon with the full one from the
+  package feed, at the owner's request. A first run removed the old package
+  and failed to install the new one from local files (unsigned when
+  installed from a file); a second run installed it from the feed, and the
+  daemon would not start. Each run took both radios down, for about 75
+  seconds each, until a script put the original files back. Wi-Fi is on the
+  original daemon again; the package database still names the new one. The
+  details and the rule are in `systems/router.md`.
+- IPv6 relay mode turned on (`dhcp.wan6` created; `ra`, `dhcpv6`, `ndp` set
+  to `relay` on `wan6` and `lan`), because the ISP router delegates no
+  prefix and downloads from one content network are slow over IPv4.
+
 ## Snapshot / backup taken
 
 - 2026-11-12: the stock flash partitions, before flashing (flashing session
@@ -54,6 +68,9 @@ checked in the session that wrote this entry.
 - 2026-11-13: `sysupgrade -b` before the package installs and the settings
   changes of this session; the archive was copied to the owner's workstation
   and its file list read back (39 files).
+- 2026-11-13, 23:55: a second `sysupgrade -b`, and an archive of the Wi-Fi
+  daemon's files, before the daemon swap. The archive was used twice to roll
+  back.
 
 Both are outside this repo (credentials, factory calibration data). Neither
 was restored.
@@ -63,9 +80,13 @@ was restored.
 All on 2026-11-13, over SSH or from a laptop on the LAN.
 
 - Internet over IPv4 from the router and the laptop (`ping`, 0% loss).
-- IPv6 from the router after the change: `ifstatus wan6` up, `ping -6` to a
-  public host 0% loss. No prefix is delegated, so the laptop has no global
-  IPv6 address and no IPv6 default route (`ip -6 route`).
+- IPv6 from the router after the first change: `ifstatus wan6` up, `ping -6`
+  to a public host 0% loss, no prefix delegated. After relay mode: the laptop
+  has a global IPv6 address and a default route, `ping -6` 0% loss, and the
+  `curl` download comparison in `systems/router.md`.
+- After the daemon rollback: both radios on their channels (`iw dev`), the
+  daemon's script file matches its checksum from before, and the laptop
+  reconnected.
 - Both radios' running configuration shows the low-acknowledgement setting
   off (`/var/run/hostapd-phy*.conf`), and `iw dev` shows channels 6 and 149.
 - The web interface answers on HTTPS (`curl -k`), and the packages are listed

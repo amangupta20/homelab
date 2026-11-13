@@ -16,7 +16,7 @@ still apply to the home edge.
 **In one line:** give every rarely-used stack a live URL that starts it on the
 first request and stops it again after a quiet period, so dozens of niche
 services can exist without any of them costing CPU or RAM while forgotten.
-**Why try it:** `inventory/services.md` records Coder, jobops, opendota and Odyssues as not
+**Why try it:** `inventory/services.md` records Coder, jobops and Odyssues as not
 running (whether that is deliberate is not recorded), and niche things get
 dropped entirely because turning them back on is more effort than the thing was
 worth. This turns "off" into a state the lab maintains, so
@@ -131,9 +131,8 @@ creates a router without the wake middleware, so one owner per host (corrected 2
 Any of: the VPS runs out of RAM with several dormant stacks already installed;
 the number of stacks recorded as not running passes roughly ten; or one disposable
 stack gets a healthcheck and two weeks of real use without a failed wake.
-opendota is the natural pilot: a small stack, not running per
-`inventory/services.md`, whose dependency graph would have to be read off its
-Compose file first.
+opendota was named here as the natural pilot. It was deleted on 2026-11-13
+(`journal/2026-11-13-remove-opendota.md`), so a pilot needs another stack.
 
 ## Sources
 

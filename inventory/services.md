@@ -65,7 +65,6 @@ checked either.
 | kimai | app (2/2) | remote VPS | running |
 | ntfy | ntfy (1/1) | remote VPS | running |
 | Odyssues | odysseus (0/0), litellm (0/0), diagram mcp (0/0), geogebramcp (0/0) | remote VPS | not running |
-| opendota | opendota (0/0) | remote VPS | not running |
 | openwebui | open-webui (3/3), memory (0/2), githubmcp (0/1), oikb (0/1), office (0/0) | remote VPS | partly running |
 | paperclip | paperclip (2/2) | remote VPS | running |
 | pelican | pelican-dashboard (1/1) | remote VPS | running |

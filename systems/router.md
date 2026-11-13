@@ -58,7 +58,6 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
   this build), `tailscale` (installed, not logged in), `luci-app-statistics`
   (history graphs of load, memory, interfaces and Wi-Fi under Statistics;
   kept in RAM, so a reboot clears them), `luci-app-sqm` (traffic shaping,
-  installed and switched off), `luci-app-adblock-fast` (DNS ad blocking,
   installed and switched off), `iperf3`, `htop`, and the Argon LuCI theme.
 
 ### Why the Wi-Fi settings are what they are

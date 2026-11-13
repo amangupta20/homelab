@@ -265,6 +265,45 @@ listing describes automatic incremental reviews, summaries, walkthroughs,
 inline suggestions and chat: https://github.com/apps/coderabbitai.
 These inform the proposal; neither product's internal quality is assumed.
 
+### Requested merge-conflict resolution: pending
+
+Owner requested this follow-up on 2026-11-14; implement later, with PR #73
+resolved by hand for now. Source: owner discussion and
+[PR #73's reply](https://github.com/amangupta20/homelab/pull/73#issuecomment-6864068839).
+That run started successfully but inspected a clean checkout without
+attempting to merge the base branch; GitHub still reported conflicts
+(`gh pr view 73 --json mergeable,mergeStateStatus`, 2026-11-14).
+
+Inspection of `prime-reviewer-action` at the revision pinned by
+`.github/workflows/prime-review.yml` on 2026-11-14 showed that `checkout_pr`
+already fetches the base branch. `prepare_jail` then clones the PR checkout
+into the agent's isolated working directory without explicitly preserving
+that base reference. `$BASE` is the common ancestor, not the latest base tip.
+Prime's claim that the workflow fetches only the PR head was inaccurate.
+
+- Preserve an explicit reference to the fetched base tip inside the agent's
+  checkout and expose its commit separately from the common ancestor.
+- On an owner's request to resolve merge conflicts, attempt merging that
+  base tip, then let Prime resolve the resulting conflicts. A clean initial
+  working tree alone must not be reported as proof of no merge conflicts.
+- Before pushing, require no unresolved index entries, passing repository
+  checks, and both the original PR head and the selected base tip as
+  ancestors of the result. Push normally without rewriting history; reject
+  a stale PR head and recheck the base if it moves.
+- Keep protected-file checks: distinguish unchanged content inherited from
+  the trusted base from edits made during conflict resolution. Resolution
+  edits to protected paths must still be blocked or referred to the owner.
+- Confirm the resulting PR supports the owner's selected merge method
+  before claiming the request is complete. A successful regular merge does
+  not establish that GitHub can rebase the individual commits. Report
+  pending or remaining conflicts explicitly.
+
+**Gate:** an offline test with deliberately conflicting branches exercises
+base visibility, resolution, protected paths, failed checks and stale heads;
+a live owner PR proves the complete flow. Publish the tested action before
+updating this repo's pinned revision. This is planned behavior, not yet
+implemented or verified.
+
 ### Observability and cleanup: deferred
 
 The owner explicitly accepts accumulating B2 objects until the observability

@@ -58,3 +58,4 @@ tags:
 - `backups.md` — what is backed up, how, and which restores are untested.
 - `vps.md` — the remote VPS, Dokploy, and what goes there.
 - `openbao.md` — the secret store: where secrets live and how they are read.
+- `router.md` — the home router (OpenWrt on a Jio indoor unit), its Wi-Fi settings and the serial-only recovery.

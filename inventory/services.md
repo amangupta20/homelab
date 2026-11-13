@@ -28,6 +28,7 @@ document says, and the read-only recon pass has not filled it in yet.
 | Nginx Proxy Manager | Reverse proxy: routes public traffic from Cloudflare to the right container by domain. | Docker + proxy host | in docs, not verified |
 | apt cache | Package cache on port 3142 so local VMs don't re-download packages. Clients point at it in `/etc/apt/apt.conf.d/00proxy`. | Docker + proxy host | in docs, not verified |
 | Fail2Ban | Bans brute-force IPs at the firewall by watching logs. | unknown | in docs, not verified |
+| Home network DHCP and DNS | dnsmasq on the router: hands out addresses on the home subnet and forwards DNS (`systems/router.md`). | Home router | running — verified: `uci show dhcp`, leases in `logread`, 2026-11-13 |
 | Tailscale | Private mesh VPN; the only admin path. | every admin-reachable machine | in docs, not verified |
 | Shared Postgres (Pigsty) | Postgres 18 cluster, with monitoring, for apps to share (`plans/shared-postgres.md`). Blinko runs on it as a test. | `pigsty-1` | running since 2026-11-06; restore and alert drills passed |
 | Blinko | Note-taking app, to test the shared Postgres (`apps/vps/blinko/`). Public domain, behind its own login. Stops after 20 idle minutes (Sablier). | remote VPS, database on `pigsty-1` | running since 2026-11-07, as a test |

@@ -1,7 +1,7 @@
 ---
 type: inventory
-status: "documented, unverified"
-verified: "no (from docs, not verified against router)"
+status: "documented, partially verified"
+verified: "partially (the router's own rows read over SSH 2026-11-13; other rows from docs)"
 tags:
   - inventory
   - network
@@ -14,15 +14,22 @@ tags:
 This file owns every IP address. Hosts are named as in `hosts.md`; what runs
 on each is in `services.md`.
 
-**Source:** from the docs, not verified against the router.
+**Source:** from the docs and not verified, unless a row's State says
+`verified: …`.
 
-Private subnet `10.22.33.0/24`.
+Private subnet `10.22.33.0/24`, served by the Home router
+(`systems/router.md`).
 
-| IP | Host |
-|---|---|
-| `.1` | router / gateway |
-| `.254` | Docker + proxy host |
-| `.160` | TrueNAS VM |
+| IP | Host | State |
+|---|---|---|
+| `.1` | Home router: gateway, DHCP, DNS | verified: `uci show network` over SSH 2026-11-13 |
+| `.100`–`.249` | DHCP pool, 12-hour leases | verified: `uci show dhcp` over SSH 2026-11-13 |
+| `.254` | Docker + proxy host | in docs; an address answers here (`ip neigh` on the router 2026-11-13), which machine it is was not checked |
+| `.160` | TrueNAS VM | in docs; an address answers here (`ip neigh` on the router 2026-11-13), which machine it is was not checked |
+
+Upstream of the Home router is the ISP router's own private network,
+`192.168.1.0/24`: the Home router takes an address there by DHCP and the ISP
+router is its gateway (`uci show network`, `ip route`, 2026-11-13).
 
 Oracle Cloud network for `iac/oci/`: `10.40.0.0/16`, subnet `10.40.1.0/24`
 (`iac/oci/network.tf`, applied 2026-11-06). Machines there are reached over

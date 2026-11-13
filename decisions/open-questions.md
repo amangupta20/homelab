@@ -254,3 +254,43 @@ these parts are open:
   image, re-seeds the volume that loses the Hindsight plugin's client
   (`journal/2026-11-08-hermes-hindsight-plugin-import.md`). Bring the stack in, pin its images, or keep it
   outside? Agent's note, 2026-11-08.
+
+## Home router (OpenWrt)
+
+Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
+
+- IPv6 for LAN devices: the ISP router gives the Home router an address but
+  delegates no prefix (`ifstatus wan6`, 2026-11-13), so devices behind it are
+  IPv4-only. Relay mode on the Home router, bridge mode on the ISP router, or
+  stay IPv4-only on the LAN?
+- IPv6 on the ISP line was measured dead on 2026-11-12 (address and default
+  route present, 100% loss to two public hosts, from the router and a laptop;
+  flashing session notes) and working on 2026-11-13 (`ping -6`, 0% loss). The
+  cause of the earlier failure is unknown. While it was dead the router's
+  package manager stalled for about an hour on a dual-stack download host; if
+  it stalls again, check IPv6 first.
+- Double NAT: the Home router sits behind the ISP router. Bridge mode on the
+  ISP router, or keep it routing? The earlier research is in
+  `ideas/edge-and-security-layers.md`, "Physical router".
+- Firmware source: the router runs a community build that is one community
+  release behind (flashing session notes, 2026-11-12), and official support is
+  two open pull requests. Stay on community builds, or move to an official
+  image once one exists? Either move drops the added packages, and a failed
+  upgrade needs the serial console.
+- The serial-console recovery and both manual backups are untested. Is a
+  recovery drill wanted before the router carries the lab?
+- Nothing backs up the router's config on a schedule, and
+  `systems/backups.md` has no row for it. Should it get one
+  (`skills/back-up-a-service/`)?
+- Tailscale is installed on the router but not logged in. Should the router
+  become the subnet router for the home subnet, and which machine advertises
+  that subnet today? The laptop lost its route to the router once in the
+  flashing session because it accepted a subnet route for the same range from
+  the tailnet.
+- `inventory/network.md` lists `.254` and `.160` from the docs. Both answer on
+  the router's LAN (`ip neigh`, 2026-11-13), but which machines they are was
+  not checked.
+- The hourly channel-scan script from the flashing session is still on the
+  router with its cron line commented out. Delete it, or keep it for manual
+  runs?
+

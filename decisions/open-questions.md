@@ -280,6 +280,9 @@ Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
   two open pull requests. Stay on community builds, or move to an official
   image once one exists? Either move drops the added packages, and a failed
   upgrade needs the serial console.
+  Agent's note, 2026-11-14, for the owner to close: upgraded to the current
+  community release, v1.0.1, at the owner's request. The question of moving
+  to an official image stays.
 - The serial-console recovery and both manual backups are untested. Is a
   recovery drill wanted before the router carries the lab?
 - Nothing backs up the router's config on a schedule, and
@@ -303,3 +306,8 @@ Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
 - The router's package database names a Wi-Fi daemon that is not the one on
   disk (`systems/router.md`, Rules). Leave it until the next firmware image,
   or take another short Wi-Fi outage to put the database right?
+  Agent's note, 2026-11-14, for the owner to close: the firmware upgrade
+  replaced the database, and the full daemon is now installed properly.
+- `usteer` now moves devices between the two radios. It was installed while
+  Wi-Fi at the edge of range was still being tested, and nothing here shows
+  whether it helps or causes disconnects. Keep it, tune it, or remove it?

@@ -306,7 +306,8 @@ first — false positives are where CRS costs time.
   guests on Xen is a known issue, as recalled (unverified).
 - **Physical router** (Hindsight, 2026-10-27): the ISP router locks DHCP and
   DNS; bridge mode or passthrough to an owned OpenWrt/OPNsense router was the
-  long-term recommendation.
+  long-term recommendation. Since 2026-11-12 an owned OpenWrt router
+  sits behind the ISP router, which still routes (`systems/router.md`).
 - **Earlier layout** (Hindsight, 2026-08-18): a critical VM for Tailscale and
   DNS, an edge VM as a kill switch, a main services VM, a 30-day soak VM, and
   a Raspberry Pi as out-of-band access and backup DNS.

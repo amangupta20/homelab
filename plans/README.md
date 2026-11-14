@@ -49,7 +49,8 @@ tags:
 ## Plans
 
 - `vps-foundations.md` — OpenBao and SSO on the VPS, before any further VPS app.
-- `migration.md` — the current migration, in order, and the Portainer -> git target.
+- `home-overhaul.md` — moving every home workload to datasets per app, Arcane, Pangolin and new Docker VMs, in gated steps (in progress, A1 done).
+- `migration.md` — the earlier migration plan; replaced by `home-overhaul.md` on 2026-11-14.
 - `shared-postgres.md` — one Pigsty-managed Postgres cluster on a second VPS then at home that apps share (in progress: installed on `pigsty-1`, drills done).
 - `offsite-backups.md` — the encrypted offsite backup tier, OpenBao first (in progress).
 - `hindsight-d1-reranker.md` — d1-2B on a homelab GPU VM, loaded on demand, in Hindsight's reranker chain (not started).

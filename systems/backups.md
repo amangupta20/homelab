@@ -81,6 +81,6 @@ plan: `plans/offsite-backups.md`). OpenBao has both tiers in place.
 - [ ] TrueNAS: wipe-and-reimport from backup (clean-import test)
 - [ ] Nextcloud: full recovery from Borg backup
 - [ ] XO config + pool metadata: no restore on record
-- [ ] Pre-migration re-audit (before the migration in `plans/migration.md`)
+- [ ] Pre-migration re-audit (before the migration in `plans/home-overhaul.md`)
 - [ ] OpenTofu state: scheduled `tofu state pull` export offsite — not built yet
 - [ ] VPS: restore one Dokploy app backup and Dokploy's own database backup from Garage

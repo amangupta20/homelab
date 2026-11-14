@@ -64,6 +64,9 @@ owner file, and is deleted from this list.
 
 - Portainer replacement: Arcane is the likely candidate, Komodo the
   alternative. Nothing chosen or tested.
+  Owner, 2026-11-14: Arcane, checked in step B3 of `plans/home-overhaul.md`
+  (git deploys, OpenBao secrets, volume backups). The item stays for the owner
+  to close.
 - Does the chosen manager read OpenBao natively?
 - Which of the three-year-old stacks are worth migrating, and which get retired?
 

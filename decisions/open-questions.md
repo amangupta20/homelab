@@ -176,6 +176,15 @@ owner file, and is deleted from this list.
   (`journal/2026-11-03-prime-reviewer-b2-migration.md`). Left for the owner
   to close.
 
+## Home VMs (recon 2026-11-14)
+
+- The docs disagree with the live lab about the "Docker + proxy host". `inventory/hosts.md`,
+  `inventory/network.md` (`.254`) and `inventory/services.md` (Nginx Proxy Manager, apt cache)
+  put the proxy and the apt cache together on one Docker host at `.254`. Live on 2026-11-14:
+  `.254` is the VM `apt-cache`, with apt-cacher-ng and no Docker (SSH); Nginx Proxy Manager runs
+  on `NPM-set` at `.99` (Portainer API, SSH). Those rows are left as they were for the owner to
+  settle.
+
 ## Edge and security layers (on hold until the Pangolin decision)
 
 Research: `ideas/edge-and-security-layers.md`. Owner, 2026-11-01: the whole

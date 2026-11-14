@@ -1,7 +1,7 @@
 ---
 type: system
 status: "jobs reported running; OpenBao (Garage and B2 offsite) and shared Postgres (B2) restores tested, others untested"
-verified: "partially (OpenBao restore tested 2026-10-29 from Garage and 2026-10-31 from B2; shared Postgres restore tested 2026-11-06 from B2; others from docs/memory; VPS read from Dokploy recon 2026-10-26)"
+verified: "partially (Xen Orchestra jobs, TrueNAS tasks and the Nextcloud Borg log read 2026-11-14; OpenBao restore tested 2026-10-29 from Garage and 2026-10-31 from B2; shared Postgres restore tested 2026-11-06 from B2; others from docs/memory; VPS read from Dokploy recon 2026-10-26)"
 hosts:
   - XCP-ng host
   - TrueNAS VM
@@ -49,7 +49,24 @@ test").
   Restore tested 2026-10-29 from Garage (`journal/2026-10-29-restore-test-openbao.md`)
   and 2026-10-31 from Backblaze B2 (`journal/2026-10-31-restore-test-openbao-b2.md`).
 
-All of the above except the remote VPS and OpenBao lines is what the docs say
+Read live on 2026-11-14 (Xen Orchestra's REST API, the TrueNAS API, the Nextcloud backup container's log):
+
+- Xen Orchestra has two VM backup jobs over the same six running VMs (NPM-set,
+  adguard-docker, apt-cache, gpu_docker, portainer instance, xo-ce): **Rolling**,
+  snapshots only, daily at 00:00, 7 kept; and **mainback**, a delta backup to one
+  backup location, daily at 06:00 (where that location is was not read: the REST
+  API does not list it). mainback has 363 runs since 2025-08-27: 212 succeeded,
+  131 failed, 20 were interrupted; the latest runs succeeded. A third job, "XO
+  config and pool data", ran 105 times, all successful. **The TrueNAS VM is in
+  no job**, and neither is any stopped VM.
+- Nextcloud AIO backs itself up with Borg every night at 22:00 to BorgWarehouse
+  on TrueNAS, keeping everything from the last 7 days plus 4 weekly and 6 monthly
+  archives; the last run, 2026-11-13, succeeded (73 GB, 59 GB stored after
+  deduplication across all archives).
+- TrueNAS snapshots and the `imp/back` to `Main/repli` replica: `systems/truenas.md`.
+  Both last ran 2026-10-30.
+
+All of the above except the remote VPS, OpenBao and 2026-11-14 lines is what the docs say
 is configured; nobody has compared it to the live XO schedules yet. The VPS apps
 line was read from Dokploy, and the OpenBao backup and restore were tested on
 2026-10-29 (Garage) and 2026-10-31 (Backblaze B2).

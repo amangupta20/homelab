@@ -70,6 +70,21 @@ Which tool does the per-app volume backups is checked in B3: Arcane, if it can;
 otherwise a backup container per stack such as `offen/docker-volume-backup`
 (stops the app, uploads to Garage over S3, prunes; **UNTESTED**, from memory).
 
+Checks for particular apps, done when each one moves:
+
+- **Nextcloud All-in-One is an exception.** Its master container creates and manages
+  the rest itself, including its own Postgres and its Borg backups, so Arcane deploys
+  only the master container. Its data folder is a host path (`NEXTCLOUD_DATADIR`), so
+  the Nextcloud dataset is mounted over NFS on the VM itself, not as a Docker volume.
+  A plain Nextcloud stack on the shared Postgres is the alternative; it gives up
+  AIO's backups.
+- **Immich's database needs a vector-search extension** (VectorChord). Before Immich
+  moves to the shared cluster, check that Pigsty ships the version Immich needs;
+  otherwise Immich keeps its bundled Postgres in a local volume.
+- **Database and files restored to the same moment.** For an app split between
+  Postgres and a dataset, its restore test restores both to matching times. Immich
+  makes this easy: its database dump lands inside the library folder.
+
 ### Datasets
 
 Grouped by how much they matter, so one recursive snapshot task and one
@@ -114,8 +129,10 @@ Rules:
 
 - **`docker-1`** (new) for most apps, and **`gpu-1`** (new) for apps that need the
   GPU (Jellyfin transcoding, AI). Both are built from this repo: OpenTofu for the VM,
-  cloud-init for the first key, Ansible for the rest. No VM backups once every app
-  on them has a tested data restore.
+  cloud-init for the first key, Ansible for the rest. Their local volumes are backed
+  up per app; until each of those restores has been tested, `docker-1` also keeps a
+  low-frequency Xen Orchestra delta backup. VM backups end once every app on a VM has
+  a tested data restore.
 - **GPU cutover:** a passed-through GPU can be attached to one running VM only. Once
   the non-GPU apps have moved, shut down the old GPU VM, attach the GPU to `gpu-1`,
   start it. Rollback is the reverse. The old VM stays powered off until the owner is
@@ -132,6 +149,8 @@ Rules:
   give containers secrets from OpenBao and back up volumes; if it cannot read OpenBao,
   a sidecar writing `/run/secrets` does (`decisions/open-questions.md`, "Container
   runtime").
+- **Accepted risk:** TrueNAS and the Docker VMs share one physical host, so a
+  hardware failure stops everything at home at once.
 - **TrueNAS does storage only:** Garage and the backup jobs stay on it; every other
   TrueNAS app moves to `docker-1`. Garage's metadata stays on local disk, never NFS.
 
@@ -163,6 +182,20 @@ Expected, **UNTESTED**:
   demotes it (about 30 seconds by default, from memory) and the VPS takes over: two
   role changes for a 2-minute blip.
 
+The owner prefers the VPS as primary and home as the failover (2026-11-14): home
+outages then only touch home apps, and the VPS side can be upgraded with home as the
+fallback. Two limits, from the cluster layout in `plans/shared-postgres.md`:
+
+- **Planned VPS work starts with a switchover.** Before upgrading `pigsty-1`, move
+  the primary home with `patronictl switchover`, which waits for the replica to catch
+  up and loses nothing; move it back afterwards. An unplanned failover with
+  asynchronous replication can lose the last seconds of writes.
+- **Home cannot take over if both Oracle machines are down.** The etcd votes are
+  `pigsty-1`, the home node and a tiebreaker on the Dokploy VPS. Losing one Oracle
+  machine leaves two of three and home can become primary; losing both — an Oracle
+  region or account problem, or working on both at once — leaves home alone with no
+  primary anywhere. Never work on `pigsty-1` and the Dokploy VPS at the same time.
+
 D1 tests this before any app with a database moves.
 
 ## Steps
@@ -193,7 +226,11 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
 
 1. **Storage layout:** free space on `Main` (prune Garage's old backups, remove
    `iocage`), create the dataset tree, snapshot and replication tasks per group,
-   NFS defaults. — gate: a test dataset is snapshotted, copied and browsable.
+   NFS defaults. Moving data into a different dataset is a copy, not a rename, so it
+   briefly takes double space: move one folder at a time and delete the source after
+   each (`imp` has about 455 GiB free). The owner expects the finished layout to use
+   less space than today's, since each dataset gets one backup method instead of
+   several copies. — gate: a test dataset is snapshotted, copied and browsable.
 2. **`docker-1`** from OpenTofu and Ansible, with the NAS wait, the reconcile timer
    and the boot order. — gate: rebooting TrueNAS, and cold-booting the whole host,
    each bring a test container on NFS back without help.

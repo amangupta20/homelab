@@ -1,0 +1,136 @@
+# The out-of-band box: a Raspberry Pi that is a second way into the home LAN, on its
+# own Tailscale account so a mistake in the main tailnet cannot lock the owner out.
+# See systems/oob.md. Run from ansible/:
+#
+#   ansible-playbook oob.yml --check --diff     # read this first
+#   TS_AUTHKEY=<from OpenBao, or unset> ansible-playbook oob.yml
+#
+# Without TS_AUTHKEY the Tailscale login is skipped; log in once by hand instead
+# (systems/oob.md, "Rebuild").
+- name: Out-of-band box
+  hosts: oob
+  become: true
+  vars:
+    home_subnet: "10.22.33.0/24"
+    tailscale_port: 41641
+  tasks:
+    # The break-glass key works when OpenBao or the main tailnet does not. The
+    # workstation key is the daily one until the SSH certificate authority exists.
+    - name: Allow only the break-glass and workstation keys
+      ansible.posix.authorized_key:
+        user: "{{ ansible_user }}"
+        key: "{{ lookup('file', 'files/breakglass.pub') }}\n{{ lookup('file', 'files/workstation.pub') }}"
+        exclusive: true
+
+    - name: Keys only, no root login over SSH
+      ansible.builtin.copy:
+        dest: /etc/ssh/sshd_config.d/10-hardening.conf
+        content: |
+          PasswordAuthentication no
+          KbdInteractiveAuthentication no
+          PermitRootLogin no
+        mode: "0644"
+        validate: sshd -t -f %s
+      notify: Reload sshd
+
+    - name: Install the firewall and automatic security updates
+      ansible.builtin.apt:
+        name: [nftables, unattended-upgrades, python3-debian]
+        update_cache: true
+        cache_valid_time: 3600
+
+    # Input: SSH and Tailscale only. Forward: only to and from the tailnet, which is
+    # what makes the subnet route work. Tailscale adds its own chains next to these.
+    - name: Firewall rules
+      ansible.builtin.copy:
+        dest: /etc/nftables.conf
+        content: |
+          #!/usr/sbin/nft -f
+          flush ruleset
+          table inet filter {
+            chain input {
+              type filter hook input priority filter; policy drop;
+              iif lo accept
+              ct state established,related accept
+              meta l4proto { icmp, ipv6-icmp } accept
+              tcp dport 22 accept
+              udp dport {{ tailscale_port }} accept
+              iifname "tailscale0" accept
+            }
+            chain forward {
+              type filter hook forward priority filter; policy drop;
+              ct state established,related accept
+              iifname "tailscale0" accept
+            }
+          }
+        mode: "0755"
+        validate: nft -c -f %s
+      notify: Load firewall
+
+    - name: Start the firewall at boot
+      ansible.builtin.systemd_service:
+        name: nftables
+        enabled: true
+        state: started
+
+    - name: Forward packets, for the subnet route
+      ansible.posix.sysctl:
+        name: "{{ item }}"
+        value: "1"
+        sysctl_file: /etc/sysctl.d/90-tailscale.conf
+      loop: [net.ipv4.ip_forward, net.ipv6.conf.all.forwarding]
+
+    - name: Tailscale package signing key
+      ansible.builtin.get_url:
+        url: "https://pkgs.tailscale.com/stable/debian/{{ ansible_facts['distribution_release'] }}.noarmor.gpg"
+        dest: /usr/share/keyrings/tailscale-archive-keyring.gpg
+        mode: "0644"
+
+    - name: Tailscale package repository
+      ansible.builtin.deb822_repository:
+        name: tailscale
+        uris: https://pkgs.tailscale.com/stable/debian
+        suites: "{{ ansible_facts['distribution_release'] }}"
+        components: main
+        signed_by: /usr/share/keyrings/tailscale-archive-keyring.gpg
+
+    - name: Install Tailscale
+      ansible.builtin.apt:
+        name: tailscale
+        update_cache: true
+      # In --check the repository above is never added, so the package cannot be found.
+      ignore_errors: "{{ ansible_check_mode }}"
+
+    - name: Read Tailscale's state
+      ansible.builtin.command: tailscale status --json
+      register: ts_status
+      changed_when: false
+      failed_when: false
+      check_mode: false
+
+    - name: Log in to the out-of-band tailnet
+      ansible.builtin.command: >-
+        tailscale up --auth-key={{ lookup('env', 'TS_AUTHKEY') }}
+        --advertise-routes={{ home_subnet }} --hostname={{ inventory_hostname }}
+      no_log: true
+      when:
+        - ts_status.rc == 0
+        - (ts_status.stdout | from_json).BackendState | default('') == 'NeedsLogin'
+        - lookup('env', 'TS_AUTHKEY') | length > 0
+
+    # Repeats the route on every run, so a manual login keeps it too.
+    - name: Advertise the home subnet
+      ansible.builtin.command: tailscale set --advertise-routes={{ home_subnet }}
+      when:
+        - ts_status.rc == 0
+        - (ts_status.stdout | from_json).BackendState | default('') == 'Running'
+      changed_when: false
+
+  handlers:
+    - name: Reload sshd
+      ansible.builtin.systemd_service:
+        name: ssh
+        state: reloaded
+
+    - name: Load firewall
+      ansible.builtin.command: nft -f /etc/nftables.conf

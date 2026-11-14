@@ -8,6 +8,15 @@ has its own playbooks and `pigsty.yml`, and runs after `base.yml`
 **Status:** `base.yml` ran against `pigsty-1` on 2026-11-06. A second run changed
 nothing, and its firewall rule survived a reboot.
 
+## Playbooks
+
+- `base.yml` — Oracle Cloud machines (group `oci`): opens Tailscale's port in the
+  image's own firewall and removes unused packages.
+- `oob.yml` — the out-of-band Raspberry Pi (group `oob`, `systems/oob.md`). First ran
+  on 2026-11-14; a second run changed nothing, and its settings survived a power cycle.
+  The Pi is not a tailnet machine of the main account, so it is reached by its LAN
+  address, from outside through the router's subnet route.
+
 ## Use
 
 Run from this folder on a machine on the tailnet. `mise install` provides Ansible.
@@ -30,9 +39,11 @@ running the playbook; that was done once, for HAProxy's, with
 
 ## Rules
 
-- The inventory holds short names only, so the tailnet's name and addresses stay out
-  of this public repo.
+- The inventory names tailnet machines by short name only, so the tailnet's name and
+  addresses stay out of this public repo. LAN machines use their LAN address
+  (`inventory/network.md`).
 - No secrets in this folder. Anything secret is read from OpenBao when it runs.
-- SSH keys stay on the machine that runs this. `~/.ssh/pigsty` exists only on the
+- Private SSH keys stay on the machine that runs this; the public keys the
+  playbooks install are in `files/`. `~/.ssh/pigsty` exists only on the
   owner's workstation (created 2026-11-06, no passphrase, no copy).
 - CI does not check this folder yet.

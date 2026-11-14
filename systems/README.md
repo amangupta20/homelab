@@ -59,4 +59,5 @@ tags:
 - `vps.md` — the remote VPS, Dokploy, and what goes there.
 - `openbao.md` — the secret store: where secrets live and how they are read.
 - `oob.md` — the Raspberry Pi that is a second way into the home LAN, on its own tailnet.
+- `truenas.md` — the storage VM: disks, pools, shares, snapshots, replication and its apps.
 - `router.md` — the home router (OpenWrt on a Jio indoor unit), its Wi-Fi settings and the serial-only recovery.

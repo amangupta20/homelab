@@ -32,6 +32,7 @@ An app that gets ruled out keeps its row, with the reason in "Waits on / notes",
 | [Blinko](https://github.com/blinkospace/blinko) | Self-hosted AI note-taking app focused on privacy. Runs on Docker; "postgres" is one of its repo tags, but the README doesn't say what database it needs. | migration |
 | [Floci](https://github.com/floci-io/floci) | Local AWS emulator for development, testing and CI: no account or auth token, and it presents itself as a drop-in replacement for LocalStack. Has an arm64 image. | later; owner, 2026-11-06 |
 | [DashBeam](https://github.com/tonyantony300/dashbeam) | Peer-to-peer encrypted file transfer between devices (desktop, Android, CLI, browser), with no cloud storage and no accounts. Its relay and discovery servers are the only parts you can self-host (documented in the repo's `infra` folder). | migration; check whether a self-hosted relay is worth running |
+| Streaming from TorBox: Remux, Rex, Polyfin, Decypharr, Ether, Gelato, TorBox Media Center | Ways to play debrid content through a self-hosted server with nothing stored. | researched, with verdicts: [debrid-streaming.md](debrid-streaming.md) |
 
 ## Sources
 

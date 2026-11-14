@@ -19,7 +19,7 @@ tags:
 **Status:** in progress. Pigsty runs on `pigsty-1` since 2026-11-06
 (`journal/2026-11-06-install-pigsty.md`). The restore and alert drills passed, and Blinko runs on it as a test
 (`journal/2026-11-07-deploy-blinko.md`). No app has migrated to it.
-Part of the migration (`plans/migration.md`), and comes before it: each app's
+Part of the migration (`plans/home-overhaul.md`), and comes before it: each app's
 database target shapes how it is migrated. The owner chose the topology on
 2026-11-01 ("Topology", below) and how phase 1 starts on 2026-11-06 ("Phase 1,
 as decided"). The app questions wait until step 5 ("Decide before step 5").
@@ -433,5 +433,5 @@ against a bill).
 
 ## Links
 
-`plans/migration.md`, `decisions/backup-tiers.md`, `systems/backups.md`,
+`plans/home-overhaul.md`, `decisions/backup-tiers.md`, `systems/backups.md`,
 `systems/openbao.md`, `ideas/multi-site-postgres.md`.

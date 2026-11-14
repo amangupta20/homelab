@@ -31,7 +31,7 @@ Each app folder holds:
 - CI runs `docker compose config` on every compose file here
   (`decisions/pull-request-gate.md`).
 - Moving a stack in is a plan, not a drive-by: old copy keeps running until
-  the new one is healthy (`plans/migration.md`).
+  the new one is healthy (`plans/home-overhaul.md`).
 
 ## Apps
 

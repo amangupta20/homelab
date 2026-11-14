@@ -64,6 +64,9 @@ owner file, and is deleted from this list.
 
 - Portainer replacement: Arcane is the likely candidate, Komodo the
   alternative. Nothing chosen or tested.
+  Owner, 2026-11-14: Arcane, checked in step B3 of `plans/home-overhaul.md`
+  (git deploys, OpenBao secrets, volume backups). The item stays for the owner
+  to close.
 - Does the chosen manager read OpenBao natively?
 - Which of the three-year-old stacks are worth migrating, and which get retired?
 
@@ -172,6 +175,15 @@ owner file, and is deleted from this list.
   refresh, and PR 31 was the first B2 run
   (`journal/2026-11-03-prime-reviewer-b2-migration.md`). Left for the owner
   to close.
+
+## Home VMs (recon 2026-11-14)
+
+- The docs disagree with the live lab about the "Docker + proxy host". `inventory/hosts.md`,
+  `inventory/network.md` (`.254`) and `inventory/services.md` (Nginx Proxy Manager, apt cache)
+  put the proxy and the apt cache together on one Docker host at `.254`. Live on 2026-11-14:
+  `.254` is the VM `apt-cache`, with apt-cacher-ng and no Docker (SSH); Nginx Proxy Manager runs
+  on `NPM-set` at `.99` (Portainer API, SSH). Those rows are left as they were for the owner to
+  settle.
 
 ## Edge and security layers (on hold until the Pangolin decision)
 

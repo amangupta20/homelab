@@ -73,6 +73,18 @@ Read on 2026-11-14 over SSH unless a line says otherwise.
 - **Reboot:** after a power cycle the firewall, Tailscale and the route came
   back without help (checked 2026-11-14).
 
+## Why these keys
+
+- **Not keys published on GitHub.** Syncing `authorized_keys` from
+  `github.com/<user>.keys` was considered and dropped (2026-11-14): a key added to
+  GitHub also logs in to the GitHub account, and GitHub would then decide which keys
+  every machine accepts.
+- **Break-glass key** for the machines that must work when everything else is broken
+  (this Pi, later the router), with an offline copy kept by the owner.
+- **Later:** short-lived SSH certificates from OpenBao's SSH secrets engine for daily
+  use (not set up). The break-glass key stays, because OpenBao runs on the VPS and is
+  reached over the main tailnet — exactly what may be down when this box is needed.
+
 ## Using it
 
 On a laptop or phone, switch the Tailscale client to the second account, then

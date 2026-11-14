@@ -57,6 +57,20 @@ Its encryption passphrase is kept in OpenBao only, an exception to rule 2 below 
 5. **The restore rule still applies.** A tier counts only after a test restore
    from it (`systems/backups.md`, "The rule").
 
+## Proposed change, 2026-11-14 (not in force until the owner approves)
+
+From `plans/home-overhaul.md`, "Design". Tier 1 is no longer always Garage:
+
+- **Data in a ZFS dataset on TrueNAS:** tier 1 is ZFS snapshots plus either the
+  app's own backup tool writing to the other disk (Nextcloud's Borg to
+  BorgWarehouse) or a ZFS copy on the other disk. One of the two, never both.
+- **Garage stays tier 1** for the VPS, for apps' local Docker volumes and for
+  pgBackRest.
+- **Tier 2 from a Borg repository:** for an app whose only capture is its own
+  Borg backup, the offsite copy is that repository copied to B2 after a
+  `borg check`. That is copying from tier 1, which the pattern above rules out;
+  the check limits the risk of carrying a damaged repository offsite.
+
 ## Cost / what this rules out
 
 - Two backup paths per tier-2 service to schedule, watch and test.

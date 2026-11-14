@@ -296,9 +296,11 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
    — gate: `Main/repli`'s newest snapshot is from after 2026-11-14 and matches
    `imp/back`'s. The 2026-10-30 copy was stale on 2026-11-14; the daily 19:00
    snapshot and replication should bring it current.
-4. **Nextcloud recovered.** The owner restored the 2026-11-13 22:07 UTC backup on
-   2026-11-14 and keeps its containers stopped until it moves (owner). AIO's nightly
-   job runs at 22:00 UTC. Before Nextcloud starts again, `custom_apps/files_archive`
+4. **Nextcloud recovered.** Parked on 2026-11-14 until it moves (owner): containers
+   stopped, and AIO's daily backup turned off, because AIO's nightly job (22:00 UTC)
+   starts all containers after its backup. A Borg integrity check of all ten archives
+   passed the same day; the restore from the 2026-11-13 22:07 UTC archive is done when
+   it moves, and the daily backup turned back on then. Before Nextcloud starts again, `custom_apps/files_archive`
    must be moved out of its volume: AIO always starts its newest image, which repeats
    the upgrade to Nextcloud 35 that this app broke. — gate: Nextcloud answers on
    Nextcloud 35, and the next nightly backup succeeds.

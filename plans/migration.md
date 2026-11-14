@@ -1,6 +1,6 @@
 ---
 type: plan
-status: "in progress"
+status: "replaced by plans/home-overhaul.md"
 verified: "no (current step unrecorded; restore tests open in systems/backups.md)"
 hosts:
   - XCP-ng host
@@ -15,8 +15,8 @@ tags:
 
 The current migration, in order. Each step gates the next.
 
-**Status:** in progress — the current step is not recorded. Step 0's restore
-tests are all still open in `systems/backups.md`.
+**Status:** replaced by `plans/home-overhaul.md` on 2026-11-14 (owner). Kept as
+history; do not work from this page.
 **Goal** (proposed, owner to confirm): move every workload onto the new setup
 without losing data, with each one's definition in this repo.
 **Done when** (proposed, owner to confirm): every workload runs on the new

@@ -89,5 +89,5 @@ Read from the NetBox repositories on 2026-11-05 unless marked otherwise.
 - `inventory/network.md`, `inventory/services.md` — what NetBox would be fed
   from or replace
 - `plans/shared-postgres.md` — possible home for its database
-- `plans/migration.md` — the Portainer replacement would change the sync's
+- `plans/home-overhaul.md` — the Portainer replacement would change the sync's
   container source

@@ -81,4 +81,4 @@ Why this order and why on the VPS: `decisions/foundations-on-vps.md`.
 ## Links
 
 `systems/vps.md`, `systems/openbao.md`, `decisions/vps-role.md`,
-`decisions/foundations-on-vps.md`, `plans/migration.md` (the homelab side).
+`decisions/foundations-on-vps.md`, `plans/home-overhaul.md` (the homelab side).

@@ -86,4 +86,4 @@ Where it actually stands (October 2026):
   stacks live only in Portainer, nothing configures a VM after first boot.
 
 Migration in progress. Rule: no migration writes until snapshots are verified.
-See `plans/migration.md`.
+See `plans/home-overhaul.md`.

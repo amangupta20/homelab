@@ -275,6 +275,28 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
 
 ### B. Before the first internal app moves
 
+0. **Agent VM** (`agent-1`), the first VM built the new way. It is the cheapest place to
+   make the VM-from-code pipeline work (OpenTofu through Xen Orchestra, cloud-init for
+   the first key, Ansible for the rest) before `docker-1` and `gpu-1` depend on it, and
+   it lets agents work in the lab around the clock instead of on the owner's laptop.
+   - **Runs** (owner, 2026-11-14): Claude Code, Codex, opencode, Hermes and pi/omp,
+     mostly as Orca workers; the owner drops the ones he stops using. Orca reaches it as
+     a connected server, so workers start there from the owner's Orca. Docker for
+     agents' test containers.
+   - **Size** (proposed): 4 CPUs, 8 GB RAM, about 80 GB on the `Nvme` repository. The
+     running VMs take about 22 GB of the host's 40 GB.
+   - **Network:** on the main tailnet with its own tag (for example `tag:agent`) and
+     rules in `homelab-private`'s access policy, so it reaches what its rules allow.
+   - **Access** follows `decisions/agent-access.md`: convenient by default, with its own
+     OpenBao policy that holds **no credential able to delete or overwrite backups**
+     (no deleting Garage or B2 keys, nothing that writes to BorgWarehouse or the Xen
+     Orchestra backup location), and no deleting or merging XCP-ng snapshots by hand.
+   - **Holds no data worth backing up:** rebuilt from the repo; agents' work lives in
+     git and in Hindsight.
+   — gate: the VM is created by `tofu apply` and configured by Ansible from this repo;
+   a second Ansible run changes nothing; an Orca worker started on it from the owner's
+   Orca finishes a read-only task; its OpenBao token is refused when it asks for a
+   backup credential.
 1. **Clean-up and storage layout:** the owner decides, item by item, what goes: the
    stopped containers and stacks on `gpu_docker` and the Portainer host, the six
    stopped VMs, the offline Portainer hosts, leftover Docker volumes. Then free space
@@ -365,6 +387,7 @@ move before its public route exists.
 - Whether to keep BorgWarehouse once restic or Kopia handle offsite copies.
 - The change to `decisions/backup-tiers.md` this design needs (proposed separately).
 - How to recover Nextcloud (A4).
+- The agent VM's size and tag (B0).
 - What the clean-up removes (B1).
 - The "Docker + proxy host" rows that disagree with the live lab
   (`decisions/open-questions.md`, "Home VMs").

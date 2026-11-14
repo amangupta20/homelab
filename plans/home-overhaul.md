@@ -282,17 +282,26 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
    - **Runs** (owner, 2026-11-14): Claude Code, Codex, opencode, Hermes and pi/omp,
      mostly as Orca workers; the owner drops the ones he stops using. Orca reaches it as
      a connected server, so workers start there from the owner's Orca. Docker for
-     agents' test containers.
-   - **Size** (proposed): 4 CPUs, 8 GB RAM, about 80 GB on the `Nvme` repository. The
-     running VMs take about 22 GB of the host's 40 GB.
+     agents' test containers. It is also the owner's general development machine for
+     AI-assisted work, including loops left running overnight, until his other project
+     is up (owner, 2026-11-14). Long runs follow the owner's rule for jobs over 25
+     minutes: an independent scheduled check, which this VM can host with systemd
+     timers.
+   - **Size:** memory static range 1–8 GB with dynamic memory 1–4 GB to start; the
+     owner raises the dynamic maximum when needed, which XCP-ng allows while the VM runs,
+     up to the static maximum (raising the static maximum needs a restart). 4 CPUs and
+     about 80 GB on the `Nvme` repository (proposed). The running VMs take about 22 GB
+     of the host's 40 GB.
    - **Network:** on the main tailnet with its own tag (for example `tag:agent`) and
      rules in `homelab-private`'s access policy, so it reaches what its rules allow.
    - **Access** follows `decisions/agent-access.md`: convenient by default, with its own
      OpenBao policy that holds **no credential able to delete or overwrite backups**
      (no deleting Garage or B2 keys, nothing that writes to BorgWarehouse or the Xen
      Orchestra backup location), and no deleting or merging XCP-ng snapshots by hand.
-   - **Holds no data worth backing up:** rebuilt from the repo; agents' work lives in
-     git and in Hindsight.
+   - **Backups:** the machine is rebuilt from the repo, but as a development machine
+     its home folder holds work in progress and the harnesses' logins, so it is backed
+     up: a low-frequency Xen Orchestra delta backup to start, or the home folder to
+     Garage. Its harness logins are credentials, so the backup is treated like one.
    — gate: the VM is created by `tofu apply` and configured by Ansible from this repo;
    a second Ansible run changes nothing; an Orca worker started on it from the owner's
    Orca finishes a read-only task; its OpenBao token is refused when it asks for a

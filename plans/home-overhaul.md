@@ -1,7 +1,7 @@
 ---
 type: plan
-status: "in progress (A1 done, A2 next)"
-verified: "partially (A1 verified 2026-11-14; storage figures from the owner's TrueNAS screenshots 2026-11-14, not yet read by an agent)"
+status: "in progress (A1 and A2 done, A3 waits on the next replication run)"
+verified: "partially (A1 verified 2026-11-14; A2 read live 2026-11-14 through the Xen Orchestra, TrueNAS and Portainer APIs and SSH)"
 hosts:
   - XCP-ng host
   - TrueNAS VM
@@ -15,8 +15,8 @@ tags:
 # Home overhaul
 
 **Status:** in progress — A1 done 2026-11-14 (`systems/oob.md`); A2, the read-only
-check of TrueNAS and the GPU VM, is next. Replaces `plans/migration.md`
-(owner, 2026-11-14).
+recon, done 2026-11-14 (facts in `inventory/` and `systems/truenas.md`); A3 waits on
+the next replication run. Replaces `plans/migration.md` (owner, 2026-11-14).
 
 **Goal:** move every home workload to a setup where each app's data has one known
 place and one known backup method, app definitions live in this repo and deploy
@@ -25,7 +25,8 @@ one app at a time, not another overhaul.
 
 **Done when:** every home app runs from `apps/homeserver/<app>/` on `docker-1` or `gpu-1`
 with a tested restore of its data; public apps go through Pangolin; the old GPU VM,
-the SMB-mount setup, the 500-second start delay and Portainer are gone; and the
+the SMB-mount setup, the start-up sleeps (300 s before the mounts, 320 s before
+Docker) and Portainer are gone; and the
 re-hardening pass (step 3 of the old plan) has a journal entry.
 
 Decisions on this page are the owner's, made in conversation on 2026-11-14, unless a
@@ -33,23 +34,50 @@ line says otherwise. Anything marked **UNTESTED** has not been run here.
 
 ## Where things stand (2026-11-14)
 
-From the owner's TrueNAS screenshots (Datasets and Data Protection pages), not yet
-read by an agent:
+Read live on 2026-11-14; the details are in their owner files (`inventory/hosts.md`,
+`inventory/services.md`, `systems/truenas.md`, `systems/backups.md`).
 
-| Pool | Disk | Used / free | Datasets |
+**Machines.** Seven VMs run on the XCP-ng host: TrueNAS, `gpu_docker` (most apps),
+`portainer instance`, `NPM-set`, `adguard-docker`, `apt-cache` and `xo-ce`. Six more
+are stopped (`Dokploy`, `Minecraft`, `arkserver`, `zorin os test`, two `XOA`). No VM
+has a start order or delay in XCP-ng, which is why `gpu_docker` sleeps before
+mounting its shares and again before starting Docker.
+
+**Storage.** TrueNAS gets the 1 TB and 2 TB disks whole (XCP-ng `udev` passthrough).
+
+| Pool | Used / size | Datasets |
+|---|---|---|
+| `imp` (1 TB) | 0.43 / 0.91 TiB | `back` 431 GiB, `norm` 16 GiB, `ioapp` 9 GiB |
+| `Main` (2 TB) | 1.38 / 1.81 TiB (76%) | `home` 650 GiB, `repli` 413 GiB, `S3_Garage` 345 GiB, `borgwarehouse` 55 GiB, empty `iocage` |
+
+Snapshots and the `imp/back` to `Main/repli` replica last ran 2026-10-30; the
+Google Drive sync tasks were deleted by the owner on 2026-11-14.
+
+**Where each running app's data is today:**
+
+| App | Runs on | Data today | Backed up today |
 |---|---|---|---|
-| `imp` | 1 TB | 461 / 455 GiB | `back` 431 GiB (important: Nextcloud data, Immich library, personal files, more; SMB), `norm` 16 GiB (unimportant leftovers; SMB), `ioapp` 9 GiB (TrueNAS apps) |
-| `Main` | 2 TB | 1.61 TiB / 200 GiB (about 89% full) | `home` 793 GiB (normal data; SMB), `repli` 413 GiB (copy of `imp/back`), `S3_Garage` 385 GiB, `borgwarehouse` 55 GiB, `iocage` (empty, left from TrueNAS CORE), `Tnas-Config` |
+| Nextcloud AIO | `gpu_docker` | data folder on SMB `back/nextcloud`; its Postgres and config in local Docker volumes | its own Borg, nightly, to BorgWarehouse on `Main` |
+| Immich | `gpu_docker` | library on SMB `back/immich`; Postgres in a local folder | the library through `imp/back`'s snapshots and replica; the local Postgres folder only through Xen Orchestra's VM backup |
+| Jellyfin | `gpu_docker` | media on SMB `home/media`; config (2.9 GB) local | VM backup only for the config |
+| Homepage, MySpeed, Ollama | `gpu_docker` | local | VM backup |
+| Portainer, Uptime Kuma, wg-easy | `portainer instance` | local Docker volumes | VM backup |
+| Nginx Proxy Manager, Fail2Ban | `NPM-set` | local folders | VM backup |
+| AdGuard Home | `adguard-docker` | local volumes | VM backup |
+| apt-cacher-ng | `apt-cache` | local | VM backup |
+| Garage, BorgWarehouse | TrueNAS (apps) | `Main/S3_Garage`, `Main/borgwarehouse` | none of their own |
 
-- Periodic snapshots of `Main` and `imp/back` last ran 15 days before the screenshot,
-  and nothing warned anyone.
-- The three Google Drive cloud sync tasks mostly failed. The owner is deleting them
-  until offsite copies are set up properly (2026-11-14); the files already in Drive
-  stay.
-- The GPU VM mounts three SMB shares and bind-mounts folders from them into
-  containers; Docker starts after a fixed 500-second delay so the shares are up
-  (owner).
-- `Main` past about 80% full slows ZFS down and leaves the copies no room to grow.
+Paperless and Kavita keep files in `back` (`paperless`, `Books`) but have been
+stopped for over a year, like about 35 other containers on `gpu_docker` (the old
+Sonarr/Radarr stack, tdarr, wg-easy, drop-game and more) and a NetBox stack on the
+Portainer host. Portainer still lists three Docker hosts that are offline (the old
+Raspberry Pi, `coder`, `kasm`).
+
+**Nextcloud has been down since 2026-11-13 22:56 UTC.** Its nightly automatic update
+to Nextcloud 35 succeeded, then the third-party app `files_archive` failed its database
+migration ("Trait ... StorageIdTrait not found") and the container restarts in a
+loop. The Borg backup from 22:07–22:41 that night succeeded. The owner decides how
+to recover; it gets a journal entry.
 
 ## Design
 
@@ -137,6 +165,8 @@ Rules:
   the non-GPU apps have moved, shut down the old GPU VM, attach the GPU to `gpu-1`,
   start it. Rollback is the reverse. The old VM stays powered off until the owner is
   satisfied, then is deleted.
+- **Boot order in XCP-ng:** TrueNAS first, the Docker VMs after a delay; today no VM
+  has one.
 - **Start-up waits for the NAS instead of sleeping:** a systemd service that checks
   TrueNAS's NFS port until it answers (with a cap, about 15 minutes) runs before
   Docker; `hard` NFS mounts make running apps pause, not die, when TrueNAS reboots;
@@ -206,26 +236,28 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
 ### A. Before anything at home changes
 
 1. **A second way in.** Done 2026-11-14: `oob-1` (`systems/oob.md`).
-2. **Read-only check of TrueNAS and the GPU VM.** TrueNAS: version, whether the
-   disks are passed through to the VM (owner thinks so; verify), pools, datasets
-   and what `imp/back` and `Main/home` hold (sizes per top-level folder), shares,
-   snapshot and replication tasks with their last runs, the cloud sync logs, Garage
-   per bucket, TrueNAS apps. GPU VM: mounts, bind mounts, the start delay, every
-   stack with its volumes, where Jellyfin's media is. Write the facts into
-   `inventory/` and new `systems/` pages. — gate: every current app has a row
-   saying where its data is.
+2. **Read-only recon.** Done 2026-11-14 ("Where things stand"). Not read yet: the
+   size of each top-level folder in `back` and `home`, and Garage per bucket (needs
+   Garage's admin token); both are read in B1, before any data moves.
 3. **Safety net:** the live data, its copy in `Main/repli`, and the old Google Drive
    copy (owner, 2026-11-14). The new backups get a tested restore as each app moves.
-   — gate: `Main/repli`'s newest snapshot matches `imp/back`'s, checked in A2;
-   if it is stale, a replication run first.
-4. **Failures are seen:** TrueNAS alerts and backup jobs post to ntfy; a fresh Uptime
+   — gate: `Main/repli`'s newest snapshot is from after 2026-11-14 and matches
+   `imp/back`'s. The 2026-10-30 copy was stale on 2026-11-14; the daily 19:00
+   snapshot and replication should bring it current.
+4. **Nextcloud running again,** however the owner chooses to recover, with
+   `files_archive` disabled or updated before the next 22:00 update. — gate:
+   Nextcloud answers, and the next nightly backup succeeds.
+5. **Failures are seen:** TrueNAS alerts and backup jobs post to ntfy; a fresh Uptime
    Kuma on the VPS watches home from outside. — gate: a deliberately failed job
    reaches the owner's phone.
 
 ### B. Before the first internal app moves
 
-1. **Storage layout:** free space on `Main` (prune Garage's old backups, remove
-   `iocage`), create the dataset tree, snapshot and replication tasks per group,
+1. **Clean-up and storage layout:** the owner decides, item by item, what goes: the
+   stopped containers and stacks on `gpu_docker` and the Portainer host, the six
+   stopped VMs, the offline Portainer hosts, leftover Docker volumes. Then free space
+   on `Main` (prune Garage's old backups, remove `iocage`), read the folder sizes in
+   `back` and `home`, create the dataset tree, snapshot and replication tasks per group,
    NFS defaults. Moving data into a different dataset is a copy, not a rename, so it
    briefly takes double space: move one folder at a time and delete the source after
    each (`imp` has about 455 GiB free). The owner expects the finished layout to use
@@ -265,9 +297,18 @@ Postgres → the GPU cutover → Nextcloud and Immich last, because they are the
 and matter most. One app at a time; the old copy keeps running until the new one is
 healthy. Some stacks are three years old and may be retired instead.
 
+### Later: streaming from TorBox
+
+After the GPU cutover, try streaming from TorBox on `gpu-1` with nothing stored:
+Remux on its own; Decypharr feeding Remux (Sonarr/Radarr choose, Decypharr adds and
+exposes only those items, Remux reads them); and Rex, the one with seek-bar
+thumbnails. Compare start time, seeking, transcoding to a phone over Tailscale, and
+per-user libraries. Candidates and why: `ideas/apps-to-try.md`. — gate: the owner
+picks one, or keeps Jellyfin with local media.
+
 ### After the last app
 
-Remove the old GPU VM, Portainer, the SMB mounts and the start delay; turn off VM
+Remove the old GPU VM, Portainer, the SMB mounts and the start-up sleeps; turn off VM
 backups for VMs that hold no data; the re-hardening pass (an audit with its own
 journal entry).
 
@@ -288,9 +329,14 @@ move before its public route exists.
 - Badger or an Authentik outpost (C2).
 - Whether to keep BorgWarehouse once restic or Kopia handle offsite copies.
 - The change to `decisions/backup-tiers.md` this design needs (proposed separately).
+- How to recover Nextcloud (A4).
+- What the clean-up removes (B1).
+- The "Docker + proxy host" rows that disagree with the live lab
+  (`decisions/open-questions.md`, "Home VMs").
 
 ## Links
 
 `plans/shared-postgres.md`, `plans/vps-foundations.md`, `plans/sablier-wakeups.md`,
 `ideas/edge-and-security-layers.md`, `systems/backups.md`, `systems/oob.md`,
+`systems/truenas.md`, `ideas/apps-to-try.md`,
 `decisions/backup-tiers.md`.

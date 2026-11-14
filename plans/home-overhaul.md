@@ -109,6 +109,18 @@ Checks for particular apps, done when each one moves:
 - **Immich's database needs a vector-search extension** (VectorChord). Before Immich
   moves to the shared cluster, check that Pigsty ships the version Immich needs;
   otherwise Immich keeps its bundled Postgres in a local volume.
+- **Nextcloud's own settings when it moves** (owner, 2026-11-14): it leaves the GPU
+  VM for a VM with dynamic memory; ClamAV off (about 1 GB of RAM for little use
+  here); office suite decided then — none, or Euro-Office for Microsoft files,
+  instead of today's Collabora; the deprecated Docker Socket Proxy off unless an
+  ExApp needs it. Add two AIO community containers: **Borg Backup Viewer** (browse
+  and pull files from the Borg archives; helps restore tests) and, once central
+  monitoring exists, the **Prometheus Nextcloud Exporter**. Other apps stay out of
+  AIO's community containers and run as their own stacks. The owner's parents use
+  Nextcloud too, so its downtime and restore test matter.
+- **Immich and Nextcloud photos** (not decided): Immich can read a Nextcloud user's
+  photo folder as a read-only external library, and the third-party Nextcloud app
+  `integration_immich` shows the Immich library inside Nextcloud. Untested here.
 - **Database and files restored to the same moment.** For an app split between
   Postgres and a dataset, its restore test restores both to matching times. Immich
   makes this easy: its database dump lands inside the library folder.
@@ -156,7 +168,8 @@ Rules:
 ### Machines
 
 - **`docker-1`** (new) for most apps, and **`gpu-1`** (new) for apps that need the
-  GPU (Jellyfin transcoding, AI). Both are built from this repo: OpenTofu for the VM,
+  GPU (Jellyfin transcoding, Immich machine learning, AI) and nothing else (owner,
+  2026-11-14). Both are built from this repo: OpenTofu for the VM,
   cloud-init for the first key, Ansible for the rest. Their local volumes are backed
   up per app; until each of those restores has been tested, `docker-1` also keeps a
   low-frequency Xen Orchestra delta backup. VM backups end once every app on a VM has
@@ -244,9 +257,12 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
    — gate: `Main/repli`'s newest snapshot is from after 2026-11-14 and matches
    `imp/back`'s. The 2026-10-30 copy was stale on 2026-11-14; the daily 19:00
    snapshot and replication should bring it current.
-4. **Nextcloud running again,** however the owner chooses to recover, with
-   `files_archive` disabled or updated before the next 22:00 update. — gate:
-   Nextcloud answers, and the next nightly backup succeeds.
+4. **Nextcloud recovered.** The owner restored the 2026-11-13 22:07 UTC backup on
+   2026-11-14 and keeps its containers stopped until it moves (owner). AIO's nightly
+   job runs at 22:00 UTC. Before Nextcloud starts again, `custom_apps/files_archive`
+   must be moved out of its volume: AIO always starts its newest image, which repeats
+   the upgrade to Nextcloud 35 that this app broke. — gate: Nextcloud answers on
+   Nextcloud 35, and the next nightly backup succeeds.
 5. **Failures are seen:** TrueNAS alerts and backup jobs post to ntfy; a fresh Uptime
    Kuma on the VPS watches home from outside. — gate: a deliberately failed job
    reaches the owner's phone.

@@ -1,6 +1,6 @@
-# What every machine gets. Run from ansible/: ansible-playbook base.yml
+# What every Oracle Cloud machine gets. Run from ansible/: ansible-playbook base.yml
 - name: Base setup
-  hosts: all
+  hosts: oci
   become: true
   vars:
     tailscale_port: "41641"

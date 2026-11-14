@@ -65,6 +65,29 @@ Read on 2026-11-14 through the TrueNAS API (`system/info`, `disk`, `pool`,
   available. A cron job copies the apps' own folder (`/mnt/.ix-apps/`) into
   `imp/ioapp` with `rsync --delete`.
 
+## Mounting the shares on a Linux laptop
+
+**UNTESTED** recipe, given to the owner on 2026-11-14. The password goes in a root-only
+file, never in `/etc/fstab`:
+
+```bash
+sudo install -d -m 700 /etc/samba/credentials
+sudo install -m 600 /dev/stdin /etc/samba/credentials/nas <<'EOF2'
+username=<user>
+password=__PASTE_ONCE__
+EOF2
+sudo mkdir -p /mnt/nas/{back,norm,home}
+for s in back norm home; do
+  echo "//10.22.33.160/$s /mnt/nas/$s cifs credentials=/etc/samba/credentials/nas,uid=$(id -u),gid=$(id -g),vers=3.1.1,_netdev,nofail,noauto,x-systemd.automount,x-systemd.idle-timeout=10min,x-systemd.mount-timeout=15s 0 0" | sudo tee -a /etc/fstab
+done
+sudo systemctl daemon-reload
+```
+
+A share mounts on first access and unmounts when idle. Away from home it goes through
+the router's subnet route, which Linux ignores until `sudo tailscale set
+--accept-routes` has been run once. For a one-off: `gio mount smb://10.22.33.160/back`.
+The share names change when the datasets are reorganised (`plans/home-overhaul.md`, B1).
+
 ## Rules
 
 - **Never delete a snapshot on the XCP-ng side by hand** (`systems/xcp-ng.md`).

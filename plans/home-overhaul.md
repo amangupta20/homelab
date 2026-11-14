@@ -250,6 +250,12 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
 5. **Failures are seen:** TrueNAS alerts and backup jobs post to ntfy; a fresh Uptime
    Kuma on the VPS watches home from outside. — gate: a deliberately failed job
    reaches the owner's phone.
+6. **Disk health is watched:** `smartd` on the XCP-ng host checks both passed-through
+   hard disks and alerts to ntfy, because TrueNAS cannot read their SMART data
+   (`systems/truenas.md`). Both pools are single disks, so a failing disk must be seen
+   early. Later, these alerts and the hosts' metrics also go to a central monitoring
+   system (which one is open). — gate: `smartctl` results for both disks are recorded,
+   and a test alert reaches the owner's phone.
 
 ### B. Before the first internal app moves
 
@@ -296,6 +302,19 @@ Small internal apps → the rest of the internal apps → public apps → apps w
 Postgres → the GPU cutover → Nextcloud and Immich last, because they are the largest
 and matter most. One app at a time; the old copy keeps running until the new one is
 healthy. Some stacks are three years old and may be retired instead.
+
+### Later: a disk controller for TrueNAS
+
+TrueNAS gets each hard disk through XCP-ng's `udev` passthrough, so it sees no
+model, serial or SMART data. Passing a whole disk controller to TrueNAS fixes that.
+The motherboard's own SATA controller is ruled out (owner, 2026-11-14); the plan is
+an HBA card (for example a used LSI 9207-8i in IT mode), much later. Before buying
+one: check on the XCP-ng host which PCIe slot is free next to the GPU, and that the
+slot's IOMMU group holds nothing else, since XCP-ng cannot split groups. The switch
+itself: shut TrueNAS down after a fresh replica, remove the disks from the
+`Pass_Drives` repository, pass the card through; ZFS finds `imp` and `Main` by the IDs
+on the disks. **UNTESTED**. — gate: TrueNAS shows both disks with their serials and
+SMART data, and both pools are online.
 
 ### Later: streaming from TorBox
 

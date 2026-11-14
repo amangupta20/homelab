@@ -79,6 +79,45 @@ migration ("Trait ... StorageIdTrait not found") and the container restarts in a
 loop. The Borg backup from 22:07–22:41 that night succeeded. The owner decides how
 to recover; it gets a journal entry.
 
+## Why the old setup is being replaced, and what was turned down
+
+The owner's description, 2026-11-14, with what the recon confirmed:
+
+- **One blob per share.** The important data (`imp/back`), the normal data
+  (`Main/home`) and leftovers (`imp/norm`) are three large shares. A snapshot, a sync
+  or a mount is all-or-nothing, so one bad file or a cut upload failed the whole
+  Google Drive job, and two of the three Drive tasks failed most of the time.
+- **Mounts held together by sleeps.** The GPU VM mounts the shares from `/etc/fstab`
+  over SMB with `soft` mounts (a short NAS hiccup becomes a file error, not a pause),
+  a systemd unit waits 300 s before mounting, Docker waits 320 s more, and containers
+  bind-mount folders inside the shares.
+- **Nothing alerts.** Snapshots and the replica stopped for 15 days without anyone
+  being told.
+
+Turned down, and why (owner, 2026-11-14):
+
+- **restic for every dataset:** each app's own backup tool where it has one (Nextcloud's
+  Borg), a ZFS copy otherwise.
+- **A ZFS copy on top of an app's own backup:** two copies of the same data on `Main`
+  waste space; one method per dataset.
+- **A fresh B2 copy before migrating:** the safety net is the live data, the
+  `Main/repli` copy and the old Google Drive copy; backups are set up and restore-tested
+  as each app moves.
+- **NFS for every app:** only the large-data apps; small state stays in local Docker
+  volumes, where SQLite is safe and apps start without the NAS.
+- **Read-only browsing for everything:** write access is decided per app (Jellyfin's
+  media is writable).
+- **Passing the onboard SATA controller to TrueNAS:** ruled out; an HBA card later.
+- **Retention** in this design: critical datasets snapshotted daily and kept two weeks,
+  with one copy on the other disk; normal data daily, one week, no copy; scratch none.
+  Nextcloud's Borg keeps 7 days, 4 weeks and 6 months. The offsite tier follows
+  `decisions/backup-tiers.md`. Today's TrueNAS tasks already keep two weeks for
+  `imp/back` and one for `Main/home` (`systems/truenas.md`).
+
+How convenient versus how locked down: `decisions/agent-access.md` — convenient by
+default, with two hard guards (no agent credential can delete or overwrite backups; no
+manual XCP-ng snapshot deletion). Restore tests carry the weight that lockdown would.
+
 ## Design
 
 ### Where an app's data lives
@@ -369,7 +408,7 @@ After the GPU cutover, try streaming from TorBox on `gpu-1` with nothing stored:
 Remux on its own; Decypharr feeding Remux (Sonarr/Radarr choose, Decypharr adds and
 exposes only those items, Remux reads them); and Rex, the one with seek-bar
 thumbnails. Compare start time, seeking, transcoding to a phone over Tailscale, and
-per-user libraries. Candidates and why: `ideas/apps-to-try.md`. — gate: the owner
+per-user libraries. Candidates, verdicts and trade-offs: `ideas/debrid-streaming.md`. — gate: the owner
 picks one, or keeps Jellyfin with local media.
 
 ### After the last app
@@ -405,5 +444,5 @@ move before its public route exists.
 
 `plans/shared-postgres.md`, `plans/vps-foundations.md`, `plans/sablier-wakeups.md`,
 `ideas/edge-and-security-layers.md`, `systems/backups.md`, `systems/oob.md`,
-`systems/truenas.md`, `ideas/apps-to-try.md`,
+`systems/truenas.md`, `ideas/debrid-streaming.md`,
 `decisions/backup-tiers.md`.

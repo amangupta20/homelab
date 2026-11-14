@@ -78,3 +78,4 @@ tags:
 - `try-netbird.md` — try NetBird, a self-hostable mesh VPN with its own UI and relay, on the side of Tailscale, with what it would cost and when to migrate.
 - `llm-checked-updates.md` — every 3 days, an LLM reads available updates; clearly safe ones install, anything else waits for the owner, and every run is logged.
 - `apps-to-try.md` — backlog of apps the owner found and might self-host one day (Karakeep, Blinko, DashBeam), one line each; an entry gets its own page once researched.
+- `debrid-streaming.md` — streaming from TorBox through a self-hosted server with nothing stored: the owner's goals, candidates with verdicts, and the trade-offs (researched 2026-11-14).

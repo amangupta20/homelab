@@ -182,6 +182,20 @@ group waits on the first item.
   or keep the static IP and inbound forwards? If yes, on which VPS (an
   E2.1.Micro or the A1), and Option A (the edge Traefik with CrowdSec AppSec
   only) or Option B (plus BunkerWeb at home)?
+  Agent's note, 2026-11-14: the two sources disagree on the premise. The
+  Pangolin research (`ideas/edge-and-security-layers.md`, "Getting in",
+  from Hindsight 2026-07-19) assumes a paid static IP and inbound port
+  forwards at home. `systems/router.md` ("WAN", owner 2026-11-13) says the
+  ISP uses carrier-grade NAT and nothing is forwarded inward. If the second
+  is current, there is no static IP to keep, and a tunnel such as Pangolin
+  is the only way to publish anything from home. Which is true today?
+  Owner, 2026-11-14: carrier-grade NAT is true; that is why the home edge
+  moves from Nginx Proxy Manager to Pangolin. The item stays for the owner
+  to close.
+- DNS for the LAN and the tailnet: the Pi-hole on the Raspberry Pi was removed
+  on 2026-11-14 (`journal/2026-11-14-rebuild-oob-pi.md`); nothing used it.
+  Which resolver replaces it, and where it runs, is to be researched (owner,
+  2026-11-14).
 - The two-NPM split (public and private by listener), approved 2026-10-27, is
   back to research (owner, 2026-11-01). The home edge candidates are
   BunkerWeb, NPMplus, Caddy, Traefik or Pangolin's Traefik; the WAF engine

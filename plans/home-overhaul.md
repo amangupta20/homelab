@@ -55,12 +55,13 @@ read by an agent:
 
 ### Where an app's data lives
 
-Each kind of data an app has goes in one of two places:
+The rule is by app (owner, 2026-11-14):
 
-| Kind | Where | Backup |
+| App | Its data | Backup |
 |---|---|---|
-| Small app state: config, SQLite, caches worth keeping | a **local Docker volume** on the VM, the way Dokploy runs apps | a per-app volume backup to Garage (tier 1); B2 for the important ones |
-| Large data, data the owner browses or edits, data shared between apps | a **ZFS dataset** on TrueNAS, mounted into the container over NFS | ZFS snapshots, plus the app's own backup tool or a ZFS copy on the other disk |
+| **Large-data apps** — Immich, Nextcloud, Jellyfin | the big data (library, user files, media) in a **ZFS dataset** on TrueNAS over NFS; their small config in a local Docker volume | the dataset: ZFS snapshots plus the app's own backup tool or a ZFS copy on the other disk; the config: as below |
+| **Other stateful apps without Postgres** | everything in **local Docker volumes** on the VM, the way Dokploy runs apps | a per-app volume backup to Garage (tier 1); B2 for the important ones |
+| **Apps with Postgres** | the database in the shared cluster (below); anything else in local volumes | pgBackRest for the database; volumes as above |
 
 SQLite and other databases never go over NFS: SQLite's locking breaks on it.
 Postgres goes to the shared cluster (below).
@@ -77,7 +78,6 @@ protected the moment it is created:
 
 ```
 imp (1 TB) — live data
-  imp/apps/<app>      app state that must be on the NAS (rare)       critical
   imp/data/<name>     large important data: nextcloud, immich, ...   critical
   imp/files/<topic>   personal files, today's `back` split by content critical
   imp/scratch         today's `norm`                                 no backup

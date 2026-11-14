@@ -1,7 +1,7 @@
 ---
 type: inventory
 status: "documented, partially verified"
-verified: "partially (the router's own rows read over SSH 2026-11-13; other rows from docs)"
+verified: "partially (the router's own rows read over SSH 2026-11-13; oob-1 2026-11-14; other rows from docs)"
 tags:
   - inventory
   - network
@@ -24,6 +24,7 @@ Private subnet `10.22.33.0/24`, served by the Home router
 |---|---|---|
 | `.1` | Home router: gateway, DHCP, DNS | verified: `uci show network` over SSH 2026-11-13 |
 | `.100`–`.249` | DHCP pool, 12-hour leases | verified: `uci show dhcp` over SSH 2026-11-13 |
+| `.252` | oob-1, static, outside the DHCP pool (`systems/oob.md`) | verified: `ip -br a` over SSH 2026-11-14 |
 | `.254` | Docker + proxy host | in docs; an address answers here (`ip neigh` on the router 2026-11-13), which machine it is was not checked |
 | `.160` | TrueNAS VM | in docs; an address answers here (`ip neigh` on the router 2026-11-13), which machine it is was not checked |
 

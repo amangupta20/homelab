@@ -33,4 +33,4 @@ names, sizes and the unknowns.
 | adguard-docker | VM, 2 CPU / 0.6 GB, 20 GB disk | XCP-ng host | AdGuard Home | Debian 13 | running — verified: Xen Orchestra's REST API and SSH, 2026-11-14, Portainer API |
 | apt-cache | VM, 2 CPU / 1 GB, 40 GB disk | XCP-ng host | apt-cacher-ng on port 3142; no Docker | Debian 13 | running — verified: Xen Orchestra's REST API and SSH, 2026-11-14 |
 | Stopped VMs | `Dokploy` (5 CPU / 5 GB), `Minecraft` (6 / 10 GB), `arkserver` (6 / 24 GB), `zorin os test` (6 / 6 GB), two `XOA` (2 / 2 GB each) | XCP-ng host | not running; whether to keep each is open (`plans/home-overhaul.md`) | various | halted — verified: Xen Orchestra's REST API 2026-11-14 |
-| Agent VM | VM | XCP-ng host | runs the maintenance agent | — | planned |
+| Agent VM | VM `agent-1` (proposed 4 CPU / 8 GB) | XCP-ng host | runs coding and maintenance agents (Claude Code, Codex, opencode, Hermes, pi/omp), mostly as Orca workers (`plans/home-overhaul.md`, B0) | — | planned |

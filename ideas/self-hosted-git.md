@@ -263,6 +263,35 @@ Both take pushes from the main host and are never the only copy.
   two-site experiment. Web view, terminal UI, CLI and a desktop app; CI through a
   separate broker; Linux, macOS and BSD only.
 
+### Track 2b: the client side (jj and GitButler)
+
+Most of the polish people notice lives in the client, not the host: the flashy,
+widely used tools are review layers and clients on top of plain git. Both of these
+write ordinary git, so any host above accepts them.
+
+- **jj (Jujutsu)** (32.5k stars, v0.47.1 on 2026-11-05, checked): a replacement
+  for the `git` command that stores everything in git repos. No staging area,
+  every edit is a commit that can be reshaped, undo for everything, conflicts that
+  do not block. Forgejo does not understand jj's change IDs, so reworked PRs show
+  as force-pushes; Tangled does, and builds stacked pull requests on them
+  (Tangled blog, "Jujutsu on Tangled", 2025-06-02). Pre-1.0.
+- **GitButler** (22k stars, 0.23.4 on 2026-11-11, checked): a desktop client
+  (Tauri, Rust, Svelte) with virtual branches, several branches applied in one
+  working folder at once. Licence: Functional Source License 1.1, which turns into
+  MIT later (its `LICENSE.md`); source-available, not open source until then.
+
+Start with jj on the laptop: no infrastructure, and the repo stays a git repo, so
+agents and Orca keep working (to confirm when tried).
+
+### Track 2c: our own Tangled frontend
+
+Tangled's data is open: a read-only API (`api.tangled.org`, queried 2026-11-15)
+serves repositories, pull requests and comments; the knot serves git; writing a
+pull request or comment means writing a record to the owner's own PDS. A custom
+web frontend over those two APIs would show the whole Tangled network, and would
+be a project to show in its own right. An idea only; nothing checked beyond the
+read API answering.
+
 ### Later, for fun: two sites
 
 Git branches can sync both ways between home and the VPS (a hook pushes each

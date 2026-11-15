@@ -79,4 +79,4 @@ tags:
 - `llm-checked-updates.md` — every 3 days, an LLM reads available updates; clearly safe ones install, anything else waits for the owner, and every run is logged.
 - `apps-to-try.md` — backlog of apps the owner found and might self-host one day (Karakeep, Blinko, DashBeam), one line each; an entry gets its own page once researched.
 - `debrid-streaming.md` — streaming from TorBox through a self-hosted server with nothing stored: the owner's goals, candidates with verdicts, and the trade-offs (researched 2026-11-14).
-- `self-hosted-git.md` — our own git host as the daily driver, mirroring to GitHub; OneDev and Forgejo are the finalists from a survey of seventeen (researched 2026-11-15).
+- `self-hosted-git.md` — our own git host as the daily driver, mirroring to GitHub; OneDev, Harness Open Source, Forgejo, GitLab CE and Tangled are the ones to try, from a survey of seventeen (researched 2026-11-15).

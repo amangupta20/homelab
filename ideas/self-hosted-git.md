@@ -10,9 +10,9 @@ tags:
 
 # A self-hosted git host that mirrors to GitHub
 
-**Status:** researched (2026-11-15). Two finalists, OneDev and Forgejo, to be tried
-side by side; nothing is scheduled.
-**In one line:** run our own git host (repositories, pull requests, issues, CI) as
+**Status:** researched (2026-11-15). Five to try: OneDev, Forgejo, Harness Open
+Source, GitLab CE and Tangled; nothing is scheduled.
+**In one line:** run our own git host (repositories, pull requests, CI) as
 the daily driver, and have it push every change to GitHub, so the public and
 recruiters still see everything there.
 **Why try it:** GitHub's web UI has become slow and unreliable to work in. On
@@ -26,12 +26,18 @@ GitHub second.
 
 ## What the owner wants (2026-11-15)
 
-1. **Looks first.** A modern, polished UI that is fun to use matters more than
-   resource use; bloat is fine. The owner does not like GitLab's UI.
-2. Works as a daily driver: repositories, pull requests with a good review UI, CI,
-   issues.
-3. Pushes everything to GitHub automatically; GitHub stays the public face.
-4. Fun to run.
+1. **A nice-looking UI to explore everything in**: browsing code, history,
+   branches, pull requests and CI runs. This is the main requirement; resource use
+   and bloat do not matter.
+2. Pull requests with a good review UI, and CI hooks (webhooks or a pipeline) so
+   prime-reviewer and the checks can run. A complicated setup is fine.
+3. **No issue tracker needed**: the lab does not use issues.
+4. Pushes everything to GitHub; GitHub stays the public face. Mirroring through a
+   CI step or hook is acceptable.
+5. Fun to run.
+
+The owner first ruled GitLab out on its UI, then (same day) asked for it to stay
+on the list.
 
 ## Options and verdicts
 
@@ -40,21 +46,36 @@ and features come from the research reports (Sources) unless marked as checked.
 
 | Option | Looks (report score /10) | Mirror to GitHub | Verdict |
 |---|---|---|---|
-| **OneDev** | 9.5 | through a CI step, not a switch | **finalist**: richest UI, jump-to-symbol in code and review, boards, visual CI editor; mostly one maintainer. MIT; v17.2.0 on 2026-11-11 (checked) |
-| **Forgejo** | 5 stock, about 8.5 themed | one switch, pushes on every change | **finalist**: imports GitHub repos, issues and pull requests; CI runs GitHub Actions workflows nearly unchanged; non-profit governance. Plain until themed (Catppuccin has a maintained theme, checked) |
+| **OneDev** | 9.5 | through a CI step, not a switch | **try**: the best for exploring code: jump-to-symbol in the browser and in review, code search, visual CI editor; mostly one maintainer. MIT; v17.2.0 on 2026-11-11 (checked) |
+| **Harness Open Source** (was Gitness) | 9.0 | through a pipeline step; no built-in mirror per the reports | **try**: the slickest modern UI, Drone CI built in. It has no issue tracker (its issue #3373, "Issues", open since 2023, checked), which does not matter here. Apache-2.0 (checked) |
+| **Forgejo** | 5 stock, about 8.5 themed | one switch, pushes on every change | **try**: the easiest mirror; CI runs GitHub Actions workflows nearly unchanged; imports GitHub pull requests. Plain until themed (Catppuccin has a maintained theme, checked) |
+| **GitLab CE** | 6.5 | one switch | **try**: everything built in (CI, mirror, code navigation, web IDE); dense UI, the heaviest to run |
+| **Tangled** | 8.5 | hook on the knot, or a GitHub Action | **try, differently**: see below |
 | Gitea | 7.5 | one switch | same base as Forgejo, company-run; pick Forgejo over it unless Gitea's UI pulls clearly ahead. v28.3.0 on 2026-11-01 (checked) |
-| Harness Open Source (was Gitness) | 9.0 | no built-in mirror per the reports | **out**: the slickest UI, but it has no issue tracker (its issue #3373, "Issues", open since 2023, checked) |
-| Tangled | 8.5 | manual (hook or Action) | **wildcard**: a git host on Bluesky's AT Protocol; a strong resume talking point, young project |
 | Radicle | 8.0 | manual | **out as daily driver**: peer-to-peer, no built-in CI; interesting to run beside the main host |
 | GitRiver | 8.5 | unverified | **unknown**: a 2026 newcomer, open-core licence; site exists (checked), nothing else verified |
-| GitLab CE | 6.5 | one switch | **out**: the owner dislikes its UI |
 | Phorge, RhodeCode, Pagure, Kallithea, GitBucket, Gogs | 4–5.5 | mixed | **out**: dated UIs, or in maintenance mode |
 | Sourcehut | by design minimal | manual | **out**: email-driven, no-JavaScript by design |
 | Soft Serve | terminal only | manual | **out**: archived (checked) |
 
 The field is genuinely small. Most self-hostable git hosts are either Gitea-family,
-older projects with dated UIs, or experiments; only OneDev and Forgejo are both
-pleasant and complete for daily use today.
+older projects with dated UIs, or experiments.
+
+### Tangled works differently
+
+Tangled splits a git host in two (tangled.org blog "intro", read 2026-11-15; the
+split is also in the research reports):
+
+- **Knot**: the server that stores repositories and serves git over SSH and HTTPS.
+  This is what you self-host, on anything down to a Raspberry Pi. **Spindle** is
+  its optional CI runner.
+- **AppView**: the web UI. It runs on tangled.org and shows repositories from every
+  knot. Running your own AppView is experimental per the reports.
+
+So self-hosting Tangled means the code lives on our hardware and the UI lives at
+tangled.org under the owner's Bluesky handle. There is no web UI to install, which
+is likely why the owner found nothing when looking. It fails "our own instance
+linked first", but it is a strong talking point and could run beside the main host.
 
 ### AI-era git hosts (2026)
 
@@ -73,9 +94,10 @@ replace prime-reviewer.
 
 ## Design sketch
 
-- Run OneDev and Forgejo side by side for a weekend, each with one real repo
-  (this one) mirrored to a throwaway GitHub repo, and keep the one the owner
-  enjoys using.
+- Run OneDev, Harness Open Source, Forgejo (themed) and GitLab CE side by side for
+  a weekend, each with this repo imported and mirrored to a throwaway GitHub repo.
+  Judge on exploring code, history and a pull request; keep the one the owner
+  enjoys using. Put a Tangled knot beside them if the AT Protocol side appeals.
 - The winner becomes the source of truth: push mirror to GitHub on every push;
   GitHub repo description and README point to the self-hosted copy.
 - Public read-only browsing, sign-up off, owner signs in through the lab's
@@ -97,7 +119,7 @@ replace prime-reviewer.
 
 ## Promote when
 
-The owner has tried both finalists and picked one, and the home overhaul no
+The owner has tried the candidates and picked one, and the home overhaul no
 longer needs the attention.
 
 ## Sources

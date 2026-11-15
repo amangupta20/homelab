@@ -232,6 +232,17 @@ What "everything switched on" would look like. Marked by how each part is known.
 
 Federation (ForgeFed) stays off: the research reports call it experimental.
 
+**Reference build: Codeberg.** Codeberg.org runs Forgejo (its API reported
+`17.0.0-100-2254cb0+gitea-1.22.0` on 2026-11-15, a little ahead of the 17.0
+release), operated by Codeberg e.V., the non-profit that has backed Forgejo's
+development since 2022 and avoids commercial or proprietary services in its
+operation (docs.codeberg.org, "What is Codeberg?"). Its extras on top of Forgejo
+are the model for ours: Codeberg Pages (static sites deployed from Forgejo
+Actions), hosted CI, and documented self-hosted runners. When building the full
+setup, read how Codeberg does a part before inventing our own. It also defends
+hard against automated scraping: headless browser requests got placeholder pages
+and rate-limit messages during this research.
+
 ### Track 2: exploration (Tangled and Radicle)
 
 Both take pushes from the main host and are never the only copy.

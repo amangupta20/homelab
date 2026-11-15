@@ -61,6 +61,34 @@ and features come from the research reports (Sources) unless marked as checked.
 The field is genuinely small. Most self-hostable git hosts are either Gitea-family,
 older projects with dated UIs, or experiments.
 
+### What each one keeps behind a paywall
+
+Read from each vendor's pricing or docs page on 2026-11-15, except where marked.
+
+- **Forgejo:** nothing. No paid edition; run by a non-profit (Codeberg e.V.).
+- **Tangled:** nothing found; no pricing page on tangled.org. Its web UI is a
+  service it runs, so the terms could change.
+- **Harness Open Source:** nothing gated in the self-hosted version (Apache-2.0).
+  Harness's commercial platform is a separate product; the research says features
+  such as SSO federation and governance stay there (unverified).
+- **OneDev:** a free Community Edition, and an Enterprise Edition at $6 per user
+  per month (minimum 12 user-months per order). Paid: code search across all
+  projects (search within one project is free), custom dashboards, statistics and
+  trends, a web terminal into running CI jobs, security and licence scanning, audit
+  log, time tracking, Renovate integration, clustering. Free includes symbol
+  navigation, the visual CI editor, the package registry, SSO and the AI users.
+- **GitLab CE (Free tier):** push mirroring, merge request review and auto-merge
+  are free. Paid (Premium and up): approval rules, code owners, merge trains, pull
+  mirroring and advanced code search across projects (GitLab docs, each page's
+  "Tier" line). The AI features (Duo) are mostly paid.
+- **Gitea (for comparison):** Gitea Enterprise sells branch protection inherited
+  from the organisation, dependency scanning, IP allowlists, SAML, audit log, and
+  "Enterprise themes". Forgejo has no equivalent paid tier.
+
+For a solo owner who wants to explore code in a good-looking UI, the only paywall
+that touches the goal is OneDev's cross-project code search and dashboards, at $6
+a month for one user.
+
 ### Tangled works differently
 
 Tangled splits a git host in two (tangled.org blog "intro", read 2026-11-15; the

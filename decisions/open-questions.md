@@ -184,6 +184,13 @@ owner file, and is deleted from this list.
   `.254` is the VM `apt-cache`, with apt-cacher-ng and no Docker (SSH); Nginx Proxy Manager runs
   on `NPM-set` at `.99` (Portainer API, SSH). Those rows are left as they were for the owner to
   settle.
+- Nextcloud's state is unclear. `plans/home-overhaul.md` (A4) says it is parked: containers
+  stopped and AIO's daily backup turned off, with the restore not run (checked 2026-11-14).
+  On 2026-11-15 the owner said he restored it and that Nextcloud then started on its own,
+  and TrueNAS shows 93,535 files under `back/nextcloud` changed between 00:30 and 02:00 that
+  night (`find -newerct`, owner). Whether its containers run now, whether AIO's nightly
+  backup and automatic update are back on, and which archive was restored were not
+  checked. A4's line is left as it was for the owner to settle.
 
 ## Edge and security layers (on hold until the Pangolin decision)
 

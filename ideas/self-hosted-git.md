@@ -52,13 +52,18 @@ and features come from the research reports (Sources) unless marked as checked.
 | **OneDev** | 9.5 | through a CI step, not a switch | **main candidate**: the best for exploring code: jump-to-symbol in the browser and in review, code search, visual CI editor; mostly one maintainer. MIT; v17.2.0 on 2026-11-11 (checked) |
 | Harness Open Source (was Gitness) | 9.0 | through a pipeline step; no built-in mirror per the reports | **dropped** (owner, 2026-11-15): the slickest UI, but no stable release since August 2025 and its new UI sends secrets, connectors and ten more settings pages to an Enterprise upsell (see below) |
 | **Forgejo** | 5 stock, about 8.5 themed | one switch, pushes on every change | **main candidate**: the easiest mirror; CI runs GitHub Actions workflows nearly unchanged; imports GitHub pull requests. Plain until themed (Catppuccin has a maintained theme, checked) |
-| GitLab CE | 6.5 | one switch | **dropped** (owner, 2026-11-15): everything built in, but 8–16 GB of memory leaves too little for `agent-1` and `gpu-1` |
+| GitLab CE | 6.5 | one switch | **dropped** (owner, 2026-11-15): everything built in, but 8–16 GB of memory leaves too little for `agent-1` and `gpu-1`. GitLab also documents a memory-constrained mode for up to 5 developers: 2–2.5 GB of RAM plus 1 GB of swap, with "unexpected degradation" possible (docs.gitlab.com, read 2026-11-15); not reconsidered yet |
 | **Tangled** | 8.5 | hook on the knot, or a GitHub Action | **exploration**: a knot and spindle beside the main host; see below |
 | Gitea | 7.5 | one switch | same base as Forgejo, company-run; pick Forgejo over it unless Gitea's UI pulls clearly ahead. v28.3.0 on 2026-11-01 (checked) |
 | **Radicle** | 8.0 | manual (add GitHub as a remote) | **exploration**: peer-to-peer, issues and patches stored in git; seed nodes at home and on the VPS; see below |
 | GitRiver | 8.5 | unverified | **unknown**: a 2026 newcomer, open-core licence; site exists (checked), nothing else verified |
 | Phorge, RhodeCode, Pagure, Kallithea, GitBucket, Gogs | 4–5.5 | mixed | **out**: dated UIs, or in maintenance mode |
 | Sourcehut | by design minimal | manual | **out**: email-driven, no-JavaScript by design |
+| GitBucket | 5.0 | manual hook | **out**: a real plugin system and a GitHub-compatible API, but a 2015 GitHub look, no maintained CI, and one main author (3,977 of the commits; 4.48.0 on 2026-09-20, checked) |
+| Bitbucket Data Center | n/a | n/a | **out**: Atlassian is sunsetting its Data Center products; no new customers from 2026-03-30, end of life 2029-03-28 (Atlassian "Ascend" announcement, read 2026-11-15) |
+| Azure DevOps Server | n/a | n/a | **out**: Windows Server and SQL Server only, licensed per user (from memory, unverified); Azure Repos is its git part, cloud-hosted |
+| Fossil | n/a | `fossil git export` | **out**: not git, so agents, Actions, gitleaks and Renovate would all need a bridge; neat single-SQLite-file design (from memory) |
+| Gerrit, Review Board | n/a | n/a | **out**: review-only tools, stricter than wanted |
 | Soft Serve | terminal only | manual | **out**: archived (checked) |
 
 The field is genuinely small. Most self-hostable git hosts are either Gitea-family,

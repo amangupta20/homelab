@@ -112,6 +112,26 @@ Checked on the GitHub API and Docker Hub (2026-11-15):
 
 Trying it means either a stable build fifteen months old or an `unstable` one.
 
+### Tried locally, and the fit with the agent VM (2026-11-15)
+
+OneDev 17.2.0, Forgejo 17 and Harness `unstable-uiv2` were run in Docker on the
+owner's laptop with this repo and pull request #79 imported. Seen:
+
+- **Forgejo** read `.github/workflows` unchanged and listed every workflow as a
+  pending check on the pull request (no runner was attached). 73 MB at idle.
+- **Harness** turned the same workflows into its own pipelines on import. 76 MB at
+  idle. On that build, opening a file by link showed "404 Not Found".
+- **OneDev** has no reader for GitHub workflows. 1.3 GB at idle.
+- GitLab was not run; its install requirements page gives 16 GB as the single-node
+  baseline and 8 GB as the minimum.
+
+Idle memory from `docker stats` with two repositories each. The host has 40 GB
+and the running VMs take about 22 (`plans/home-overhaul.md`), which rules GitLab
+out beside `agent-1` and `gpu-1`. Forgejo fits the agent VM best: its runner on
+`agent-1` would give every agent branch the CI and prime-reviewer it gets on
+GitHub today. OneDev is the most agent-minded (AI users, a CLI that runs CI
+against uncommitted changes) but needs its CI rewritten.
+
 ### Tangled works differently
 
 Tangled splits a git host in two (tangled.org blog "intro", read 2026-11-15; the

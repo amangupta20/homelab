@@ -198,9 +198,10 @@ a starting point for evaluation, not production. It sets
 
 ## Decisions this plan needs from the owner
 
-- **Where it runs.** The Docker + proxy host already carries the reverse
-  proxy, so the cache would share fate with the thing that routes traffic to
-  it; a small VM of its own costs one more machine to patch and back up.
+- **Where it runs.** Decided by the owner on 2026-11-15: **its own VM**, built
+  from code as the first VM of `plans/home-overhaul.md`'s step B, before the
+  agent VM. (The alternative was the Docker + proxy host, which would have
+  made it share fate with the reverse proxy.)
 - **Whether apt stays with the current software.** If only images justify the
   work, the apt side can be left alone and this plan shrinks to steps 1, 3, 4
   and 6.

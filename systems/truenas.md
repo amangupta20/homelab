@@ -136,6 +136,10 @@ WD's SATA cable and run a memory test on the host.
   TrueNAS's own ZFS snapshots are separate and safe to manage in TrueNAS.
 - **Read disk health on the XCP-ng host**, not in TrueNAS: the passed-through
   disks hide their SMART data from the VM.
+- **Move scripted reads off the REST API before upgrading to 26.04.** TrueNAS
+  25.10.4 warns that the REST API (`/api/v2.0/...`, which the recon used) is
+  deprecated and removed in version 26.04; the replacement is its JSON-RPC 2.0
+  API over a WebSocket (TrueNAS alert `RESTAPIUsage`, 2026-11-15).
 
 ## Backups
 

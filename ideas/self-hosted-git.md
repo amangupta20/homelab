@@ -10,8 +10,8 @@ tags:
 
 # A self-hosted git host that mirrors to GitHub
 
-**Status:** researched (2026-11-15). Five to try: OneDev, Forgejo, Harness Open
-Source, GitLab CE and Tangled; nothing is scheduled.
+**Status:** researched (2026-11-15). Four to try: OneDev, Forgejo, Harness Open
+Source and Tangled; GitLab CE dropped; nothing is scheduled.
 **In one line:** run our own git host (repositories, pull requests, CI) as
 the daily driver, and have it push every change to GitHub, so the public and
 recruiters still see everything there.
@@ -37,7 +37,8 @@ GitHub second.
 5. Fun to run.
 
 The owner first ruled GitLab out on its UI, then (same day) asked for it to stay
-on the list.
+on the list, then dropped it after the comparison (memory it would take beside
+the agent VM).
 
 ## Options and verdicts
 
@@ -49,7 +50,7 @@ and features come from the research reports (Sources) unless marked as checked.
 | **OneDev** | 9.5 | through a CI step, not a switch | **try**: the best for exploring code: jump-to-symbol in the browser and in review, code search, visual CI editor; mostly one maintainer. MIT; v17.2.0 on 2026-11-11 (checked) |
 | **Harness Open Source** (was Gitness) | 9.0 | through a pipeline step; no built-in mirror per the reports | **try**: the slickest modern UI, Drone CI built in. It has no issue tracker (its issue #3373, "Issues", open since 2023, checked), which does not matter here. Apache-2.0 (checked) |
 | **Forgejo** | 5 stock, about 8.5 themed | one switch, pushes on every change | **try**: the easiest mirror; CI runs GitHub Actions workflows nearly unchanged; imports GitHub pull requests. Plain until themed (Catppuccin has a maintained theme, checked) |
-| **GitLab CE** | 6.5 | one switch | **try**: everything built in (CI, mirror, code navigation, web IDE); dense UI, the heaviest to run |
+| GitLab CE | 6.5 | one switch | **dropped** (owner, 2026-11-15): everything built in, but 8–16 GB of memory leaves too little for `agent-1` and `gpu-1` |
 | **Tangled** | 8.5 | hook on the knot, or a GitHub Action | **try, differently**: see below |
 | Gitea | 7.5 | one switch | same base as Forgejo, company-run; pick Forgejo over it unless Gitea's UI pulls clearly ahead. v28.3.0 on 2026-11-01 (checked) |
 | Radicle | 8.0 | manual | **out as daily driver**: peer-to-peer, no built-in CI; interesting to run beside the main host |
@@ -180,7 +181,7 @@ replace prime-reviewer.
 
 ## Design sketch
 
-- Run OneDev, Harness Open Source, Forgejo (themed) and GitLab CE side by side for
+- Run OneDev, Harness Open Source and Forgejo (themed) side by side for
   a weekend, each with this repo imported and mirrored to a throwaway GitHub repo.
   Judge on exploring code, history and a pull request; keep the one the owner
   enjoys using. Put a Tangled knot beside them if the AT Protocol side appeals.

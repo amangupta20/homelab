@@ -191,6 +191,12 @@ owner file, and is deleted from this list.
   night (`find -newerct`, owner). Whether its containers run now, whether AIO's nightly
   backup and automatic update are back on, and which archive was restored were not
   checked. A4's line is left as it was for the owner to settle.
+  Agent's note, 2026-11-15, for the owner to close: read on the GPU VM the same
+  evening. The restore brought back `daily_backup_time` (22:00); the nightly backup
+  ran, failed on the damaged file in `imp`, and AIO then started every container,
+  which ran on Nextcloud 34.0.5. At the owner's request the agent stopped all twelve
+  containers and renamed `daily_backup_time` so nothing restarts them; A4 now says so.
+  Which archive was restored is still unknown.
 
 ## Edge and security layers (on hold until the Pangolin decision)
 

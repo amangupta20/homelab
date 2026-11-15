@@ -69,9 +69,13 @@ Read from each vendor's pricing or docs page on 2026-11-15, except where marked.
 - **Forgejo:** nothing. No paid edition; run by a non-profit (Codeberg e.V.).
 - **Tangled:** nothing found; no pricing page on tangled.org. Its web UI is a
   service it runs, so the terms could change.
-- **Harness Open Source:** nothing gated in the self-hosted version (Apache-2.0).
-  Harness's commercial platform is a separate product; the research says features
-  such as SSO federation and governance stay there (unverified).
+- **Harness Open Source:** Apache-2.0, but the `unstable-uiv2` build's settings
+  menu shows Harness Platform pages that open an "Upgrade to Harness Enterprise"
+  screen (owner spotted it; an agent then opened each page, 2026-11-15 local trial):
+  notifications, environments, connectors, delegates, secrets, file store,
+  templates, variables, policies, freeze windows, certificates and overrides.
+  Repositories, pipelines, pull requests, users, roles and webhooks opened. The
+  stable 3.3.0 web UI was not checked.
 - **OneDev:** a free Community Edition, and an Enterprise Edition at $6 per user
   per month (minimum 12 user-months per order). Paid: code search across all
   projects (search within one project is free), custom dashboards, statistics and

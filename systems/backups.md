@@ -64,7 +64,8 @@ Read live on 2026-11-14 (Xen Orchestra's REST API, the TrueNAS API, the Nextclou
   archives; the last run, 2026-11-13, succeeded (73 GB, 59 GB stored after
   deduplication across all archives).
 - TrueNAS snapshots and the `imp/back` to `Main/repli` replica: `systems/truenas.md`.
-  Both last ran 2026-10-30.
+  Snapshots run daily again (2026-11-14 and -15); the replica's last good copy is
+  still 2026-10-30 and is being redone after a checksum error.
 
 All of the above except the remote VPS, OpenBao and 2026-11-14 lines is what the docs say
 is configured; nobody has compared it to the live XO schedules yet. The VPS apps

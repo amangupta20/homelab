@@ -54,7 +54,7 @@ tags:
 - `shared-postgres.md` — one Pigsty-managed Postgres cluster on a second VPS then at home that apps share (in progress: installed on `pigsty-1`, drills done).
 - `offsite-backups.md` — the encrypted offsite backup tier, OpenBao first (in progress).
 - `hindsight-d1-reranker.md` — d1-2B on a homelab GPU VM, loaded on demand, in Hindsight's reranker chain (not started).
-- `package-and-image-cache.md` — apt packages and container images cached once at home, inside a disk budget (not started).
+- `package-and-image-cache.md` — apt packages and container images cached once at home, inside a disk budget (in progress, step 1: Artifact Keeper tested on the workstation; step 0 still open).
 - `ai-reviewer-prime-agent.md` — Prime Agent reviews the owner's pull requests with three levels of finding, memory and kept traces; built as a GitHub App on GitHub's runners instead of spot VMs (in progress, step 7; how it works: `repo/prime-reviewer.md`).
 - `netbox.md` — NetBox as the lab's inventory, kept current by a sync from the live systems (not started, no date).
 - `sablier-wakeups.md` — stop rarely used VPS apps when idle and start them on the next request; Blinko first (done 2026-11-07).

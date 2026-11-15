@@ -1,7 +1,7 @@
 ---
 type: plan
-status: "not started"
-verified: "no (options read from their docs and source 2026-11-01; nothing installed or measured on the lab)"
+status: "in progress (step 1)"
+verified: "partially (Artifact Keeper run on the workstation 2026-11-15; other options read from docs and source; nothing installed or measured on the lab)"
 tags:
   - plan
   - cache
@@ -11,9 +11,10 @@ tags:
 
 # Package and image cache, redone
 
-**Status:** not started. The candidate list was researched 2026-11-01; nothing
-is installed, and the cache the lab has today has never been checked against
-the live lab.
+**Status:** in progress (step 1). The candidate list was researched 2026-11-01
+and again on 2026-11-15, when Artifact Keeper was also run on the workstation
+(see "Local test"). Nothing is installed on the lab, and step 0, the recon of
+the cache the lab has today, is still open.
 **Goal:** one cache on the home network answers apt and container-image
 requests for every VM, stores what is asked for the first time, and keeps
 itself inside a disk budget the owner chooses, so a redeploy stops coming down
@@ -27,8 +28,11 @@ row for the new cache in place of the apt cache row.
 
 - **apt cache** on the Docker + proxy host. Its port, how clients are pointed
   at it, and its state are that row's facts: `inventory/services.md`, where the
-  State is "in docs, not verified". Nobody has confirmed what software it runs,
-  how large its cache is, or whether clients actually use it.
+  State is "in docs, not verified". `inventory/hosts.md` records a VM
+  `apt-cache` running apt-cacher-ng instead (verified 2026-11-14); the two
+  disagree, and the disagreement is listed in `decisions/open-questions.md`
+  for the owner to settle. Nobody has confirmed how large its cache is or
+  whether clients actually use it.
 - **No image cache.** Every `docker pull` on every VM goes to the internet
   registry named in the compose file. The homeserver runs most stacks on
   `latest` and redeploys them, so the same base images come down again and
@@ -54,6 +58,19 @@ row for the new cache in place of the apt cache row.
    loses its own database. The cache has to be told a size and evict down to
    it.
 
+## What the owner needs, in order
+
+Said by the owner in conversation on 2026-11-15:
+
+1. **apt caching is required.**
+2. **apt from HTTPS-only repositories** is wanted strongly.
+3. **Container images** are wanted, but are not a hard requirement.
+4. **More formats later** (not named yet) should be possible without
+   replacing the cache.
+
+This reorders "Why it is being redone" below, which was written on 2026-11-01
+with images as the main payoff.
+
 ## What the cache has to do
 
 These are requirements, not features of any one product; the step-1 comparison
@@ -69,7 +86,10 @@ scores candidates against them.
 4. **A disk ceiling with eviction by use.** When the volume reaches the
    ceiling, the least recently used artifacts go first — not "expire
    everything older than N days", which evicts an image the lab deploys daily
-   just because nobody re-pulled it this week.
+   just because nobody re-pulled it this week. A ceiling per upstream
+   repository meets this; one ceiling across everything would be better, and
+   no multi-format candidate has it (worker research, 2026-11-15, read from
+   docs and source).
 5. **Visible warmth.** Per-repository size and hit counts, in a UI or a
    metric, so the owner can see what the cache is spending disk on. The owner
    liked this about the cache that exists today (his description, 2026-11-01;
@@ -85,20 +105,24 @@ scores candidates against them.
 
 ## Candidates
 
-Read from each project's own documentation and source on 2026-11-01. Nothing
-below was installed or benchmarked; sizes and memory are the vendors' own
-numbers unless marked.
+Read from each project's own documentation and source on 2026-11-01, and
+again on 2026-11-15 by two research worker agents whose claims were not
+re-checked unless a row says "tested". Only Artifact Keeper was run; sizes and
+memory are the vendors' own numbers unless marked.
 
 | Candidate | Licence and shape | Caches | Eviction | Verdict |
 |---|---|---|---|---|
-| **Artifact Keeper** | MIT, Rust (Axum/SQLx), needs PostgreSQL 16 + OpenSearch, React UI | local + remote (pull-through) + virtual repositories; 40+ formats including Docker/OCI, Debian, RPM, npm, PyPI, Helm, raw | retention rules, promotion gates, per-run byte budgets; **no single size cap that evicts the oldest OCI blobs** | **Primary candidate.** Closest to requirements 1-5 and 7; heaviest of the real-OSS options |
-| **NORA** | MIT, one Rust binary (~23 MB), no database, ~15 MB idle | 17 formats, Docker/OCI and Debian/apt among them (apt behind an opt-in flag) | **`proxy_cache_max_bytes`, a real size cap that evicts the oldest files** (currently Debian/RPM/Hugging Face), plus `keep_last` / `older_than_days` / tag-glob retention with a dry run | **Fallback, and the honest answer to requirement 4.** Small team and a young project; the byte cap does not cover OCI today |
+| **Artifact Keeper** | MIT, Rust (Axum/SQLx), needs PostgreSQL; OpenSearch and the scanners are optional (tested 2026-11-15), React UI | local + remote (pull-through) + virtual repositories; 40+ formats including Docker/OCI, Debian, RPM, npm, PyPI, Helm, raw | retention rules by age or last download; **a byte cap per remote repository that evicts the least recently used entries, in 1.12.0** (tested 2026-11-15 on the `main` image; the `latest` image that day was 1.11.13, without it). No one cap across all repositories | **Primary candidate.** Meets requirements 1-5 in the local test; young, fast-moving, mostly one author |
+| **NORA** | MIT, one Rust binary (~23 MB), no database, ~15 MB idle | 17 formats, Docker/OCI and Debian/apt among them (apt behind an opt-in flag) | **`proxy_cache_max_bytes`, a real size cap that evicts the oldest files** (currently Debian/RPM/Hugging Face), plus `keep_last` / `older_than_days` / tag-glob retention with a dry run | **The one to compare against.** Simplest to run, and its byte cap covers apt, the owner's required part. Small team and a young project; the byte cap still does not cover OCI (worker reading of its source, 2026-11-15); not run here |
 | **Zot** | Apache-2.0, one Go binary, no database | OCI only; on-demand sync from several upstreams in one instance, dedupe, GC | TTL + GC + tag-count retention; **no access tracking, so no LRU** | Good engineering, wrong scope: no apt, no raw, no warmth reporting |
 | **Harbor** | Apache-2.0 (CNCF), about 10 containers + PostgreSQL + Redis; 2 CPU / 4 GB / 40 GB minimum in its docs | OCI + Helm; one proxy-cache project per upstream | 7-day default retention per proxy project; quotas **block writes** rather than evict | Best UI (per-artifact pull counts, quota bars) but no apt and no raw, and the heaviest to run |
 | **Nexus Community Edition** | **Proprietary EULA with usage caps** (40,000 components or 100,000 requests a day; over either, new components are refused). The EPL core on GitHub is source-only and cannot be built into the distributed binary | Docker, apt, raw, npm, PyPI and the rest | **cleanup policy on "last downloaded", the closest thing to on-demand LRU** | **Ruled out** on requirement 6, and on trust, despite fitting requirements 1-4 best |
 | **Pulp** | GPLv2, PostgreSQL + Redis + workers | Debian, RPM, container (pull-through marked tech preview), PyPI, Ansible | GC, no size cap | Mature but heavy, and its container pull-through is not finished |
 | **Artipie** | MIT, Java (Vert.x) | Maven, Docker, Debian, RPM and more | none documented | Its adapters have gone quiet; not a base to build on |
 | **Gitea / Forgejo packages** | MIT / GPLv3 | hosted only, no pull-through proxy | not applicable | Fails requirement 1: a place to upload, not a cache |
+| **rpardini/docker-registry-proxy** | Apache-2.0, nginx in one container | container images from every registry, as an intercepting HTTPS proxy; no apt | **byte ceiling with nginx's least-recently-used eviction** (`CACHE_MAX_SIZE`) | Images-only fallback. Every client must trust its certificate authority; no UI and no per-repository sizes (worker research 2026-11-15, not run) |
+| **nginx caching proxy** | BSD, one process | anything over HTTP(S), with a configuration block per upstream | **byte ceiling with least-recently-used eviction** (`proxy_cache_path ... max_size`) | Smallest way to cache HTTPS apt inside a ceiling; no UI, hand-written configuration, a dead end for more formats (worker research 2026-11-15, not run) |
+| **apt-cacher-ng, kept** | the software `inventory/hosts.md` records on the `apt-cache` VM | apt only; an HTTPS upstream is cached through a `Remap-` rule per repository or a `http://HTTPS///host/...` source line on the client, not through `PassThroughPattern` | expiry only, no byte ceiling | The do-nothing option: covers apt and HTTPS apt, nothing else (worker research 2026-11-15, from its documentation; **UNTESTED** here) |
 
 ### Why Nexus is ruled out
 
@@ -116,8 +140,9 @@ page and community forum, read 2026-11-01.
 
 The owner's starting position is Artifact Keeper as the primary candidate, so
 its source got a first pass before this plan was written. Recorded here so the
-next session does not redo it. All from its repository and documentation on
-2026-11-01; **not deployed, and the audit is not finished**.
+next session does not redo it. The bullets below are from its repository and
+documentation on 2026-11-01; the local test and the two source reviews that
+follow are from 2026-11-15. **Not deployed on the lab.**
 
 - **Licence:** MIT, copyright Brandon Geraci. The whole feature set ships in
   one release, with no paid edition and no usage cap.
@@ -138,7 +163,7 @@ next session does not redo it. All from its repository and documentation on
   cosign-signed with build provenance and a CycloneDX SBOM since 1.8.2; and a
   red-team suite covering CORS, auth bypass, default credentials, path
   traversal and plugin installs lives in the repository.
-- **What the audit still has to settle:** the changelog for the 1.11.x line
+- **What the audit had to settle (answered under "Source reviews" below):** the changelog for the 1.11.x line
   records a run of published authorization advisories — a read-only token able
   to change scan configuration, missing action-level checks on mutation
   handlers, a read-only member able to delete SBOM attestations, an
@@ -153,6 +178,82 @@ Worth knowing before sizing it: the shipped `docker-compose.yml` calls itself
 a starting point for evaluation, not production. It sets
 `ENVIRONMENT=development`, hardcodes the PostgreSQL credentials and turns on
 `ALLOW_HTTP_INTEGRATIONS`. Anything deployed from it is re-configured first.
+
+### Local test, 2026-11-15
+
+Run on the owner's workstation, published on loopback only, then removed with
+its volumes and images. The stack was the project's `docker-compose.yml` cut
+down to four containers: backend, PostgreSQL, web UI and Caddy. The `main`
+image was used because the released one had no byte cap; it reported version
+1.12.0 on `/health`.
+
+| Check | Result |
+|---|---|
+| Memory, four containers idle (`docker stats`) | about 185 MB |
+| `docker pull` of a small image through a Docker Hub remote, twice | 3.5 s, then 0.3 s |
+| 30 MiB cap on that remote (`PUT /api/v1/repositories/<key>/proxy-cache-cap`), then three more images | the fourth pull evicted the 19 oldest entries (26.8 MB); the backend logged the eviction and usage stayed under the cap |
+| Pull without the repository key in the path, with `AK_DEFAULT_DOCKER_MIRROR_REPO` set (what Docker's `registry-mirrors` sends) | worked |
+| A 674 MB image through a `ghcr.io` remote, under a prefixed name | worked |
+| apt remote on `https://download.docker.com/linux/ubuntu`: `InRelease`, `Packages.gz` and a 17.6 MB package with `curl`, twice each | package 4.1 s, then 0.07 s |
+| Requests with no credentials | user and admin routes answer 401; the repository list answers 200 |
+
+What the test did not cover: a full Ubuntu or Debian archive as an apt remote,
+`apt` itself as the client (the files were fetched with `curl`), a full disk,
+an upgrade between versions, and the released 1.12.0 image, which did not
+exist yet. PostgreSQL ran without TLS in the test because the init container
+could not reach its package mirror that evening; the real stack keeps TLS.
+
+### What the trimmed stack leaves out
+
+| Left out | What it provides | Cost of leaving it out |
+|---|---|---|
+| OpenSearch | full-text search over artifacts in the UI and API | none for a cache that is pulled by name; saves its 512 MB heap |
+| Trivy, OpenSCAP | vulnerability and compliance scans of stored artifacts | no scan results |
+| Dependency-Track | tracking of software bills of materials over time | none; it is already off by default upstream, which measures it at about 4 GiB idle |
+
+The backend starts without them when `OPENSEARCH_URL`, `TRIVY_URL` and
+`OPENSCAP_URL` are unset (tested). Unused but still present in the backend:
+hosted and virtual repositories, promotion gates, replication between
+instances, WASM plugins, webhooks, single sign-on and the other formats.
+
+### What PostgreSQL holds
+
+Read from the test instance with `psql`: 188 tables, 21 MB after the test,
+against 692 MB of cached files on the storage volume. The database holds the
+cache catalogue (path, size, SHA-256, upstream URL, when cached and when last
+read, which is what eviction orders by), which image manifests reference which
+layers, the repositories and their settings, users and tokens, download
+counts and the audit log. The file bytes are on disk, not in the database. A
+cache that loses its database loses the catalogue and refills on first use.
+
+### Source reviews
+
+Two worker agents each reviewed the repository at commit `2ca1c3f`
+(2026-11-15) against the same eight questions, without running it. Both
+answered "safe and sensible on a LAN, with conditions". Their claims are
+theirs; the ones marked tested were confirmed in the local test.
+
+- **Unauthenticated access.** Anonymous read is on by default and applies to
+  repositories marked `public`; writes and admin routes always need a
+  credential. For a cache, only the cache remotes are made `public`.
+- **Authorization.** The changelog from July to November 2026 carries a dense
+  run of fixed authorization advisories. There is now one central guard, but
+  each handler has to call it, so a new route can forget. One reviewer sampled
+  mutation handlers and found none without the check; neither swept all of
+  them.
+- **Disk.** The cap is per remote repository (tested). Writes go to a temporary
+  file and are renamed, so a full disk should fail a write without damaging
+  the catalogue; nobody tested that.
+- **Project.** About ten months old, roughly 80% of commits from one author,
+  several builds a day.
+- **Docker clients.** `registry-mirrors` reaches Docker Hub only (the mirror
+  path itself was tested);
+  other registries need the cache's host and repository key in the image name
+  or per-host client configuration.
+
+Conditions both reviewers set: a byte cap on every remote from the first day,
+LAN only with only the cache remotes public, and a pinned release with a VM
+snapshot before each upgrade.
 
 ## Steps
 
@@ -169,6 +270,10 @@ a starting point for evaluation, not production. It sets
    table at the size step 0 implies. — gate: the table is in this plan with a
    recommendation, and each audit finding is fixed upstream, mitigated by
    configuration, or listed as accepted risk by the owner.
+   Done so far (2026-11-15): the local test and the two source reviews above.
+   Still open: the sizes, which wait for step 0; the owner accepting the
+   reviews' conditions; and running NORA the same way, if the owner wants a
+   second tested option.
 2. **The owner picks, and the budget is set.** One candidate, one volume size,
    one eviction rule (byte ceiling, retention window, or both), and where it
    runs: the Docker + proxy host, or its own VM. — gate: the choice and the
@@ -178,7 +283,10 @@ a starting point for evaluation, not production. It sets
    plus its README, following `apps/README.md`; secrets and identifying values
    as references, never as values. — gate: merged, and `docker compose config`
    passes in CI.
-4. **Prove it on one client before touching the rest.** Point one VM's apt at
+4. **Prove it on one client before touching the rest.** Vendor HTTPS apt
+   repositories first, then images, and the distribution's own archives last:
+   the old apt cache keeps serving those until the new one has been tried
+   against a full archive on one VM. Point one VM's apt at
    the new cache and one VM's Docker daemon at it. `registry-mirrors` covers
    Docker Hub only — Docker's own documentation states a daemon cannot point at
    a mirror of another upstream (read 2026-11-01) — so other registries need
@@ -202,9 +310,17 @@ a starting point for evaluation, not production. It sets
   from code as the first VM of `plans/home-overhaul.md`'s step B, before the
   agent VM. (The alternative was the Docker + proxy host, which would have
   made it share fate with the reverse proxy.)
-- **Whether apt stays with the current software.** If only images justify the
-  work, the apt side can be left alone and this plan shrinks to steps 1, 3, 4
-  and 6.
+- **Whether apt stays with the current software.** Answered by the owner's
+  order of needs (2026-11-15): apt is the required part, so it moves to the new
+  cache, but last, with the old apt cache running beside it until step 5's
+  gate.
+- **Which candidate.** The owner's position on 2026-11-15: Artifact Keeper,
+  dropped for something smaller if it proves too much. What "too much" means
+  is not written down yet; a number (idle memory, or manual clean-ups in the
+  first month) would make that decision checkable. The formal pick is step 2.
+- **Whether to wait for the 1.12.0 release.** The byte cap is only in the
+  `main` image as of 2026-11-15. Until a release carries it, the choice is
+  running `main`, or a "not downloaded in N days" policy plus a disk alert.
 - **How much disk.** One number, chosen after step 0's pull count instead of
   guessed now.
 

@@ -126,7 +126,11 @@ owner's laptop with this repo and pull request #79 imported. Seen:
   pending check on the pull request (no runner was attached). 73 MB at idle.
 - **Harness** turned the same workflows into its own pipelines on import. 76 MB at
   idle. On that build, opening a file by link showed "404 Not Found".
-- **OneDev** has no reader for GitHub workflows. 1.3 GB at idle.
+- **OneDev** has no reader for GitHub workflows. Its memory use follows the
+  limit it is given: Java sizes its heap to half the memory it can see
+  (`-XX:MaxRAMPercentage=50` in `conf/wrapper.conf`). Without a container limit
+  it allowed itself an 8.2 GB heap and used 0.6–1.8 GB; capped at 1 GB (512 MB
+  heap) it served the same pages using about 800 MB. Give it a limit of 1–1.5 GB.
 - GitLab was not run; its install requirements page gives 16 GB as the single-node
   baseline and 8 GB as the minimum.
 
@@ -135,7 +139,7 @@ and the running VMs take about 22 (`plans/home-overhaul.md`), which rules GitLab
 out beside `agent-1` and `gpu-1`. Forgejo fits the agent VM best: its runner on
 `agent-1` would give every agent branch the CI and prime-reviewer it gets on
 GitHub today. OneDev is the most agent-minded (AI users, a CLI that runs CI
-against uncommitted changes) but needs its CI rewritten.
+against uncommitted changes) but needs its CI rewritten and a memory limit.
 
 ### Tangled works differently
 

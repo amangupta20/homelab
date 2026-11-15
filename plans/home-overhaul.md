@@ -1,6 +1,6 @@
 ---
 type: plan
-status: "in progress (A1 and A2 done, A3 waits on the next replication run)"
+status: "in progress (A1 and A2 done, A3 redone after a checksum error)"
 verified: "partially (A1 verified 2026-11-14; A2 read live 2026-11-14 through the Xen Orchestra, TrueNAS and Portainer APIs and SSH)"
 hosts:
   - XCP-ng host
@@ -15,8 +15,8 @@ tags:
 # Home overhaul
 
 **Status:** in progress — A1 done 2026-11-14 (`systems/oob.md`); A2, the read-only
-recon, done 2026-11-14 (facts in `inventory/` and `systems/truenas.md`); A3 waits on
-the next replication run. Replaces `plans/migration.md` (owner, 2026-11-14).
+recon, done 2026-11-14 (facts in `inventory/` and `systems/truenas.md`); A3 is being
+redone after the 2026-11-15 replication failed on a checksum error in `imp`. Replaces `plans/migration.md` (owner, 2026-11-14).
 
 **Goal:** move every home workload to a setup where each app's data has one known
 place and one known backup method, app definitions live in this repo and deploy
@@ -294,8 +294,11 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
 3. **Safety net:** the live data, its copy in `Main/repli`, and the old Google Drive
    copy (owner, 2026-11-14). The new backups get a tested restore as each app moves.
    — gate: `Main/repli`'s newest snapshot is from after 2026-11-14 and matches
-   `imp/back`'s. The 2026-10-30 copy was stale on 2026-11-14; the daily 19:00
-   snapshot and replication should bring it current.
+   `imp/back`'s. The 2026-10-30 copy was stale on 2026-11-14. On 2026-11-15 the
+   snapshots ran again but the replication failed on a checksum error in `imp`;
+   the damaged file and snapshot were removed and the replication rerun by hand
+   (`systems/truenas.md`, "Checksum errors on `imp`"). The gate is checked when
+   that run finishes, and `imp` is scrubbed after it.
 4. **Nextcloud recovered.** Parked on 2026-11-14 until it moves (owner): containers
    stopped, and AIO's daily backup turned off, because AIO's nightly job (22:00 UTC)
    starts all containers after its backup. A Borg integrity check of all ten archives
@@ -310,7 +313,9 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
 6. **Disk health is watched:** `smartd` on the XCP-ng host checks both passed-through
    hard disks and alerts to ntfy, because TrueNAS cannot read their SMART data
    (`systems/truenas.md`). Both pools are single disks, so a failing disk must be seen
-   early. Later, these alerts and the hosts' metrics also go to a central monitoring
+   early. SMART was read by hand on 2026-11-15 (both PASSED; recorded in
+   `systems/truenas.md`); `smartd`, the long self-tests and the ntfy alert are not set
+   up yet. Later, these alerts and the hosts' metrics also go to a central monitoring
    system (which one is open). — gate: `smartctl` results for both disks are recorded,
    and a test alert reaches the owner's phone.
 

@@ -1,7 +1,7 @@
 ---
 type: system
-status: "running; replica and snapshots last ran 2026-10-30"
-verified: "yes (TrueNAS API and Xen Orchestra's REST API, 2026-11-14)"
+status: "running; checksum errors on imp, replica being redone (2026-11-15)"
+verified: "yes (TrueNAS API and Xen Orchestra's REST API, 2026-11-14; disk SMART and pool errors read by the owner on the hosts, 2026-11-15)"
 hosts:
   - TrueNAS VM
   - XCP-ng host
@@ -17,8 +17,10 @@ tags:
 The storage VM: two ZFS pools on two physical disks, the file shares the home
 apps use, and two apps (Garage and BorgWarehouse).
 
-**Status:** running. Its snapshots and its one replication task last ran on
-2026-10-30, before the lab went down; they run again at their next 19:00.
+**Status:** running. Snapshots run daily again (2026-11-14 and -15). The
+replication failed on 2026-11-15 on a checksum error in `imp` and is being
+redone ("Checksum errors on `imp`" below); the replica's last good copy is
+still 2026-10-30.
 Rows: `inventory/hosts.md`, `inventory/services.md`. Where it is going:
 `plans/home-overhaul.md`.
 
@@ -38,6 +40,17 @@ Read on 2026-11-14 through the TrueNAS API (`system/info`, `disk`, `pool`,
   no model or serial number, so TrueNAS cannot read their SMART health: that
   has to be read on the XCP-ng host. The scheduled SMART test cron job in
   TrueNAS therefore checks nothing real.
+- **The physical disks** (`smartctl -a` and `/dev/disk/by-id` on the XCP-ng
+  host, run by the owner 2026-11-15):
+
+  | Pool | Host device | Model | Power-on hours | SMART notes |
+  |---|---|---|---|---|
+  | `imp` | `sdd` | WD Blue WD10EZEX, 1 TB, 7200 rpm | 31,300 | PASSED; 0 reallocated, 0 pending, 0 uncorrectable; **4 UDMA CRC errors** (link errors, usually the cable); 3,767 start/stop cycles; last self-test at 22,728 hours |
+  | `Main` | `sdc` | Toshiba P300 HDWD320, 2 TB, 7200 rpm | 18,330 | PASSED; no errors of any kind; **drive-managed SMR** (`Zoned Device: Device managed zones`), which slows long sustained writes such as a resilver or a large replication; no self-test ever run |
+
+  The XCP-ng host's RAM is not ECC (`dmidecode -t memory` on the host:
+  `Error Correction Type: None`), so ZFS cannot rule out a bit-flip in
+  memory as the cause of a checksum error.
 - **Pools:** one disk each, no redundancy inside a pool.
 
   | Pool | Disk | Size | Used | Datasets (used) |
@@ -56,8 +69,9 @@ Read on 2026-11-14 through the TrueNAS API (`system/info`, `disk`, `pool`,
   (`Main/home`). NFS is running with no shares.
 - **Snapshots:** daily at 19:00 — `imp/back` (recursive, kept 2 weeks),
   `Main/home` (recursive, kept 1 week), `imp/ioapp` (at 00:00, kept 2 weeks).
-- **Replication:** `imp/back` to `Main/repli`, after each snapshot; last run
-  2026-10-30 (`imp/back@auto-2026-10-30_19-00`).
+- **Replication:** `imp/back` to `Main/repli`, after each snapshot; last
+  successful run 2026-10-30 (`imp/back@auto-2026-10-30_19-00`). The run on
+  2026-11-15 failed: see "Checksum errors on `imp`" below.
 - **Cloud sync:** only `config-back`, the TrueNAS configuration, which last
   succeeded 2026-11-13. The Google Drive tasks were deleted by the owner on
   2026-11-14, to be set up again properly (`plans/home-overhaul.md`).
@@ -87,6 +101,34 @@ A share mounts on first access and unmounts when idle. Away from home it goes th
 the router's subnet route, which Linux ignores until `sudo tailscale set
 --accept-routes` has been run once. For a one-off: `gio mount smb://10.22.33.160/back`.
 The share names change when the datasets are reorganised (`plans/home-overhaul.md`, B1).
+
+## Checksum errors on `imp` (2026-11-15, in progress)
+
+The 19:00 replication on 2026-11-15 stopped with `cannot send
+'imp/back@auto-2026-11-15_19-00': Input/output error`, and TrueNAS raised a
+critical `ReplicationFailed` alert. `zpool status -v imp` (owner, TrueNAS
+shell) showed 8 checksum errors on `xvdc1`, no read or write errors, and one
+damaged file: a library inside a Python virtual environment
+(`back/nextcloud/admin/files/.../.venv/.../libcublasLt.so.12`), live and in
+that one snapshot. Reading it back gave `Input/output error`, so the bad block
+is on disk.
+
+How it is read, not proved: the file was created at 00:59 on 2026-11-15 during
+a bulk rewrite of `back/nextcloud` (93,535 files changed between 00:30 and
+02:00, `find -newerct`), the owner's Nextcloud restore. The scrub that ended at
+02:08 had started before the file existed, so it never checked it. The disk
+surface is clean and the host logged no disk errors, so the likeliest cause is
+corruption on the way to the disk (non-ECC RAM, or the link with 4 CRC
+errors), not a failing disk.
+
+What was done (owner, 2026-11-15): the damaged virtual environment was
+deleted, `auto-2026-11-15_19-00` destroyed, the partial receive on
+`Main/repli` discarded (`zfs receive -A`), a fresh snapshot
+`auto-2026-11-15_20-00` taken and the replication started by hand. Still to
+do: confirm the replica holds that snapshot, then scrub `imp`; the scrub is
+the first check of the other files written in the same burst. A clean scrub
+is followed by `zpool clear imp`. At the next shutdown: reseat or replace the
+WD's SATA cable and run a memory test on the host.
 
 ## Rules
 

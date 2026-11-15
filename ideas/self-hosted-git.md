@@ -100,10 +100,25 @@ split is also in the research reports):
 - **AppView**: the web UI. It runs on tangled.org and shows repositories from every
   knot. Running your own AppView is experimental per the reports.
 
-So self-hosting Tangled means the code lives on our hardware and the UI lives at
-tangled.org under the owner's Bluesky handle. There is no web UI to install, which
-is likely why the owner found nothing when looking. It fails "our own instance
-linked first", but it is a strong talking point and could run beside the main host.
+So self-hosting Tangled today means the code lives on our hardware and the UI
+lives at tangled.org under the owner's Bluesky handle.
+
+Checked on Tangled's blog and docs (2026-11-15). Tangled hosts its own source on
+tangled.org, not GitHub, which is why general web searches find little:
+
+- Its 2026-10-30 post ("The federated code forge") says every part can be
+  self-hosted, "including the API server and UI". The docs list five parts (knot,
+  spindle, client, index, PDS), but the "Run a frontend" page says "Coming soon".
+  So our own Tangled UI is announced, not yet documented.
+- The company is Tangled Labs Oy; it announced a €3.8M seed round on 2026-03-02.
+- 2026 additions: code search across the network, CI in QEMU microVMs, CI logs
+  over SSH, a "vouching" web of trust against spam, and a read-only API
+  (api.tangled.org).
+- Moving from GitHub: an importer brings repos, emails and SSH keys; the docs
+  have a section on pushing to both GitHub and Tangled.
+
+It fails "our own instance linked first" until the self-hosted UI ships, but it
+is a strong talking point and could run beside the main host.
 
 ### AI-era git hosts (2026)
 

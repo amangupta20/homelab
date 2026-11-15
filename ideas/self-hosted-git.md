@@ -89,6 +89,29 @@ For a solo owner who wants to explore code in a good-looking UI, the only paywal
 that touches the goal is OneDev's cross-project code search and dashboards, at $6
 a month for one user.
 
+### Harness Open Source: what the web UI has, and its release problem
+
+What it includes, from its README and the research reports: repositories and pull
+requests (with code owners, tag rules and a pull request dashboard in 3.3.0),
+pipelines (the successor to Drone CI), **Gitspaces** (one-click development
+environments from a `.devcontainer`, opened in VS Code in the browser) and an
+artifact registry that can proxy upstream registries. A React web app with dark
+mode; the reports rate it the most modern-looking self-hosted UI. No issues.
+
+Checked on the GitHub API and Docker Hub (2026-11-15):
+
+- **The last stable release is 3.3.0, from 2025-08-19**, and the `latest` Docker
+  image still points to it. The 2026 releases numbered v2.27–v2.28 are built from
+  the `drone` branch: they are Drone, not Harness Open Source.
+- `main` is busy (commits daily in November 2026), but ships only as `unstable`
+  and `unstable-uiv2` images, both updated 2026-11-12. `uiv2` suggests a new web
+  UI is coming (a guess from the tag name).
+- Commit titles carry the ticket prefixes of Harness's commercial products
+  (`CODE-`, `AICR-`), so the open-source build looks like a by-product of the paid
+  platform rather than its own release line (an inference).
+
+Trying it means either a stable build fifteen months old or an `unstable` one.
+
 ### Tangled works differently
 
 Tangled splits a git host in two (tangled.org blog "intro", read 2026-11-15; the

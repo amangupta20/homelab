@@ -10,8 +10,10 @@ tags:
 
 # A self-hosted git host that mirrors to GitHub
 
-**Status:** researched (2026-11-15). Three to try: OneDev, Forgejo and Tangled;
-GitLab CE and Harness Open Source dropped; nothing is scheduled.
+**Status:** researched (2026-11-15). Two tracks, decided by the owner the same
+day: **Forgejo and OneDev** are the full main-host candidates; **Tangled and
+Radicle** are exploration beside whichever wins. GitLab CE and Harness Open
+Source dropped. Nothing is scheduled.
 **In one line:** run our own git host (repositories, pull requests, CI) as
 the daily driver, and have it push every change to GitHub, so the public and
 recruiters still see everything there.
@@ -47,13 +49,13 @@ and features come from the research reports (Sources) unless marked as checked.
 
 | Option | Looks (report score /10) | Mirror to GitHub | Verdict |
 |---|---|---|---|
-| **OneDev** | 9.5 | through a CI step, not a switch | **try**: the best for exploring code: jump-to-symbol in the browser and in review, code search, visual CI editor; mostly one maintainer. MIT; v17.2.0 on 2026-11-11 (checked) |
+| **OneDev** | 9.5 | through a CI step, not a switch | **main candidate**: the best for exploring code: jump-to-symbol in the browser and in review, code search, visual CI editor; mostly one maintainer. MIT; v17.2.0 on 2026-11-11 (checked) |
 | Harness Open Source (was Gitness) | 9.0 | through a pipeline step; no built-in mirror per the reports | **dropped** (owner, 2026-11-15): the slickest UI, but no stable release since August 2025 and its new UI sends secrets, connectors and ten more settings pages to an Enterprise upsell (see below) |
-| **Forgejo** | 5 stock, about 8.5 themed | one switch, pushes on every change | **try**: the easiest mirror; CI runs GitHub Actions workflows nearly unchanged; imports GitHub pull requests. Plain until themed (Catppuccin has a maintained theme, checked) |
+| **Forgejo** | 5 stock, about 8.5 themed | one switch, pushes on every change | **main candidate**: the easiest mirror; CI runs GitHub Actions workflows nearly unchanged; imports GitHub pull requests. Plain until themed (Catppuccin has a maintained theme, checked) |
 | GitLab CE | 6.5 | one switch | **dropped** (owner, 2026-11-15): everything built in, but 8–16 GB of memory leaves too little for `agent-1` and `gpu-1` |
-| **Tangled** | 8.5 | hook on the knot, or a GitHub Action | **try, differently**: see below |
+| **Tangled** | 8.5 | hook on the knot, or a GitHub Action | **exploration**: a knot and spindle beside the main host; see below |
 | Gitea | 7.5 | one switch | same base as Forgejo, company-run; pick Forgejo over it unless Gitea's UI pulls clearly ahead. v28.3.0 on 2026-11-01 (checked) |
-| Radicle | 8.0 | manual | **out as daily driver**: peer-to-peer, no built-in CI; interesting to run beside the main host |
+| **Radicle** | 8.0 | manual (add GitHub as a remote) | **exploration**: peer-to-peer, issues and patches stored in git; seed nodes at home and on the VPS; see below |
 | GitRiver | 8.5 | unverified | **unknown**: a 2026 newcomer, open-core licence; site exists (checked), nothing else verified |
 | Phorge, RhodeCode, Pagure, Kallithea, GitBucket, Gogs | 4–5.5 | mixed | **out**: dated UIs, or in maintenance mode |
 | Sourcehut | by design minimal | manual | **out**: email-driven, no-JavaScript by design |
@@ -189,18 +191,72 @@ replace prime-reviewer.
 
 ## Design sketch
 
-- Run OneDev and Forgejo (themed) side by side for
-  a weekend, each with this repo imported and mirrored to a throwaway GitHub repo.
-  Judge on exploring code, history and a pull request; keep the one the owner
-  enjoys using. Put a Tangled knot beside them if the AT Protocol side appeals.
-- The winner becomes the source of truth: push mirror to GitHub on every push;
-  GitHub repo description and README point to the self-hosted copy.
-- Public read-only browsing, sign-up off, owner signs in through the lab's
-  identity provider.
+Two tracks. The main host is the source of truth; the exploration track takes a
+push from it and is never the only copy of anything.
+
+### Track 1: the main host (Forgejo or OneDev)
+
+Run both side by side for a weekend with this repo imported, judge on exploring
+code, history and a pull request, and keep one. The local trial on 2026-11-15
+(above) was the first look. Whichever wins:
+
+- It is the source of truth and mirrors every push to GitHub (built-in push
+  mirror on Forgejo; a CI step on OneDev). The GitHub repo description and README
+  point back to it.
+- Public repositories can be browsed without signing in; sign-up is off; the
+  owner signs in through Authentik, as Langfuse already does (`inventory/services.md`).
+- It runs as a container (Dokploy or `docker-1`); its CI runners run on
+  `agent-1`, because a runner needs the Docker socket.
 - Mirrored commits still count on the GitHub contribution graph when the author
   email is one linked to the GitHub account and they land on the default branch
   (research report; GitHub's documented rule, not tested here).
-- Port prime-reviewer as a CI job on the new host.
+
+### A full Forgejo setup
+
+What "everything switched on" would look like. Marked by how each part is known.
+
+| Part | What it does | How known |
+|---|---|---|
+| Forgejo server | Container; Catppuccin themes, custom landing page in `custom/templates/home.tmpl`, code search with the built-in indexer | Tried locally 2026-11-15 |
+| Database | Postgres on the shared cluster (`plans/shared-postgres.md`) instead of SQLite | Supported per Forgejo docs; not tried |
+| Object storage | Attachments, LFS, packages, Actions logs and artifacts in Garage (S3); git repos stay on disk | Forgejo docs; not tried |
+| Runners | `forgejo-runner` on `agent-1` running the existing `.github/workflows` | Registered and picked up the jobs locally; no job finished, because the job images would not download over the laptop's connection |
+| Reviewers | prime-reviewer as a workflow, with its posting step ported from GitHub's API to Forgejo's; PR-Agent has a Gitea provider as a second reviewer | Forgejo looked for `prime-reviewer-action` on its own action mirror and hung, so the action must be referenced by full URL; PR-Agent's Gitea provider file exists (checked), untried with Forgejo |
+| Dependency updates | Renovate, which lists Forgejo as a supported platform | Renovate docs page exists (checked); not tried |
+| Mirrors | Push mirror to GitHub; second push mirror to a Tangled knot | Forgejo allows several push mirrors per repo (docs); not tried |
+| Sign-in | Authentik over OpenID Connect; `ALLOW_ONLY_EXTERNAL_REGISTRATION=true`, `ENABLE_INTERNAL_SIGNIN=false`, `ENABLE_AUTO_REGISTRATION=true`, `REQUIRE_SIGNIN_VIEW=false`; an Authentik policy limits who can sign in | Setting names from Forgejo's config docs (checked); not tried |
+| Agent access | `tea` CLI, access tokens kept in OpenBao, an MCP server (`goern/forgejo-mcp`, a mirror of a Codeberg project) | MCP repo exists (checked); not tried |
+| Registry | Container and package registry, so CI can publish images | Forgejo docs; not tried |
+| Monitoring | A metrics endpoint for Prometheus | From memory, unverified |
+| Backups | `forgejo dump` or the data folder plus a Postgres dump, through `skills/back-up-a-service/`, with a restore test | Not tried |
+
+Federation (ForgeFed) stays off: the research reports call it experimental.
+
+### Track 2: exploration (Tangled and Radicle)
+
+Both take pushes from the main host and are never the only copy.
+
+- **Tangled:** a knot (repo storage) and spindle (CI) in the lab, registered to
+  the owner's Bluesky handle; the main host pushes to the knot as a second mirror.
+  The web UI is tangled.org until Tangled ships its self-hosted one. The
+  spindle's microVM engine needs `/dev/kvm`, so it wants a VM with nested
+  virtualisation or bare metal (untested on XCP-ng).
+- **Radicle** (1.10.3, 2026-09-08, read on radicle.xyz): peer-to-peer; issues
+  and patches are signed objects stored in git, so there is no database. Seed
+  nodes at home and on the VPS replicate each other, which makes it the natural
+  two-site experiment. Web view, terminal UI, CLI and a desktop app; CI through a
+  separate broker; Linux, macOS and BSD only.
+
+### Later, for fun: two sites
+
+Git branches can sync both ways between home and the VPS (a hook pushes each
+updated branch to the other site, fast-forward only, so a branch moved on both
+sides is refused and flagged). Forgejo's own push and pull mirrors cannot do
+this: a push mirror deletes branches that only exist on the other side, and a
+pull mirror makes the repo read-only. Pull requests and comments live in the
+database, so they stay single-primary: both Forgejo instances use the one
+Postgres primary at home, with a replica on the VPS (`ideas/multi-site-postgres.md`).
+Radicle gets two-site sync without any of this.
 
 ## Risks and costs
 
@@ -214,8 +270,9 @@ replace prime-reviewer.
 
 ## Promote when
 
-The owner has tried the candidates and picked one, and the home overhaul no
-longer needs the attention.
+The owner has tried Forgejo and OneDev side by side and picked one, `agent-1`
+exists for the runners, and the home overhaul no longer needs the attention. The
+exploration track does not gate this.
 
 ## Sources
 

@@ -267,13 +267,17 @@ would not have measured normal use.
 1. **The owner accepts the review conditions and sets the budget.** The
    conditions from "Source reviews": a byte cap on every remote from the
    first day, LAN only with only the cache remotes public, and a pinned image
-   with a VM snapshot before each upgrade. One starting volume size and one
-   cap per remote. — gate: written in "Decisions" below.
+   with a VM snapshot before each upgrade. The budget is set (owner,
+   2026-11-16; "Decisions" below). — gate: the owner accepts the conditions,
+   written in "Decisions" below.
 2. **The stack goes into the repo.** `apps/homeserver/<name>/compose.yaml`
    plus its README, following `apps/README.md`; secrets and identifying values
    as references, never as values. The backend image is `main`, pinned by
    digest, and the README says why and when it moves to a release (see
-   "Decisions"). — gate: merged, and `docker compose config` passes in CI.
+   "Decisions"). The remotes and their caps are created by a script in the
+   same folder, through the API the local test used, so a lost VM is rebuilt
+   from the repo instead of a backup. — gate: merged, and `docker compose
+   config` passes in CI.
 3. **Its own VM, built from code, and proved there.** The VM is the first one
    of `plans/home-overhaul.md`'s step B. On it, check what the local test did
    not: a full Ubuntu or Debian archive as an apt remote with `apt` itself as
@@ -327,9 +331,19 @@ would not have measured normal use.
   the verified `main` (step 6). The cost: `main` builds several times a day
   and has had no release testing, so the pinned digest is only changed with a
   VM snapshot first.
-- **How much disk.** Open. Not measured from the lab: the owner dropped the
-  pull count because the lab has been offline. A starting size is chosen by
-  the owner; the per-remote caps can be raised later without a rebuild.
+- **How much disk.** Decided by the owner on 2026-11-16, as a starting
+  point, not measured (the lab has been offline): a **100 GB** VM disk (the
+  owner said 60-100 GB; 100 is the size that fits the cap plus the system and
+  PostgreSQL), and **80 GB of cache**. Artifact Keeper has no single cap
+  across repositories (see "Candidates"), so the 80 GB is the sum of the
+  per-remote caps; the split between remotes is set in step 2. Caps can be
+  raised later without a rebuild.
+- **Backups.** Decided by the owner on 2026-11-16: **no automatic backups**
+  of the cache VM, so it does not fill backup space with cached packages. A
+  manual VM snapshot before an upgrade, when needed; if the cache breaks, it
+  is cleared and refills from upstream. What is lost with the VM is the
+  remotes, caps and users in PostgreSQL, which step 2's script recreates.
+  This is an exception to `decisions/backup-tiers.md`, proposed there.
 
 ## Links
 

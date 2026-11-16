@@ -1,7 +1,7 @@
 ---
 type: system
 status: "jobs reported running; OpenBao (Garage and B2 offsite), shared Postgres (B2) and OpenTofu state (Garage copy) restores tested, others untested"
-verified: "partially (Xen Orchestra jobs, TrueNAS tasks and the Nextcloud Borg log read 2026-11-14; OpenBao restore tested 2026-10-29 from Garage and 2026-10-31 from B2; shared Postgres restore tested 2026-11-06 from B2; Oracle Cloud OpenTofu state restore tested 2026-11-16 from its Garage copy; others from docs/memory; VPS read from Dokploy recon 2026-10-26)"
+verified: "partially (Xen Orchestra jobs, TrueNAS tasks and the Nextcloud Borg log read 2026-11-14; OpenBao restore tested 2026-10-29 from Garage and 2026-10-31 from B2; shared Postgres restore tested 2026-11-06 from B2; Oracle Cloud and Xen Orchestra OpenTofu state restores tested 2026-11-16 from their Garage copies; others from docs/memory; VPS read from Dokploy recon 2026-10-26)"
 hosts:
   - XCP-ng host
   - TrueNAS VM

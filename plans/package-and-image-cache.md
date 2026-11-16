@@ -1,6 +1,6 @@
 ---
 type: plan
-status: "in progress (Artifact Keeper picked for a trial; step 1 next)"
+status: "in progress (running on cache-1 since 2026-11-16; step 4, the clients, next)"
 verified: "partially (Artifact Keeper run on the workstation 2026-11-15; other options read from docs and source; nothing installed or measured on the lab)"
 tags:
   - plan
@@ -278,7 +278,8 @@ would not have measured normal use.
    "Decisions"). The remotes and their caps are created by a script in the
    same folder, through the API the local test used, so a lost VM is rebuilt
    from the repo instead of a backup. — gate: merged, and `docker compose
-   config` passes in CI.
+   config` passes in CI. Written 2026-11-16 (`apps/homeserver/artifact-keeper/`,
+   deployed by `ansible/cache.yml`); the gate waits for the merge.
 3. **Its own VM, built from code, and proved there.** The VM is the first one
    of `plans/home-overhaul.md`'s step B. On it, check what the local test did
    not: a full Ubuntu or Debian archive as an apt remote with `apt` itself as
@@ -290,6 +291,15 @@ would not have measured normal use.
    instead. Only after this passes is the digest written into the compose
    file as the verified one. — gate: the cache's log shows one miss then a
    hit for each, usage stays under the cap, and a `journal/` entry records it.
+   **Done 2026-11-16** (`journal/2026-11-16-deploy-artifact-keeper.md`): apt as
+   the client against the full Debian archive, the security archive and
+   Docker's apt repository; images from Docker Hub (by key and by the mirror
+   path), ghcr.io and Docker Hub again past a 4 MB test cap, which evicted the
+   least recently used image. Misses and hits are read from the cache's usage
+   counters and timings; the backend logs a miss outright only on a failure.
+   The pinned digest in `compose.yaml` is now the verified one. Found on the
+   way: first fetches from ghcr.io are slow from the LAN (the README's
+   "Quirks").
 4. **New VMs use it from the start, through one Ansible role.** The role
    writes each client's apt sources and Docker `daemon.json` mirror, and runs
    on every VM built from code, and on machines that are not (the

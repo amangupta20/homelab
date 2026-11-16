@@ -1,0 +1,19 @@
+# Artifact Keeper's front door on cache-1: plain HTTP on port 80, LAN only.
+# Routes taken from the project's docker/Caddyfile at commit 825b75e9, cut to
+# what a cache serves: the API and health checks, the OCI registry (Docker) and
+# the Debian format. Everything else goes to the web UI. A format added later
+# needs its prefix here, or its requests reach the web UI and get an HTML 404.
+{
+	auto_https off
+}
+
+:80 {
+	reverse_proxy /api/* backend:8080
+	reverse_proxy /health backend:8080
+	reverse_proxy /livez backend:8080
+	reverse_proxy /readyz backend:8080
+	reverse_proxy /v2 backend:8080
+	reverse_proxy /v2/* backend:8080
+	reverse_proxy /debian/* backend:8080
+	reverse_proxy web:3000
+}

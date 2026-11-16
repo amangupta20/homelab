@@ -1,0 +1,161 @@
+# Artifact Keeper: the LAN's package and image cache, on cache-1
+# (plans/package-and-image-cache.md). Trimmed from the project's own
+# docker-compose.yml at commit 825b75e9 to the four services a pull-through
+# cache needs; search (OpenSearch), scanners (Trivy, OpenSCAP) and
+# Dependency-Track are left out, which the backend allows when their URLs are
+# unset (tested 2026-11-15, plan "Local test").
+#
+# Deployed by ansible/cache.yml into /opt/artifact-keeper, with the secret files
+# it writes into ./secrets/ from OpenBao (kv/homelab/artifact-keeper). Data is on
+# bind mounts under /srv/artifact-keeper (owner, 2026-11-16).
+name: artifact-keeper
+
+services:
+  # Self-signed certificates so the backend talks to PostgreSQL over TLS, as
+  # upstream does. Runs once; skips when the certificates exist.
+  pg-certs:
+    image: docker.io/library/alpine:3.24@sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bf
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -f /certs/server.crt ]; then
+          echo "pg-certs: certificates already exist, skipping"
+          exit 0
+        fi
+        apk add --no-cache openssl >/dev/null 2>&1
+        openssl genrsa -out /certs/ca.key 4096
+        openssl req -x509 -new -nodes -key /certs/ca.key -sha256 -days 3650 \
+          -out /certs/ca.crt -subj "/CN=cache-1 PostgreSQL CA"
+        openssl genrsa -out /certs/server.key 2048
+        openssl req -new -key /certs/server.key -out /certs/server.csr -subj "/CN=postgres"
+        printf 'basicConstraints=CA:FALSE\nsubjectAltName=DNS:postgres,DNS:localhost\n' > /certs/server.ext
+        openssl x509 -req -in /certs/server.csr -CA /certs/ca.crt -CAkey /certs/ca.key \
+          -CAcreateserial -out /certs/server.crt -days 3650 -sha256 -extfile /certs/server.ext
+        rm -f /certs/server.csr /certs/server.ext /certs/ca.srl
+        chown 70:70 /certs/server.key /certs/server.crt /certs/ca.crt
+        chmod 600 /certs/server.key
+        chmod 644 /certs/server.crt /certs/ca.crt
+    volumes:
+      - pg_certs:/certs
+    restart: "no"
+
+  postgres:
+    image: docker.io/library/postgres:18-alpine@sha256:b6972e1115a4ff8eba5d7f7d19184926d1e16d7d1136ae1e1a7ebf286da0f015
+    depends_on:
+      pg-certs:
+        condition: service_completed_successfully
+    environment:
+      POSTGRES_USER: registry
+      POSTGRES_DB: artifact_registry
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      # PostgreSQL 18 keeps PGDATA in a subfolder of this mount (upstream note).
+      - /srv/artifact-keeper/postgres:/var/lib/postgresql
+      - ./init-pg-ssl.sh:/docker-entrypoint-initdb.d/init-pg-ssl.sh:ro
+      - pg_certs:/var/lib/postgresql/certs:ro
+    # Not published: only the backend talks to it, on this network.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U registry -d artifact_registry"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  backend:
+    # `main`, pinned by digest (owner, 2026-11-16): the per-remote byte cap is
+    # only in `main`; the newest release, v1.11.13, lacks it. Built 2026-11-16
+    # from upstream revision aee5068f. Moves to a release that carries the cap
+    # (plan step 6), with a VM snapshot first.
+    image: ghcr.io/artifact-keeper/artifact-keeper-backend:main@sha256:9cacff074a69af43df5e97b0b74b9fd63b47798d55e7567610006f2a0aea81fb
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Secrets come from files, so they stay out of `docker inspect`.
+      DATABASE_URL_FILE: /run/secrets/database_url
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+      # ADMIN_PASSWORD (not INITIAL_ADMIN_PASSWORD) creates the admin without
+      # the first-login password change, so cache-remotes.sh can log in.
+      ADMIN_PASSWORD_FILE: /run/secrets/admin_password
+      STORAGE_PATH: /data/storage
+      BACKUP_PATH: /data/backups
+      PLUGINS_DIR: /data/plugins
+      RUST_LOG: info
+      CORS_ORIGINS: http://10.22.33.137
+      # Caddy's network below; upstream explains why this must match it.
+      RATE_LIMIT_TRUSTED_PROXY_CIDRS: 172.30.0.0/24
+      # Docker daemons using this cache as `registry-mirrors` send image paths
+      # without a repository key; they land in this remote (tested 2026-11-15).
+      AK_DEFAULT_DOCKER_MIRROR_REPO: dockerhub
+      # Anonymous reads, for the remotes marked public (cache-remotes.sh) only;
+      # writes and admin routes always need a login (source reviews, plan).
+      AK_GUEST_ACCESS_ENABLED: "true"
+      HOST: 0.0.0.0
+      PORT: 8080
+    secrets:
+      - database_url
+      - jwt_secret
+      - admin_password
+    volumes:
+      # Owned by uid 1001, group 0: the image's runtime user.
+      - /srv/artifact-keeper/storage:/data/storage
+      - /srv/artifact-keeper/backups:/data/backups
+      - /srv/artifact-keeper/plugins:/data/plugins
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/livez"]
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+
+  web:
+    # Released separately from the backend; v1.11.2 was its newest on 2026-11-16.
+    image: ghcr.io/artifact-keeper/artifact-keeper-web:1.11.2@sha256:c17f1bff9a8bc1646efded313c107a003c383f7c03b213b389cdf789302267a5
+    depends_on:
+      backend:
+        condition: service_started
+    environment:
+      BACKEND_URL: http://backend:8080
+    restart: unless-stopped
+
+  # The only published service: plain HTTP on the LAN. apt checks package
+  # signatures itself, and Docker checks image digests.
+  caddy:
+    image: docker.io/library/caddy:2-alpine@sha256:003a97808e781aa9f7e75cc2f43d34d461099031faf5e20faefb9f61126836f0
+    depends_on:
+      backend:
+        condition: service_started
+      web:
+        condition: service_started
+    ports:
+      - "80:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+secrets:
+  db_password:
+    file: ./secrets/db_password
+  database_url:
+    file: ./secrets/database_url
+  jwt_secret:
+    file: ./secrets/jwt_secret
+  admin_password:
+    file: ./secrets/admin_password
+
+volumes:
+  pg_certs:
+  caddy_data:
+  caddy_config:
+
+networks:
+  default:
+    name: artifact-keeper-network
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24

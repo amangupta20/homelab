@@ -16,7 +16,7 @@ all:
           ansible_user: aman
           ansible_ssh_private_key_file: ~/.ssh/id_rsa
     # VMs on the XCP-ng host (ansible/xcpng.yml). All use the homelab VM key
-    # (kv/general/vm-ssh); cache-1 is built by OpenTofu (iac/cache-vm.tf).
+    # (kv/general/vm-ssh); cache-1 is built by OpenTofu (see plans/package-and-image-cache.md).
     xcpng:
       vars:
         ansible_ssh_private_key_file: ~/.ssh/homelab_vm

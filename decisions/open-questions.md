@@ -197,6 +197,8 @@ owner file, and is deleted from this list.
   which ran on Nextcloud 34.0.5. At the owner's request the agent stopped all twelve
   containers and renamed `daily_backup_time` so nothing restarts them; A4 now says so.
   Which archive was restored is still unknown.
+  Agent's note, 2026-11-16: the owner says the 2026-11-13 archive was restored. A4 now
+  says so; closing this item is the owner's.
 
 ## Edge and security layers (on hold until the Pangolin decision)
 

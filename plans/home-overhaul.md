@@ -1,6 +1,6 @@
 ---
 type: plan
-status: "in progress (A1 and A2 done, A3 redone after a checksum error)"
+status: "in progress (A1, A2 and A3 done)"
 verified: "partially (A1 verified 2026-11-14; A2 read live 2026-11-14 through the Xen Orchestra, TrueNAS and Portainer APIs and SSH)"
 hosts:
   - XCP-ng host
@@ -15,8 +15,9 @@ tags:
 # Home overhaul
 
 **Status:** in progress — A1 done 2026-11-14 (`systems/oob.md`); A2, the read-only
-recon, done 2026-11-14 (facts in `inventory/` and `systems/truenas.md`); A3 is being
-redone after the 2026-11-15 replication failed on a checksum error in `imp`. Replaces `plans/migration.md` (owner, 2026-11-14).
+recon, done 2026-11-14 (facts in `inventory/` and `systems/truenas.md`); A3 done
+2026-11-15, after a rerun of a replication that failed on a checksum error in `imp`
+(checked 2026-11-16). Replaces `plans/migration.md` (owner, 2026-11-14).
 
 **Goal:** move every home workload to a setup where each app's data has one known
 place and one known backup method, app definitions live in this repo and deploy
@@ -297,8 +298,10 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
    `imp/back`'s. The 2026-10-30 copy was stale on 2026-11-14. On 2026-11-15 the
    snapshots ran again but the replication failed on a checksum error in `imp`;
    the damaged file and snapshot were removed and the replication rerun by hand
-   (`systems/truenas.md`, "Checksum errors on `imp`"). The gate is checked when
-   that run finishes, and `imp` is scrubbed after it.
+   (`systems/truenas.md`, "Checksum errors on `imp`"). **Done 2026-11-15**, checked
+   2026-11-16 through the TrueNAS API: `Main/repli` and `imp/back` both have
+   `auto-2026-11-15_20-00` as their newest snapshot, and the scrub of `imp` that
+   followed found 0 errors.
 4. **Nextcloud recovered.** Parked on 2026-11-14 until it moves (owner): containers
    stopped, and AIO's daily backup turned off, because AIO's nightly job (22:00 UTC)
    starts all containers after its backup. A Borg integrity check of all ten archives
@@ -310,7 +313,8 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
    34.0.5 with `files_archive` 1.2.8 still installed until 2026-11-15, when the
    agent stopped all twelve containers at the owner's request and renamed
    `daily_backup_time` to `daily_backup_time.off-2026-11-15` so nothing restarts them.
-   The last good Borg archive is still 2026-11-13 22:07 UTC. The move restores from
+   The owner restored the 2026-11-13 archive (owner, 2026-11-16), which is also
+   the last good one (22:07 UTC). The move restores from
    it, and the daily backup is turned back on then. Before Nextcloud starts again, `custom_apps/files_archive`
    must be moved out of its volume: AIO always starts its newest image, which repeats
    the upgrade to Nextcloud 35 that this app broke. — gate: Nextcloud answers on

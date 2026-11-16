@@ -1,7 +1,7 @@
 ---
 type: system
-status: "running; checksum errors on imp, replica being redone (2026-11-15)"
-verified: "yes (TrueNAS API and Xen Orchestra's REST API, 2026-11-14; disk SMART and pool errors read by the owner on the hosts, 2026-11-15)"
+status: "running; replica current and imp scrubbed clean after a checksum error (2026-11-15)"
+verified: "yes (TrueNAS API and Xen Orchestra's REST API, 2026-11-14; disk SMART and pool errors read by the owner on the hosts, 2026-11-15; replica and scrub read through the TrueNAS API, 2026-11-16)"
 hosts:
   - TrueNAS VM
   - XCP-ng host
@@ -18,9 +18,9 @@ The storage VM: two ZFS pools on two physical disks, the file shares the home
 apps use, and two apps (Garage and BorgWarehouse).
 
 **Status:** running. Snapshots run daily again (2026-11-14 and -15). The
-replication failed on 2026-11-15 on a checksum error in `imp` and is being
-redone ("Checksum errors on `imp`" below); the replica's last good copy is
-still 2026-10-30.
+replication failed on 2026-11-15 on a checksum error in `imp`, was redone the
+same evening, and `Main/repli` now holds `auto-2026-11-15_20-00`; a scrub of
+`imp` afterwards found no errors ("Checksum errors on `imp`" below).
 Rows: `inventory/hosts.md`, `inventory/services.md`. Where it is going:
 `plans/home-overhaul.md`.
 
@@ -69,9 +69,11 @@ Read on 2026-11-14 through the TrueNAS API (`system/info`, `disk`, `pool`,
   (`Main/home`). NFS is running with no shares.
 - **Snapshots:** daily at 19:00 — `imp/back` (recursive, kept 2 weeks),
   `Main/home` (recursive, kept 1 week), `imp/ioapp` (at 00:00, kept 2 weeks).
-- **Replication:** `imp/back` to `Main/repli`, after each snapshot; last
-  successful run 2026-10-30 (`imp/back@auto-2026-10-30_19-00`). The run on
-  2026-11-15 failed: see "Checksum errors on `imp`" below.
+- **Replication:** `imp/back` to `Main/repli`, after each snapshot. The
+  19:00 run on 2026-11-15 failed (see "Checksum errors on `imp`" below); the
+  rerun finished at 20:04 IST with `imp/back@auto-2026-11-15_20-00` as its last
+  snapshot, the newest on both sides (TrueNAS API `replication` and
+  `pool/snapshot`, 2026-11-16).
 - **Cloud sync:** only `config-back`, the TrueNAS configuration, which last
   succeeded 2026-11-13. The Google Drive tasks were deleted by the owner on
   2026-11-14, to be set up again properly (`plans/home-overhaul.md`).
@@ -102,7 +104,7 @@ the router's subnet route, which Linux ignores until `sudo tailscale set
 --accept-routes` has been run once. For a one-off: `gio mount smb://10.22.33.160/back`.
 The share names change when the datasets are reorganised (`plans/home-overhaul.md`, B1).
 
-## Checksum errors on `imp` (2026-11-15, in progress)
+## Checksum errors on `imp` (2026-11-15, closed 2026-11-16)
 
 The 19:00 replication on 2026-11-15 stopped with `cannot send
 'imp/back@auto-2026-11-15_19-00': Input/output error`, and TrueNAS raised a
@@ -124,11 +126,16 @@ errors), not a failing disk.
 What was done (owner, 2026-11-15): the damaged virtual environment was
 deleted, `auto-2026-11-15_19-00` destroyed, the partial receive on
 `Main/repli` discarded (`zfs receive -A`), a fresh snapshot
-`auto-2026-11-15_20-00` taken and the replication started by hand. Still to
-do: confirm the replica holds that snapshot, then scrub `imp`; the scrub is
-the first check of the other files written in the same burst. A clean scrub
-is followed by `zpool clear imp`. At the next shutdown: reseat or replace the
-WD's SATA cable and run a memory test on the host.
+`auto-2026-11-15_20-00` taken and the replication started by hand.
+
+Checked through the TrueNAS API on 2026-11-16 (`replication`, `pool/snapshot`,
+`pool`): the replication finished at 20:04 IST on 2026-11-15 and `Main/repli`
+holds `auto-2026-11-15_20-00`. A scrub of `imp` ran from 20:14 to 21:18 IST
+that evening and finished with 0 errors; it is the first check of the other
+files the restore wrote. The pool is `ONLINE` and healthy, and `xvdc1` now
+shows 0 read, write and checksum errors. Still to do at the next shutdown:
+reseat or replace the WD's SATA cable and run a memory test on the host, since
+the cause was never found.
 
 ## Rules
 

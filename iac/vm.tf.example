@@ -1,8 +1,8 @@
 # Rename to vm.tf and fill names from your XO instance.
-# data "xenorchestra_pool" "pool" { name_label = "Main pool" }
-# data "xenorchestra_template" "tmpl" { name_label = "Ubuntu 24.04 Cloud-Init" }
-# data "xenorchestra_sr" "sr" { name_label = "Local storage" pool_id = data.xenorchestra_pool.pool.id }
-# data "xenorchestra_network" "net" { name_label = "Pool-wide network" pool_id = data.xenorchestra_pool.pool.id }
+# data "xenorchestra_pool" "pool" { name_label = "__POOL_NAME__" }
+# data "xenorchestra_template" "tmpl" { name_label = "debian-13-cloud-20261111-2659" }
+# data "xenorchestra_sr" "sr" { name_label = "Nvme" pool_id = data.xenorchestra_pool.pool.id }
+# data "xenorchestra_network" "net" { name_label = "Pool-wide network associated with eth0" pool_id = data.xenorchestra_pool.pool.id }
 #
 # resource "xenorchestra_vm" "vm" {
 #   name_label  = "example"

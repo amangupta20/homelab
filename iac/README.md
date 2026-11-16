@@ -33,7 +33,28 @@ tofu apply
 First boot still uses cloud-init (bakes in hostname, SSH keys, IP). OpenTofu
 owns the VM's shape; cloud-init owns its first-boot personality.
 
-## State
+## VM template
+
+Every home VM is cloned from one template, `debian-13-cloud-<build>`: Debian
+13's official generic cloud image with cloud-init, on `Local storage` (the host's
+own disk; owner, 2026-11-16). One OS for every home VM is the rule in
+`plans/home-overhaul.md`, "One operating system". A clone onto `Nvme` copies the
+3.2 GB disk, which takes seconds.
+
+`templates/debian-13.sh <build>` makes it: it checks the image's SHA-512
+against Debian's `SHA512SUMS`, has Xen Orchestra download the image itself (so
+it never crosses the tailnet), and turns it into a template without booting it.
+Debian publishes `SHA512SUMS` over HTTPS with no signature file next to it
+(checked 2026-11-16), so HTTPS is what vouches for the checksums.
+
+**In place:** `debian-13-cloud-20261111-2659`, made 2026-11-16 with the steps
+that script strings together (`journal/2026-11-16-debian-13-template.md`). The
+script as a whole is **UNTESTED**; it was written from those steps.
+
+**Boot-test a new build before using it:** clone a throwaway VM from it with a
+cloud-init user and a temporary SSH key, log in, and check `cloud-init status
+--long` says `done` with no errors. Then delete the VM with its disks.
+
 
 State lives in a Garage bucket on TrueNAS (`homelab-tofu-state`, key
 `xcp-ng/terraform.tfstate`), never in git. `backend.tf` holds the bucket, key and

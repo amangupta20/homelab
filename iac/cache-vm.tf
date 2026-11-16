@@ -37,8 +37,14 @@ resource "xenorchestra_vm" "cache" {
   template         = data.xenorchestra_template.debian_13.id
   tags             = ["managed-by-opentofu", "cache"]
 
-  cpus       = 2
-  memory_max = 2 * 1024 * 1024 * 1024 # 2 GiB; Artifact Keeper idled at ~185 MB in the local test
+  cpus = 2
+  # Dynamic memory (owner, 2026-11-16): 256 MiB to 1.5 GiB, raised if it runs
+  # near the top. memory_max sets the static and dynamic maximum together; the
+  # static minimum, 128 MiB, comes from the template. Artifact Keeper idled at
+  # about 185 MB in the local test.
+  memory_max = 1536 * 1024 * 1024
+  memory_min = 256 * 1024 * 1024
+  vga        = "std" # the template's base defaults to cirrus
 
   hvm_boot_firmware = "uefi"
   secure_boot       = true # the template's clone booted with Secure Boot on (2026-11-16)

@@ -2,7 +2,7 @@
 
 The LAN's pull-through cache for apt packages and container images
 (`plans/package-and-image-cache.md`). One Compose stack on its own VM, `cache-1`
-(`iac/cache-vm.tf`), at `http://10.22.33.137` on the LAN only.
+(`iac/`), at `http://10.22.33.137` on the LAN only.
 
 **Status:** running since 2026-11-16 (`journal/2026-11-16-deploy-artifact-keeper.md`).
 No client points at it yet: that is the client playbook, plan step 4.

@@ -27,6 +27,9 @@ nothing, and its firewall rule survived a reboot.
   2026-11-16 (7.11.0 to 10.0.0; Xen Orchestra then reported agent 10.0.0-1 and the VM's
   addresses); a second run changed nothing. Also ran on `cache-1` right after it was
   built (2026-11-16); Xen Orchestra then reported agent 10.0.0-1 and its address.
+  It also installs a native systemd unit for the agent (upstream's, with Debian's
+  paths), because the `.deb` ships only a SysV script that systemd warns it will
+  stop supporting; on both VMs the warning stopped and the agent kept reporting.
 
 ## Use
 

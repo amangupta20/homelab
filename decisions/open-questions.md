@@ -364,3 +364,19 @@ Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
 - `usteer` now moves devices between the two radios. It was installed while
   Wi-Fi at the edge of range was still being tested, and nothing here shows
   whether it helps or causes disconnects. Keep it, tune it, or remove it?
+
+## Home network (added 2026-11-16)
+
+- LAN traffic forwarded into the router's GitHub detour is slow, which
+  disagrees with `systems/router.md` ("Detour for GitHub downloads": 4.6–4.7
+  MB/s from a laptop through the router, 2026-11-14). Measured 2026-11-16 with
+  `curl -4` and `wget -4`, the same 52 MB ghcr.io layer from
+  `pkg-containers.githubusercontent.com`, whose addresses are inside the
+  detoured range and which the router sends over `tailscale0`: the router itself
+  11 s; the VPS that advertises the range 3.5 s; `cache-1` and `xo-ce`, forwarded
+  by the router, about 125 kB/s and 106 kB/s. `cache-1` to Cloudflare, not
+  detoured, ran at 5 MB/s, so the VMs' own links are fine. Capping `cache-1`'s
+  route MTU to 1280 for those addresses changed nothing. The router's Tailscale
+  link to the VPS was direct, its CPU 97% idle, flow offloading off, the
+  `tailscale` zone with `masq` on. Cause unknown; left for the owner, who set up
+  the detour.

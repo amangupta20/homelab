@@ -29,8 +29,33 @@
       # In --check the download above is only simulated, so there is no file yet.
       ignore_errors: "{{ ansible_check_mode }}"
 
+    # The .deb ships only a SysV init script, which systemd wraps with a
+    # warning that this compatibility is deprecated (seen on cache-1's console,
+    # 2026-11-16). This is upstream's own unit (mk/xe-linux-distribution.service
+    # at v10.0.0) with the paths where the .deb installs the programs; a native
+    # unit of the same name takes precedence over the init script.
+    - name: Native systemd unit for the agent
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/xe-linux-distribution.service
+        content: |
+          [Unit]
+          Description=Linux Guest Agent
+          ConditionVirtualization=xen
+          After=network-online.target
+          Wants=network-online.target
+
+          [Service]
+          ExecStartPre=/usr/sbin/xe-linux-distribution /var/cache/xe-linux-distribution
+          ExecStart=/usr/sbin/xe-daemon
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: "0644"
+      register: xgu_unit
+
     - name: Run the agent now and at boot
-      ansible.builtin.service:
+      ansible.builtin.systemd_service:
         name: xe-linux-distribution
-        state: started
+        state: "{{ 'restarted' if xgu_unit is changed else 'started' }}"
         enabled: true
+        daemon_reload: "{{ xgu_unit is changed }}"

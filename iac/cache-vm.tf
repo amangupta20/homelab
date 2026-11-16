@@ -55,7 +55,7 @@ resource "xenorchestra_vm" "cache" {
     mac_address = local.cache.mac
   }
 
-  # 100 GB provisional: the system plus PostgreSQL with room for the cache cap; the plan ("How much disk") still sets the real budget after step 0.
+  # 100 GB (owner, 2026-11-16): the 80 GB cache cap plus the system and PostgreSQL (plan, "How much disk").
   disk {
     sr_id      = data.xenorchestra_sr.nvme.id
     name_label = "${local.cache.hostname}-root"

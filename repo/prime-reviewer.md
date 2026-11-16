@@ -39,6 +39,20 @@ core's rule against committing to protected paths needs the matching exception
 (`prime-reviewer` pull request 10, open on 2026-11-14); until it merges the
 reviewer may still decline such an instruction.
 
+Since action pull request 11 (pinned 2026-11-17), `/prime resolve` merges the
+base branch into a conflicting pull request. Before it, the reviewer could not:
+its copy of the pull request held only the pull request's branch, so on pull
+request 88 (2026-11-16) it replied that it had nothing to merge against. Prime's
+copy now also holds the base branch. The action pushes only a merge whose second
+parent is the base tip the run started from, on top of the pull request's head;
+a rebase is dropped. Protected paths are checked against a plain merge of the
+two (`git merge-tree`), so what `main` brought in does not count, while a
+conflict Prime resolves in `.github/` is refused. Source: `check_merges` and
+`changes_from` in the action's `prime-review.py` at the pinned commit, read
+2026-11-17; its offline suite (90 tests, 11 for this) passes. A live
+`/prime resolve` is **UNTESTED**, and whether the private core lets Prime
+merge is unchecked.
+
 ## When it runs
 
 `.github/workflows/prime-review.yml`. The job's first step stops every pull
@@ -51,6 +65,7 @@ token that can push.
 | the owner pushes to it | continues the same session and re-reviews the new commits; `ai review` passes or fails on the result | only when it has something new |
 | the reviewer's own fix commits arrive | re-reviews them, because a review only covers the commit it read (action `review_state.py`, read 2026-11-06) | only when it has something new |
 | the owner comments `/prime` or `/prime review [focus]` | a new full review, job named `prime` (not a check) | always |
+| the owner comments `/prime resolve [notes]` | merges the base branch's current tip into the pull request, resolves the conflicts and pushes the merge; the push is then re-reviewed | a reply listing each conflicted file and how it was resolved |
 | the owner comments `/prime <anything else>`, in the conversation or on a line | follows the instruction in the same session, for example "do it" on a level 3 | a reply |
 | a pull request someone else opened | `ai review` fails with "not reviewed"; the owner reviews it by hand | none |
 

@@ -30,6 +30,17 @@ None: nothing that existed was changed; the template and its disk are new.
   grown to 9.7 GB, 265 MB of memory used just after first boot (1 GB VM). The VM was deleted with its two disks (both
   answered 404 afterwards); the template's disk was not attached to it and is still there.
 
+## Follow-up, same evening: rebuilt on a 128 MiB base
+
+The first template, made from the built-in `Debian Trixie 13`, carried a 1 GiB static memory minimum, which Xen
+Orchestra treats as read-only; it blocked the owner's memory settings for `cache-1` (static 128 MiB, dynamic 256 MiB to
+1.5 GiB). A new template was made from `Other install media` (static minimum 128 MiB), set to UEFI, with the same image
+disk attached. A throwaway clone with Secure Boot and 1.5 GiB booted, took `10.22.33.44` by DHCP, and over SSH showed
+cloud-init `done` with no errors; Xen Orchestra accepted a 256 MiB dynamic minimum on it while running, and inside it
+showed 1,465 MB total, 260 MB used, a balloon target of 1,531 MB. The clone was deleted with its disks, the old template
+was deleted without its disk, and the new one took the name `debian-13-cloud-20261111-2659`. The image disk is attached
+only to it and still shows 3.23 GB after a rescan.
+
 ## Still open
 
 - `iac/templates/debian-13.sh` as a whole is untested; only its "already exists" guard ran.

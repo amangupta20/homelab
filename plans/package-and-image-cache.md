@@ -268,8 +268,9 @@ would not have measured normal use.
    conditions from "Source reviews": a byte cap on every remote from the
    first day, LAN only with only the cache remotes public, and a pinned image
    with a VM snapshot before each upgrade. The budget is set (owner,
-   2026-11-16; "Decisions" below). — gate: the owner accepts the conditions,
-   written in "Decisions" below.
+   2026-11-16; "Decisions" below). **Done 2026-11-16:** the owner accepted
+   the conditions; it is LAN only, open to every machine on the LAN, with its
+   data on a bind mount on the VM. — gate: written in "Decisions" below.
 2. **The stack goes into the repo.** `apps/homeserver/<name>/compose.yaml`
    plus its README, following `apps/README.md`; secrets and identifying values
    as references, never as values. The backend image is `main`, pinned by

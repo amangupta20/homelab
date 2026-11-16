@@ -30,6 +30,10 @@ nothing, and its firewall rule survived a reboot.
   It also installs a native systemd unit for the agent (upstream's, with Debian's
   paths), because the `.deb` ships only a SysV script that systemd warns it will
   stop supporting; on both VMs the warning stopped and the agent kept reporting.
+- `cache.yml` — `cache-1` only: Docker from Debian, then Artifact Keeper from
+  `apps/homeserver/artifact-keeper/` with its secrets from OpenBao
+  (`kv/homelab/artifact-keeper`). First ran on 2026-11-16
+  (`journal/2026-11-16-deploy-artifact-keeper.md`).
 
 ## Use
 

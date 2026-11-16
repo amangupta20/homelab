@@ -1,0 +1,97 @@
+# Artifact Keeper on cache-1 (plans/package-and-image-cache.md). Run from ansible/
+# after common.yml and xcpng.yml:
+#   ansible-playbook cache.yml --check --diff      # read this first
+#   ansible-playbook cache.yml
+# then create the repositories: ../apps/homeserver/artifact-keeper/cache-remotes.sh
+#
+# Secrets are read from OpenBao on this machine (kv/homelab/artifact-keeper) and
+# written to cache-1 as files the stack mounts; they never appear in the output.
+- name: Artifact Keeper on cache-1
+  hosts: cache-1
+  become: true
+  vars:
+    stack_src: "{{ playbook_dir }}/../apps/homeserver/artifact-keeper"
+    stack_dir: /opt/artifact-keeper
+    data_dir: /srv/artifact-keeper
+    secret: "bao kv get -mount=kv -field=FIELD homelab/artifact-keeper"
+  tasks:
+    # Debian 13's own Docker 26.1.5 and Compose 2.26.1 (apt-cache policy on
+    # cache-1, 2026-11-16), so no extra apt repository is needed.
+    - name: Install Docker and Compose from Debian
+      ansible.builtin.apt:
+        name: [docker.io, docker-compose]
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Data folders the backend writes (its image runs as uid 1001, group 0)
+      ansible.builtin.file:
+        path: "{{ data_dir }}/{{ item }}"
+        state: directory
+        owner: "1001"
+        group: "0"
+        mode: "0770"
+      loop: [storage, backups, plugins]
+
+    - name: PostgreSQL's data folder (the image sets up its own subfolder)
+      ansible.builtin.file:
+        path: "{{ data_dir }}/postgres"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Stack folder and its secrets folder
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "{{ item.mode }}"
+      loop:
+        - { path: "{{ stack_dir }}", mode: "0755" }
+        - { path: "{{ stack_dir }}/secrets", mode: "0700" }
+
+    - name: Stack files from apps/homeserver/artifact-keeper
+      ansible.builtin.copy:
+        src: "{{ stack_src }}/{{ item.name }}"
+        dest: "{{ stack_dir }}/{{ item.name }}"
+        owner: root
+        group: root
+        mode: "{{ item.mode }}"
+      loop:
+        - { name: compose.yaml, mode: "0644" }
+        - { name: Caddyfile, mode: "0644" }
+        - { name: init-pg-ssl.sh, mode: "0755" }
+      register: stack_files
+
+    # The folder above is root-only; the files are world-readable because each
+    # container reads its own as a non-root user (PostgreSQL as 70, the backend
+    # as 1001), and a mounted file keeps its permissions.
+    - name: Secret files from OpenBao
+      ansible.builtin.copy:
+        dest: "{{ stack_dir }}/secrets/{{ item.name }}"
+        content: "{{ item.value }}"
+        owner: root
+        group: root
+        mode: "0444"
+      loop:
+        - name: db_password
+          value: "{{ lookup('pipe', secret | replace('FIELD', 'db_password')) }}"
+        - name: jwt_secret
+          value: "{{ lookup('pipe', secret | replace('FIELD', 'jwt_secret')) }}"
+        - name: admin_password
+          value: "{{ lookup('pipe', secret | replace('FIELD', 'admin_password')) }}"
+        - name: database_url
+          value: "postgresql://registry:{{ lookup('pipe', secret | replace('FIELD', 'db_password')) }}@postgres:5432/artifact_registry?sslmode=require"
+      loop_control:
+        label: "{{ item.name }}"
+      no_log: true
+      register: stack_secrets
+
+    - name: Start or update the stack
+      ansible.builtin.command:
+        cmd: docker compose up -d --remove-orphans
+        chdir: "{{ stack_dir }}"
+      register: compose_up
+      changed_when: compose_up.stderr is search('(Creat|Recreat|Start|Pull)(ed|ing)')
+      when: not ansible_check_mode

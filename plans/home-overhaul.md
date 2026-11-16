@@ -342,7 +342,7 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
 
 00. **Package and image cache** on its own VM, the first VM built the new way: OpenTofu
     through Xen Orchestra, cloud-init for the first key, Ansible for the rest. Its steps
-    and gates are in `plans/package-and-image-cache.md`. — gate: that plan's step 4
+    and gates are in `plans/package-and-image-cache.md`. — gate: that plan's step 3
     (a miss then a hit for one package and one image) passes on this VM.
 0. **Agent VM** (`agent-1`), the second VM built from code, after the cache. It reuses
    the VM-from-code pipeline the cache VM proved, before `docker-1` and `gpu-1` depend on

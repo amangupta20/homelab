@@ -40,3 +40,18 @@ None: a new stack on a new VM, and the cache VM has no backups by the owner's de
   request filled it. The slowness is the router forwarding LAN traffic into its GitHub detour, not the cache
   (`decisions/open-questions.md`, "Home network").
 - No client points at the cache yet (plan step 4).
+
+## Follow-up, 2026-11-17: first real clients
+
+At the owner's request (the VMs are covered by the daily Xen Orchestra snapshots), two VMs ran `apt-get update` and
+`apt-get upgrade` through the cache for one run only: a temporary sources list mapping `deb.debian.org`,
+`security.debian.org` and `download.docker.com/linux/debian` to the cache's remotes, with their `apt-cacher-ng`
+proxy bypassed (`Acquire::http::Proxy=DIRECT`) and `deb-src` lines left out. A normal `apt-get update` restored
+their own lists afterwards; their configuration was not changed.
+
+- `NPM-set` (Debian 12): update 5.4 s, then 1.9 s; **50 packages upgraded** from the Debian, security and Docker
+  remotes in 86 s, no errors or signature warnings. Docker went to 29.10.0 and restarted: all four containers came back
+  and Nginx Proxy Manager answered 200 locally; no reboot flag.
+- `xo-ce` (Debian 13): update 2.5 s, then 1.3 s; nothing to upgrade. Its Yarn and NodeSource sources, which have no
+  remote, were fetched directly.
+- The cache afterwards: debian: 35 MB in 23 entries, debian-security: 25 MB in 44 entries, docker-apt: 102 MB in 11 entries.

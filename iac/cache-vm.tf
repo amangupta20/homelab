@@ -59,7 +59,10 @@ resource "xenorchestra_vm" "cache" {
   disk {
     sr_id      = data.xenorchestra_sr.nvme.id
     name_label = "${local.cache.hostname}-root"
-    size       = 100 * 1000 * 1000 * 1000
+    # 100 GB rounded up to whole 2 MiB blocks, which is what XCP-ng allocates
+    # (it reported 100,000,595,968 bytes after the first apply, 2026-11-16).
+    # Writing the exact 100 GB made every later plan try to shrink the disk.
+    size = 47684 * 2 * 1024 * 1024
   }
 
   cloud_config = templatefile("${path.module}/cloud-init/user-data.yaml.tftpl", {
@@ -75,5 +78,8 @@ resource "xenorchestra_vm" "cache" {
   })
 
   # The drive only carries first-boot settings; nothing reads it afterwards.
+  # The provider deletes it only when power_state is set to Running; without
+  # that line the first apply left it attached (2026-11-16, removed by hand).
+  power_state                         = "Running"
   destroy_cloud_config_vdi_after_boot = true
 }

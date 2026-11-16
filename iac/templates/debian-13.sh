@@ -11,9 +11,12 @@
 #   2. has Xen Orchestra download the same file itself and import it into
 #      "Local storage", so the image never crosses the tailnet. Xen Orchestra
 #      only imports VHD or raw from a URL; qcow2 is refused;
-#   3. creates a halted VM from Xen Orchestra's built-in "Debian Trixie 13"
-#      template (UEFI) with no disk and no network card, attaches the image as
-#      its boot disk, and converts it to a template.
+#   3. creates a halted VM from Xen Orchestra's built-in "Other install media"
+#      template, set to UEFI, with no network card, attaches the image as its
+#      boot disk, and converts it to a template. "Other install media" is the
+#      only built-in template whose static memory minimum is 128 MiB; the
+#      "Debian Trixie 13" one fixes it at 1 GiB, which Xen Orchestra cannot
+#      lower, and that would forbid a dynamic minimum below 1 GiB.
 # The VM is never booted before it becomes a template: a first boot runs
 # cloud-init and would bake a machine ID and SSH host keys into every clone.
 #
@@ -26,7 +29,7 @@ base=https://cloud.debian.org/images/cloud/trixie/$build
 file=debian-13-generic-amd64-$build.raw
 name=debian-13-cloud-$build
 storage="Local storage"
-base_template="Debian Trixie 13"
+base_template="Other install media"
 
 XO_URL=$(bao kv get -mount=kv -field=url homelab/xo)
 XO_TOKEN=$(bao kv get -mount=kv -field=token homelab/xo)
@@ -65,9 +68,9 @@ vdi=$(rpc disk.import "$(jq -nc --arg sr "$sr" --arg name "$file" --arg url "$ba
 echo "3/4 creating $name and attaching the disk" >&2
 vm=$(rest "pools/$pool/actions/create_vm?sync=true" -X POST -H 'Content-Type: application/json' \
   -d "$(jq -nc --arg n "$name" --arg t "$tmpl" --arg b "$build" '{
-    name_label: $n, template: $t, cpus: 1, memory: 1073741824, boot: false, vifs: [],
-    vdis: [{userdevice: "0", destroy: true}],
-    name_description: ("Template: Debian 13 generic cloud image " + $b + " (cloud-init). See iac/README.md.")
+    name_label: $n, template: $t, cpus: 1, memory: 268435456, boot: false, vifs: [],
+    hvmBootFirmware: "uefi",
+    name_description: ("Template: Debian 13 generic cloud image " + $b + " (cloud-init), UEFI, static memory minimum 128 MiB. Base: Other install media. See iac/README.md.")
   }')" | jq -r .id)
 rest vbds -X POST -H 'Content-Type: application/json' \
   -d "$(jq -nc --arg vm "$vm" --arg vdi "$vdi" \

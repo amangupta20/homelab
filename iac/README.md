@@ -56,6 +56,10 @@ own disk; owner, 2026-11-16). One OS for every home VM is the rule in
 `templates/debian-13.sh <build>` makes it: it checks the image's SHA-512
 against Debian's `SHA512SUMS`, has Xen Orchestra download the image itself (so
 it never crosses the tailnet), and turns it into a template without booting it.
+The template is built on Xen Orchestra's `Other install media`, set to UEFI,
+because that is the only built-in template with a static memory minimum of
+128 MiB; `Debian Trixie 13` fixes it at 1 GiB, which Xen Orchestra cannot
+lower, and a VM's dynamic minimum cannot go below its static minimum.
 Debian publishes `SHA512SUMS` over HTTPS with no signature file next to it
 (checked 2026-11-16), so HTTPS is what vouches for the checksums.
 

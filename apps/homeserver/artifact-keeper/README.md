@@ -14,7 +14,8 @@ No client points at it yet: that is the client playbook, plan step 4.
 | `compose.yaml` | backend, PostgreSQL (with TLS, as upstream), web UI and Caddy; trimmed from upstream's `docker-compose.yml` at commit `825b75e9` |
 | `Caddyfile` | plain HTTP on port 80: the API, the registry (`/v2`) and the Debian format go to the backend, the rest to the web UI |
 | `init-pg-ssl.sh` | upstream's script that turns on TLS in PostgreSQL at first start, unchanged |
-| `cache-remotes.sh` | creates the remote repositories and their caps; safe to run again |
+| `remotes.txt` | the one list of remote repositories and their caps, read by `cache-remotes.sh` and, later, the client playbook; add one with `skills/add-a-cache-remote/` |
+| `cache-remotes.sh` | creates the repositories in `remotes.txt` on cache-1 and sets their caps; refuses caps over 80 GB in total; safe to run again |
 
 Deployed by `ansible/cache.yml`, which also writes the secret files from OpenBao
 (`kv/homelab/artifact-keeper`: `db_password`, `jwt_secret`, `admin_password`). The

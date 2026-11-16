@@ -1,8 +1,8 @@
 #!/bin/sh
 # Run tofu in this directory with credentials from OpenBao. Nothing is written
 # to disk or to the shell's environment. Usage: ./run.sh init | plan | apply | ...
-# After a command that can change state, the encrypted state is copied to Garage
-# (../lib/state-copy.sh); `./run.sh backup` makes that copy on its own.
+# After every command, the encrypted state is synced to Garage if it changed
+# (../lib/state-copy.sh); `./run.sh backup` runs that sync on its own.
 # Needs: bao, tofu, rclone, BAO_ADDR set, and `bao login` done once on this machine.
 set -eu
 cd "$(dirname "$0")"
@@ -10,7 +10,7 @@ cd "$(dirname "$0")"
 STATE_KEY=oci/terraform.tfstate
 
 if [ "${1:-}" = "backup" ]; then
-  STATE_COPY_STRICT=1 state_copy "$STATE_KEY"
+  state_sync "$STATE_KEY"
   exit
 fi
 
@@ -41,5 +41,6 @@ export TF_VAR_tenancy_ocid TF_VAR_user_ocid TF_VAR_fingerprint TF_VAR_private_ke
 
 rc=0
 tofu "$@" || rc=$?
-if state_changes "${1:-}"; then state_copy "$STATE_KEY"; fi
+# Garage is only the second copy: its result never changes the exit code.
+state_sync "$STATE_KEY" || true
 exit "$rc"

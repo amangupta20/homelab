@@ -13,8 +13,8 @@ is the Xen Orchestra root.
 - `run.sh` — runs `tofu` with every credential read from OpenBao, so nothing
   is written to disk or left in the shell: the B2 state key
   (`kv/general/tofub2`), the state passphrase (`kv/general/tofu-state`), and Xen
-  Orchestra's address and token (`kv/homelab/xo`). After a command that can
-  change state it copies the state to Garage (below). `iac/oci/run.sh` is the
+  Orchestra's address and token (`kv/homelab/xo`). After every command it
+  syncs the state to Garage if it changed (below). `iac/oci/run.sh` is the
   same for Oracle Cloud.
 - `lib/state-copy.sh` — that copy, shared by both roots.
 - `backend.tf` — where the state lives, and its encryption.
@@ -54,12 +54,14 @@ home is down, and because state about the home machines should not live only on
 them. Until 2026-11-16 this backend pointed at a Garage bucket that was never
 created, so no state was lost by the move.
 
-**Second copy in Garage.** After `apply`, `destroy`, `import`, `state`, `taint`
-or `untaint`, `run.sh` copies the encrypted object from B2 to Garage's `opentofu`
-bucket as `xcp-ng/<UTC time>.tfstate`, checks the copy byte for byte, and keeps
-the newest 14 (`lib/state-copy.sh`, `plans/oci-state-backup.md`). A failed copy
-warns but does not fail the command, which has already changed the lab. Never
-copy with `tofu state pull`: it prints the state decrypted.
+**Second copy in Garage.** After every command, `run.sh` compares the newest
+copy in Garage's `opentofu` bucket with the encrypted object in B2. When they
+differ it copies the object as `xcp-ng/<UTC time>.tfstate`, checks the copy byte
+for byte, and keeps the newest 14 (`lib/state-copy.sh`,
+`plans/oci-state-backup.md`). Garage is only the second copy, so it never
+changes the exit code (owner, 2026-11-16): when Garage is down the command
+prints a warning, and the next run of any command, even a `plan`, catches up.
+Never copy with `tofu state pull`: it prints the state decrypted.
 
 **One writer.** B2 answers OpenTofu's conditional write with `501
 NotImplemented` (tested 2026-11-04), so OpenTofu cannot take a lock. No command

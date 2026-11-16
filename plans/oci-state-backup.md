@@ -35,13 +35,17 @@ The design below is what was built. Where the build differs, the step says so.
 - `iac/oci/run.sh` copies the object after anything that changes state: `apply`,
   `destroy`, `import`, `state ...`. Copying on each change needs no schedule and
   no credentials on the VPS, because state only changes through this wrapper.
+  As built: the wrapper syncs after **every** command, copying only when Garage's
+  newest copy differs from B2, so a copy missed while Garage was down is made on
+  the next run of any command (owner, 2026-11-16).
 - The copy is the encrypted object from the bucket. Never `tofu state pull`: it
   prints decrypted state (tested 2026-11-04).
 - Copies are timestamped, `oci/<timestamp>.tfstate`, keeping the last 14, the
   count OpenBao uses. A single mirror would overwrite the good copy with a
   corrupted one. Garage has no S3 versioning, as recalled and unverified.
-- A failed copy warns loudly but does not fail the command, because the change has
-  already happened in Oracle. `./run.sh backup` retries it.
+- A failed copy warns but never fails the command: Garage is only the second
+  copy (owner, 2026-11-16). `./run.sh backup` runs the sync on its own and exits 1
+  if it fails.
 
 ## Steps
 
@@ -57,7 +61,9 @@ The design below is what was built. Where the build differs, the step says so.
    command warns and still exits as `tofu` did. Built 2026-11-16; the first copy
    was made with `./run.sh backup`, not an `apply`. With Garage unreachable
    (tested 2026-11-16 by pointing it at a closed port), the command warns and
-   keeps `tofu`'s exit code; `./run.sh backup` exits 1.
+   keeps `tofu`'s exit code; `./run.sh backup` exits 1. Catching up was tested the
+   same day: with the Garage copies moved aside, a plain `plan` made a new copy,
+   and the next `plan` copied nothing.
 4. Restore test. — gate: the "Done when" check, recorded in `journal/`. Done
    2026-11-16.
 5. Update `iac/oci/README.md` and `systems/backups.md`. Done 2026-11-16.

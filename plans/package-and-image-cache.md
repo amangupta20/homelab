@@ -343,6 +343,8 @@ would not have measured normal use.
   across repositories (see "Candidates"), so the 80 GB is the sum of the
   per-remote caps; the split between remotes is set in step 2. Caps can be
   raised later without a rebuild.
+- **Operating system.** Debian 13, like every home VM built from code
+  (`plans/home-overhaul.md`, "One operating system"; owner, 2026-11-16).
 - **How clients find it.** Decided by the owner on 2026-11-16: the cache
   VM's fixed address is set on the VM itself, in its OpenTofu and cloud-init
   configuration, not by a DHCP reservation or DNS entry on the OpenWrt router,

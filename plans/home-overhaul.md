@@ -121,6 +121,22 @@ manual XCP-ng snapshot deletion). Restore tests carry the weight that lockdown w
 
 ## Design
 
+### One operating system
+
+Every home VM built from code runs **Debian 13** (owner, 2026-11-16), from
+Debian's official cloud image imported as one Xen Orchestra template, unless a
+specific reason for one VM is written down here. Why: one OS means one Ansible
+base, one set of package names and one upgrade rhythm. The old VMs were split
+without a rule — Debian on the ones set up and left alone (NPM-set,
+adguard-docker, apt-cache, `xo-ce`), Ubuntu 24.04 on the ones used often
+(`gpu_docker`, portainer instance) (`inventory/hosts.md`) — and the owner
+does not know of a reason for the Ubuntu ones. Debian is also the lighter
+of the two at idle, by roughly 50-100 MB (estimate, not measured).
+
+To check before its VM is built, not assumed: `gpu-1`, the NVIDIA driver and
+container toolkit for the GTX 1050 Ti on Debian 13. The Oracle Cloud machines
+(Remote VPS, `pigsty-1`) run Ubuntu 24.04 and are not covered by this rule.
+
 ### Where an app's data lives
 
 The rule is by app (owner, 2026-11-14):

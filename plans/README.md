@@ -58,4 +58,4 @@ tags:
 - `ai-reviewer-prime-agent.md` — Prime Agent reviews the owner's pull requests with three levels of finding, memory and kept traces; built as a GitHub App on GitHub's runners instead of spot VMs (in progress, step 7; how it works: `repo/prime-reviewer.md`).
 - `netbox.md` — NetBox as the lab's inventory, kept current by a sync from the live systems (not started, no date).
 - `sablier-wakeups.md` — stop rarely used VPS apps when idle and start them on the next request; Blinko first (done 2026-11-07).
-- `oci-state-backup.md` — a second copy of the Oracle Cloud OpenTofu state in Garage (blocked on Garage).
+- `oci-state-backup.md` — a second copy of every OpenTofu root's state in Garage (done 2026-11-16).

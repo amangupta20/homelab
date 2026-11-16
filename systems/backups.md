@@ -1,7 +1,7 @@
 ---
 type: system
-status: "jobs reported running; OpenBao (Garage and B2 offsite) and shared Postgres (B2) restores tested, others untested"
-verified: "partially (Xen Orchestra jobs, TrueNAS tasks and the Nextcloud Borg log read 2026-11-14; OpenBao restore tested 2026-10-29 from Garage and 2026-10-31 from B2; shared Postgres restore tested 2026-11-06 from B2; others from docs/memory; VPS read from Dokploy recon 2026-10-26)"
+status: "jobs reported running; OpenBao (Garage and B2 offsite), shared Postgres (B2) and OpenTofu state (Garage copy) restores tested, others untested"
+verified: "partially (Xen Orchestra jobs, TrueNAS tasks and the Nextcloud Borg log read 2026-11-14; OpenBao restore tested 2026-10-29 from Garage and 2026-10-31 from B2; shared Postgres restore tested 2026-11-06 from B2; Oracle Cloud OpenTofu state restore tested 2026-11-16 from its Garage copy; others from docs/memory; VPS read from Dokploy recon 2026-10-26)"
 hosts:
   - XCP-ng host
   - TrueNAS VM
@@ -17,9 +17,9 @@ tags:
 What gets backed up, and — more importantly — what restore is still untested.
 This file owns the backup facts; other pages link here.
 
-**Status:** jobs reported running; OpenBao (Garage and B2 offsite) and shared Postgres (B2) restores tested, other
-restores untested, and the OpenTofu state has no backup at all (see "Still to
-test").
+**Status:** jobs reported running; OpenBao (Garage and B2 offsite), shared Postgres (B2) and the Oracle Cloud
+OpenTofu state (Garage copy) restores tested, other restores untested (see "Still
+to test").
 
 - Plain VMs: Xen Orchestra (XO) snapshot + delta backups (only changed
   blocks) go to TrueNAS, then get copied offsite. No per-VM backup agent:
@@ -28,11 +28,14 @@ test").
   kept, success/failure posted to the `xen-orchestra` ntfy topic.
 - Apps with internal state (Nextcloud): VM image plus an app-level Borg
   backup from inside the app, managed through BorgWarehouse on TrueNAS.
-- OpenTofu state: a `tofu state pull` export offsite is planned but **not
-  implemented**, so the state bucket is a single copy today. The Oracle Cloud
-  state (`iac/oci/README.md`) is encrypted in Backblaze B2, also a single copy;
-  first written 2026-11-05. A copy in Garage is planned
-  (`plans/oci-state-backup.md`).
+- OpenTofu state: both roots (`iac/` for Xen Orchestra since 2026-11-16,
+  `iac/oci/` since 2026-11-05) keep their state encrypted in one Backblaze B2
+  bucket, which keeps every old version. Each root's `run.sh` copies the
+  encrypted object to Garage's `opentofu` bucket after any command that can
+  change state, timestamped, newest 14 kept (`iac/lib/state-copy.sh`). The Oracle
+  state's copy was restore-tested on 2026-11-16
+  (`journal/2026-11-16-restore-test-tofu-state-garage.md`); the Xen Orchestra
+  root has no resources yet, so it has nothing to copy.
 - Remote VPS: Dokploy backs up its own database and the volumes or
   databases of 12 service names to one destination, `garage` — the Garage
   store at home, addressed by its home LAN IP, presumably through a Tailscale
@@ -100,5 +103,6 @@ plan: `plans/offsite-backups.md`). OpenBao has both tiers in place.
 - [ ] Nextcloud: full recovery from Borg backup
 - [ ] XO config + pool metadata: no restore on record
 - [ ] Pre-migration re-audit (before the migration in `plans/home-overhaul.md`)
-- [ ] OpenTofu state: scheduled `tofu state pull` export offsite — not built yet
+- [x] OpenTofu state: Oracle Cloud state restored from its Garage copy, `tofu plan` reported no changes (2026-11-16)
+- [ ] OpenTofu state: the same test for the Xen Orchestra root, once it holds a resource
 - [ ] VPS: restore one Dokploy app backup and Dokploy's own database backup from Garage

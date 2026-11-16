@@ -116,8 +116,8 @@ There is no lock. B2 answers OpenTofu's conditional write with `501
 NotImplemented` (tested 2026-11-04), so the one-writer rule in `iac/README.md` is
 the only protection.
 
-`run.sh` needs a token that can read `kv/general/tofub2`, `kv/general/oci` and
-`kv/general/tofu-state`. These sit under `general` because OpenTofu serves the
+`run.sh` needs a token that can read `kv/general/tofub2`, `kv/general/oci`,
+`kv/general/tofu-state` and `kv/general/tofugarage`, and `rclone` on the path. These sit under `general` because OpenTofu serves the
 whole setup, not one host (owner, 2026-11-05).
 
 ## State
@@ -127,8 +127,10 @@ B2 bucket (the owner's choice, 2026-11-04). B2 stays reachable when home or Orac
 is down. The bucket has no lifecycle rules (B2 API, 2026-11-04), so B2 keeps every
 old version of the state.
 
-A second copy in Garage is planned but not built, so this is a single copy for
-now (`plans/oci-state-backup.md`).
+After any command that can change state, `run.sh` copies the encrypted object
+to Garage at home (`../lib/state-copy.sh`, `plans/oci-state-backup.md`);
+`./run.sh backup` makes a copy on its own. Restore-tested 2026-11-16
+(`journal/2026-11-16-restore-test-tofu-state-garage.md`).
 
 `tofu state pull` prints **decrypted** state, so never use it to make a copy. A
 second copy has to be the encrypted object from the bucket.

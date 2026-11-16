@@ -6,25 +6,21 @@
 # state).
 #
 # Usage: ./cache-remotes.sh [base URL]     default http://10.22.33.137
+# Reads remotes.txt in this folder.
 # Needs: bao (logged in), curl, jq.
 #
-# The caps add up to 80 GB, the owner's budget on a 100 GB disk (2026-11-16):
-# Docker Hub 40, other image registries 10, the Debian archives 20, vendor apt
-# repositories 10. GB here is 10^9 bytes. Each cap evicts the least recently
-# used entries of its own repository; there is no cap across all of them.
+# The repositories, their caps and the 80 GB budget are in remotes.txt next to
+# this script. Each cap evicts the least recently used entries of its own
+# repository; there is no cap across all of them.
 set -eu
+cd "$(dirname "$0")"
 
 base=${1:-http://10.22.33.137}
 GB=1000000000
+remotes=$(grep -vE '^\s*(#|$)' remotes.txt)
 
-# key  format  cap in GB  upstream
-remotes='
-dockerhub        docker  40  https://registry-1.docker.io
-ghcr             docker  10  https://ghcr.io
-debian           debian  14  https://deb.debian.org/debian
-debian-security  debian   6  https://security.debian.org/debian-security
-docker-apt       debian  10  https://download.docker.com/linux/debian
-'
+total=$(echo "$remotes" | awk '{ sum += $3 } END { print sum }')
+[ "$total" -le 80 ] || { echo "caps in remotes.txt add up to $total GB, over the 80 GB budget" >&2; exit 1; }
 
 password=$(bao kv get -mount=kv -field=admin_password homelab/artifact-keeper)
 token=$(jq -nc --arg p "$password" '{username: "admin", password: $p}' |

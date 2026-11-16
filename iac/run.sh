@@ -31,6 +31,8 @@ XOA_URL=$(bao kv get -mount=kv -field=url homelab/xo | sed 's|^https://|wss://|;
 XOA_TOKEN=$(bao kv get -mount=kv -field=token homelab/xo)
 XOA_INSECURE=true
 export XOA_URL XOA_TOKEN XOA_INSECURE
+TF_VAR_vm_ssh_public_key=$(bao kv get -mount=kv -field=public_key general/vm-ssh)
+export TF_VAR_vm_ssh_public_key
 
 rc=0
 tofu "$@" || rc=$?

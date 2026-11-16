@@ -3,3 +3,8 @@ variable "state_passphrase" {
   type        = string
   sensitive   = true
 }
+
+variable "vm_ssh_public_key" {
+  description = "Public half of the homelab VM key (kv/general/vm-ssh), given to every VM at first boot."
+  type        = string
+}

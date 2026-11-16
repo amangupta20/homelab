@@ -1,0 +1,15 @@
+# cloud-init network configuration, version 1 (the format the Xen Orchestra
+# provider passes on). The interface is matched by its MAC address.
+version: 1
+config:
+  - type: physical
+    name: eth0
+    mac_address: "${mac}"
+    subnets:
+      - type: static
+        address: ${address}
+        gateway: ${gateway}
+        dns_nameservers:
+%{ for server in dns ~}
+          - ${server}
+%{ endfor ~}

@@ -17,6 +17,10 @@ is the Xen Orchestra root.
   syncs the state to Garage if it changed (below). `iac/oci/run.sh` is the
   same for Oracle Cloud.
 - `lib/state-copy.sh` — that copy, shared by both roots.
+- `cache-vm.tf` — `cache-1`, the package and image cache VM
+  (`plans/package-and-image-cache.md`). Planned 2026-11-16, not applied yet.
+- `cloud-init/` — the first-boot user data (hostname, the homelab VM key from
+  `kv/general/vm-ssh`) and the static network configuration every VM gets.
 - `backend.tf` — where the state lives, and its encryption.
 - `provider.tf` — declares the Xen Orchestra provider. Holds no credentials:
   `run.sh` sets `XOA_URL`, `XOA_TOKEN` and `XOA_INSECURE` (Xen Orchestra's

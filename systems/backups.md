@@ -36,8 +36,9 @@ to test").
   (`iac/lib/state-copy.sh`). Garage being down never fails a command; the next
   run catches up. The Oracle
   state's copy was restore-tested on 2026-11-16
-  (`journal/2026-11-16-restore-test-tofu-state-garage.md`); the Xen Orchestra
-  root has no resources yet, so it has nothing to copy.
+  (`journal/2026-11-16-restore-test-tofu-state-garage.md`), and the Xen
+  Orchestra state's the same evening, once it held `cache-1`
+  (`journal/2026-11-16-build-cache-1.md`).
 - Remote VPS: Dokploy backs up its own database and the volumes or
   databases of 12 service names to one destination, `garage` — the Garage
   store at home, addressed by its home LAN IP, presumably through a Tailscale
@@ -106,5 +107,5 @@ plan: `plans/offsite-backups.md`). OpenBao has both tiers in place.
 - [ ] XO config + pool metadata: no restore on record
 - [ ] Pre-migration re-audit (before the migration in `plans/home-overhaul.md`)
 - [x] OpenTofu state: Oracle Cloud state restored from its Garage copy, `tofu plan` reported no changes (2026-11-16)
-- [ ] OpenTofu state: the same test for the Xen Orchestra root, once it holds a resource
+- [x] OpenTofu state: Xen Orchestra state restored from its Garage copy (`xcp-ng/20261116T172306Z.tfstate`), `tofu plan` reported no changes with `cache-1` in it (2026-11-16)
 - [ ] VPS: restore one Dokploy app backup and Dokploy's own database backup from Garage

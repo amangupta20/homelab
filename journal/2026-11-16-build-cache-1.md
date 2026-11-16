@@ -30,9 +30,11 @@ None: a new VM, no existing one changed. By the owner's decision the cache VM ha
 - Xen Orchestra's REST API: the memory limits above, agent 10.0.0-1 reporting `10.22.33.137`.
 - Both playbooks changed nothing on a second run.
 - After both fixes and the drive's removal: `./run.sh plan` printed `No changes.`
+- Restore test of the state's second copy: in a scratch copy of `iac/` with a `backend "local"` override, the newest
+  Garage copy (`xcp-ng/20261116T172306Z.tfstate`, from the apply) was the state; `tofu plan -lock=false` printed
+  `No changes.` The scratch copy was deleted.
 
 ## Still open
 
-- The restore test of the `xcp-ng` state's Garage copy, now that the root holds a resource.
 - Its DNS lists two IPv6 resolvers advertised by the router besides `10.22.33.1`.
 - Artifact Keeper itself: plan steps 2 and 3.

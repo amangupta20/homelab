@@ -1,0 +1,14 @@
+#cloud-config
+# First boot only. Everything after this is Ansible's job (iac/README.md).
+hostname: ${hostname}
+fqdn: ${hostname}
+manage_etc_hosts: true
+
+# Debian's cloud image creates the user `debian` with passwordless sudo;
+# this gives it the homelab VM key (kv/general/vm-ssh) and nothing else.
+users:
+  - default
+ssh_authorized_keys:
+  - ${ssh_public_key}
+ssh_pwauth: false
+disable_root: true

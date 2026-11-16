@@ -290,12 +290,16 @@ would not have measured normal use.
    instead. Only after this passes is the digest written into the compose
    file as the verified one. — gate: the cache's log shows one miss then a
    hit for each, usage stays under the cap, and a `journal/` entry records it.
-4. **New VMs use it from the start.** Each VM built from code in the
-   overhaul gets its apt proxy and Docker mirror configuration at creation.
-   Old VMs are not reconfigured; apt-cacher-ng goes when its VM, `.254`, is
-   dropped with the rest. — gate: the VM template or module sets the
-   configuration, and `inventory/services.md` has the new cache's row in
-   place of the apt cache row once `.254` is gone.
+4. **New VMs use it from the start, through one Ansible role.** The role
+   writes each client's apt sources and Docker `daemon.json` mirror, and runs
+   on every VM built from code, and on machines that are not (the
+   workstation, a laptop). The cache's address is one variable in the role.
+   One switch in the role points clients back at the upstream repositories,
+   so if the cache goes wrong, a rerun of the role takes the LAN off it. Old
+   VMs are not reconfigured; apt-cacher-ng goes when its VM, `.254`, is
+   dropped with the rest. — gate: the role is in the repo, a test VM is
+   switched to upstream and back with it, and `inventory/services.md` has the
+   new cache's row in place of the apt cache row once `.254` is gone.
 5. **The month's trial, measured.** At least a month of normal use after step
    3: hit rate, bytes served from disk against bytes fetched upstream, `df`
    on the volume against the cap, idle memory, and every manual clean-up.
@@ -339,6 +343,15 @@ would not have measured normal use.
   across repositories (see "Candidates"), so the 80 GB is the sum of the
   per-remote caps; the split between remotes is set in step 2. Caps can be
   raised later without a rebuild.
+- **How clients find it.** Decided by the owner on 2026-11-16: the cache
+  VM's fixed address is set on the VM itself, in its OpenTofu and cloud-init
+  configuration, not by a DHCP reservation or DNS entry on the OpenWrt router,
+  and clients get it from the Ansible role in step 4. Router-side tricks were
+  weighed and left out: proxy auto-discovery does not fit (Artifact Keeper is
+  addressed by repository URL, not as a proxy), intercepting HTTPS needs a
+  certificate on every client, and answering `archive.ubuntu.com` with the
+  cache's address would break every apt client on the LAN whenever the cache
+  is down. The address goes into `inventory/network.md` when it is chosen.
 - **Backups.** Decided by the owner on 2026-11-16: **no automatic backups**
   of the cache VM, so it does not fill backup space with cached packages. A
   manual VM snapshot before an upgrade, when needed; if the cache breaks, it

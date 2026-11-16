@@ -10,48 +10,63 @@ is the Xen Orchestra root.
 
 ## Files
 
-- `provider.tf` — declares the Xen Orchestra provider. Holds no credentials.
-  Login comes from environment variables (`XOA_URL`, `XOA_TOKEN`) or from the
-  vault (see `vault.tf.example`).
+- `run.sh` — runs `tofu` with every credential read from OpenBao, so nothing
+  is written to disk or left in the shell: the B2 state key
+  (`kv/general/tofub2`), the state passphrase (`kv/general/tofu-state`), and Xen
+  Orchestra's address and token (`kv/homelab/xo`). After a command that can
+  change state it copies the state to Garage (below). `iac/oci/run.sh` is the
+  same for Oracle Cloud.
+- `lib/state-copy.sh` — that copy, shared by both roots.
+- `backend.tf` — where the state lives, and its encryption.
+- `provider.tf` — declares the Xen Orchestra provider. Holds no credentials:
+  `run.sh` sets `XOA_URL`, `XOA_TOKEN` and `XOA_INSECURE` (Xen Orchestra's
+  certificate is self-signed, `CN=xo-ce`, read 2026-11-16).
+- `variables.tf` — the state passphrase.
 - `vm.tf.example` — commented example VM. Copy to `vm.tf` and fill in your
   pool, template, storage, and network names. `vm.tf` itself is git-ignored
   so local names never leak into git.
-- `vault.tf.example` — same idea for vault-backed credentials. Copy to
-  `vault.tf` when OpenBao is running.
+- `vault.tf.example` — reading the Xen Orchestra login through OpenTofu's
+  vault provider instead. Not used: `run.sh` reads it with `bao`.
 
 ## Use
 
+Ran on 2026-11-16 with no resources yet: `init` reached B2 and `plan` reached
+Xen Orchestra and reported no changes.
+
 ```bash
-cp vm.tf.example vm.tf   # then edit names inside
-export XOA_URL=wss://xo-host
-export XOA_TOKEN=xxxx     # or: bao login, see systems/openbao.md
-tofu init
-tofu plan                 # read this before applying
-tofu apply
+./run.sh init
+./run.sh plan    # read it all; the pull request gets the short form below
+./run.sh apply
+./run.sh backup  # copy the state to Garage now, e.g. after a failed copy
 ```
+
+Needs `bao` (logged in, `BAO_ADDR` set), `tofu` and `rclone`.
 
 First boot still uses cloud-init (bakes in hostname, SSH keys, IP). OpenTofu
 owns the VM's shape; cloud-init owns its first-boot personality.
 
 ## State
 
-State lives in a Garage bucket on TrueNAS (`homelab-tofu-state`, key
-`xcp-ng/terraform.tfstate`), never in git. `backend.tf` holds the bucket, key and
-endpoint; credentials come from the environment, not the file.
+Encrypted by OpenTofu before upload, with the same passphrase as `iac/oci/`, in
+the same private Backblaze B2 bucket, at key `xcp-ng/terraform.tfstate`; never
+in git (owner, 2026-11-16). B2 is the primary because it stays reachable when
+home is down, and because state about the home machines should not live only on
+them. Until 2026-11-16 this backend pointed at a Garage bucket that was never
+created, so no state was lost by the move.
 
-Prerequisites before the first `tofu init` works:
+**Second copy in Garage.** After `apply`, `destroy`, `import`, `state`, `taint`
+or `untaint`, `run.sh` copies the encrypted object from B2 to Garage's `opentofu`
+bucket as `xcp-ng/<UTC time>.tfstate`, checks the copy byte for byte, and keeps
+the newest 14 (`lib/state-copy.sh`, `plans/oci-state-backup.md`). A failed copy
+warns but does not fail the command, which has already changed the lab. Never
+copy with `tofu state pull`: it prints the state decrypted.
 
-- Bucket `homelab-tofu-state` exists in Garage and the S3 key used can read and
-  write it.
-- `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` are exported for that key,
-  ideally by the same wrapper that fetches the Xen Orchestra token from
-  OpenBao.
-
-**One writer.** Garage has no S3 conditional writes, so OpenTofu cannot take a
-lock. No command can detect that someone else applied in between: a plan always
-reads whatever is in the bucket now. So the rule is the whole protection — one
-checkout runs `tofu apply`, the plan summarised in the pull request comes from that
-same checkout, produced immediately before the apply.
+**One writer.** B2 answers OpenTofu's conditional write with `501
+NotImplemented` (tested 2026-11-04), so OpenTofu cannot take a lock. No command
+can detect that someone else applied in between: a plan always reads whatever
+is in the bucket now. So the rule is the whole protection — one checkout runs
+`./run.sh apply`, the plan summarised in the pull request comes from that same
+checkout, produced immediately before the apply.
 
 **Plans in pull requests.** This repo is public and a full plan can show IDs and
 addresses, so paste only the summary and resource actions, and keep the full plan
@@ -59,7 +74,7 @@ out of the repo, pull requests and CI logs. This keeps only those lines (ran
 against a scratch config on 2026-11-05; attribute values did not appear):
 
 ```bash
-tofu plan -no-color | grep -E '^ +# |^Plan:|^No changes'
+./run.sh plan -no-color | grep -E '^ +# |^Plan:|^No changes'
 ```
 
 Read the full plan before applying; this short form is for the record, not for
@@ -68,9 +83,8 @@ deciding. Still check what it prints: a resource's name can identify something t
 **Backup:** losing the bucket loses the mapping between code and real VMs.
 Whether it is backed up is tracked in `systems/backups.md`.
 
-Note: this backend has not been exercised against a real bucket yet. Everything
-that could be checked locally (fmt, validate, tflint, provider lock) has been.
-One thing CI cannot check: `tofu init -backend=false` skips the backend block
+The backend was first used against the real bucket on 2026-11-16 (`./run.sh
+init`). One thing CI cannot check: `tofu init -backend=false` skips the backend block
 entirely, so a typo in `backend.tf` surfaces at your first real `tofu init`, not
 in a pull request.
 
@@ -78,5 +92,4 @@ in a pull request.
 
 `*.tfvars`, `*.tfstate*`, `.terraform/`, `vm.tf`, `vault.tf`, `.env`,
 anything with a token. State is never committed — it holds secrets, so it lives
-in the Garage bucket, which stores it unencrypted (accepted: the bucket is only
-reachable over the tailnet).
+encrypted in B2, with encrypted copies in Garage.

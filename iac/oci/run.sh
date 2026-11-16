@@ -1,9 +1,18 @@
 #!/bin/sh
 # Run tofu in this directory with credentials from OpenBao. Nothing is written
 # to disk or to the shell's environment. Usage: ./run.sh init | plan | apply | ...
-# Needs: bao, tofu, BAO_ADDR set, and `bao login` done once on this machine.
+# After a command that can change state, the encrypted state is copied to Garage
+# (../lib/state-copy.sh); `./run.sh backup` makes that copy on its own.
+# Needs: bao, tofu, rclone, BAO_ADDR set, and `bao login` done once on this machine.
 set -eu
 cd "$(dirname "$0")"
+. ../lib/state-copy.sh
+STATE_KEY=oci/terraform.tfstate
+
+if [ "${1:-}" = "backup" ]; then
+  STATE_COPY_STRICT=1 state_copy "$STATE_KEY"
+  exit
+fi
 
 oci() { bao kv get -mount=kv -field="$1" general/oci; }
 b2() { bao kv get -mount=kv -field="$1" general/tofub2; }
@@ -30,4 +39,7 @@ TF_VAR_tailscale_auth_key=$(bao kv get -mount=kv -field=auth_key general/tailsca
 export TF_VAR_tenancy_ocid TF_VAR_user_ocid TF_VAR_fingerprint TF_VAR_private_key \
   TF_VAR_region TF_VAR_compartment_ocid TF_VAR_ssh_public_key TF_VAR_tailscale_auth_key
 
-exec tofu "$@"
+rc=0
+tofu "$@" || rc=$?
+if state_changes "${1:-}"; then state_copy "$STATE_KEY"; fi
+exit "$rc"

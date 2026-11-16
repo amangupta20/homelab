@@ -1,7 +1,7 @@
 ---
 type: plan
-status: "blocked"
-verified: "no (design only; nothing built, Garage unreachable 2026-11-04)"
+status: "done"
+verified: "yes (built and restore-tested 2026-11-16)"
 hosts:
   - TrueNAS VM
 tags:
@@ -13,8 +13,10 @@ tags:
 
 # Second copy of the Oracle Cloud state in Garage
 
-**Status:** blocked on Garage, which is staying down for now (owner, 2026-11-05).
-It timed out from the owner's workstation on 2026-11-04 (`curl` to its S3 port).
+**Status:** done 2026-11-16. Built for both OpenTofu roots, not only Oracle Cloud
+(owner, 2026-11-16): `iac/lib/state-copy.sh`, called by `iac/run.sh` and
+`iac/oci/run.sh`. The Oracle state's copy passed the restore test the same day
+(`journal/2026-11-16-restore-test-tofu-state-garage.md`).
 
 **Goal:** the encrypted state in Backblaze B2 (`iac/oci/README.md`) also exists in
 Garage at home, so losing the B2 account or bucket does not lose the state.
@@ -26,7 +28,7 @@ temporary checkout using that copy runs `tofu plan` and reports no changes.
 bucket has no lifecycle rules, B2 API, 2026-11-04), which covers a corrupted state
 but not losing the account.
 
-Everything below is a design and **UNTESTED**.
+The design below is what was built. Where the build differs, the step says so.
 
 ## Design
 
@@ -44,13 +46,21 @@ Everything below is a design and **UNTESTED**.
 ## Steps
 
 1. Garage is back up. — gate: its S3 port answers from the checkout that applies.
+   Done: it answered from the workstation on 2026-11-16.
 2. Create a bucket and a key limited to it, and store the key in OpenBao. — gate:
-   the key can write and list that bucket and nothing else.
+   the key can write and list that bucket and nothing else. Done 2026-11-16: the
+   owner created bucket `opentofu` and its key, at `kv/general/tofugarage`. Writing,
+   listing and deleting a test object worked; listing buckets showed only
+   `opentofu`, and another bucket's name answered 404 (signed `curl`).
 3. Add `rclone`, pinned in `mise.toml`, and the copy step to `run.sh`. — gate: one
    `apply` leaves a new timestamped copy, and with Garage unreachable the same
-   command warns and still exits as `tofu` did.
-4. Restore test. — gate: the "Done when" check, recorded in `journal/`.
-5. Update `iac/oci/README.md` and `systems/backups.md`.
+   command warns and still exits as `tofu` did. Built 2026-11-16; the first copy
+   was made with `./run.sh backup`, not an `apply`. With Garage unreachable
+   (tested 2026-11-16 by pointing it at a closed port), the command warns and
+   keeps `tofu`'s exit code; `./run.sh backup` exits 1.
+4. Restore test. — gate: the "Done when" check, recorded in `journal/`. Done
+   2026-11-16.
+5. Update `iac/oci/README.md` and `systems/backups.md`. Done 2026-11-16.
 
 ## Links
 

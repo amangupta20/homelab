@@ -9,5 +9,7 @@ terraform {
   }
 }
 
-# Creds via env: XOA_URL, XOA_TOKEN
-# provider "xenorchestra" {}
+# Login comes from the environment, set by run.sh from OpenBao: XOA_URL,
+# XOA_TOKEN, and XOA_INSECURE because Xen Orchestra's certificate is
+# self-signed (CN=xo-ce, read 2026-11-16).
+provider "xenorchestra" {}

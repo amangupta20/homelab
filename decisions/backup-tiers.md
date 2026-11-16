@@ -25,6 +25,15 @@ few versions, in pgBackRest's own terms (`plans/shared-postgres.md`, "Backups").
 Its encryption passphrase is kept in OpenBao only, an exception to rule 2 below (owner,
 2026-11-06): OpenBao restores from B2 (tested 2026-10-31) with unseal keys kept offline.
 
+**Rebuildable state is exempt** (owner, 2026-11-16). A service whose data refills
+itself from upstream, and whose configuration lives in this repo, needs no backup
+tier: losing it costs a rebuild from the repo and some download time, not data.
+The first one is the package and image cache (`plans/package-and-image-cache.md`):
+the cache refills on demand, and its remotes, caps and users are recreated by a
+script kept with its stack. A manual VM snapshot before an upgrade is still taken
+when useful. If a service also holds something that is not in the repo and cannot
+be fetched again, it is not exempt.
+
 ## Why
 
 - **One copy offsite fails when it is needed.** If ransomware encrypts the

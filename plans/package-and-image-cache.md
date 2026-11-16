@@ -343,7 +343,8 @@ would not have measured normal use.
   manual VM snapshot before an upgrade, when needed; if the cache breaks, it
   is cleared and refills from upstream. What is lost with the VM is the
   remotes, caps and users in PostgreSQL, which step 2's script recreates.
-  This is an exception to `decisions/backup-tiers.md`, proposed there.
+  It falls under the rebuildable-state exemption in
+  `decisions/backup-tiers.md` (owner, 2026-11-16).
 
 ## Links
 

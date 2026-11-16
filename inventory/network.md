@@ -23,12 +23,13 @@ Private subnet `10.22.33.0/24`, served by the Home router
 | IP | Host | State |
 |---|---|---|
 | `.1` | Home router: gateway, DHCP, DNS | verified: `uci show network` over SSH 2026-11-13 |
-| `.100`–`.249` | DHCP pool, 12-hour leases | verified: `uci show dhcp` over SSH 2026-11-13 |
+| `.10`–`.54` | DHCP pool, 12-hour leases. Moved from `.100`–`.249` on 2026-11-16 (owner's request), so addresses above `.100` are free for fixed addresses set by each machine; it stops at `.54` to stay clear of `.55`, `.99` and `.100`, which are set on their machines. The router has no DHCP reservations | verified: `uci show dhcp` and the generated `dhcp-range` over SSH 2026-11-16 |
 | `.252` | oob-1, static, outside the DHCP pool (`systems/oob.md`) | verified: `ip -br a` over SSH 2026-11-14 |
 | `.254` | Docker + proxy host | in docs; an address answers here (`ip neigh` on the router 2026-11-13), which machine it is was not checked |
 | `.55` | portainer instance | verified: SSH and Portainer API 2026-11-14 |
 | `.99` | NPM-set | verified: SSH and Portainer API 2026-11-14 |
 | `.100` | Xen Orchestra (`xo-ce`) | verified: its REST API answered 2026-11-14 |
+| `.137` | cache VM (planned, `plans/package-and-image-cache.md`); set on the VM by OpenTofu and cloud-init | chosen 2026-11-16; nothing answered there (ping, and the router's neighbour table showed `FAILED`) |
 | `.123` | gpu_docker | verified: SSH 2026-11-14 |
 | `.160` | TrueNAS VM | verified: TrueNAS API 2026-11-14 |
 | `.253` | adguard-docker | verified: SSH and Portainer API 2026-11-14 |

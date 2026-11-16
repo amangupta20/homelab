@@ -127,9 +127,10 @@ B2 bucket (the owner's choice, 2026-11-04). B2 stays reachable when home or Orac
 is down. The bucket has no lifecycle rules (B2 API, 2026-11-04), so B2 keeps every
 old version of the state.
 
-After any command that can change state, `run.sh` copies the encrypted object
-to Garage at home (`../lib/state-copy.sh`, `plans/oci-state-backup.md`);
-`./run.sh backup` makes a copy on its own. Restore-tested 2026-11-16
+After every command, `run.sh` syncs the encrypted object to Garage at home when
+Garage's newest copy differs (`../lib/state-copy.sh`, `plans/oci-state-backup.md`).
+Garage being down never fails a command; the next run catches up. `./run.sh
+backup` runs the sync on its own and exits 1 if it fails. Restore-tested 2026-11-16
 (`journal/2026-11-16-restore-test-tofu-state-garage.md`).
 
 `tofu state pull` prints **decrypted** state, so never use it to make a copy. A

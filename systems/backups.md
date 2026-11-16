@@ -31,8 +31,10 @@ to test").
 - OpenTofu state: both roots (`iac/` for Xen Orchestra since 2026-11-16,
   `iac/oci/` since 2026-11-05) keep their state encrypted in one Backblaze B2
   bucket, which keeps every old version. Each root's `run.sh` copies the
-  encrypted object to Garage's `opentofu` bucket after any command that can
-  change state, timestamped, newest 14 kept (`iac/lib/state-copy.sh`). The Oracle
+  encrypted object to Garage's `opentofu` bucket whenever Garage's newest copy
+  differs, checked after every command, timestamped, newest 14 kept
+  (`iac/lib/state-copy.sh`). Garage being down never fails a command; the next
+  run catches up. The Oracle
   state's copy was restore-tested on 2026-11-16
   (`journal/2026-11-16-restore-test-tofu-state-garage.md`); the Xen Orchestra
   root has no resources yet, so it has nothing to copy.

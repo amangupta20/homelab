@@ -1,6 +1,6 @@
 ---
 type: plan
-status: "in progress (step 1)"
+status: "in progress (Artifact Keeper picked for a trial; step 1 next)"
 verified: "partially (Artifact Keeper run on the workstation 2026-11-15; other options read from docs and source; nothing installed or measured on the lab)"
 tags:
   - plan
@@ -11,10 +11,11 @@ tags:
 
 # Package and image cache, redone
 
-**Status:** in progress (step 1). The candidate list was researched 2026-11-01
-and again on 2026-11-15, when Artifact Keeper was also run on the workstation
-(see "Local test"). Nothing is installed on the lab, and step 0, the recon of
-the cache the lab has today, is still open.
+**Status:** in progress. The candidate list was researched 2026-11-01 and
+again on 2026-11-15, when Artifact Keeper was also run on the workstation (see
+"Local test"). On 2026-11-16 the owner picked Artifact Keeper for a trial of at
+least a month, replacing apt-cacher-ng, and dropped the recon of the old
+cache (see "Steps"). Nothing is installed on the lab.
 **Goal:** one cache on the home network answers apt and container-image
 requests for every VM, stores what is asked for the first time, and keeps
 itself inside a disk budget the owner chooses, so a redeploy stops coming down
@@ -257,52 +258,50 @@ snapshot before each upgrade.
 
 ## Steps
 
-0. **Recon the cache that exists.** Read the apt cache's configuration on the
-   Docker + proxy host, read-only: what software, what cache size, what
-   retention, which VMs point at it, and how many requests a day it serves.
-   Count the image pulls the homeserver makes in a week (`docker events`, or
-   the registry's own view) so the size budget is chosen from a number. —
-   gate: the software, the volume size and the pull count are written into
-   this plan, and the apt cache row in `inventory/services.md` is corrected or
-   confirmed.
-1. **Finish the comparison.** Complete the security audit of Artifact Keeper
-   (above), and price every candidate against the eight requirements in one
-   table at the size step 0 implies. — gate: the table is in this plan with a
-   recommendation, and each audit finding is fixed upstream, mitigated by
-   configuration, or listed as accepted risk by the owner.
-   Done so far (2026-11-15): the local test and the two source reviews above.
-   Still open: the sizes, which wait for step 0; the owner accepting the
-   reviews' conditions; and running NORA the same way, if the owner wants a
-   second tested option.
-2. **The owner picks, and the budget is set.** One candidate, one volume size,
-   one eviction rule (byte ceiling, retention window, or both), and where it
-   runs: the Docker + proxy host, or its own VM. — gate: the choice and the
-   numbers are written here, and the owner has approved the pull request that
-   adds them.
-3. **The stack goes into the repo.** `apps/homeserver/<name>/compose.yaml`
+The recon of the old apt cache and the week's pull count, step 0 until
+2026-11-16, were dropped by the owner: every VM is recreated from code in
+`plans/home-overhaul.md`, so no old VM is moved over to the new cache, and
+the lab has been offline and unmaintained for a while, so a week's pulls
+would not have measured normal use.
+
+1. **The owner accepts the review conditions and sets the budget.** The
+   conditions from "Source reviews": a byte cap on every remote from the
+   first day, LAN only with only the cache remotes public, and a pinned image
+   with a VM snapshot before each upgrade. One starting volume size and one
+   cap per remote. — gate: written in "Decisions" below.
+2. **The stack goes into the repo.** `apps/homeserver/<name>/compose.yaml`
    plus its README, following `apps/README.md`; secrets and identifying values
-   as references, never as values. — gate: merged, and `docker compose config`
-   passes in CI.
-4. **Prove it on one client before touching the rest.** Vendor HTTPS apt
-   repositories first, then images, and the distribution's own archives last:
-   the old apt cache keeps serving those until the new one has been tried
-   against a full archive on one VM. Point one VM's apt at
-   the new cache and one VM's Docker daemon at it. `registry-mirrors` covers
-   Docker Hub only — Docker's own documentation states a daemon cannot point at
-   a mirror of another upstream (read 2026-11-01) — so other registries need
-   per-host mirror configuration instead. Pull an image twice and install a
-   package twice. — gate: the cache's log shows one miss then a hit for
-   each, and the same bytes are not fetched from the internet twice.
-5. **Cut the fleet over, then retire the old cache.** Every VM's apt
-   configuration and every Docker daemon, one at a time, with the old cache
-   left running as the rollback until nothing has failed for two weeks. —
-   gate: no VM has pointed at the old cache for two weeks; then it is
-   stopped, its volume kept one more month, and its row in
-   `inventory/services.md` is replaced.
-6. **Measure it, and write down what it saves.** Hit rate, bytes served from
-   disk against bytes fetched upstream, and `df` on the volume against the
-   ceiling. — gate: a `journal/` entry, the numbers in `inventory/services.md`
-   or a new `systems/` page, and the ceiling proved to hold over a month.
+   as references, never as values. The backend image is `main`, pinned by
+   digest, and the README says why and when it moves to a release (see
+   "Decisions"). — gate: merged, and `docker compose config` passes in CI.
+3. **Its own VM, built from code, and proved there.** The VM is the first one
+   of `plans/home-overhaul.md`'s step B. On it, check what the local test did
+   not: a full Ubuntu or Debian archive as an apt remote with `apt` itself as
+   the client, a vendor HTTPS apt repository, `docker pull` through Docker
+   Hub and one other registry, and a remote filled past its cap.
+   `registry-mirrors` covers Docker Hub only — Docker's own documentation
+   states a daemon cannot point at a mirror of another upstream (read
+   2026-11-01) — so other registries need per-host mirror configuration
+   instead. Only after this passes is the digest written into the compose
+   file as the verified one. — gate: the cache's log shows one miss then a
+   hit for each, usage stays under the cap, and a `journal/` entry records it.
+4. **New VMs use it from the start.** Each VM built from code in the
+   overhaul gets its apt proxy and Docker mirror configuration at creation.
+   Old VMs are not reconfigured; apt-cacher-ng goes when its VM, `.254`, is
+   dropped with the rest. — gate: the VM template or module sets the
+   configuration, and `inventory/services.md` has the new cache's row in
+   place of the apt cache row once `.254` is gone.
+5. **The month's trial, measured.** At least a month of normal use after step
+   3: hit rate, bytes served from disk against bytes fetched upstream, `df`
+   on the volume against the cap, idle memory, and every manual clean-up.
+   — gate: the numbers in a `journal/` entry and in `inventory/services.md`
+   or a new `systems/` page, and the owner's keep-or-change decision written
+   in "Decisions".
+6. **Move from `main` to a release.** When a release carries the per-remote
+   byte cap (1.12.0, or whichever release first includes the `main` build
+   that was verified), snapshot the VM and switch the pinned image to that
+   release. — gate: the cap still evicts after the switch, and the compose
+   file names a release instead of `main`.
 
 ## Decisions this plan needs from the owner
 
@@ -312,17 +311,25 @@ snapshot before each upgrade.
   made it share fate with the reverse proxy.)
 - **Whether apt stays with the current software.** Answered by the owner's
   order of needs (2026-11-15): apt is the required part, so it moves to the new
-  cache, but last, with the old apt cache running beside it until step 5's
-  gate.
-- **Which candidate.** The owner's position on 2026-11-15: Artifact Keeper,
-  dropped for something smaller if it proves too much. What "too much" means
-  is not written down yet; a number (idle memory, or manual clean-ups in the
-  first month) would make that decision checkable. The formal pick is step 2.
-- **Whether to wait for the 1.12.0 release.** The byte cap is only in the
-  `main` image as of 2026-11-15. Until a release carries it, the choice is
-  running `main`, or a "not downloaded in N days" policy plus a disk alert.
-- **How much disk.** One number, chosen after step 0's pull count instead of
-  guessed now.
+  cache. On 2026-11-16 the owner set how: new VMs use the new cache from the
+  start, and apt-cacher-ng is dropped with the old VMs instead of running
+  beside it as a rollback.
+- **Which candidate.** Decided by the owner on 2026-11-16: **Artifact
+  Keeper**, replacing apt-cacher-ng, on a trial of at least a month. If it
+  works well it stays; if not, it is changed for another candidate. What
+  "works well" means is not written down yet; a number (idle memory, or
+  manual clean-ups in the month) would make the end of the trial checkable.
+- **Which image.** Decided by the owner on 2026-11-16: **`main`, once
+  verified on the cache VM (step 3)**, pinned by digest. Why: the per-remote
+  byte cap is the owner's way of keeping the cache inside its budget, and on
+  2026-11-15 it was only in `main` (the `latest` release was 1.11.13,
+  without it). The cache moves to a release as soon as one ships the cap or
+  the verified `main` (step 6). The cost: `main` builds several times a day
+  and has had no release testing, so the pinned digest is only changed with a
+  VM snapshot first.
+- **How much disk.** Open. Not measured from the lab: the owner dropped the
+  pull count because the lab has been offline. A starting size is chosen by
+  the owner; the per-remote caps can be raised later without a rebuild.
 
 ## Links
 

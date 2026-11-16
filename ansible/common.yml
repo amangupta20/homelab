@@ -5,10 +5,18 @@
   hosts: all
   become: true
   tasks:
+    # Runs in --check too, so a dry run on a fresh VM, which has never fetched
+    # its package lists, can tell what it would install. It changes only apt's
+    # lists, never a package.
+    - name: Refresh the package lists
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+      check_mode: false
+      changed_when: false
+
     # The owner's process viewers (2026-11-16). Both are in the Debian 13 and
     # Ubuntu 24.04 archives.
     - name: Install htop and btop
       ansible.builtin.apt:
         name: [htop, btop]
-        update_cache: true
-        cache_valid_time: 3600

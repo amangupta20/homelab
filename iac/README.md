@@ -18,7 +18,7 @@ is the Xen Orchestra root.
   same for Oracle Cloud.
 - `lib/state-copy.sh` — that copy, shared by both roots.
 - `cache-vm.tf` — `cache-1`, the package and image cache VM
-  (`plans/package-and-image-cache.md`). Planned 2026-11-16, not applied yet.
+  (`plans/package-and-image-cache.md`). Built 2026-11-16 (`journal/2026-11-16-build-cache-1.md`).
 - `cloud-init/` — the first-boot user data (hostname, the homelab VM key from
   `kv/general/vm-ssh`) and the static network configuration every VM gets.
 - `backend.tf` — where the state lives, and its encryption.

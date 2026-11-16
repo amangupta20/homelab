@@ -1,7 +1,7 @@
 ---
 type: inventory
 status: "documented, partially verified"
-verified: "partially (the router's own rows read over SSH 2026-11-13; oob-1 and the home VMs 2026-11-14; other rows from docs)"
+verified: "partially (the router's own rows read over SSH 2026-11-13; oob-1 and the home VMs 2026-11-14; cache-1 2026-11-16; other rows from docs)"
 tags:
   - inventory
   - network
@@ -29,7 +29,7 @@ Private subnet `10.22.33.0/24`, served by the Home router
 | `.55` | portainer instance | verified: SSH and Portainer API 2026-11-14 |
 | `.99` | NPM-set | verified: SSH and Portainer API 2026-11-14 |
 | `.100` | Xen Orchestra (`xo-ce`) | verified: its REST API answered 2026-11-14 |
-| `.137` | cache VM (planned, `plans/package-and-image-cache.md`); set on the VM by OpenTofu and cloud-init | chosen 2026-11-16; nothing answered there (ping, and the router's neighbour table showed `FAILED`) |
+| `.137` | cache VM `cache-1` (`plans/package-and-image-cache.md`); set on the VM by OpenTofu and cloud-init | verified: over SSH `eth0` at `.137/24`, and Xen Orchestra's agent reported it, 2026-11-16 (`journal/2026-11-16-build-cache-1.md`) |
 | `.123` | gpu_docker | verified: SSH 2026-11-14 |
 | `.160` | TrueNAS VM | verified: TrueNAS API 2026-11-14 |
 | `.253` | adguard-docker | verified: SSH and Portainer API 2026-11-14 |

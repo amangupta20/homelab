@@ -353,7 +353,7 @@ would not have measured normal use.
   addressed by repository URL, not as a proxy), intercepting HTTPS needs a
   certificate on every client, and answering `archive.ubuntu.com` with the
   cache's address would break every apt client on the LAN whenever the cache
-  is down. The address goes into `inventory/network.md` when it is chosen.
+  is down. The address is `.137` (`inventory/network.md`, chosen 2026-11-16).
 - **Backups.** Decided by the owner on 2026-11-16: **no automatic backups**
   of the cache VM, so it does not fill backup space with cached packages. A
   manual VM snapshot before an upgrade, when needed; if the cache breaks, it

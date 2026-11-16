@@ -95,6 +95,7 @@ description: <What it explains and when to use it, in one or two sentences.>
 - `deploy-on-dokploy/` — deploy an app on the VPS, or move a Dokploy app into the repo (runbook, UNTESTED).
 - `write-a-skill/` — how to add or change a skill in this repo (know-how).
 - `back-up-a-service/` — give a service its local and offsite backups and prove them with a restore (runbook, UNTESTED).
+- `add-a-cache-remote/` — add an apt repository, a non-Docker-Hub registry or a new format to the LAN cache's one list and create it on cache-1 (runbook, UNTESTED).
 
 First runbooks planned: the read-only recon pass, and moving one stack off
 Portainer.

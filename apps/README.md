@@ -32,6 +32,10 @@ Each app folder holds:
   (`decisions/pull-request-gate.md`).
 - Moving a stack in is a plan, not a drive-by: old copy keeps running until
   the new one is healthy (`plans/home-overhaul.md`).
+- A homeserver stack that pulls an image from a registry other than Docker
+  Hub, or a machine that gets a new apt source, goes through the LAN cache:
+  if its upstream is not in `homeserver/artifact-keeper/remotes.txt`, add it
+  first (`skills/add-a-cache-remote/`). Docker Hub needs nothing.
 
 ## Apps
 

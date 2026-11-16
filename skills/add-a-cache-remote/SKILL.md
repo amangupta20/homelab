@@ -1,0 +1,85 @@
+---
+name: add-a-cache-remote
+description: Use when a machine, stack or playbook starts pulling from an upstream the LAN cache does not know yet — an apt repository (a vendor's, or another distribution's archive), a container registry other than Docker Hub (ghcr.io, quay.io, lscr.io), or a new package format — so it is fetched through Artifact Keeper on cache-1 instead of straight from the internet. Adds the upstream to the cache's one list, keeps the caps inside the 80 GB budget, creates it on cache-1 and checks one fetch.
+---
+
+# Add an upstream to the LAN cache
+
+**Status:** UNTESTED as a whole. Each step ran on 2026-11-16 while the first five
+upstreams were added (`journal/2026-11-16-deploy-artifact-keeper.md`).
+**Touches:** writes to Artifact Keeper on `cache-1` (a new remote repository and its cap).
+
+## When to use / when not to
+
+Use it whenever something new on the LAN downloads from an upstream that is not a
+line in `apps/homeserver/artifact-keeper/remotes.txt` (owner, 2026-11-16: the list
+is kept by agents, not by hand). Typical moments:
+
+- a stack in `apps/homeserver/` uses an image from a registry other than Docker Hub;
+- a playbook or a VM adds an apt source (`deb …` line or `.sources` file);
+- a tool is pointed at a new package format (PyPI, npm, Helm, …).
+
+Not needed for Docker Hub images: every Docker daemon reaches them through
+`registry-mirrors` without a new remote. Not for machines off the LAN (the VPS,
+Oracle Cloud): the cache answers on the LAN only.
+
+## Before you start
+
+- Read `apps/homeserver/artifact-keeper/README.md` ("Repositories", "Quirks").
+- No snapshot: a remote repository holds only a cache, and `cache-remotes.sh`
+  recreates the settings (`decisions/backup-tiers.md`, rebuildable state).
+
+## Steps
+
+1. **Pick the line.** In `apps/homeserver/artifact-keeper/remotes.txt` add
+   `key  format  cap  upstream`:
+   - `key`: short, lowercase, what clients will type (`quay`, `nodesource-apt`).
+   - `format`: `docker` for any OCI registry, `debian` for any apt repository
+     (Ubuntu's archives included), or the upstream project's name for another
+     format (the backend's list is `RepositoryFormat` in its source).
+   - `upstream`: the URL a client would use without the cache, `https://` as
+     published. For apt, the folder that holds `dists/` and `pool/`.
+   - `cap`: in GB. Take it from the group it belongs to so the total stays at
+     80 GB or less (other registries 10, distribution archives 20, vendor apt
+     10); if a group is full, ask the owner which cap to lower.
+2. **Route the format if it is new.** `Caddyfile` passes only `/api`, `/v2`
+   and `/debian` to the backend. A new format needs its prefix there (upstream's
+   `docker/Caddyfile` lists them), then `ansible-playbook cache.yml` from
+   `ansible/` — expect: the stack task reports changed.
+3. **Create it.** `apps/homeserver/artifact-keeper/cache-remotes.sh` — expect:
+   `<key>: created (200)` and `<key>: cap <n> GB (200)`; every other line says
+   `exists`. It stops if the caps add up to more than 80 GB.
+4. **Fetch through it twice** from `cache-1`:
+   - apt: an `apt-get update` and `apt-get download <package>` with a
+     throwaway configuration, as in the deploy journal entry, using
+     `deb http://10.22.33.137/debian/<key> <suite> <component>`;
+   - images: pull `10.22.33.137/<key>/<image>:<tag>` (a Docker daemon needs
+     `10.22.33.137` in `insecure-registries`), or the registry API as in the
+     journal entry.
+5. **Tell clients.** Add a row to "Repositories" in the app's `README.md` with
+   the line a client uses. Once the client playbook exists (plan step 4), it
+   reads `remotes.txt`; until then, say in the pull request which machines
+   should use the new remote.
+
+## Verify
+
+`GET /api/v1/repositories/<key>/proxy-cache-cap` with an admin token (password at
+`kv/homelab/artifact-keeper`, user `admin`) shows non-zero `usage`, and the
+second fetch is far faster than the first.
+
+## Stop if
+
+- the remote is created but every fetch answers 404 or HTML: the Caddyfile
+  prefix is missing (step 2);
+- the upstream needs a login (a private registry or a paid repository):
+  credentials go in OpenBao and the remote needs upstream authentication, which
+  this skill does not cover; ask the owner;
+- the first fetch is very slow and the upstream is GitHub-hosted: that is the
+  router's GitHub detour (`decisions/open-questions.md`, "Home network"), not
+  the cache.
+
+## Afterwards
+
+Commit `remotes.txt`, the README row (and the Caddyfile if changed) together, and
+mention the test in the pull request. A journal entry only if the Caddyfile or
+the stack changed.

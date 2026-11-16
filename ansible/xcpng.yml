@@ -1,0 +1,36 @@
+# What every VM on the XCP-ng host gets (group `xcpng`). Run from ansible/:
+#   ansible-playbook xcpng.yml --check --diff      # read this first
+#   ansible-playbook xcpng.yml
+#
+# The Xen drivers (disk, network, memory balloon) are in Debian's kernel. What a
+# VM lacks is the management agent, which reports its addresses, OS and memory to
+# the host and lets Xen Orchestra shut it down or reboot it cleanly. XCP-ng's docs
+# name xe-guest-utilities from XenServer's repository (docs.xcp-ng.org/vms,
+# read 2026-11-16); Debian 13 does not package it, so the release .deb is pinned
+# here by its SHA-256, which matched GitHub's published digest on 2026-11-16.
+- name: XCP-ng guest agent
+  hosts: xcpng
+  become: true
+  vars:
+    xgu_version: "10.0.0"
+    xgu_sha256: "62fa81534a6a0e762ffe40e91fe1e2f3f4850a4270304928eb4aff647a914b13"
+    xgu_deb: "xe-guest-utilities_{{ xgu_version }}-1_amd64.deb"
+  tasks:
+    - name: Download xe-guest-utilities {{ xgu_version }}
+      ansible.builtin.get_url:
+        url: "https://github.com/xenserver/xe-guest-utilities/releases/download/v{{ xgu_version }}/{{ xgu_deb }}"
+        dest: "/var/cache/{{ xgu_deb }}"
+        checksum: "sha256:{{ xgu_sha256 }}"
+        mode: "0644"
+
+    - name: Install xe-guest-utilities {{ xgu_version }}
+      ansible.builtin.apt:
+        deb: "/var/cache/{{ xgu_deb }}"
+      # In --check the download above is only simulated, so there is no file yet.
+      ignore_errors: "{{ ansible_check_mode }}"
+
+    - name: Run the agent now and at boot
+      ansible.builtin.service:
+        name: xe-linux-distribution
+        state: started
+        enabled: true

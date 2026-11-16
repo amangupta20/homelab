@@ -17,6 +17,14 @@ nothing, and its firewall rule survived a reboot.
   The Pi is not a tailnet machine of the main account, so it is reached by its LAN
   address, from outside through the router's subnet route.
 
+- `common.yml` — every host: `htop` and `btop`. Ran on `xo-ce` on 2026-11-16; a second
+  run changed nothing. Not yet run on `pigsty-1` or `oob-1`.
+- `xcpng.yml` — VMs on the XCP-ng host (group `xcpng`): the management agent
+  `xe-guest-utilities`, a release `.deb` pinned by its SHA-256, so the host sees each VM's
+  addresses and memory and Xen Orchestra can shut it down cleanly. Ran on `xo-ce` on
+  2026-11-16 (7.11.0 to 10.0.0; Xen Orchestra then reported agent 10.0.0-1 and the VM's
+  addresses); a second run changed nothing. `cache-1` joins once it is built.
+
 ## Use
 
 Run from this folder on a machine on the tailnet. `mise install` provides Ansible.

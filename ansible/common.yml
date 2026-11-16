@@ -1,0 +1,14 @@
+# What every host gets, whatever it runs on. Run from ansible/:
+#   ansible-playbook common.yml --check --diff     # read this first
+#   ansible-playbook common.yml
+- name: Tools on every host
+  hosts: all
+  become: true
+  tasks:
+    # The owner's process viewers (2026-11-16). Both are in the Debian 13 and
+    # Ubuntu 24.04 archives.
+    - name: Install htop and btop
+      ansible.builtin.apt:
+        name: [htop, btop]
+        update_cache: true
+        cache_valid_time: 3600

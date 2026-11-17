@@ -5,7 +5,7 @@ The LAN's pull-through cache for apt packages and container images
 (`iac/`), at `http://10.22.33.137` on the LAN only.
 
 **Status:** running since 2026-11-16 (`journal/2026-11-16-deploy-artifact-keeper.md`).
-No client points at it yet: that is the client playbook, plan step 4.
+One client, `oob-1` ("Repositories"); the client playbook for new VMs is plan step 4.
 
 ## Files
 
@@ -30,6 +30,10 @@ admin user is `admin`.
 | `debian` | `deb.debian.org/debian` | 40 GB | `deb http://10.22.33.137/debian/debian trixie main` |
 | `debian-security` | `security.debian.org/debian-security` | 15 GB | `deb http://10.22.33.137/debian/debian-security trixie-security main` |
 | `docker-apt` | `download.docker.com/linux/debian` | 15 GB | `deb [signed-by=<Docker's key>] http://10.22.33.137/debian/docker-apt trixie stable` |
+| `raspi` | `archive.raspberrypi.com/debian` | 15 GB | `deb http://10.22.33.137/debian/raspi trixie main` (used by `oob-1`) |
+| `tailscale-apt` | `pkgs.tailscale.com/stable/debian` | 15 GB | `deb [signed-by=<Tailscale's key>] http://10.22.33.137/debian/tailscale-apt trixie main` (used by `oob-1`) |
+
+Clients today: `oob-1`, through `ansible/oob.yml` (2026-11-17).
 
 ## How it stays inside the disk
 

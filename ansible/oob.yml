@@ -13,6 +13,14 @@
   vars:
     home_subnet: "10.22.33.0/24"
     tailscale_port: 41641
+    # apt goes through the LAN cache on cache-1 (apps/homeserver/artifact-keeper,
+    # owner 2026-11-17). Set to "" and rerun to point the Pi straight at the
+    # upstream repositories again, for example while cache-1 is down.
+    apt_cache: http://10.22.33.137/debian
+    apt_debian: "{{ apt_cache ~ '/debian' if apt_cache else 'http://deb.debian.org/debian' }}"
+    apt_security: "{{ apt_cache ~ '/debian-security' if apt_cache else 'http://deb.debian.org/debian-security' }}"
+    apt_raspi: "{{ apt_cache ~ '/raspi' if apt_cache else 'http://archive.raspberrypi.com/debian' }}"
+    apt_tailscale: "{{ apt_cache ~ '/tailscale-apt' if apt_cache else 'https://pkgs.tailscale.com/stable/debian' }}"
   tasks:
     # The break-glass key works when OpenBao or the main tailnet does not. The
     # workstation key is the daily one until the SSH certificate authority exists.
@@ -32,6 +40,35 @@
         mode: "0644"
         validate: sshd -t -f %s
       notify: Reload sshd
+
+    # The same files Raspberry Pi OS ships (debian.sources, raspi.sources), with
+    # the address switched. apt checks each repository's signature itself, so the
+    # cache's plain HTTP adds no trust.
+    - name: Debian and Raspberry Pi package repositories
+      ansible.builtin.deb822_repository:
+        name: "{{ item.name }}"
+        uris: "{{ item.uri }}"
+        suites: "{{ item.suites }}"
+        components: "{{ item.components }}"
+        signed_by: "{{ item.key }}"
+      loop:
+        - name: debian
+          uri: "{{ apt_debian }}"
+          suites: ["{{ ansible_facts['distribution_release'] }}", "{{ ansible_facts['distribution_release'] }}-updates"]
+          components: [main, contrib, non-free, non-free-firmware]
+          key: /usr/share/keyrings/debian-archive-keyring.pgp
+        - name: debian-security
+          uri: "{{ apt_security }}"
+          suites: ["{{ ansible_facts['distribution_release'] }}-security"]
+          components: [main, contrib, non-free, non-free-firmware]
+          key: /usr/share/keyrings/debian-archive-keyring.pgp
+        - name: raspi
+          uri: "{{ apt_raspi }}"
+          suites: ["{{ ansible_facts['distribution_release'] }}"]
+          components: [main]
+          key: /usr/share/keyrings/raspberrypi-archive-keyring.pgp
+      loop_control:
+        label: "{{ item.name }}"
 
     - name: Install the firewall and automatic security updates
       ansible.builtin.apt:
@@ -89,7 +126,7 @@
     - name: Tailscale package repository
       ansible.builtin.deb822_repository:
         name: tailscale
-        uris: https://pkgs.tailscale.com/stable/debian
+        uris: "{{ apt_tailscale }}"
         suites: "{{ ansible_facts['distribution_release'] }}"
         components: main
         signed_by: /usr/share/keyrings/tailscale-archive-keyring.gpg

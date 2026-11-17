@@ -64,6 +64,12 @@ Read on 2026-11-14 over SSH unless a line says otherwise.
   - Firewall (`nftables`): in, only SSH, Tailscale's UDP port 41641 and the
     tailnet itself; forwarding only to and from the tailnet.
   - Automatic security updates (`unattended-upgrades`).
+  - apt through the LAN cache on `cache-1`, for Debian, Debian security,
+    Raspberry Pi and Tailscale (`apps/homeserver/artifact-keeper/`; since
+    2026-11-17, `apt-get update` and a download checked that day). If
+    `cache-1` is down, apt fails here but the Tailscale route does not;
+    rerun the playbook with `-e apt_cache=` to use the upstream repositories
+    (**UNTESTED**).
   - Tailscale from its own package repository (1.104.7 on 2026-11-14),
     advertising `10.22.33.0/24`.
 - **Tailscale:** signed in to the second account; the route is approved and

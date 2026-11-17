@@ -92,6 +92,11 @@ services:
       # Anonymous reads, for the remotes marked public (cache-remotes.sh) only;
       # writes and admin routes always need a login (source reviews, plan).
       AK_GUEST_ACCESS_ENABLED: "true"
+      # The hard limit across all repositories, 80 GB on the 100 GB disk
+      # (owner, 2026-11-16). At it, remotes still answer but store nothing new;
+      # nothing is evicted by it. Per-repository caps (remotes.txt) evict, and
+      # cache-remotes.sh's idle rule drains (owner, 2026-11-17).
+      STORAGE_QUOTA_BYTES: "80000000000"
       HOST: 0.0.0.0
       PORT: 8080
     secrets:

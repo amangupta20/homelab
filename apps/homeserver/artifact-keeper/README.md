@@ -15,7 +15,7 @@ No client points at it yet: that is the client playbook, plan step 4.
 | `Caddyfile` | plain HTTP on port 80: the API, the registry (`/v2`) and the Debian format go to the backend, the rest to the web UI |
 | `init-pg-ssl.sh` | upstream's script that turns on TLS in PostgreSQL at first start, unchanged |
 | `remotes.txt` | the one list of remote repositories and their caps, read by `cache-remotes.sh` and, later, the client playbook; add one with `skills/add-a-cache-remote/` |
-| `cache-remotes.sh` | creates the repositories in `remotes.txt` on cache-1 and sets their caps; refuses caps over 80 GB in total; safe to run again |
+| `cache-remotes.sh` | creates the repositories in `remotes.txt` on cache-1, sets their caps and keeps the 30-day idle rule assigned to all of them; refuses a cap over the instance ceiling; safe to run again |
 
 Deployed by `ansible/cache.yml`, which also writes the secret files from OpenBao
 (`kv/homelab/artifact-keeper`: `db_password`, `jwt_secret`, `admin_password`). The
@@ -25,16 +25,62 @@ admin user is `admin`.
 
 | Key | Upstream | Cap | How a client uses it |
 |---|---|---|---|
-| `dockerhub` | Docker Hub | 40 GB | `registry-mirrors` (no key in the path), or `10.22.33.137/dockerhub/<image>` |
-| `ghcr` | ghcr.io | 10 GB | `10.22.33.137/ghcr/<owner>/<image>` |
-| `debian` | `deb.debian.org/debian` | 14 GB | `deb http://10.22.33.137/debian/debian trixie main` |
-| `debian-security` | `security.debian.org/debian-security` | 6 GB | `deb http://10.22.33.137/debian/debian-security trixie-security main` |
-| `docker-apt` | `download.docker.com/linux/debian` | 10 GB | `deb [signed-by=<Docker's key>] http://10.22.33.137/debian/docker-apt trixie stable` |
+| `dockerhub` | Docker Hub | 50 GB | `registry-mirrors` (no key in the path), or `10.22.33.137/dockerhub/<image>` |
+| `ghcr` | ghcr.io | 30 GB | `10.22.33.137/ghcr/<owner>/<image>` |
+| `debian` | `deb.debian.org/debian` | 40 GB | `deb http://10.22.33.137/debian/debian trixie main` |
+| `debian-security` | `security.debian.org/debian-security` | 15 GB | `deb http://10.22.33.137/debian/debian-security trixie-security main` |
+| `docker-apt` | `download.docker.com/linux/debian` | 15 GB | `deb [signed-by=<Docker's key>] http://10.22.33.137/debian/docker-apt trixie stable` |
 
-The caps add up to 80 GB (10^9 bytes) on a 100 GB disk (owner, 2026-11-16). Each
-cap evicts its own repository's least recently used entries; there is no cap
-across all of them. Read one with `GET /api/v1/repositories/<key>/proxy-cache-cap`
-(admin token).
+## How it stays inside the disk
+
+Three limits, all in GB of 10^9 bytes (owner, 2026-11-17, replacing the
+2026-11-16 rule that the caps add up to 80 GB). Artifact Keeper has no shared
+cap that evicts across repositories or a group of them (its source at
+`e808fda`, 2026-11-17), so this is the closest it gets:
+
+- **A cap per repository** (`remotes.txt`, generous on purpose). Over it, the
+  repository evicts its own least recently used entries. Read one with
+  `GET /api/v1/repositories/<key>/proxy-cache-cap` (admin token).
+- **An 80 GB ceiling across everything** (`STORAGE_QUOTA_BYTES` in
+  `compose.yaml`, on a 100 GB disk). It evicts nothing: at it, remotes still
+  answer but store nothing new. The caps add up to more than it.
+- **An idle rule:** a lifecycle policy, `cache-idle`, deletes entries not
+  served for 30 days. It goes by each entry's last serve, not by when it was
+  cached, so a file fetched yesterday stays. It runs every 6 hours and must be
+  assigned to each remote by name (a global policy does not reach a remote's
+  cache); `cache-remotes.sh` does both. A dry run on 2026-11-17 matched
+  nothing, as expected for a two-day-old cache.
+
+If the ceiling is ever hit with every repository under its cap, the cache
+passes downloads through without storing until the idle rule frees space.
+`GET /api/v1/admin/stats` shows `storage_quota.percent`.
+
+## What it served
+
+- **Hits and misses per repository:** `ak_proxy_cache_lookups_total` on
+  `GET /api/v1/admin/metrics` (Prometheus format, admin token). `hit` is
+  served from disk; `miss_no_metadata` is a file not cached yet and
+  `miss_expired` one past its time to live, both fetched upstream; `miss`
+  comes from a second lookup path the backend also counts (meanings read from
+  `metrics_service.rs` and `proxy_service.rs`, not traced request by request).
+  A counter, reset when the backend restarts.
+- **Bytes served this month:** `ak_transfer_used_bytes` (kept in PostgreSQL,
+  so it survives a restart; 563 MB on 2026-11-17).
+- **Bytes stored:** `proxy_storage_bytes` on `GET /api/v1/admin/stats`, and
+  each repository's size in the web UI.
+
+Nothing reports bytes fetched from upstream, so "how much came from disk" is
+read as hits against misses, not as bytes. Nothing scrapes the metrics yet.
+
+## Deduplication
+
+None across repositories with this storage backend. Files are stored per
+repository (`proxy-cache/<repository>/<path>`), and the backend counts a file
+present in two repositories as two (`storage_stats_service.rs`: on the
+filesystem backend `shared_bytes` is always 0; only S3, GCS or Azure backends
+share one copy). Within a repository a file is stored once. In practice the
+remotes hold different upstreams, so the overlap is small: mostly base image
+layers that exist on both Docker Hub and ghcr.io.
 
 ## Data
 

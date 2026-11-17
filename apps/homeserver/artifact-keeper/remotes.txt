@@ -4,13 +4,15 @@
 # skills/add-a-cache-remote/.
 #
 # Columns: key, format, cap in GB (10^9 bytes), upstream URL.
-# The caps add up to at most 80 GB, the owner's budget on a 100 GB disk
-# (2026-11-16): Docker Hub 40, other image registries 10, distribution archives
-# 20, vendor apt repositories 10.
+# Each cap evicts its own repository's least recently used entries. The caps are
+# generous and add up to more than the disk on purpose (owner, 2026-11-17): the
+# hard limit is the instance-wide ceiling, STORAGE_QUOTA_BYTES in compose.yaml
+# (80 GB on a 100 GB disk), and a 30-day idle rule, made by cache-remotes.sh,
+# drains entries nobody fetched in that time. No cap may exceed the ceiling.
 #
 # key            format  cap  upstream
-dockerhub        docker  40   https://registry-1.docker.io
-ghcr             docker  10   https://ghcr.io
-debian           debian  14   https://deb.debian.org/debian
-debian-security  debian   6   https://security.debian.org/debian-security
-docker-apt       debian  10   https://download.docker.com/linux/debian
+dockerhub        docker  50   https://registry-1.docker.io
+ghcr             docker  30   https://ghcr.io
+debian           debian  40   https://deb.debian.org/debian
+debian-security  debian  15   https://security.debian.org/debian-security
+docker-apt       debian  15   https://download.docker.com/linux/debian

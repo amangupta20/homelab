@@ -1,7 +1,8 @@
 #!/bin/sh
-# Create Artifact Keeper's pull-through (remote) repositories and cap each one.
-# Safe to run again: an existing repository is left as it is and only its cap is
-# set again. The repository settings live here, so a rebuilt cache-1 gets them
+# Create Artifact Keeper's pull-through (remote) repositories, cap each one, and
+# keep one idle rule assigned to all of them. Safe to run again: an existing
+# repository is left as it is and only its cap is set again; the rule is
+# created once and then updated in place. The repository settings live here, so a rebuilt cache-1 gets them
 # back from the repo instead of a backup (decisions/backup-tiers.md, rebuildable
 # state).
 #
@@ -9,18 +10,25 @@
 # Reads remotes.txt in this folder.
 # Needs: bao (logged in), curl, jq.
 #
-# The repositories, their caps and the 80 GB budget are in remotes.txt next to
-# this script. Each cap evicts the least recently used entries of its own
-# repository; there is no cap across all of them.
+# The repositories and their caps are in remotes.txt next to this script. Each
+# cap evicts the least recently used entries of its own repository. The caps may
+# add up to more than the disk: the instance-wide ceiling (STORAGE_QUOTA_BYTES in
+# compose.yaml) is the hard limit, and at it the cache serves without storing.
+# The idle rule deletes entries not fetched for IDLE_DAYS days, so the cache
+# drains even when no single repository reaches its own cap.
 set -eu
 cd "$(dirname "$0")"
 
 base=${1:-http://10.22.33.137}
 GB=1000000000
+IDLE_DAYS=30
+POLICY=cache-idle
 remotes=$(grep -vE '^\s*(#|$)' remotes.txt)
 
-total=$(echo "$remotes" | awk '{ sum += $3 } END { print sum }')
-[ "$total" -le 80 ] || { echo "caps in remotes.txt add up to $total GB, over the 80 GB budget" >&2; exit 1; }
+ceiling=$(sed -n 's/^ *STORAGE_QUOTA_BYTES: *"\{0,1\}\([0-9]*\)"\{0,1\}.*/\1/p' compose.yaml)
+[ -n "$ceiling" ] || { echo "no STORAGE_QUOTA_BYTES in compose.yaml" >&2; exit 1; }
+over=$(echo "$remotes" | awk -v c="$ceiling" -v g="$GB" '$3 * g > c { print $1 }')
+[ -z "$over" ] || { echo "caps over the $((ceiling / GB)) GB ceiling: $over" >&2; exit 1; }
 
 password=$(bao kv get -mount=kv -field=admin_password homelab/artifact-keeper)
 token=$(jq -nc --arg p "$password" '{username: "admin", password: $p}' |
@@ -57,3 +65,23 @@ echo "$remotes" | while read -r key format cap url; do
   r=$(api PUT "repositories/$key/proxy-cache-cap" -d "{\"cap_bytes\": $((cap * GB))}")
   echo "$key: cap $cap GB ($r)"
 done
+
+# The idle rule: one no_downloads_days policy assigned to every remote above. It
+# goes by when an entry was last served, not when it was cached. A global
+# (applies_to_all) policy would not reach a remote's cache, so it is assigned
+# explicitly. It runs every 6 hours (the backend's default cadence).
+ids=$(echo "$remotes" | while read -r key _; do
+  curl -sf -H "Authorization: Bearer $token" "$base/api/v1/repositories/$key" | jq -r .id
+done | jq -Rsc 'split("\n") | map(select(length > 0))')
+rule=$(jq -nc --arg n "$POLICY" --argjson d "$IDLE_DAYS" --argjson ids "$ids" \
+  '{name: $n, policy_type: "no_downloads_days", config: {days: $d}, repository_ids: $ids,
+    description: "Cache entries not fetched for this many days (cache-remotes.sh)", enabled: true}')
+policy=$(curl -sf -H "Authorization: Bearer $token" "$base/api/v1/admin/lifecycle" |
+  jq -r --arg n "$POLICY" '.[] | select(.name == $n) | .id')
+if [ -z "$policy" ]; then
+  r=$(api POST admin/lifecycle -d "$rule")
+  echo "$POLICY: created, $IDLE_DAYS days on $(echo "$ids" | jq length) repositories ($r)"
+else
+  r=$(api PATCH "admin/lifecycle/$policy" -d "$(echo "$rule" | jq -c 'del(.policy_type)')")
+  echo "$POLICY: updated, $IDLE_DAYS days on $(echo "$ids" | jq length) repositories ($r)"
+fi

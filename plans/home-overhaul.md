@@ -407,9 +407,52 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
 3. **Arcane:** deploy a test stack from git, give it a secret from OpenBao, back up and
    restore its local volume. — gate: all three work, or their replacements are
    chosen.
-4. **DNS and internal names:** a resolver (to be researched, owner 2026-11-14), one
-   naming scheme for internal addresses, internal TLS by DNS challenge. — gate: a
-   test name resolves with a valid certificate on the LAN and over Tailscale.
+4. **Internal names and the home proxy.** Split in two (owner, 2026-11-17), so the
+   names and certificates do not depend on whichever DNS resolver is being tried:
+   - **4a. Home proxy: Traefik** (owner, 2026-11-17), the one reverse proxy for
+     internal apps, on its own VM built from code (owner, 2026-11-17). Chosen
+     for Sablier: Traefik loads its plugin without a custom build, and the VPS already
+     runs it that way (`plans/sablier-wakeups.md`); Pangolin is Traefik too.
+     - **Names:** one public Cloudflare record, `*.home.<domain>`, pointing at the
+       proxy's LAN address, so any resolver that forwards to the internet answers it,
+       and over Tailscale through the subnet route (`ideas/edge-and-security-layers.md`,
+       "Internal names"). OpenWrt's dnsmasq drops public answers that point at private
+       addresses by default (rebind protection). The Home router has it on, with no
+       allowlist (`uci show dhcp`: `rebind_protection='1'`, no `rebind_domain`,
+       2026-11-17). `home.<domain>` was added to its allowlist the same day
+       (`uci add_list dhcp.@dnsmasq[0].rebind_domain`, previous file kept in
+       `/root/dhcp.bak-20261117`); not yet tested with a real answer, as the record
+       does not exist yet.
+     - **Certificate:** one wildcard by DNS challenge through Cloudflare's API, the
+       token in OpenBao. Nothing at home has to be reachable, and app names stay out
+       of certificate-transparency logs.
+     - **Routes as files** (owner, 2026-11-17): one file per app under the proxy's
+       folder in this repo (hostname, then the app's `http://<address>:<port>`, as in
+       Nginx Proxy Manager), deployed by Ansible. Traefik's file provider rereads them
+       without a restart, and routes reach any VM, which a docker provider (one daemon
+       only) cannot.
+     - **Wakeups:** a Sablier with a socket proxy on each VM with sleepable apps, as on
+       the VPS (`apps/vps/sablier/`); each route's middleware names its VM's Sablier
+       (`sablierUrl`). Waking a container on another VM through a file route is
+       **UNTESTED** (`decisions/open-questions.md`, "Multi-node wakeups"). Traefik
+       fetches the plugin from GitHub at start, which is slow from the LAN
+       (`decisions/open-questions.md`, the GitHub detour): pin it and keep the plugin
+       cache on disk.
+     - **View-only dashboards**, to try together and keep the ones used (owner,
+       2026-11-17): Traefik's own dashboard (routes, services, middlewares, their
+       state), traefik-log-dashboard (live traffic, a map of client locations, status
+       codes and response times per service; AGPL-3.0; the project's changelog lists
+       v2.4.1 from 2026-01), and GoAccess (one report page from the access log). All
+       three read Traefik's access log or API and edit nothing. Behind Authentik
+       forward-auth (Traefik's ForwardAuth to Authentik's embedded outpost), so they
+       have no passwords of their own.
+     - **First app:** `cache-1`'s web UI and Grafana, which then sign in through
+       Authentik (OIDC) at their `home.<domain>` names instead of with their own
+       passwords. apt and Docker clients keep using its address.
+     — gate: a test name has a valid certificate on the LAN and over Tailscale,
+     whichever resolver answers; a stopped test container on another VM wakes through
+     its route; the dashboards ask for Authentik.
+   - **4b. Resolver** (to be researched, owner 2026-11-14). Nothing in 4a waits on it.
 5. **Pilot:** one small internal app, end to end, then a skill
    (`skills/migrate-a-home-app/`) with the steps as they were done. — gate: the app
    runs from `apps/homeserver/<app>/`, and its data restore has been tested.
@@ -476,7 +519,7 @@ move before its public route exists.
 ## Open, for the owner
 
 - Where the Pigsty primary sits (after D1).
-- Which DNS resolver (B4).
+- Which DNS resolver (B4b).
 - Badger or an Authentik outpost (C2).
 - Whether to keep BorgWarehouse once restic or Kopia handle offsite copies.
 - The change to `decisions/backup-tiers.md` this design needs (proposed separately).

@@ -124,6 +124,10 @@ owner file, and is deleted from this list.
   matters if on-demand wakeups are adopted (`ideas/on-demand-container-wakeups.md`);
   the edge choice gates that idea, and whether NPM can load the plugin at all
   is part of this question rather than settled above it.
+- Answered by the owner, 2026-11-17, for the internal side of the item above:
+  Traefik, with routes as files in this repo, is the home proxy for internal
+  apps, chosen for Sablier (`plans/home-overhaul.md`, B4a). The public side
+  goes through Pangolin, also Traefik. Left for the owner to close.
 - Does the proxy host's nginx have Wasm support? Unverified; one recon command
   on the host would answer it.
 - Multi-node wakeups: one Traefik with file-provider routes to tailnet

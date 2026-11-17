@@ -32,6 +32,17 @@
         mode: "0770"
       loop: [storage, backups, plugins]
 
+    - name: Monitoring data folders, owned by each image's user
+      ansible.builtin.file:
+        path: "{{ data_dir }}/{{ item.name }}"
+        state: directory
+        owner: "{{ item.uid }}"
+        group: "{{ item.uid }}"
+        mode: "0750"
+      loop:
+        - { name: prometheus, uid: "65534" }
+        - { name: grafana, uid: "472" }
+
     - name: PostgreSQL's data folder (the image sets up its own subfolder)
       ansible.builtin.file:
         path: "{{ data_dir }}/postgres"
@@ -62,7 +73,18 @@
         - { name: compose.yaml, mode: "0644" }
         - { name: Caddyfile, mode: "0644" }
         - { name: init-pg-ssl.sh, mode: "0755" }
+        - { name: prometheus.yml, mode: "0644" }
       register: stack_files
+
+    # Grafana's data source and dashboard, provisioned from the repo.
+    - name: Grafana files from apps/homeserver/artifact-keeper/grafana
+      ansible.builtin.copy:
+        src: "{{ stack_src }}/grafana"
+        dest: "{{ stack_dir }}/"
+        owner: root
+        group: root
+        mode: u=rwX,go=rX
+      register: grafana_files
 
     # The folder above is root-only; the files are world-readable because each
     # container reads its own as a non-root user (PostgreSQL as 70, the backend
@@ -81,6 +103,8 @@
           value: "{{ lookup('pipe', secret | replace('FIELD', 'jwt_secret')) }}"
         - name: admin_password
           value: "{{ lookup('pipe', secret | replace('FIELD', 'admin_password')) }}"
+        - name: grafana_admin_password
+          value: "{{ lookup('pipe', secret | replace('FIELD', 'grafana_admin_password')) }}"
         - name: database_url
           value: "postgresql://registry:{{ lookup('pipe', secret | replace('FIELD', 'db_password')) }}@postgres:5432/artifact_registry?sslmode=require"
       loop_control:
@@ -95,3 +119,20 @@
       register: compose_up
       changed_when: compose_up.stderr is search('(Creat|Recreat|Start|Pull)(ed|ing)')
       when: not ansible_check_mode
+
+    # `compose up` only recreates a container whose own definition changed; a
+    # mounted config file that changed needs a restart of the one reading it.
+    - name: Restart what reads a changed config file
+      ansible.builtin.command:
+        cmd: "docker compose restart {{ item.service }}"
+        chdir: "{{ stack_dir }}"
+      loop:
+        - service: caddy
+          changed: "{{ stack_files.results | selectattr('item.name', 'eq', 'Caddyfile') | selectattr('changed') | list | length > 0 }}"
+        - service: prometheus
+          changed: "{{ stack_files.results | selectattr('item.name', 'eq', 'prometheus.yml') | selectattr('changed') | list | length > 0 }}"
+        - service: grafana
+          changed: "{{ grafana_files.changed }}"
+      loop_control:
+        label: "{{ item.service }}"
+      when: item.changed | bool and not ansible_check_mode

@@ -313,6 +313,8 @@ would not have measured normal use.
 5. **The month's trial, measured.** At least a month of normal use after step
    3: hit rate, bytes served from disk against bytes fetched upstream, `df`
    on the volume against the cap, idle memory, and every manual clean-up.
+   The cache's dashboard collects all but the clean-ups since 2026-11-17
+   (`apps/homeserver/artifact-keeper/README.md`, "Dashboard").
    — gate: the numbers in a `journal/` entry and in `inventory/services.md`
    or a new `systems/` page, and the owner's keep-or-change decision written
    in "Decisions".

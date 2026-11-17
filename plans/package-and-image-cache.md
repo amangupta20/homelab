@@ -350,9 +350,13 @@ would not have measured normal use.
   point, not measured (the lab has been offline): a **100 GB** VM disk (the
   owner said 60-100 GB; 100 is the size that fits the cap plus the system and
   PostgreSQL), and **80 GB of cache**. Artifact Keeper has no single cap
-  across repositories (see "Candidates"), so the 80 GB is the sum of the
-  per-remote caps; the split between remotes is set in step 2. Caps can be
-  raised later without a rebuild.
+  across repositories (see "Candidates"). On 2026-11-16 the 80 GB was the sum
+  of the per-remote caps. **Changed by the owner on 2026-11-17:** the 80 GB is
+  an instance-wide ceiling (which stops storing, not evicts), the per-remote
+  caps are generous (Docker Hub 50 GB) and add up to more, and a 30-day idle
+  rule, keyed on last serve, drains what nobody fetches
+  (`apps/homeserver/artifact-keeper/README.md`, "How it stays inside the
+  disk").
 - **Operating system.** Debian 13, like every home VM built from code
   (`plans/home-overhaul.md`, "One operating system"; owner, 2026-11-16).
 - **How clients find it.** Decided by the owner on 2026-11-16: the cache

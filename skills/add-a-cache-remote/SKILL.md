@@ -1,12 +1,13 @@
 ---
 name: add-a-cache-remote
-description: Use when a machine, stack or playbook starts pulling from an upstream the LAN cache does not know yet — an apt repository (a vendor's, or another distribution's archive), a container registry other than Docker Hub (ghcr.io, quay.io, lscr.io), or a new package format — so it is fetched through Artifact Keeper on cache-1 instead of straight from the internet. Adds the upstream to the cache's one list, keeps the caps inside the 80 GB budget, creates it on cache-1 and checks one fetch.
+description: Use when a machine, stack or playbook starts pulling from an upstream the LAN cache does not know yet — an apt repository (a vendor's, or another distribution's archive), a container registry other than Docker Hub (ghcr.io, quay.io, lscr.io), or a new package format — so it is fetched through Artifact Keeper on cache-1 instead of straight from the internet. Adds the upstream to the cache's one list, sets a cap under the instance ceiling, creates it on cache-1 and checks one fetch.
 ---
 
 # Add an upstream to the LAN cache
 
 **Status:** UNTESTED as a whole. Each step ran on 2026-11-16 while the first five
-upstreams were added (`journal/2026-11-16-deploy-artifact-keeper.md`).
+upstreams were added, and steps 1, 3 and 4 again on 2026-11-17 for `raspi` and
+`tailscale-apt` (`journal/2026-11-16-deploy-artifact-keeper.md`).
 **Touches:** writes to Artifact Keeper on `cache-1` (a new remote repository and its cap).
 
 ## When to use / when not to
@@ -39,16 +40,20 @@ Oracle Cloud): the cache answers on the LAN only.
      format (the backend's list is `RepositoryFormat` in its source).
    - `upstream`: the URL a client would use without the cache, `https://` as
      published. For apt, the folder that holds `dists/` and `pool/`.
-   - `cap`: in GB. Take it from the group it belongs to so the total stays at
-     80 GB or less (other registries 10, distribution archives 20, vendor apt
-     10); if a group is full, ask the owner which cap to lower.
+   - `cap`: in GB, generous (owner, 2026-11-17): 15 for a vendor apt
+     repository, 30 for an image registry, more for a distribution archive.
+     The caps may add up to more than the disk; no single cap may exceed the
+     instance ceiling, `STORAGE_QUOTA_BYTES` in `compose.yaml` (README, "How it
+     stays inside the disk").
 2. **Route the format if it is new.** `Caddyfile` passes only `/api`, `/v2`
    and `/debian` to the backend. A new format needs its prefix there (upstream's
    `docker/Caddyfile` lists them), then `ansible-playbook cache.yml` from
    `ansible/` — expect: the stack task reports changed.
 3. **Create it.** `apps/homeserver/artifact-keeper/cache-remotes.sh` — expect:
    `<key>: created (200)` and `<key>: cap <n> GB (200)`; every other line says
-   `exists`. It stops if the caps add up to more than 80 GB.
+   `exists`, and the last line says `cache-idle: updated, 30 days on <n>
+   repositories`, with `<n>` the number of lines in `remotes.txt`. It stops if a
+   cap is over the ceiling.
 4. **Fetch through it twice** from `cache-1`:
    - apt: an `apt-get update` and `apt-get download <package>` with a
      throwaway configuration, as in the deploy journal entry, using

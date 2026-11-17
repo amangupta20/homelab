@@ -1,0 +1,19 @@
+# Prometheus on cache-1: keeps the cache's own counters (hits, misses, bytes
+# served, storage against the ceiling) so the month's trial can be read back
+# (plans/package-and-image-cache.md, step 5). The backend's counters reset when
+# it restarts; Prometheus' rate functions handle that.
+global:
+  scrape_interval: 30s
+
+scrape_configs:
+  # The backend's unauthenticated metrics listener (METRICS_PORT in
+  # compose.yaml). It is not published: only this stack's network reaches it.
+  - job_name: artifact-keeper
+    static_configs:
+      - targets: ["backend:9091"]
+
+  # The VM itself: CPU, load, memory, disk and network, to tell whether cache-1
+  # needs more vCPUs or memory (owner, 2026-11-17).
+  - job_name: node
+    static_configs:
+      - targets: ["172.30.0.1:9100"]  # node-exporter, on the host network

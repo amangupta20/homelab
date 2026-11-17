@@ -1,0 +1,9 @@
+# Dashboards come from the repo (apps/homeserver/artifact-keeper/grafana/dashboards);
+# a change made in the Grafana UI is not saved back.
+apiVersion: 1
+providers:
+  - name: cache
+    type: file
+    allowUiUpdates: false
+    options:
+      path: /etc/grafana/dashboards

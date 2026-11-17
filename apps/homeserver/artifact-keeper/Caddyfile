@@ -15,5 +15,8 @@
 	reverse_proxy /v2 backend:8080
 	reverse_proxy /v2/* backend:8080
 	reverse_proxy /debian/* backend:8080
+	# Grafana, the cache's dashboard (compose.yaml, "Monitoring").
+	redir /grafana /grafana/
+	reverse_proxy /grafana/* grafana:3000
 	reverse_proxy web:3000
 }

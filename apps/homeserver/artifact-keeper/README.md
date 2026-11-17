@@ -11,15 +11,17 @@ One client, `oob-1` ("Repositories"); the client playbook for new VMs is plan st
 
 | File | What it is |
 |---|---|
-| `compose.yaml` | backend, PostgreSQL (with TLS, as upstream), web UI and Caddy; trimmed from upstream's `docker-compose.yml` at commit `825b75e9` |
-| `Caddyfile` | plain HTTP on port 80: the API, the registry (`/v2`) and the Debian format go to the backend, the rest to the web UI |
+| `compose.yaml` | backend, PostgreSQL (with TLS, as upstream), web UI and Caddy, trimmed from upstream's `docker-compose.yml` at commit `825b75e9`; plus Prometheus, node-exporter and Grafana ("Dashboard") |
+| `Caddyfile` | plain HTTP on port 80: the API, the registry (`/v2`) and the Debian format go to the backend, `/grafana/` to Grafana, the rest to the web UI |
+| `prometheus.yml` | what Prometheus collects: the backend's metrics listener and node-exporter |
+| `grafana/` | Grafana's data source and the dashboard, `grafana/dashboards/cache.json`, provisioned read-only |
 | `init-pg-ssl.sh` | upstream's script that turns on TLS in PostgreSQL at first start, unchanged |
 | `remotes.txt` | the one list of remote repositories and their caps, read by `cache-remotes.sh` and, later, the client playbook; add one with `skills/add-a-cache-remote/` |
 | `cache-remotes.sh` | creates the repositories in `remotes.txt` on cache-1, sets their caps and keeps the 30-day idle rule assigned to all of them; refuses a cap over the instance ceiling; safe to run again |
 
 Deployed by `ansible/cache.yml`, which also writes the secret files from OpenBao
-(`kv/homelab/artifact-keeper`: `db_password`, `jwt_secret`, `admin_password`). The
-admin user is `admin`.
+(`kv/homelab/artifact-keeper`: `db_password`, `jwt_secret`, `admin_password`,
+`grafana_admin_password`). The admin user is `admin` in both Artifact Keeper and Grafana.
 
 ## Repositories
 
@@ -59,22 +61,53 @@ If the ceiling is ever hit with every repository under its cap, the cache
 passes downloads through without storing until the idle rule frees space.
 `GET /api/v1/admin/stats` shows `storage_quota.percent`.
 
-## What it served
+## Dashboard
 
-- **Hits and misses per repository:** `ak_proxy_cache_lookups_total` on
-  `GET /api/v1/admin/metrics` (Prometheus format, admin token). `hit` is
-  served from disk; `miss_no_metadata` is a file not cached yet and
-  `miss_expired` one past its time to live, both fetched upstream; `miss`
-  comes from a second lookup path the backend also counts (meanings read from
-  `metrics_service.rs` and `proxy_service.rs`, not traced request by request).
-  A counter, reset when the backend restarts.
-- **Bytes served this month:** `ak_transfer_used_bytes` (kept in PostgreSQL,
-  so it survives a restart; 563 MB on 2026-11-17).
-- **Bytes stored:** `proxy_storage_bytes` on `GET /api/v1/admin/stats`, and
-  each repository's size in the web UI.
+`http://10.22.33.137/grafana/`, user `admin`, password `grafana_admin_password`
+(owner, 2026-11-17: the web UI shows downloads per day and storage per
+repository, but no hit rate). One dashboard, "Cache (Artifact Keeper on
+cache-1)", in two rows:
 
-Nothing reports bytes fetched from upstream, so "how much came from disk" is
-read as hits against misses, not as bytes. Nothing scrapes the metrics yet.
+- **Cache:** hit rate over the chosen range and per repository, lookups by
+  result, bytes served (this month and per hour), stored bytes against the
+  80 GB ceiling, evictions by the caps, and an estimate of bytes fetched
+  upstream.
+- **cache-1:** vCPUs, memory, disk, CPU busy per vCPU, load against the vCPU
+  count, steal and I/O wait, disk and network throughput. This is where to
+  read whether the VM needs more vCPUs or memory (`iac/cache-vm.tf`).
+
+The dashboard is the file in the repo: a change made in Grafana is not saved,
+so change `grafana/dashboards/cache.json` and rerun `ansible/cache.yml`, which
+restarts Grafana when its files changed.
+
+How it is collected:
+
+- The backend serves its metrics without a login on a second port
+  (`METRICS_PORT=9091`), reachable only on the stack's own network.
+- node-exporter runs on the VM's network so it sees the VM's interfaces, but
+  listens only on the stack's bridge address, `172.30.0.1:9100`; from the LAN
+  the port does not answer (checked 2026-11-17).
+- Prometheus keeps a year, at most 2 GB, in `/srv/artifact-keeper/prometheus`.
+  Like the rest of the cache it has no backup: losing it loses the history.
+
+The three added containers took cache-1 from about 690 MB to 880 MB of its
+1.5 GiB in use (`free -m`, 2026-11-17).
+
+Meaning of the counters, if you query them yourself:
+
+- `ak_proxy_cache_lookups_total{repository, result}`: `hit` is served from
+  disk; `miss_no_metadata` is a file not cached yet and `miss_expired` one
+  past its time to live, both fetched upstream; `miss` comes from a second
+  lookup path the backend also counts (meanings read from `metrics_service.rs`
+  and `proxy_service.rs`, not traced request by request). Reset when the
+  backend restarts; Prometheus' `increase` and `rate` allow for that.
+- `ak_transfer_used_bytes`: bytes served this month, kept in PostgreSQL.
+- `ak_storage_used_bytes` and `ak_storage_quota_bytes`: stored bytes and the
+  ceiling.
+
+Nothing reports bytes fetched from upstream. The dashboard estimates it as new
+stored bytes plus bytes evicted by the caps, which misses downloads passed
+through without storing.
 
 ## Deduplication
 

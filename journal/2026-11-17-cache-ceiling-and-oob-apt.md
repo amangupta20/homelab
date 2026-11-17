@@ -1,4 +1,4 @@
-# 2026-11-17 — Cache ceiling, idle rule and generous caps; oob-1's apt through the cache
+# 2026-11-17 — Cache ceiling, idle rule and generous caps; oob-1's apt through the cache; a dashboard
 
 **Who:** Claude Code, at the owner's request  **Scope:** VM `cache-1` (Artifact Keeper), `oob-1`  **Mode:** write
 **Task:** the owner asked for one shared limit instead of caps that add up to 80 GB, and for the Pi to use the cache  **Skill:** `skills/add-a-cache-remote/`
@@ -12,6 +12,9 @@
   `cache-idle` (no download in 30 days) and assigned it to all seven remotes.
 - `oob-1`: its four apt sources point at the cache (`ansible-playbook oob.yml`). The files it had before are
   in `/root/apt-sources-2026-11-17/` on the Pi.
+- `cache-1`: Prometheus, node-exporter and Grafana added to the stack, with the backend's unauthenticated
+  metrics listener on its internal port 9091; Grafana at `http://10.22.33.137/grafana/` (password in OpenBao,
+  new field `grafana_admin_password`). The whole stack except PostgreSQL was recreated.
 
 How the three limits work, and why there is no shared evicting cap:
 `apps/homeserver/artifact-keeper/README.md`, "How it stays inside the disk".
@@ -31,6 +34,10 @@ None. The cache holds rebuildable state (`decisions/backup-tiers.md`); its setti
   0.16 s the second time when fetched on `cache-1` itself; usage counters 2.0 MB and 32.8 MB.
 - `oob-1`: `apt-get update` fetched all five suites from `10.22.33.137`; `apt-get download hello raspi-config`
   ran twice, and `ak_proxy_cache_lookups_total` counted hits for `debian` and `raspi`.
+- Prometheus' targets page: both targets `up`, no error. Each dashboard query run against Prometheus: the
+  gauges and VM panels returned data at once, the rate panels after a few minutes; the hit-rate panels need an
+  hour of history. `curl http://10.22.33.137:9100/metrics` from the workstation got no answer.
+- Memory in use went from about 690 MB to 880 MB of 1.5 GiB (`free -m`).
 
 ## Still open
 

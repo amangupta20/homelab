@@ -1,7 +1,7 @@
 ---
 type: plan
 status: "in progress (running on cache-1 since 2026-11-16; step 4, the clients, mostly done)"
-verified: "partially (Artifact Keeper run on the workstation 2026-11-15; other options read from docs and source; nothing installed or measured on the lab)"
+verified: "partially (Artifact Keeper run on the workstation 2026-11-15; deployed and tested on cache-1 2026-11-16; the client playbook verified on proxy-1 2026-11-18; the month's trial not measured)"
 tags:
   - plan
   - cache
@@ -15,7 +15,8 @@ tags:
 again on 2026-11-15, when Artifact Keeper was also run on the workstation (see
 "Local test"). On 2026-11-16 the owner picked Artifact Keeper for a trial of at
 least a month, replacing apt-cacher-ng, and dropped the recon of the old
-cache (see "Steps"). Nothing is installed on the lab.
+cache (see "Steps"). Running on `cache-1` since 2026-11-16; step 4, the
+clients, is mostly done.
 **Goal:** one cache on the home network answers apt and container-image
 requests for every VM, stores what is asked for the first time, and keeps
 itself inside a disk budget the owner chooses, so a redeploy stops coming down

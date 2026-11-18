@@ -17,7 +17,9 @@ tags:
 **Status:** in progress — A1 done 2026-11-14 (`systems/oob.md`); A2, the read-only
 recon, done 2026-11-14 (facts in `inventory/` and `systems/truenas.md`); A3 done
 2026-11-15, after a rerun of a replication that failed on a checksum error in `imp`
-(checked 2026-11-16). Replaces `plans/migration.md` (owner, 2026-11-14).
+(checked 2026-11-16); B4a phase 1, the home proxy, done 2026-11-18
+(`journal/2026-11-18-build-proxy-1-traefik.md`). Replaces `plans/migration.md`
+(owner, 2026-11-14).
 
 **Goal:** move every home workload to a setup where each app's data has one known
 place and one known backup method, app definitions live in this repo and deploy

@@ -28,3 +28,8 @@ python3 -I .githooks/check-properties.py
 # The LAN cache rule: every home VM in ansible/inventory.yml goes through
 # cache-1 or is exempt with a reason (ansible/README.md, "Adding a host").
 python3 -I .githooks/check-cache-clients.py
+
+# Doc rules for the clean-up: paths resolve, no dates in human tables, length
+# caps, danger rules in their owner files only. Known offenders are allowed
+# in .githooks/check-docs-allow.txt; only new ones fail.
+python3 -I .githooks/check-docs.py

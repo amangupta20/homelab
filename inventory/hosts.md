@@ -21,7 +21,6 @@ names, sizes and the unknowns.
 |---|---|---|---|---|---|
 | XCP-ng host | bare-metal server (Gigabyte B450M DS3H, AMD Ryzen 5 1600, 40 GB RAM; `systems/xcp-ng.md`, "Hardware") | — | hypervisor for every VM | XCP-ng | hardware verified: 2026-11-13 by the owner at the console; role and OS in docs, not verified |
 | TrueNAS VM | VM `aaTruenas-core`, 4 CPU / 8 GB; data disks are the two physical disks passed through whole (`systems/truenas.md`) | XCP-ng host | storage; Garage and BorgWarehouse as TrueNAS apps | TrueNAS 25.10.4 | running — verified: TrueNAS API 2026-11-14 |
-| Docker + proxy host | unknown | unknown | Docker stacks, Nginx Proxy Manager, apt cache | unknown | in docs, not verified |
 | Xen Orchestra | VM `xo-ce`, 2 CPU / 4 GB, 30 GB disk | XCP-ng host | manages VMs and backups (Xen Orchestra built from source) | Debian 13 | running — verified: Xen Orchestra's REST API and SSH, 2026-11-14 |
 | cache-1 | VM, 2 CPU, dynamic memory 256 MiB–1.5 GiB, 100 GB disk on `Nvme`; built by OpenTofu (`iac/cache-vm.tf`) | XCP-ng host | the LAN's package and image cache, Artifact Keeper (`apps/homeserver/artifact-keeper/`) | Debian 13 | running — verified: SSH and Xen Orchestra, 2026-11-16 (`journal/2026-11-16-build-cache-1.md`) |
 | proxy-1 | VM, 1 CPU, dynamic memory 256 MiB–1 GiB, 10 GB disk on `Nvme`; built by OpenTofu (`iac/proxy-vm.tf`) | XCP-ng host | the home reverse proxy, Traefik (`apps/homeserver/traefik/`) | Debian 13 | running — verified: SSH, 2026-11-18 (`journal/2026-11-18-build-proxy-1-traefik.md`) |

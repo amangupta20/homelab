@@ -537,8 +537,6 @@ move before its public route exists.
 - How to recover Nextcloud (A4).
 - The agent VM's size and tag (B0).
 - What the clean-up removes (B1).
-- The "Docker + proxy host" rows that disagree with the live lab
-  (`decisions/open-questions.md`, "Home VMs").
 
 ## Links
 

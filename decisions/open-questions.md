@@ -188,6 +188,9 @@ owner file, and is deleted from this list.
   `.254` is the VM `apt-cache`, with apt-cacher-ng and no Docker (SSH); Nginx Proxy Manager runs
   on `NPM-set` at `.99` (Portainer API, SSH). Those rows are left as they were for the owner to
   settle.
+  Agent's note, 2026-11-19: PR 97 changed the rows in `inventory/` to match the live lab (this
+  item's recon); `.254` in the Home router section below is now named too. Closing both is the
+  owner's.
 - Nextcloud's state is unclear. `plans/home-overhaul.md` (A4) says it is parked: containers
   stopped and AIO's daily backup turned off, with the restore not run (checked 2026-11-14).
   On 2026-11-15 the owner said he restored it and that Nextcloud then started on its own,

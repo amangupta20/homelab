@@ -418,7 +418,7 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
        Phase 1 done 2026-11-18: `proxy-1` built by OpenTofu, Traefik with the
        wildcard certificate and the route to `cache-1`
        (`apps/homeserver/traefik/`, `journal/2026-11-18-build-proxy-1-traefik.md`).
-       Still open: the check over Tailscale, Authentik sign-in (OIDC for the
+       Verified over Tailscale and on the LAN. Still open: Authentik sign-in (OIDC for the
        cache's web UI and Grafana, forward-auth for the dashboards), the
        dashboards, and Sablier.
      - **Names:** one public Cloudflare record, `*.home.<domain>`, pointing at the

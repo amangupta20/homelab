@@ -9,7 +9,8 @@ secrets:
 
 services:
   traefik:
-    # Pinned by digest (Docker Hub, read 2026-11-18).
+    # Same release as the VPS's Traefik (`traefik version` there, 2026-11-18),
+    # pinned by digest (Docker Hub, read 2026-11-18).
     image: docker.io/library/traefik:v3.7.16@sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65
     restart: unless-stopped
     ports:

@@ -18,7 +18,7 @@ tags:
 
 1. **Listed here:** the owner saw it and thinks it looks interesting. One row, no research.
 2. **Its own page, `ideas/<app>.md`:** someone has looked into it (resources, sign-in, backups, overlap with what already runs). The row links to that page.
-3. **Deployed:** a plan or a straight deploy (`skills/deploy-on-dokploy/`), then the service goes in `inventory/services.md`. Remove the row, or leave it with a link to the service.
+3. **Deployed:** a plan or a straight deploy (`agents/skills/deploy-on-dokploy/`), then the service goes in `inventory/services.md`. Remove the row, or leave it with a link to the service.
 
 An app that gets ruled out keeps its row, with the reason in "Waits on / notes", so nobody looks into it again.
 

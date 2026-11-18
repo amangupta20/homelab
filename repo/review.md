@@ -103,7 +103,7 @@ the verdict is `needs_owner`, however good the edit is:
 
 - an existing file in `decisions/` (other than appending to `open-questions.md`);
 - `AGENTS.md`, or the README's goal and principles;
-- an existing skill in `skills/` (a new skill is fine);
+- an existing skill in `agents/skills/` (a new skill is fine);
 - an old `journal/` entry.
 
 ## 5. Safe for the lab

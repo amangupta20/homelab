@@ -167,7 +167,7 @@ Metrics.
 
 | PRO feature | What it does | By hand instead |
 |---|---|---|
-| Backup S3 | uploads backups to S3 | free Backup writes them to a folder; ship it to Garage/B2 like other services (`skills/back-up-a-service/`) |
+| Backup S3 | uploads backups to S3 | free Backup writes them to a folder; ship it to Garage/B2 like other services (`agents/skills/back-up-a-service/`) |
 | Monitoring | internal plugin that Reporting needs | — |
 | Prometheus exporter | `/metrics` for Grafana | access logs into GoAccess or Loki/Grafana; CrowdSec's own metrics |
 | Reporting | weekly email or webhook summary | a cron job against BunkerWeb's API posting to ntfy (UNTESTED) |

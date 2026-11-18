@@ -20,7 +20,7 @@ through it, a tested backup) is open.
 **Goal:** OpenBao and SSO running on the VPS with tested backups, so every app
 after them is deployed once with secrets and sign-in already wired.
 **Done when:** OpenBao and SSO each have a restore test in `journal/`, and the
-first app deployed with `skills/deploy-on-dokploy/` reads its secrets from
+first app deployed with `agents/skills/deploy-on-dokploy/` reads its secrets from
 OpenBao and signs in through SSO.
 
 Why this order and why on the VPS: `decisions/foundations-on-vps.md`.
@@ -57,14 +57,14 @@ Why this order and why on the VPS: `decisions/foundations-on-vps.md`.
    precondition stays open. Dokploy's OpenBao provider token renewal is automated
    daily by the `openbao-raft-snapshot` scheduled task. Still open: the OpenTofu half.
 4. **SSO.** Choose one (`decisions/open-questions.md`, Foundations), deploy it
-   with `skills/deploy-on-dokploy/`, public login, tailnet-only admin, backup
+   with `agents/skills/deploy-on-dokploy/`, public login, tailnet-only admin, backup
    tested. — gate: the throwaway app from step 3 signs in through it.
    Choosing and deploying the provider does not wait on the edge decision:
    all three candidates are OpenID Connect providers that every edge option
    can use. Forward-auth for apps with no sign-in of their own does wait on
    it (`ideas/edge-and-security-layers.md`, "Sign-in").
 5. **Apps.** From here, every VPS app goes through
-   `skills/deploy-on-dokploy/` with OpenBao and SSO from the start. Apps
+   `agents/skills/deploy-on-dokploy/` with OpenBao and SSO from the start. Apps
    already on Dokploy move into `apps/vps/` one at a time. The first new one
    is the reviewer's trace viewer, Langfuse, right after the step-4 SSO
    (owner, 2026-11-10; `plans/ai-reviewer-prime-agent.md`, step 6) —

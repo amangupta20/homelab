@@ -16,13 +16,13 @@ description: Use when adding a new skill to this homelab repo or changing an exi
 
 ## How
 
-1. **Check it does not exist already.** `ls skills/` and read the
-   `description:` lines (`grep -h '^description:' skills/*/SKILL.md`). Extend
+1. **Check it does not exist already.** `ls agents/skills/` and read the
+   `description:` lines (`grep -h '^description:' agents/skills/*/SKILL.md`). Extend
    an existing skill rather than writing a near-duplicate.
 2. **Pick the kind.** A procedure that touches the lab is a *runbook*; how to
    use a tool or this repo is *know-how*. Both templates are in
-   `skills/README.md`.
-3. **Create the folder.** `skills/<name>/SKILL.md`, where `<name>` is
+   `agents/skills/README.md`.
+3. **Create the folder.** `agents/skills/<name>/SKILL.md`, where `<name>` is
    lowercase letters, digits and hyphens, and the `name:` line matches the
    folder exactly.
 4. **Write the description first.** It is the only part an agent sees before
@@ -37,13 +37,13 @@ description: Use when adding a new skill to this homelab repo or changing an exi
    names — the commit hook blocks them (`repo/secret-scanning.md`), but write
    placeholders from the start. Credentials live in OpenBao
    (`systems/openbao.md`).
-8. **List it** under "Skills" in `skills/README.md`.
+8. **List it** under "Skills" in `agents/skills/README.md`.
 9. **Make it visible to every harness:** run `mise run agents:link`; which
    harnesses need it and which do not is in `agents/README.md`.
 10. **Commit it alone**, Status UNTESTED, and propose it in a pull request.
 
 **Adopting a skill your harness wrote** (e.g. in `~/.hermes/skills/<name>/`):
-move the folder into `skills/<name>/`, rewrite it to the template, strip
+move the folder into `agents/skills/<name>/`, rewrite it to the template, strip
 anything harness-specific, then run `mise run agents:link` — the harness's
 copy becomes a link to the repo's.
 

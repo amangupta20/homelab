@@ -233,7 +233,7 @@ What "everything switched on" would look like. Marked by how each part is known.
 | Agent access | `tea` CLI, access tokens kept in OpenBao, an MCP server (`goern/forgejo-mcp`, a mirror of a Codeberg project) | MCP repo exists (checked); not tried |
 | Registry | Container and package registry, so CI can publish images | Forgejo docs; not tried |
 | Monitoring | A metrics endpoint for Prometheus | From memory, unverified |
-| Backups | `forgejo dump` or the data folder plus a Postgres dump, through `skills/back-up-a-service/`, with a restore test | Not tried |
+| Backups | `forgejo dump` or the data folder plus a Postgres dump, through `agents/skills/back-up-a-service/`, with a restore test | Not tried |
 
 Federation (ForgeFed) stays off: the research reports call it experimental.
 
@@ -309,7 +309,7 @@ Radicle gets two-site sync without any of this.
   commits, not the conversations.
 - prime-reviewer is a GitHub App and has to be rewritten for the new host.
 - Our host becomes the source of truth, so it needs the two-tier backups and a
-  restore test (`skills/back-up-a-service/`) before it holds anything that matters.
+  restore test (`agents/skills/back-up-a-service/`) before it holds anything that matters.
 - A public instance needs patching and sign-in kept up.
 - OneDev depends mostly on one maintainer.
 

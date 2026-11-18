@@ -55,7 +55,7 @@ For a home VM built from code, in this order and in the same change that builds 
    as a comment.
 3. `ansible-playbook common.yml xcpng.yml cache-client.yml -l <name>`.
 4. Then the host's own playbook. Its packages and images now come through cache-1; an
-   upstream the cache does not have yet is added first (`skills/add-a-cache-remote/`).
+   upstream the cache does not have yet is added first (`agents/skills/add-a-cache-remote/`).
 
 **The LAN cache rule** (owner; `apps/README.md`, `plans/home-overhaul.md` step B00):
 every home VM downloads through cache-1, so a package or image leaves home once.

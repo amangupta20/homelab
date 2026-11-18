@@ -127,4 +127,4 @@ Write down what you saw, and ask the owner.
 - If the app needs more than a row, a page in `systems/`.
 - Write `journal/YYYY-MM-DD-deploy-<app>.md`.
 - If any step above was wrong, propose the fix to this skill
-  (`skills/write-a-skill/`).
+  (`agents/skills/write-a-skill/`).

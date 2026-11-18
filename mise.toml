@@ -12,7 +12,7 @@ description = "Point git at the tracked hooks (once per checkout)"
 run = "git config core.hooksPath .githooks && echo 'core.hooksPath=.githooks'"
 
 [tasks."agents:link"]
-description = "Link skills/ into agent harnesses that only read a home-directory folder"
+description = "Link agents/skills/ into agent harnesses that only read a home-directory folder"
 run = "sh agents/link.sh"
 
 [tasks.scan]

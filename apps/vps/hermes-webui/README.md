@@ -21,7 +21,7 @@ Upstream base for later modifications (re-check these when upgrading):
 | nesquena/hermes-webui `docker_init.bash` | tag v0.52.544, and again at the `0.52.561` build's revision `4d975aa` | the image has no agent of its own: it looks for one in `~/.hermes/hermes-agent` or `/opt/hermes` and serves without it; from `0.52.556` it also passes the agent's uv overrides to the install |
 | nesquena/hermes-webui `docs/docker.md` | main, read 2026-10-27 | release-pair rule (WebUI and agent pinned and upgraded together) |
 | nesquena/hermes-webui issue #8113, #8524, #8544 | read 2026-10-27 | why the agent install failed on an older tag: the venv must be built on Python 3.14 (#8113, fixed in 0.52.544), and from 0.52.556 the WebUI also passes the agent's own `[tool.uv]` override table to uv (#8524, fixed by #8544). 0.52.561 is the pinned tag used here — the first that needs no workaround |
-| This repo's `skills/deploy-on-dokploy/` | 2026-10-27 | file layout, placeholder rules, inventory + journal follow-ups |
+| This repo's `agents/skills/deploy-on-dokploy/` | 2026-10-27 | file layout, placeholder rules, inventory + journal follow-ups |
 
 Choices that differ from those sources, and why:
 
@@ -52,7 +52,7 @@ Choices that differ from those sources, and why:
 
 ## Deploying in Dokploy
 
-Follows `skills/deploy-on-dokploy/` steps 4–7 and 9, with these differences:
+Follows `agents/skills/deploy-on-dokploy/` steps 4–7 and 9, with these differences:
 
 - **Source:** this repo, branch `main`, compose path
   `apps/vps/hermes-webui/compose.yaml`. Auto-deploy off — downtime on every

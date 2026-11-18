@@ -23,7 +23,7 @@ So the layout is:
 |---|---|---|
 | What exists? (lookup tables) | `inventory/` | agent, saying how it verified |
 | How does a thing work, what never to do? | `systems/` | agent, saying how it verified |
-| How do I do X? | `skills/` (agentskills.io `SKILL.md`, shared by every harness) | agent adds new ones; changes to existing ones are proposed |
+| How do I do X? | `agents/skills/` (agentskills.io `SKILL.md`, shared by every harness) | agent adds new ones; changes to existing ones are proposed |
 | What is in flight? | `plans/` | agent updates status; owner sets goals |
 | What could be tried later? | `ideas/` | owner adds or asks; agent corrects facts, never promotes |
 | Why is it this way? | `decisions/` | owner; agent proposes |

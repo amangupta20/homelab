@@ -519,8 +519,8 @@ journal entry).
 
 ## Portainer to git
 
-Moved from `plans/migration.md`. Today every home stack exists only inside
-Portainer: its Compose file and `.env` live in Portainer's database, not here.
+Moved from `plans/migration.md`. Today every home stack that predates this
+plan exists only inside Portainer: its Compose file and `.env` live in Portainer's database, not here.
 The target: one directory per app, `apps/homeserver/<app>/compose.yaml`, with secrets and
 identifying values as references and everything else written in (`apps/README.md`),
 deployed by Arcane from that directory, so the repo — not the UI — is the source of

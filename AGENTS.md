@@ -13,7 +13,7 @@ Read in this order:
 5. `systems/xcp-ng.md` — the platform rule that destroys VMs
 6. The README of the folder you are about to write in — it has the naming
    rules and the template
-7. The `systems/` page, `plans/` file or `skills/` entry for your task
+7. The `systems/` page, `plans/` file or `agents/skills/` entry for your task
 
 ## What you may edit
 
@@ -22,7 +22,7 @@ Read in this order:
 | `inventory/`, `systems/`, `plans/`, `apps/`, `iac/README.md`, `repo/` | edit, as long as every fact you add says how you know it |
 | `ideas/` | correct facts and add sources; never promote, drop or act on an idea without the owner (`ideas/README.md`) |
 | `journal/` | add an entry when a task changed the live lab, handled an incident, or tested a restore (`journal/README.md`); never edit an old one except to append a follow-up |
-| `skills/` | follow; add new skills and propose changes to existing ones (`skills/write-a-skill/`) |
+| `agents/skills/` | follow; add new skills and propose changes to existing ones (`agents/skills/write-a-skill/`) |
 | `decisions/open-questions.md` | append; never delete or resolve an item |
 | `decisions/` (everything else), `AGENTS.md`, `README.md` goal and principles | propose only, in a separate commit for the owner to review |
 
@@ -125,9 +125,9 @@ repo, never only inside your own harness:
 
 - **You did something in several steps, or the owner had to explain how:**
   write it down as a skill so the next agent, in any harness, does not need
-  the explanation (`skills/write-a-skill/`).
+  the explanation (`agents/skills/write-a-skill/`).
 - **Your harness saved a skill or memory of its own:** it is not part of the
-  setup until it is in `skills/` or the owner file it belongs in. Move it there
+  setup until it is in `agents/skills/` or the owner file it belongs in. Move it there
   and propose it. `mise run agents:link` lists the skills it finds outside the
   repo.
 - **You need access you do not have** (an MCP server, an API, a tool): propose

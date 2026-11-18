@@ -63,7 +63,7 @@ never in git. See `systems/openbao.md` for where they live.
 | an IP, or how traffic gets in | `inventory/network.md` |
 | how a thing works and what never to do to it | `systems/` — one page per thing (`xcp-ng.md`, `backups.md`, `openbao.md`) |
 | what is backed up, and which restores are untested | `systems/backups.md` |
-| how to do a task step by step | `skills/` — runbooks and know-how, shared with the agent harnesses (`agents/`) |
+| how to do a task step by step | `agents/skills/` — runbooks and know-how, shared with the agent harnesses (`agents/`) |
 | what is in progress | `plans/` |
 | what could be tried later (researched, not scheduled) | `ideas/` |
 | why something is the way it is | `decisions/` |

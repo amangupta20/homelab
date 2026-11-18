@@ -106,7 +106,7 @@ memories, which a worker would search.
 - **What it may change by itself:** its own prompts and skills in the private
   config repo, each as a versioned change with the evidence behind it, so it
   can be rolled back. Anything in this repo's rules (`repo/review.md`,
-  `AGENTS.md`, `skills/`) is a pull request for the owner. For the first weeks
+  `AGENTS.md`, `agents/skills/`) is a pull request for the owner. For the first weeks
   it only proposes.
 - **Prime Agent** stays the yardstick: with the adapter in place, rerun its
   past reviews and compare.

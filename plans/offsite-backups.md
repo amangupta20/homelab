@@ -26,7 +26,7 @@ for OpenBao.
 
 Today OpenBao's only backup is tier 1: a daily Raft snapshot from the VPS to
 Garage at home, restore tested 2026-10-29 (`systems/backups.md`). The procedure
-for each service is `skills/back-up-a-service/`; commands below are
+for each service is `agents/skills/back-up-a-service/`; commands below are
 **UNTESTED**.
 
 ## Steps
@@ -61,11 +61,11 @@ for each service is `skills/back-up-a-service/`; commands below are
 4. **One learning service, lighter pattern.** The owner picks a small service
    (a candidate with little data, suggested in an earlier session: ntfy). Same
    steps with fewer versions, to practise the procedure and correct
-   `skills/back-up-a-service/`. — gate:
+   `agents/skills/back-up-a-service/`. — gate:
    restore journal entry; skill Status updated.
 
 ## Links
 
-`decisions/backup-tiers.md`, `skills/back-up-a-service/`,
+`decisions/backup-tiers.md`, `agents/skills/back-up-a-service/`,
 `systems/backups.md`, `systems/openbao.md`, `apps/vps/openbao/README.md`,
 `decisions/open-questions.md` ("Backups").

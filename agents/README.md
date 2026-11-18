@@ -3,7 +3,7 @@
 This repo is meant to be worked on by several agent harnesses — Claude Code,
 Pi, omp, Codex, OpenCode, Hermes, and whatever gets tried next — on more than
 one machine. None of them owns anything: the instructions (`AGENTS.md`) and the
-skills (`skills/`) live in the repo, and each harness is pointed at them. On a
+skills (`agents/skills/`) live in the repo, and each harness is pointed at them. On a
 fresh clone, harnesses that read project folders see them at once; harnesses
 that only read a home-directory folder need one `mise run agents:link`.
 
@@ -11,9 +11,9 @@ that only read a home-directory folder need one `mise run agents:link`.
 
 | Harness | Reads skills from | How it gets there | Checked |
 |---|---|---|---|
-| Pi | `.agents/skills/` (project) | committed link to `skills/` | Pi 1.4.0 listed `write-a-skill`, 2026-10-26 |
+| Pi | `.agents/skills/` (project) | committed link to `agents/skills/` | Pi 1.4.0 listed `write-a-skill`, 2026-10-26 |
 | omp | `.agents/skills/`, `.claude/skills/` (project) | committed links | paths found in the omp binary, 2026-10-26; not run yet; may list each skill twice |
-| Claude Code | `.claude/skills/` (project) | committed link to `skills/` | a running session picked up `write-a-skill`, 2026-10-26 |
+| Claude Code | `.claude/skills/` (project) | committed link to `agents/skills/` | a running session picked up `write-a-skill`, 2026-10-26 |
 | Codex, OpenCode, Gemini / Antigravity | `.agents/skills/` (project) | committed link | not checked: the agentskills.io convention |
 | Hermes | `~/.hermes/skills/` (home directory only) | `agents/link.sh` | third-party guides; confirm on the agent VM |
 

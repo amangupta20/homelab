@@ -103,4 +103,4 @@ real data is there.
 - Update the service's line in `systems/backups.md` with both tiers, and tick
   its restore under "Tested restores" only after the restore worked.
 - Write `journal/YYYY-MM-DD-backup-<service>.md`.
-- If a step here was wrong, propose the fix (`skills/write-a-skill/`).
+- If a step here was wrong, propose the fix (`agents/skills/write-a-skill/`).

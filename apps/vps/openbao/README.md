@@ -83,7 +83,7 @@ certificate for the name, `curl` with the system trust store got 200 from
 
 ## Deploying in Dokploy
 
-Follows `skills/deploy-on-dokploy/` steps 6 and 7, with these differences:
+Follows `agents/skills/deploy-on-dokploy/` steps 6 and 7, with these differences:
 
 - **No domain.** A Dokploy domain would route OpenBao through the public
   Traefik.

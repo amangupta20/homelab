@@ -20,7 +20,7 @@ How this view works and how to keep it working: [repo/obsidian-view.md](repo/obs
 | Ideas | What could be tried later, not scheduled | [ideas/](ideas/README.md) |
 | Decisions | Why it is this way | [decisions/](decisions/README.md) |
 | Open questions | What is undecided or unverified | [decisions/open-questions.md](decisions/open-questions.md) |
-| Skills | How to do X | [skills/](skills/README.md) |
+| Skills | How to do X | [agents/skills/](agents/skills/README.md) |
 | Journal | What happened, when | [journal/](journal/README.md) |
 | Agent rules | How agents work here | [AGENTS.md](AGENTS.md) |
 

@@ -78,7 +78,7 @@ Read from the NetBox repositories on 2026-11-05 unless marked otherwise.
    changed on the lab changes nothing in NetBox.
 3. **Deploy it for real.** Install on the chosen host, reachable for admin only,
    with its secrets in OpenBao. — gate: the sync fills it without errors.
-4. **Back it up.** Follow `skills/back-up-a-service/`. — gate: a test restore
+4. **Back it up.** Follow `agents/skills/back-up-a-service/`. — gate: a test restore
    works.
 5. **Schedule the sync and record it.** Add the `inventory/services.md` row and a
    `systems/netbox.md` page, and apply the fact-ownership decision. — gate: the

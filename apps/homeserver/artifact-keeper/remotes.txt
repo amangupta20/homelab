@@ -1,7 +1,7 @@
 # The cache's remote repositories: one upstream per line. The one list both
 # cache-remotes.sh (which creates them on cache-1) and the client playbook
 # (which points machines at them, plan step 4) read. Adding an upstream:
-# skills/add-a-cache-remote/.
+# agents/skills/add-a-cache-remote/.
 #
 # Columns: key, format, cap in GB (10^9 bytes), upstream URL.
 # Each cap evicts its own repository's least recently used entries. The caps are

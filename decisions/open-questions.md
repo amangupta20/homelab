@@ -281,7 +281,7 @@ these parts are open:
 - For "Where Pigsty's manager runs": on `pigsty-1` in phase 1 (agent's recommendation,
   2026-11-06, after the owner chose one node only). The item stays for the owner to close.
 - Pigsty's pgBackRest setup makes the one selected repository `repo1`, while
-  `skills/back-up-a-service/` says `repo1` Garage, `repo2` B2; the owner wants B2
+  `agents/skills/back-up-a-service/` says `repo1` Garage, `repo2` B2; the owner wants B2
   first (`plans/shared-postgres.md`, "Backups"). Which numbering wins, and how a
   second repository gets added, is untested.
 - `decisions/backup-tiers.md` keeps "3 daily, 1 weekly, 1 monthly" on B2, which
@@ -338,7 +338,7 @@ Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
   recovery drill wanted before the router carries the lab?
 - Nothing backs up the router's config on a schedule, and
   `systems/backups.md` has no row for it. Should it get one
-  (`skills/back-up-a-service/`)?
+  (`agents/skills/back-up-a-service/`)?
 - Tailscale is installed on the router but not logged in. Should the router
   become the subnet router for the home subnet, and which machine advertises
   that subnet today? The laptop lost its route to the router once in the

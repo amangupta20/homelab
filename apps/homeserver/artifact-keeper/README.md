@@ -17,7 +17,7 @@ group (`ansible/cache-client.yml`, from 2026-11-18; `proxy-1` first).
 | `prometheus.yml` | what Prometheus collects: the backend's metrics listener and node-exporter |
 | `grafana/` | Grafana's data source and the dashboard, `grafana/dashboards/cache.json`, provisioned read-only |
 | `init-pg-ssl.sh` | upstream's script that turns on TLS in PostgreSQL at first start, unchanged |
-| `remotes.txt` | the one list of remote repositories and their caps, read by `cache-remotes.sh` and, later, the client playbook; add one with `skills/add-a-cache-remote/` |
+| `remotes.txt` | the one list of remote repositories and their caps, read by `cache-remotes.sh` and, later, the client playbook; add one with `agents/skills/add-a-cache-remote/` |
 | `cache-remotes.sh` | creates the repositories in `remotes.txt` on cache-1, sets their caps and keeps the 30-day idle rule assigned to all of them; refuses a cap over the instance ceiling; safe to run again |
 
 Deployed by `ansible/cache.yml`, which also writes the secret files from OpenBao

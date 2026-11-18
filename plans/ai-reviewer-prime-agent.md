@@ -234,7 +234,7 @@ export its log before adding LiteLLM. None of it is checked.
 - Candidates kept for the migration agent: `ideas/dsh-superagent-and-harness2.md`
 - On-demand starting of the trace viewer: `ideas/on-demand-container-wakeups.md`
 - The required review check: `repo/review.md`, `decisions/pull-request-gate.md`
-- Backups for the bucket and the viewer: `skills/back-up-a-service/`
+- Backups for the bucket and the viewer: `agents/skills/back-up-a-service/`
 - Undecided parts: `decisions/open-questions.md`, AI reviewer
 
 

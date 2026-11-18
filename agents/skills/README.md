@@ -17,8 +17,8 @@ Two kinds of skill live here:
   know-how template.
 
 ```
-skills/<name>/SKILL.md      the instructions (required)
-skills/<name>/<file>        scripts, references or templates it uses (optional)
+agents/skills/<name>/SKILL.md      the instructions (required)
+agents/skills/<name>/<file>        scripts, references or templates it uses (optional)
 ```
 
 `<name>` is lowercase with hyphens and matches the `name:` line inside. The
@@ -36,7 +36,7 @@ skill, so it says what the skill does *and when to use it*.
 - Nothing harness-specific in a skill. If something only works in one
   harness, it is an extension (`agents/extensions/<harness>/`), not a skill.
 - Agents may write new skills and propose fixes after using one; the owner
-  merges them (`skills/write-a-skill/`).
+  merges them (`agents/skills/write-a-skill/`).
 
 ## Runbook template
 

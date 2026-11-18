@@ -14,7 +14,7 @@ Decided: 2026-10-31. Status: in force — approved by the owner.
 
 Tier 2 is sent **from the source**, not copied from Garage, so a missing or
 broken backup in Garage never reaches B2. The procedure is
-`skills/back-up-a-service/`.
+`agents/skills/back-up-a-service/`.
 
 **Tier 2 services (owner to confirm):** OpenBao first. Others get a lighter
 version for learning, chosen one at a time (`plans/offsite-backups.md`).
@@ -90,5 +90,5 @@ From `plans/home-overhaul.md`, "Design". Tier 1 is no longer always Garage:
 ## Where it lives
 
 `systems/backups.md` (what each service actually has),
-`skills/back-up-a-service/` (how), `plans/offsite-backups.md` (OpenBao first),
+`agents/skills/back-up-a-service/` (how), `plans/offsite-backups.md` (OpenBao first),
 `decisions/open-questions.md` ("Backups").

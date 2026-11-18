@@ -290,7 +290,7 @@ Follows `decisions/backup-tiers.md` (proposed).
   only repository until Garage is back, and Garage (tier 1) is added then.
   **UNTESTED.** Pigsty v4.5.0 writes only the repository `pgbackrest_method`
   selects, as `repo1` (`pigsty.io/docs/pgsql/backup/repository`), so B2 becomes
-  `repo1`, not the `repo2` that `skills/back-up-a-service/` names. An S3 repository
+  `repo1`, not the `repo2` that `agents/skills/back-up-a-service/` names. An S3 repository
   with no local one is not stated as supported in those docs; adding the second
   repository later may need raw pgBackRest options.
 - **How many on B2 (owner, 2026-11-06):** one. A weekly full backup with daily

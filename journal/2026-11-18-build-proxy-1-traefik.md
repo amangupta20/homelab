@@ -33,15 +33,18 @@ the repo; losing its certificate only means a new one is requested.
 - A second `./run.sh plan`: no changes. A second `ansible-playbook proxy.yml`: `changed=0`.
 - The certificate served on `10.22.33.138:443` (`openssl s_client`): issuer Let's Encrypt, names `home.<zone>` and
   `*.home.<zone>`, valid until 2027-02-16.
-- On the LAN, from the workstation, `proxy-1` and `cache-1`: `https://cache.home.<zone>/` 200 (the web UI),
-  `/health` 200, `/grafana/` 302 to Grafana's login on the same name, `http://` 301 to `https://`, certificate valid.
+- Over Tailscale, from the workstation away from home (`ip route get 10.22.33.138`: via `tailscale0`, through the
+  router's subnet route; the name resolved through the workstation's own public resolver):
+  `https://cache.home.<zone>/` 200 (the web UI), `/health` 200, `/grafana/` 302 to Grafana's login on the same name,
+  `http://` 301 to `https://`, certificate valid.
+- On the LAN, from `proxy-1` and `cache-1` (both resolve through the router): `https://cache.home.<zone>/health` 200,
+  certificate valid.
 - The router's dnsmasq answers `cache.home.<zone>` with `10.22.33.138` (`nslookup` on the router against
   `127.0.0.1`), with rebind protection on and `home.<zone>` in `rebind_domain`: the allowlist added on 2026-11-17
   works.
 
 ## Not verified
 
-- **Over Tailscale from outside the LAN.** The VPS cannot test it: the tailnet policy lets it reach only Garage on
-  the home subnet (`homelab-private`'s policy), so its request timed out as a request to `cache-1` directly did.
-  The owner's own devices may reach the whole subnet; a check from the phone on mobile data is still to do.
+- From the VPS: the tailnet policy lets it reach only Garage on the home subnet (`homelab-private`'s policy), so its
+  request timed out, as a request to `cache-1` directly did. That is intended, not a fault of the proxy.
 - Certificate renewal (Traefik renews about 30 days before expiry, so first around mid-January 2027).

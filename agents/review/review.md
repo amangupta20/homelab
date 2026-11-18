@@ -7,7 +7,7 @@ reviewer in CI), and readable by a person doing the same review by hand.
 The reviewer reads the full diff, `AGENTS.md`, and the README of every folder
 the diff touches. A subagent or a person reports and does not fix; the Prime
 reviewer may also push mechanical fixes, under the limits in
-`repo/prime-reviewer.md`.
+`agents/review/prime-reviewer.md`.
 
 ## Default review sequence
 
@@ -49,7 +49,7 @@ sections 5 or 1. This sequence does not introduce new gate categories.
   reviewer subagent with this file (`AGENTS.md`, "Before you open a pull
   request"). Fast feedback, not enforced.
 - **On every pull request:** the Prime reviewer
-  (`.github/workflows/prime-review.yml`, `repo/prime-reviewer.md`) reviews
+  (`.github/workflows/prime-review.yml`, `agents/review/prime-reviewer.md`) reviews
   the owner's pull requests against this file and runs the `ai review`
   check, which is required on `main`. It fails on a blocker under sections 1
   and 5 and on any pull request the owner did not open. The workflow, its
@@ -57,11 +57,11 @@ sections 5 or 1. This sequence does not introduce new gate categories.
   pull request. Execution code comes from the public action at that reference.
   A change here takes effect only after it merges, and
   the pull request that makes it is reviewed by the old version. A clean
-  review also approves the commit (`repo/prime-reviewer.md`).
+  review also approves the commit (`agents/review/prime-reviewer.md`).
 
 ## 1. Nothing that should not be public
 
-The scan (`repo/secret-scanning.md`) catches credentials, public IPs, tailnet
+The scan (`agents/review/secret-scanning.md`) catches credentials, public IPs, tailnet
 names and the domains on a local list. A reviewer catches what a pattern
 cannot:
 
@@ -94,7 +94,7 @@ cannot:
 - Every path mentioned in backticks exists after the change.
 - A page in `systems/`, `inventory/` or `plans/` whose Status line, source or
   host changed has its property block changed to match, and no property states
-  something the page body does not (`repo/obsidian-view.md`).
+  something the page body does not (`agents/obsidian/obsidian-view.md`).
 
 ## 4. Within the author's permission
 

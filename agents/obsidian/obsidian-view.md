@@ -77,4 +77,4 @@ Run the check by hand: `mise run check:properties`.
 The check sees a missing, misspelled or unknown property and a host that does
 not exist. It cannot tell whether `status` still matches the page's Status
 line; that is on whoever edits the page, and on the reviewer
-(`repo/review.md`).
+(`agents/review/review.md`).

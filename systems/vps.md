@@ -122,7 +122,7 @@ purpose — never Docker's.
 >   is public by the owner's choice. OpenBao and SSH are tailnet-only.
 > - No real domain, public IP or tailnet name in this repo — the commit hook
 >   blocks domains on the local list, public IPs and tailnet names
->   (`repo/secret-scanning.md`); use placeholders.
+>   (`agents/review/secret-scanning.md`); use placeholders.
 > - Security findings (exposed ports, missing authentication) do not go in this
 >   repo while they are unfixed.
 

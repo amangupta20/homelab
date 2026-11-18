@@ -20,7 +20,7 @@ Everything else runs at home. The two sides reach each other over Tailscale.
 
 - The VPS is the public-facing side: its docs are where a real domain or
   public IP is most likely to slip into this public repo
-  (`repo/secret-scanning.md`).
+  (`agents/review/secret-scanning.md`).
 - Dokploy is the deployment tool for the VPS only; the homeserver's container
   manager is a separate, still open question.
 - Whether an app goes home or VPS is decided per app against the list above,

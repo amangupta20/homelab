@@ -2,11 +2,11 @@ name: prime review
 
 # Prime Agent reviews the owner's pull requests and acts on the owner's
 # /prime comments: it pushes mechanical fixes, posts one-click suggestions,
-# and raises design issues (repo/prime-reviewer.md).
+# and raises design issues (agents/review/prime-reviewer.md).
 #
 # On pull request events the job is named `ai review`, the required check on
 # main (decisions/pull-request-gate.md). It fails on a blocker under
-# repo/review.md section 1 or 5, and on any pull request not opened by the
+# agents/review/review.md section 1 or 5, and on any pull request not opened by the
 # owner. A push by the owner gets a quiet re-review (it comments only when it
 # has something new); a push of the reviewer's own fixes gets one too. A clean
 # review approves its commit, so the owner can merge without the bypass.

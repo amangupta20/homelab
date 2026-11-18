@@ -12,7 +12,7 @@ is, where it runs, and its state. How a thing works belongs on its page in
 `systems/`, and the row links there once that page exists.
 
 Every page starts with a property block (the Obsidian view reads it); the
-schema and rules are in `repo/obsidian-view.md`, and `mise run check:properties`
+schema and rules are in `agents/obsidian/obsidian-view.md`, and `mise run check:properties`
 checks it.
 
 | File | One row per | Owns |
@@ -32,4 +32,4 @@ checks it.
   State column (`verified: recon 2026-11-02`).
 - Unknown is written as `unknown`, never guessed.
 - Only private addresses and placeholders. The scan blocks public IPs and
-  tailnet names (`repo/secret-scanning.md`).
+  tailnet names (`agents/review/secret-scanning.md`).

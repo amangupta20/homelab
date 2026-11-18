@@ -11,7 +11,7 @@ the diff to a model in one call.
 ## What it does
 
 [Prime Agent](https://github.com/PrimeIntellect-ai/prime-agent) (an open
-source coding agent) reads the pull request against `repo/review.md` and
+source coding agent) reads the pull request against `agents/review/review.md` and
 `AGENTS.md`, then sorts each finding by level:
 
 | Level | Kind | What happens |
@@ -20,10 +20,10 @@ source coding agent) reads the pull request against `repo/review.md` and
 | 2 | a clear change of a few lines | a suggestion on the line, applied with **Commit suggestion**; lines outside the diff cannot carry one, so those go in the summary |
 | 3 | design, or anything in a protected path | a comment with no code; reply `/prime <instruction>` (for example "do it") and it continues the same session and commits |
 
-It reports only findings that meet the bar in `repo/review.md`
+It reports only findings that meet the bar in `agents/review/review.md`
 ("Blockers and warnings"), not wording or style. Never on its own: `iac/`, `decisions/`, `.github/`,
 `.githooks/`, `agents/skills/`, `journal/`, `AGENTS.md`, `README.md`, `CLAUDE.md`,
-`repo/review.md` — anything there is level 3. Source: `protected` in the
+`agents/review/review.md` — anything there is level 3. Source: `protected` in the
 private `repos/homelab/config.toml`, read 2026-11-14.
 
 Those paths are closed only to what the reviewer does by itself. Since action
@@ -69,7 +69,7 @@ token that can push.
 | the owner comments `/prime <anything else>`, in the conversation or on a line | follows the instruction in the same session, for example "do it" on a level 3 | a reply |
 | a pull request someone else opened | `ai review` fails with "not reviewed"; the owner reviews it by hand | none |
 
-`ai review` fails on a blocker under `repo/review.md` sections 1 or 5, or
+`ai review` fails on a blocker under `agents/review/review.md` sections 1 or 5, or
 when the reviewer produced no result. A 👀 reaction on a `/prime` comment
 means it started, 🚀 that it finished, 😕 that it failed.
 
@@ -106,7 +106,7 @@ free for a public repository. Nothing runs on the lab.
 
 | What | Where |
 |---|---|
-| The rules it judges by | `repo/review.md` and `AGENTS.md`, always from `main`, so a pull request cannot rewrite them |
+| The rules it judges by | `agents/review/review.md` and `AGENTS.md`, always from `main`, so a pull request cannot rewrite them |
 | Shared execution code | public `prime-reviewer-action`, called as a composite action at commit `280578b3eac0` (pinned by full SHA) by this repo's workflow |
 | Its prompts, playbook and model settings | the owner's private repo `prime-reviewer` (`main`): shared `APPEND_SYSTEM.md` and `skills/common-review/`, with homelab settings and playbook in `repos/homelab/` |
 | Changes it makes to its own playbook | a pull request on `prime-reviewer`, which the owner merges or closes |

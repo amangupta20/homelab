@@ -15,7 +15,7 @@ repository has not been tested. A live `/prime` reply ran on homelab PR 27
 
 For repository onboarding or changes spanning the public action, private
 configuration and a caller workflow. The current homelab behavior is owned by
-`repo/prime-reviewer.md`; the action's README owns its inputs and examples.
+`agents/review/prime-reviewer.md`; the action's README owns its inputs and examples.
 
 ## How
 

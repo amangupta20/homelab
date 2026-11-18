@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the page properties the Obsidian view reads (repo/obsidian-view.md).
+"""Check the page properties the Obsidian view reads (agents/obsidian/obsidian-view.md).
 
 Every page in systems/, inventory/, plans/ and ideas/ starts with a small YAML block.
 The Bases tables in bases/ are built from it, so a missing or misspelled
@@ -95,7 +95,7 @@ def main():
     for e in errors:
         print(f"check-properties: {e}", file=sys.stderr)
     if errors:
-        print("check-properties: see repo/obsidian-view.md for the schema", file=sys.stderr)
+        print("check-properties: see agents/obsidian/obsidian-view.md for the schema", file=sys.stderr)
         return 1
     return 0
 

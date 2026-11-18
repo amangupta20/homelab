@@ -13,7 +13,7 @@ it is finished, the outcome lands in `systems/` and `inventory/`, the story in
 `journal/`, and the plan is marked done (kept, not deleted — it is history).
 
 Every page starts with a property block (the Obsidian view reads it); the
-schema and rules are in `repo/obsidian-view.md`, and `mise run check:properties`
+schema and rules are in `agents/obsidian/obsidian-view.md`, and `mise run check:properties`
 checks it.
 
 Not scheduled yet? It belongs in `ideas/` until the owner decides to do it;
@@ -55,7 +55,7 @@ tags:
 - `offsite-backups.md` — the encrypted offsite backup tier, OpenBao first (in progress).
 - `hindsight-d1-reranker.md` — d1-2B on a homelab GPU VM, loaded on demand, in Hindsight's reranker chain (not started).
 - `package-and-image-cache.md` — apt packages and container images cached once at home, inside a disk budget (in progress: Artifact Keeper picked for a month's trial, on the `main` image until a release has the byte cap).
-- `ai-reviewer-prime-agent.md` — Prime Agent reviews the owner's pull requests with three levels of finding, memory and kept traces; built as a GitHub App on GitHub's runners instead of spot VMs (in progress, step 7; how it works: `repo/prime-reviewer.md`).
+- `ai-reviewer-prime-agent.md` — Prime Agent reviews the owner's pull requests with three levels of finding, memory and kept traces; built as a GitHub App on GitHub's runners instead of spot VMs (in progress, step 7; how it works: `agents/review/prime-reviewer.md`).
 - `netbox.md` — NetBox as the lab's inventory, kept current by a sync from the live systems (not started, no date).
 - `sablier-wakeups.md` — stop rarely used VPS apps when idle and start them on the next request; Blinko first (done 2026-11-07).
 - `oci-state-backup.md` — a second copy of every OpenTofu root's state in Garage (done 2026-11-16).

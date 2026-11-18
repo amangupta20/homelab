@@ -19,7 +19,7 @@ Read in this order:
 
 | Files | You may |
 |---|---|
-| `inventory/`, `systems/`, `plans/`, `apps/`, `iac/README.md`, `repo/` | edit, as long as every fact you add says how you know it |
+| `inventory/`, `systems/`, `plans/`, `apps/`, `iac/README.md`, `agents/review/` | edit, as long as every fact you add says how you know it |
 | `ideas/` | correct facts and add sources; never promote, drop or act on an idea without the owner (`ideas/README.md`) |
 | `journal/` | add an entry when a task changed the live lab, handled an incident, or tested a restore (`journal/README.md`); never edit an old one except to append a follow-up |
 | `agents/skills/` | follow; add new skills and propose changes to existing ones (`agents/skills/write-a-skill/`) |
@@ -49,7 +49,7 @@ first is not automatically right.
 - No secrets in this repo. No tokens, passwords, private keys, real public
   domains, or full configs containing secrets. Examples use placeholders like
   `__PASTE_ONCE__`. See `systems/openbao.md` for where secrets live, and
-  `repo/secret-scanning.md` for the scan that blocks a commit or push.
+  `agents/review/secret-scanning.md` for the scan that blocks a commit or push.
 - Security flaws you find are fixed with the owner, never published. This
   repo is public: a weakness that is not fixed yet — an exposed port or admin
   page, a service without authentication, a firewall gap, the versions of
@@ -60,7 +60,7 @@ first is not automatically right.
   you know, propose the fix, apply it once the owner agrees, and verify it.
   Only after it is fixed may the repo mention it, in one line ("removed X:
   it had no authentication"). If it cannot be fixed now, it stays out of the
-  repo; the owner decides where to track it. `repo/review.md` section 1 is
+  repo; the owner decides where to track it. `agents/review/review.md` section 1 is
   the CI backstop, not the plan.
 - Look before touching. Read-only recon first (list, describe, plan), report
   what you found, then change.
@@ -80,7 +80,7 @@ first is not automatically right.
   works. Update the owner file, link to it from elsewhere — don't copy the
   fact.
 - Pages in `systems/`, `inventory/` and `plans/` start with a property block
-  that the owner's Obsidian view reads (`repo/obsidian-view.md`). It only
+  that the owner's Obsidian view reads (`agents/obsidian/obsidian-view.md`). It only
   summarises the page — no fact that is not in the body — and changes in the
   same commit as the line it summarises. `mise run check:properties` and CI
   check its shape; keeping it true is on you.
@@ -103,7 +103,7 @@ first is not automatically right.
 
 ## Before you open a pull request
 
-Run a reviewer over your change with `repo/review.md` as its instructions —
+Run a reviewer over your change with `agents/review/review.md` as its instructions —
 a separate subagent or session, not the one that wrote the change. Fix what it
 finds, and paste its final verdict into the pull request. A `needs_owner`
 verdict is not a failure: say so in the pull request and leave it for the

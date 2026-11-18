@@ -34,6 +34,10 @@ nothing, and its firewall rule survived a reboot.
   `apps/homeserver/artifact-keeper/` with its secrets from OpenBao
   (`kv/homelab/artifact-keeper`). First ran on 2026-11-16
   (`journal/2026-11-16-deploy-artifact-keeper.md`).
+- `proxy.yml` — `proxy-1` only: Docker from Debian, then Traefik from
+  `apps/homeserver/traefik/` with the Cloudflare token and the zone from OpenBao
+  (`kv/general/cloudflare`). First ran on 2026-11-18
+  (`journal/2026-11-18-build-proxy-1-traefik.md`).
 
 ## Use
 

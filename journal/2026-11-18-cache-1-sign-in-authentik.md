@@ -36,6 +36,7 @@ removing the `OIDC_*` variables and restarting disables the provider again.
 - apt through the cache by IP: `Release` 200. The registry's token realm is now `https://cache.home.<zone>/v2/token`;
   a token from there, used on `http://10.22.33.137/v2/…/manifests/latest`, returned 200.
 
-## Not verified
-
-- A real sign-in by the owner into each app, and the admin role from `homelab-admins`.
+- The owner signed in to both apps through Authentik with their everyday account (owner, 2026-11-18). Read-only
+  checks of each app's database afterwards: Artifact Keeper has the account with `auth_provider` `oidc` and
+  `is_admin` true; Grafana has it with auth module `oauth_generic_oauth` and org role `Admin`, so the
+  `homelab-admins` group claim reaches both.

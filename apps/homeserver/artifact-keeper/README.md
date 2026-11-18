@@ -40,7 +40,9 @@ At `https://cache.home.<zone>/` (the web UI) and `/grafana/`, through the home p
 Both providers copy Langfuse's settings (`apps/vps/langfuse/README.md`, "Sign-in"),
 including the explicit grant types an API-made provider needs; made through Authentik's
 API on 2026-11-18. `homelab-admins` holds the owner's everyday account, not `akadmin`,
-which Authentik refuses outside the tailnet. A first sign-in creates the account.
+which Authentik refuses outside the tailnet. A first sign-in creates the account. The
+owner's first sign-ins worked in both apps, as admin (2026-11-18,
+`journal/2026-11-18-cache-1-sign-in-authentik.md`).
 
 Grafana signs in through Authentik only (owner, 2026-11-18): no password form, no basic
 auth on its API, and `/grafana/login` goes straight to Authentik. Its local `admin`

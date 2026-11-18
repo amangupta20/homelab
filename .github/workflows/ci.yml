@@ -67,6 +67,11 @@ jobs:
           python3 -m pip install --quiet pyyaml==6.0.3
           python3 -I .githooks/check-cache-clients.py
 
+      # Same job again, so no new required check. Only offenders missing from
+      # .githooks/check-docs-allow.txt fail.
+      - name: Check doc rules (paths, dates in tables, caps, danger rules)
+        run: python3 -I .githooks/check-docs.py
+
   compose:
     name: compose config
     runs-on: ubuntu-latest

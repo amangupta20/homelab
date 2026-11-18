@@ -1,0 +1,65 @@
+# Known offenders of .githooks/check-docs.py: <check> <file> <count>.
+# This list only shrinks. Lower or delete an entry when you fix its file;
+# raising one or adding a new one is the owner's call. For `lines` the
+# count is the file's allowed length.
+
+dates apps/vps/authentik/README.md 5
+dates apps/vps/blinko/README.md 1
+dates apps/vps/cloudbeaver/README.md 2
+dates apps/vps/hermes-webui/README.md 4
+dates apps/vps/langfuse/README.md 5
+dates apps/vps/openbao/README.md 4
+dates apps/vps/pg-proxy/README.md 3
+dates apps/vps/pgadmin/README.md 2
+dates apps/vps/sablier/README.md 3
+dates inventory/hosts.md 15
+dates inventory/network.md 12
+dates inventory/services.md 28
+dates systems/xcp-ng.md 1
+lines AGENTS.md 144
+lines apps/README.md 49
+lines apps/homeserver/artifact-keeper/README.md 180
+lines apps/homeserver/traefik/README.md 77
+lines apps/vps/authentik/README.md 140
+lines apps/vps/hermes-webui/README.md 185
+lines apps/vps/langfuse/README.md 213
+lines apps/vps/openbao/README.md 133
+lines apps/vps/pg-proxy/README.md 44
+lines apps/vps/sablier/README.md 76
+lines journal/2026-10-26-install-openbao.md 50
+lines journal/2026-10-27-deploy-hermes-webui.md 64
+lines journal/2026-10-29-hindsight-down-stale-firewall-rules.md 86
+lines journal/2026-10-29-restore-test-openbao.md 57
+lines journal/2026-11-03-prime-reviewer-b2-migration.md 66
+lines journal/2026-11-05-opentofu-on-oracle-cloud.md 51
+lines journal/2026-11-06-create-pigsty-node.md 52
+lines journal/2026-11-06-install-pigsty.md 83
+lines journal/2026-11-07-backup-age-alerts.md 45
+lines journal/2026-11-07-deploy-sablier.md 55
+lines journal/2026-11-07-restore-test-blinko-copy.md 102
+lines journal/2026-11-08-hermes-hindsight-plugin-import.md 82
+lines journal/2026-11-09-deploy-db-admin-uis.md 51
+lines journal/2026-11-10-deploy-authentik.md 60
+lines journal/2026-11-10-deploy-langfuse.md 78
+lines journal/2026-11-13-cleanup-removed-sleeping-apps.md 41
+lines journal/2026-11-13-openwrt-home-router.md 144
+lines journal/2026-11-13-xcp-ng-host-ram-and-bios.md 48
+lines journal/2026-11-14-9router-clef-envelope.md 73
+lines journal/2026-11-14-rebuild-oob-pi.md 53
+lines journal/2026-11-16-debian-13-template.md 47
+lines journal/2026-11-16-deploy-artifact-keeper.md 57
+lines journal/2026-11-17-cache-ceiling-and-oob-apt.md 46
+lines journal/2026-11-18-build-proxy-1-traefik.md 61
+lines journal/2026-11-18-cache-1-sign-in-authentik.md 42
+lines systems/openbao.md 204
+lines systems/router.md 187
+lines systems/truenas.md 159
+paths plans/home-overhaul.md 1
+paths plans/netbox.md 1
+paths repo/obsidian-view.md 1
+paths repo/prime-reviewer.md 1
+paths skills/configure-prime-reviewer/SKILL.md 1
+rules Home.md 1
+rules apps/homeserver/artifact-keeper/README.md 1
+rules decisions/agent-access.md 1
+rules plans/package-and-image-cache.md 1

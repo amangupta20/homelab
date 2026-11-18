@@ -216,7 +216,11 @@ separate internal proxy, and a Cloudflare record pointing a wildcard
 - Use a wildcard DNS-01 certificate so hostnames never appear one by one in
   public certificate-transparency logs.
 - Some routers and resolvers drop answers that point at private addresses
-  (DNS rebinding protection); untested on this ISP's router.
+  (DNS rebinding protection). The Home router does by default; with
+  `home.<domain>` in its allowlist it answers the real record (tested
+  2026-11-18, `journal/2026-11-18-build-proxy-1-traefik.md`). Firefox and Zen
+  with secure DNS reject such answers too unless `network.trr.allow-rfc1918`
+  is on (`apps/homeserver/traefik/README.md`).
 - Off the LAN it resolves only to something reachable over Tailscale's
   subnet route. Recommended alongside (Hindsight, 2026-10-27): AdGuard as the
   tailnet's global nameserver with MagicDNS. Whether the internal proxy sits

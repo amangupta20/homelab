@@ -5,8 +5,8 @@ do not wade through them when looking for something about the lab.
 
 - `secret-scanning.md` — the scan that blocks a commit or push carrying a
   secret, a public IP, a tailnet name or your domain; setup per checkout.
-- `obsidian-view.md` — the repo as an Obsidian vault: page properties, the
-  tables in `bases/`, `Home.md`, and the check that keeps them valid.
+- `agents/obsidian/obsidian-view.md` — the repo as an Obsidian vault: page
+  properties, the tables in `bases/`, `Home.md`, and the check that keeps them valid.
 - `.githooks/check-docs.py` — doc rules for the clean-up: repo paths resolve,
   no dates in the human pages' tables, length caps, danger rules only in their
   owner files. Known offenders are listed in `.githooks/check-docs-allow.txt`,

@@ -30,7 +30,7 @@ so the folder sorts by date.
 # YYYY-MM-DD — <what was done>
 
 **Who:** <you | agent name>  **Scope:** <VM / service>  **Mode:** read-only | write
-**Task:** <one line or link>  **Skill:** <skills/<name>/ or "none">
+**Task:** <one line or link>  **Skill:** <agents/skills/<name>/ or "none">
 
 ## What changed
 

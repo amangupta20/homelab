@@ -33,6 +33,9 @@ XOA_INSECURE=true
 export XOA_URL XOA_TOKEN XOA_INSECURE
 TF_VAR_vm_ssh_public_key=$(bao kv get -mount=kv -field=public_key general/vm-ssh)
 export TF_VAR_vm_ssh_public_key
+CLOUDFLARE_API_TOKEN=$(bao kv get -mount=kv -field=zonedns general/cloudflare)
+TF_VAR_lab_zone=$(bao kv get -mount=kv -field=zone general/cloudflare)
+export CLOUDFLARE_API_TOKEN TF_VAR_lab_zone
 
 rc=0
 tofu "$@" || rc=$?

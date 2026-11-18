@@ -1,6 +1,6 @@
 ---
 type: plan
-status: "in progress (A1, A2 and A3 done)"
+status: "in progress (A1, A2 and A3 done; B4a phase 1 done)"
 verified: "partially (A1 verified 2026-11-14; A2 read live 2026-11-14 through the Xen Orchestra, TrueNAS and Portainer APIs and SSH)"
 hosts:
   - XCP-ng host
@@ -413,6 +413,14 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
      internal apps, on its own VM built from code (owner, 2026-11-17). Chosen
      for Sablier: Traefik loads its plugin without a custom build, and the VPS already
      runs it that way (`plans/sablier-wakeups.md`); Pangolin is Traefik too.
+     - **Order and progress** (owner, 2026-11-18): 4a goes ahead of B0, so the
+       cache and the apps already deployed as code get names and sign-in first.
+       Phase 1 done 2026-11-18: `proxy-1` built by OpenTofu, Traefik with the
+       wildcard certificate and the route to `cache-1`
+       (`apps/homeserver/traefik/`, `journal/2026-11-18-build-proxy-1-traefik.md`).
+       Still open: the check over Tailscale, Authentik sign-in (OIDC for the
+       cache's web UI and Grafana, forward-auth for the dashboards), the
+       dashboards, and Sablier.
      - **Names:** one public Cloudflare record, `*.home.<domain>`, pointing at the
        proxy's LAN address, so any resolver that forwards to the internet answers it,
        and over Tailscale through the subnet route (`ideas/edge-and-security-layers.md`,
@@ -421,8 +429,9 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
        allowlist (`uci show dhcp`: `rebind_protection='1'`, no `rebind_domain`,
        2026-11-17). `home.<domain>` was added to its allowlist the same day
        (`uci add_list dhcp.@dnsmasq[0].rebind_domain`, previous file kept in
-       `/root/dhcp.bak-20261117`); not yet tested with a real answer, as the record
-       does not exist yet.
+       `/root/dhcp.bak-20261117`). Tested 2026-11-18 with the real record: the
+       router's dnsmasq answers `cache.home.<domain>` with the proxy's address
+       (`journal/2026-11-18-build-proxy-1-traefik.md`).
      - **Certificate:** one wildcard by DNS challenge through Cloudflare's API, the
        token in OpenBao. Nothing at home has to be reachable, and app names stay out
        of certificate-transparency logs.

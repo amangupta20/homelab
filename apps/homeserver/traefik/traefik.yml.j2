@@ -1,0 +1,60 @@
+# Traefik's static configuration on proxy-1. Rendered by ansible/proxy.yml:
+# {{ lab_zone }} is the lab's zone, read from OpenBao (kv/general/cloudflare,
+# field zone) and kept out of this public repo.
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+log:
+  level: INFO
+
+# One JSON line per request: the input for the view-only dashboards
+# (plans/home-overhaul.md, step B4a), which are not set up yet.
+accessLog:
+  filePath: /var/log/traefik/access.log
+  format: json
+
+# The dashboard is on, but no route leads to it until it sits behind
+# Authentik's forward-auth (phase 2 in README.md).
+api:
+  dashboard: true
+
+# For the container's health check, on Traefik's internal entry point (8080),
+# which is not published.
+ping: {}
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+    http:
+      tls:
+        certResolver: cloudflare
+        # One wildcard certificate for every internal name, so no app name
+        # reaches the certificate-transparency logs.
+        domains:
+          - main: "home.{{ lab_zone }}"
+            sans:
+              - "*.home.{{ lab_zone }}"
+
+providers:
+  # Routes as files, one per app (routes/). Traefik watches the folder and
+  # rereads a changed file without a restart.
+  file:
+    directory: /etc/traefik/routes
+    watch: true
+
+certificatesResolvers:
+  cloudflare:
+    acme:
+      storage: /letsencrypt/acme.json
+      # DNS challenge through Cloudflare's API: nothing at home has to be
+      # reachable from the internet.
+      dnsChallenge:
+        provider: cloudflare

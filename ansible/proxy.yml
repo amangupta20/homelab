@@ -1,0 +1,94 @@
+# Traefik on proxy-1, the home reverse proxy (apps/homeserver/traefik/README.md).
+# Run from ansible/ after common.yml and xcpng.yml:
+#   ansible-playbook proxy.yml --check --diff      # read this first
+#   ansible-playbook proxy.yml
+#
+# The zone and the Cloudflare token are read from OpenBao on this machine
+# (kv/general/cloudflare, fields zone and zonedns); the token is written to
+# proxy-1 as a secret file and never appears in the output.
+- name: Traefik on proxy-1
+  hosts: proxy-1
+  become: true
+  vars:
+    stack_src: "{{ playbook_dir }}/../apps/homeserver/traefik"
+    stack_dir: /opt/traefik
+    data_dir: /srv/traefik
+    lab_zone: "{{ lookup('pipe', 'bao kv get -mount=kv -field=zone general/cloudflare') }}"
+  tasks:
+    # Debian 13's own Docker and Compose, as on cache-1 (ansible/cache.yml).
+    - name: Install Docker and Compose from Debian
+      ansible.builtin.apt:
+        name: [docker.io, docker-compose]
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Stack, routes and secrets folders
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "{{ item.mode }}"
+      loop:
+        - { path: "{{ stack_dir }}", mode: "0755" }
+        - { path: "{{ stack_dir }}/routes", mode: "0755" }
+        - { path: "{{ stack_dir }}/secrets", mode: "0700" }
+        - { path: "{{ data_dir }}/letsencrypt", mode: "0700" }
+        - { path: "{{ data_dir }}/log", mode: "0750" }
+
+    - name: Compose file
+      ansible.builtin.copy:
+        src: "{{ stack_src }}/compose.yaml"
+        dest: "{{ stack_dir }}/compose.yaml"
+        owner: root
+        group: root
+        mode: "0644"
+      register: compose_file
+
+    - name: Static configuration, with the zone filled in
+      ansible.builtin.template:
+        src: "{{ stack_src }}/traefik.yml.j2"
+        dest: "{{ stack_dir }}/traefik.yml"
+        owner: root
+        group: root
+        mode: "0644"
+      register: static_config
+
+    # Traefik rereads these without a restart (file provider, watch).
+    - name: One route file per app
+      ansible.builtin.template:
+        src: "{{ item }}"
+        dest: "{{ stack_dir }}/routes/{{ item | basename | regex_replace('\\.j2$', '') }}"
+        owner: root
+        group: root
+        mode: "0644"
+      with_fileglob: "{{ stack_src }}/routes/*.yml.j2"
+
+    # Traefik runs as root in its container, so the file can stay root-only.
+    - name: Cloudflare token from OpenBao
+      ansible.builtin.copy:
+        dest: "{{ stack_dir }}/secrets/cf_dns_api_token"
+        content: "{{ lookup('pipe', 'bao kv get -mount=kv -field=zonedns general/cloudflare') }}"
+        owner: root
+        group: root
+        mode: "0400"
+      no_log: true
+      register: cf_token
+
+    - name: Start or update the stack
+      ansible.builtin.command:
+        cmd: docker compose up -d --remove-orphans
+        chdir: "{{ stack_dir }}"
+      register: compose_up
+      changed_when: compose_up.stderr is search('(Creat|Recreat|Start|Pull)(ed|ing)')
+      when: not ansible_check_mode
+
+    # The static configuration and the secret are read only at start.
+    - name: Restart Traefik when its static configuration or token changed
+      ansible.builtin.command:
+        cmd: docker compose restart traefik
+        chdir: "{{ stack_dir }}"
+      when:
+        - static_config.changed or cf_token.changed
+        - not compose_up.changed | default(false)
+        - not ansible_check_mode

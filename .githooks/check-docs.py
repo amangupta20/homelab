@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Doc rules for the repo clean-up (report-only for now).
+"""Doc rules for the repo clean-up; only offenders missing from the allowlist fail.
 
 Checks, over tracked Markdown files:
 

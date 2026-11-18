@@ -46,7 +46,10 @@ Set `network.trr.allow-rfc1918` to `true` in `about:config` (the owner's fix,
 2026-11-18), or add `home.<zone>` to `network.trr.excluded-domains`.
 
 To add an app: copy `routes/cache.yml.j2`, change the router and service
-names, the hostname and the address, and run `ansible-playbook proxy.yml`.
+names, the hostname and the address, and run `ansible-playbook proxy.yml`. To
+remove one, delete its file here and run the playbook: it deletes every route
+file on `proxy-1` that no template in `routes/` produces (tested 2026-11-19 with
+a planted file; the remaining route kept serving).
 
 ## Secrets
 

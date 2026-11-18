@@ -64,6 +64,26 @@
         mode: "0644"
       with_fileglob: "{{ stack_src }}/routes/*.yml.j2"
 
+    # A route removed from the repo must stop serving: delete every file in
+    # the routes folder that no template above produced. Traefik drops it
+    # without a restart.
+    - name: Route files on proxy-1
+      ansible.builtin.find:
+        paths: "{{ stack_dir }}/routes"
+        file_type: file
+      register: routes_on_host
+
+    - name: Remove routes that are no longer in the repo
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ routes_on_host.files }}"
+      loop_control:
+        label: "{{ item.path | basename }}"
+      when: (item.path | basename) not in routes_wanted
+      vars:
+        routes_wanted: "{{ query('fileglob', stack_src ~ '/routes/*.yml.j2') | map('basename') | map('regex_replace', '\\.j2$', '') | list }}"
+
     # Traefik runs as root in its container, so the file can stay root-only.
     - name: Cloudflare token from OpenBao
       ansible.builtin.copy:

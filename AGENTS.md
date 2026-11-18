@@ -66,6 +66,10 @@ first is not automatically right.
   what you found, then change.
 - Snapshots or verified backups before any write to infrastructure. Say which
   snapshot you took.
+- Every new home VM downloads through the LAN cache from its first build:
+  inventory group `lan_cache_clients` and `ansible/cache-client.yml` before
+  anything else is installed (`ansible/README.md`, "Adding a host"). A commit
+  that adds a VM without it fails the pre-commit hook and CI.
 - Infrastructure changes go through OpenTofu: read `tofu plan` before
   `tofu apply`, and never apply blind. This repo is public, so a pull request
   gets only the plan's summary and its list of resource actions

@@ -31,9 +31,19 @@ OpenBao (`kv/general/cloudflare`, field `zone`) and fills it into
 
 | Name | Goes to | Sign-in |
 |---|---|---|
-| `cache.home.<zone>` | `cache-1`'s Caddy, `http://10.22.33.137:80`: Artifact Keeper's web UI, and Grafana at `/grafana/` | each app's own login for now |
+| `cache.home.<zone>` | `cache-1`'s Caddy, `http://10.22.33.137:80`: Artifact Keeper's web UI, and Grafana at `/grafana/` | Authentik by OIDC, in each app (`apps/homeserver/artifact-keeper/README.md`, "Sign-in") |
 
 apt and Docker clients keep using `http://10.22.33.137` directly.
+
+**Sign-in rule** (owner, 2026-11-18): an app that supports single sign-on itself
+(OIDC or OAuth2) signs in through Authentik that way, keeping a local admin for when
+Authentik is unreachable; forward-auth at this proxy is only for apps without it, and
+for view-only dashboards. Never both on one app.
+
+**Firefox and Zen with secure DNS (DNS over HTTPS):** they reject a private address
+from their DNS provider, so `*.home.<zone>` fails with "trouble finding that site".
+Set `network.trr.allow-rfc1918` to `true` in `about:config` (the owner's fix,
+2026-11-18), or add `home.<zone>` to `network.trr.excluded-domains`.
 
 To add an app: copy `routes/cache.yml.j2`, change the router and service
 names, the hostname and the address, and run `ansible-playbook proxy.yml`.
@@ -51,8 +61,7 @@ Not backed up: losing them only means Traefik requests a new certificate.
 
 ## Not done yet (phase 2)
 
-- **Sign-in through Authentik.** cache-1's web UI and Grafana by OIDC, and
-  Traefik's dashboard by forward-auth. Authentik runs on the VPS, outside
+- **Forward-auth through Authentik**, for Traefik's dashboard. Authentik runs on the VPS, outside
   `home.<zone>`, so forward-auth's cookie domain needs working out first
   (domain-level mode needs Authentik under the cookie domain). The dashboard
   is on in the static configuration, but no route leads to it until then.

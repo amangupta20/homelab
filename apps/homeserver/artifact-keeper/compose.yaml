@@ -83,7 +83,21 @@ services:
       BACKUP_PATH: /data/backups
       PLUGINS_DIR: /data/plugins
       RUST_LOG: info
-      CORS_ORIGINS: http://10.22.33.137
+      CORS_ORIGINS: http://10.22.33.137,https://cache.home.${LAB_ZONE:?}
+      # The name behind the home proxy (apps/homeserver/traefik/). The OIDC
+      # callback is built from it, so it must be the https:// name.
+      AK_EXTERNAL_URL: https://cache.home.${LAB_ZONE:?}
+      # Sign-in through Authentik (OIDC), seeded from these on every boot;
+      # removing them and restarting disables the provider again and leaves
+      # the local admin, which stays for when Authentik is unreachable.
+      # Authentik users in `homelab-admins` become admins here.
+      OIDC_NAME: authentik
+      OIDC_ISSUER: https://${AUTHENTIK_DOMAIN:?}/application/o/artifact-keeper/
+      OIDC_CLIENT_ID: ${AK_OIDC_CLIENT_ID:?}
+      OIDC_CLIENT_SECRET_FILE: /run/secrets/oidc_client_secret
+      OIDC_SCOPES: openid profile email
+      OIDC_USERNAME_CLAIM: preferred_username
+      OIDC_ADMIN_GROUP: homelab-admins
       # Caddy's network below; upstream explains why this must match it.
       RATE_LIMIT_TRUSTED_PROXY_CIDRS: 172.30.0.0/24
       # Docker daemons using this cache as `registry-mirrors` send image paths
@@ -106,6 +120,7 @@ services:
       - database_url
       - jwt_secret
       - admin_password
+      - oidc_client_secret
     volumes:
       # Owned by uid 1001, group 0: the image's runtime user.
       - /srv/artifact-keeper/storage:/data/storage
@@ -184,7 +199,9 @@ services:
     depends_on:
       - prometheus
     environment:
-      GF_SERVER_ROOT_URL: http://10.22.33.137/grafana/
+      # The name behind the home proxy; the OAuth callback is built from it.
+      # http://10.22.33.137/grafana/ still answers, then redirects there.
+      GF_SERVER_ROOT_URL: https://cache.home.${LAB_ZONE:?}/grafana/
       GF_SERVER_SERVE_FROM_SUB_PATH: "true"
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_admin_password
@@ -194,8 +211,32 @@ services:
       GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: "false"
       GF_NEWS_NEWS_FEED_ENABLED: "false"
       GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/dashboards/cache.json
+      # Sign-in through Authentik (generic OAuth) only (owner, 2026-11-18): no
+      # password form and no basic auth. Members of the Authentik group
+      # `homelab-admins` become Grafana admins, everyone else a viewer; a
+      # first sign-in creates the account. When Authentik is unreachable, set
+      # both lines below to "false" and rerun cache.yml: the local `admin`
+      # (kv/homelab/artifact-keeper, grafana_admin_password) still exists.
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_AUTH_BASIC_ENABLED: "false"
+      # Straight to Authentik instead of a page with one button.
+      GF_AUTH_GENERIC_OAUTH_AUTO_LOGIN: "true"
+      GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
+      GF_AUTH_GENERIC_OAUTH_NAME: Authentik
+      GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP: "true"
+      GF_AUTH_GENERIC_OAUTH_CLIENT_ID: ${GRAFANA_OIDC_CLIENT_ID:?}
+      GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE: /run/secrets/grafana_oidc_client_secret
+      GF_AUTH_GENERIC_OAUTH_SCOPES: openid profile email
+      GF_AUTH_GENERIC_OAUTH_AUTH_URL: https://${AUTHENTIK_DOMAIN:?}/application/o/authorize/
+      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: https://${AUTHENTIK_DOMAIN:?}/application/o/token/
+      GF_AUTH_GENERIC_OAUTH_API_URL: https://${AUTHENTIK_DOMAIN:?}/application/o/userinfo/
+      GF_AUTH_GENERIC_OAUTH_USE_PKCE: "true"
+      GF_AUTH_GENERIC_OAUTH_LOGIN_ATTRIBUTE_PATH: preferred_username
+      GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: "contains(groups, 'homelab-admins') && 'Admin' || 'Viewer'"
+      GF_AUTH_SIGNOUT_REDIRECT_URL: https://${AUTHENTIK_DOMAIN:?}/application/o/cache-grafana/end-session/
     secrets:
       - grafana_admin_password
+      - grafana_oidc_client_secret
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/dashboards:/etc/grafana/dashboards:ro
@@ -213,8 +254,12 @@ secrets:
     file: ./secrets/jwt_secret
   admin_password:
     file: ./secrets/admin_password
+  oidc_client_secret:
+    file: ./secrets/oidc_client_secret
   grafana_admin_password:
     file: ./secrets/grafana_admin_password
+  grafana_oidc_client_secret:
+    file: ./secrets/grafana_oidc_client_secret
 
 volumes:
   pg_certs:

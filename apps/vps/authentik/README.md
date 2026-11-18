@@ -74,6 +74,10 @@ These live in Authentik's database. Set through its API on 2026-11-10, with the 
   the recovery flow on the public domain, as `akadmin`, stopped at the deny stage and sent no mail. Authentik sees
   the real client address: the owner's logins were logged with a tailnet address.
 - `akadmin` has a TOTP device.
+- **Applications** (2026-11-18): `langfuse`, `artifact-keeper` and `cache-grafana` (the last two:
+  `apps/homeserver/artifact-keeper/README.md`, "Sign-in"). Group `homelab-admins` (the owner's everyday account) makes its members admins in the apps that map groups to roles; it grants no access by itself.
+- **The API token** in OpenBao (`kv/general/authentik`, field `api`) expires; the one from 2026-11-10 had, and the
+  owner replaced it on 2026-11-18. The same entry's field `domain` holds the public hostname, for code that needs it.
 - **Every user may use every app, unless an app is restricted** (owner, 2026-11-10: "give default users access to
   all the apps since that was the point of SSO, unless I restrict some apps"). Authentik already works this way: an
   application with no policy binding is open to every user. To restrict an app, bind a group (or a policy) to its

@@ -21,7 +21,40 @@ One client, `oob-1` ("Repositories"); the client playbook for new VMs is plan st
 
 Deployed by `ansible/cache.yml`, which also writes the secret files from OpenBao
 (`kv/homelab/artifact-keeper`: `db_password`, `jwt_secret`, `admin_password`,
-`grafana_admin_password`). The admin user is `admin` in both Artifact Keeper and Grafana.
+`grafana_admin_password`, `oidc_client_secret`, `grafana_oidc_client_secret`) and a
+`.env` with the values `compose.yaml` fills in (`.env.example` lists them: the zone,
+Authentik's hostname and the two client IDs). The local admin user is `admin` in both
+Artifact Keeper and Grafana.
+
+## Sign-in
+
+At `https://cache.home.<zone>/` (the web UI) and `/grafana/`, through the home proxy
+(`apps/homeserver/traefik/`), both sign in through Authentik by OIDC (2026-11-18):
+
+| App | Authentik application and provider | Callback | Admins |
+|---|---|---|---|
+| Artifact Keeper | `artifact-keeper` | `/api/v1/auth/sso/oidc/callback` | Authentik group `homelab-admins` (`OIDC_ADMIN_GROUP`); others get the default role |
+| Grafana | `cache-grafana` | `/grafana/login/generic_oauth` | `homelab-admins` become Admin, everyone else Viewer (`GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`) |
+
+Both providers copy Langfuse's settings (`apps/vps/langfuse/README.md`, "Sign-in"),
+including the explicit grant types an API-made provider needs; made through Authentik's
+API on 2026-11-18. `homelab-admins` holds the owner's everyday account, not `akadmin`,
+which Authentik refuses outside the tailnet. A first sign-in creates the account.
+
+Grafana signs in through Authentik only (owner, 2026-11-18): no password form, no basic
+auth on its API, and `/grafana/login` goes straight to Authentik. Its local `admin`
+still exists; when Authentik (on the VPS) is unreachable, set `GF_AUTH_DISABLE_LOGIN_FORM`
+and `GF_AUTH_BASIC_ENABLED` to `"false"` and rerun `cache.yml` (`compose.yaml` says so
+too). Artifact Keeper keeps its local `admin` login next to the Authentik button; its
+provider is seeded from the `OIDC_*` variables on every boot, and removing them and
+restarting disables it again.
+
+`AK_EXTERNAL_URL` is the `https://cache.home.<zone>` name, because the OIDC callback is
+built from it. It also sets the registry's token address (`WWW-Authenticate` realm
+`https://cache.home.<zone>/v2/token`), so a Docker client using the cache by its IP
+fetches its token through the home proxy: it must resolve the name and reach `proxy-1`.
+A token from there works on the IP (`curl`, 2026-11-18). No Docker client uses the mirror
+yet.
 
 ## Repositories
 

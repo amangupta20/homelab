@@ -58,9 +58,10 @@ jobs:
         # tracking, a persistent interaction status comment and clean-review
         # approval, one retry when Prime exits without a result, protected
         # paths open to the owner's own /prime instructions, and /prime resolve
-        # merging the base branch into a conflicting pull request, and the
-        # thinking level read from the private config.
-        uses: amangupta20/prime-reviewer-action@ef77c84383a5b44d6f4de80a97f84eacaa63daac
+        # merging the base branch into a conflicting pull request, the
+        # thinking level read from the private config, the PR description
+        # given to Prime as a file, and a review kept when its push is refused.
+        uses: amangupta20/prime-reviewer-action@280578b3eac03ce90d17768f43377606467ac3d1
         with:
           app-id: ${{ vars.PRIME_APP_ID }}
           app-private-key: ${{ secrets.PRIME_APP_PRIVATE_KEY }}

@@ -107,7 +107,7 @@ free for a public repository. Nothing runs on the lab.
 | What | Where |
 |---|---|
 | The rules it judges by | `repo/review.md` and `AGENTS.md`, always from `main`, so a pull request cannot rewrite them |
-| Shared execution code | public `prime-reviewer-action`, called as a composite action at commit `e8ad2e7559ff` (pinned by full SHA) by this repo's workflow |
+| Shared execution code | public `prime-reviewer-action`, called as a composite action at commit `ef77c84383a5` (pinned by full SHA) by this repo's workflow |
 | Its prompts, playbook and model settings | the owner's private repo `prime-reviewer` (`main`): shared `APPEND_SYSTEM.md` and `skills/common-review/`, with homelab settings and playbook in `repos/homelab/` |
 | Changes it makes to its own playbook | a pull request on `prime-reviewer`, which the owner merges or closes |
 | Each pull request's session (so `/prime <instruction>` continues it) | B2: `sessions/<owner>/<repo>/<pr>/latest.json` references its saved session archive; the private Git `state` branch keeps the sessions from before the cutover as rollback |
@@ -136,6 +136,11 @@ each review comment ends with the run ID that names its trace.
 - Selected model: `muse-spark-1.3-contributor` through OpenCode Go (owner,
   2026-11-03; local Prime smoke test returned `ok`, exit 0), set in the
   private `repos/homelab/config.toml`; pull request 31's run used it.
+  **Trial from 2026-11-18:** `glm-5.3` with `thinking = "max"` (owner),
+  compared with `muse-spark-1.3-contributor` in Langfuse; the config's
+  comment says how to revert. Local check that day: Prime 0.10.2 lists `max`
+  as its highest level and ran `glm-5.3` at it. Before the action read
+  `thinking` (action commit `ef77c84383a5`), every run used `high`.
   Prime Agent version is pinned by the shared action's `prime-version` input.
 
 ## How it was tested

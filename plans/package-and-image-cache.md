@@ -1,6 +1,6 @@
 ---
 type: plan
-status: "in progress (running on cache-1 since 2026-11-16; step 4, the clients, next)"
+status: "in progress (running on cache-1 since 2026-11-16; step 4, the clients, mostly done)"
 verified: "partially (Artifact Keeper run on the workstation 2026-11-15; other options read from docs and source; nothing installed or measured on the lab)"
 tags:
   - plan
@@ -310,6 +310,15 @@ would not have measured normal use.
    dropped with the rest. — gate: the role is in the repo, a test VM is
    switched to upstream and back with it, and `inventory/services.md` has the
    new cache's row in place of the apt cache row once `.254` is gone.
+   **Mostly done 2026-11-18:** `ansible/cache-client.yml` (a playbook, not a
+   role), on every host in the inventory's `lan_cache_clients` group, which a
+   commit check makes every home VM join or be exempted from
+   (`ansible/README.md`, "Adding a host"). It lists cache-1 first and Debian's
+   own mirror second, so apt falls back by itself, and Docker falls back to
+   Docker Hub. On `proxy-1`, `lan_cache=""` switched it to upstream (apt
+   fetched nothing from cache-1) and a rerun switched it back (apt lists and a
+   `docker pull` through cache-1). Not done: the workstation and laptops, and
+   the apt cache row, which waits for `.254`.
 5. **The month's trial, measured.** At least a month of normal use after step
    3: hit rate, bytes served from disk against bytes fetched upstream, `df`
    on the volume against the cap, idle memory, and every manual clean-up.

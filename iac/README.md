@@ -19,13 +19,18 @@ is the Xen Orchestra root.
 - `lib/state-copy.sh` — that copy, shared by both roots.
 - `cache-vm.tf` — `cache-1`, the package and image cache VM
   (`plans/package-and-image-cache.md`). Built 2026-11-16 (`journal/2026-11-16-build-cache-1.md`).
+- `proxy-vm.tf` — `proxy-1`, the home reverse proxy, and the public `*.home.<zone>`
+  record pointing at it (`apps/homeserver/traefik/`). Built 2026-11-18
+  (`journal/2026-11-18-build-proxy-1-traefik.md`).
 - `cloud-init/` — the first-boot user data (hostname, the homelab VM key from
   `kv/general/vm-ssh`) and the static network configuration every VM gets.
 - `backend.tf` — where the state lives, and its encryption.
-- `provider.tf` — declares the Xen Orchestra provider. Holds no credentials:
-  `run.sh` sets `XOA_URL`, `XOA_TOKEN` and `XOA_INSECURE` (Xen Orchestra's
-  certificate is self-signed, `CN=xo-ce`, read 2026-11-16).
-- `variables.tf` — the state passphrase.
+- `provider.tf` — declares the Xen Orchestra and Cloudflare providers. Holds no
+  credentials: `run.sh` sets `XOA_URL`, `XOA_TOKEN` and `XOA_INSECURE` (Xen
+  Orchestra's certificate is self-signed, `CN=xo-ce`, read 2026-11-16), and
+  `CLOUDFLARE_API_TOKEN` (`kv/general/cloudflare`, field `zonedns`).
+- `variables.tf` — the state passphrase, the VM key, and the lab's zone
+  (`kv/general/cloudflare`, field `zone`; kept out of this public repo).
 - `vm.tf.example` — commented example VM. Copy to `vm.tf` and fill in your
   pool, template, storage, and network names. `vm.tf` itself is git-ignored
   so local names never leak into git.
@@ -48,6 +53,11 @@ Needs `bao` (logged in, `BAO_ADDR` set), `tofu` and `rclone`.
 
 First boot still uses cloud-init (bakes in hostname, SSH keys, IP). OpenTofu
 owns the VM's shape; cloud-init owns its first-boot personality.
+
+**A new VM is not done at `apply`.** It goes into `ansible/inventory.yml` and through
+`cache-client.yml` before anything is installed on it, so it downloads through the LAN
+cache: `ansible/README.md`, "Adding a host". A commit that adds it to the inventory
+without that fails the pre-commit hook and CI.
 
 ## VM template
 

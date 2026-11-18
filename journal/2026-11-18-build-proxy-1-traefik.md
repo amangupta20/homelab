@@ -48,3 +48,14 @@ the repo; losing its certificate only means a new one is requested.
 - From the VPS: the tailnet policy lets it reach only Garage on the home subnet (`homelab-private`'s policy), so its
   request timed out, as a request to `cache-1` directly did. That is intended, not a fault of the proxy.
 - Certificate renewal (Traefik renews about 30 days before expiry, so first around mid-January 2027).
+
+## Follow-up, 2026-11-18: proxy-1 through the LAN cache
+
+`proxy-1` was built pulling apt packages and Traefik's image straight from the internet, against the LAN cache rule
+(`apps/README.md`). Fixed the same day with `ansible/cache-client.yml`: its Debian mirror lists now name cache-1 first
+and `deb.debian.org` second, and Docker uses cache-1 as its registry mirror (Docker restarted, Traefik back healthy).
+After `rm -rf /var/lib/apt/lists/*`, `apt-get update` fetched the release files and most lists from cache-1; two lists
+came from Debian's mirror, apt's fallback while cache-1 fetched them the first time. A `docker pull hello-world` went
+through cache-1 (its log). Switching to upstream with `-e lan_cache=` and back both worked, and a second run changed
+nothing. A commit check now keeps it from happening again (`ansible/README.md`, "Adding a host").
+

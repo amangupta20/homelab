@@ -1,7 +1,7 @@
 ---
 type: inventory
 status: "documented, partially verified"
-verified: "partially (the router's own rows read over SSH 2026-11-13; oob-1 and the home VMs 2026-11-14; cache-1 2026-11-16; other rows from docs)"
+verified: "partially (the router's own rows read over SSH 2026-11-13; oob-1 and the home VMs 2026-11-14; cache-1 2026-11-16; proxy-1 2026-11-18; other rows from docs)"
 tags:
   - inventory
   - network

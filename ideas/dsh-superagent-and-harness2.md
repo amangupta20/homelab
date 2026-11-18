@@ -105,7 +105,7 @@ memories, which a worker would search.
   much work a dsh-superagent adapter is was not checked.
 - **What it may change by itself:** its own prompts and skills in the private
   config repo, each as a versioned change with the evidence behind it, so it
-  can be rolled back. Anything in this repo's rules (`repo/review.md`,
+  can be rolled back. Anything in this repo's rules (`agents/review/review.md`,
   `AGENTS.md`, `agents/skills/`) is a pull request for the owner. For the first weeks
   it only proposes.
 - **Prime Agent** stays the yardstick: with the adapter in place, rerun its

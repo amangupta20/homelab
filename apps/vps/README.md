@@ -8,4 +8,4 @@ Stacks deployed on the remote VPS by Dokploy: `openbao/`, `hermes-webui/`
 (`decisions/remote-vps-in-scope.md`, `inventory/services.md`), and OpenBao's
 part is `systems/openbao.md`'s. This is the public-facing side: set up
 `secret-scan.local.toml` with your domains before writing anything here
-(`repo/secret-scanning.md`).
+(`agents/review/secret-scanning.md`).

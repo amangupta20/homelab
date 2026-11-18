@@ -151,7 +151,7 @@ owner file, and is deleted from this list.
     (`plans/ai-reviewer-prime-agent.md`, step 6).
 - Where do the reviewer's own instructions live? The plan proposes a private
   config repo (prompt, skills, tool manifest, `/refine` lessons) and keeps the
-  shared rules public in `repo/review.md` and `AGENTS.md`. `AGENTS.md` says
+  shared rules public in `agents/review/review.md` and `AGENTS.md`. `AGENTS.md` says
   the setup lives in this repo so every harness gets it; is a private repo for
   one agent's setup within that rule?
 

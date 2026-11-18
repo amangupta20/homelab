@@ -30,7 +30,7 @@ correct facts on a page and add sources; they never promote or drop an idea on
 their own, and never start work from this folder.
 
 Every page starts with a property block (the Obsidian view reads it); the
-schema is in `repo/obsidian-view.md`, and `mise run check:properties` checks it.
+schema is in `agents/obsidian/obsidian-view.md`, and `mise run check:properties` checks it.
 
 **Backlog list:** `apps-to-try.md` is the exception to "thought through". It
 holds apps the owner found and might host, one line each with no research.

@@ -56,7 +56,7 @@ lines systems/router.md 187
 lines systems/truenas.md 159
 paths plans/home-overhaul.md 1
 paths plans/netbox.md 1
-paths repo/obsidian-view.md 1
+paths agents/obsidian/obsidian-view.md 1
 rules Home.md 1
 rules apps/homeserver/artifact-keeper/README.md 1
 rules decisions/agent-access.md 1

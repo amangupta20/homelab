@@ -35,7 +35,7 @@ Two guards cost no convenience and keep recovery possible:
   turns out to need it.
 - Recovery has to be real: the restore tests in `systems/backups.md` matter
   more under this decision, not less.
-- Reviewers (`repo/review.md`) should not ask for extra lockdown beyond the
+- Reviewers (`agents/review/review.md`) should not ask for extra lockdown beyond the
   two guards above.
 
 ## Where it lives

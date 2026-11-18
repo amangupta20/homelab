@@ -10,7 +10,7 @@ tags:
 The Obsidian front page of this repo. On GitHub, start at
 [README.md](README.md) instead: the tables below only render inside Obsidian.
 
-How this view works and how to keep it working: [repo/obsidian-view.md](repo/obsidian-view.md).
+How this view works and how to keep it working: [agents/obsidian/obsidian-view.md](agents/obsidian/obsidian-view.md).
 
 | Area | Answers | Start at |
 |---|---|---|

@@ -14,12 +14,12 @@ tags:
 
 **Status:** in progress (step 7). Built on 2026-11-02 as a GitHub App run on
 GitHub's hosted runners instead of spot VMs (steps 2 to 6 below were replaced
-by that design; how it works now: `repo/prime-reviewer.md`). Chosen 2026-11-02 by the owner over PR-Agent,
+by that design; how it works now: `agents/review/prime-reviewer.md`). Chosen 2026-11-02 by the owner over PR-Agent,
 dsh-superagent and Harness² for this job; dsh-superagent and Harness² are kept
 for the migration agent (`ideas/dsh-superagent-and-harness2.md`).
 
 **Goal:** Prime Agent reviews the owner's pull requests on this repo against
-`repo/review.md`, on a spot VM started only for that review, answers the
+`agents/review/review.md`, on a spot VM started only for that review, answers the
 owner's replies in the pull request, and gets better from run to run, with
 every run's reasoning kept where the owner can read it.
 
@@ -30,7 +30,7 @@ repo's checks passing, every VM is gone afterwards, and each run's trace can be
 found by the ID in its comment.
 
 It now runs the required `ai review` check itself, replacing the earlier
-single-call reviewer (owner, 2026-11-02; `repo/prime-reviewer.md`).
+single-call reviewer (owner, 2026-11-02; `agents/review/prime-reviewer.md`).
 
 ## What Prime Agent is, and why it
 
@@ -98,7 +98,7 @@ Limits on every level:
 - A cap on rounds per pull request.
 - Everything it writes is public: it names a path, a line and the kind of
   value for anything that should not be public, never the value
-  (`repo/review.md` section 1, `AGENTS.md` security rule).
+  (`agents/review/review.md` section 1, `AGENTS.md` security rule).
 
 ## Memory: three kinds, three places
 
@@ -161,7 +161,7 @@ export its log before adding LiteLLM. None of it is checked.
 2. **Private config repo.** The reviewer prompt, skills, tool manifest
    (`mise.toml`, an apt package list, a `Dockerfile`) and `/refine` lessons
    live in a private repo, cloned at run time. The rules everyone follows stay
-   public in `repo/review.md` and `AGENTS.md`. — gate: the owner decides the
+   public in `agents/review/review.md` and `AGENTS.md`. — gate: the owner decides the
    public and private split (`decisions/open-questions.md`, AI reviewer).
 3. **Container image.** CI builds the image from the manifest whenever it
    changes and pushes it to a private registry. Every tool in it is pinned (a
@@ -233,7 +233,7 @@ export its log before adding LiteLLM. None of it is checked.
 
 - Candidates kept for the migration agent: `ideas/dsh-superagent-and-harness2.md`
 - On-demand starting of the trace viewer: `ideas/on-demand-container-wakeups.md`
-- The required review check: `repo/review.md`, `decisions/pull-request-gate.md`
+- The required review check: `agents/review/review.md`, `decisions/pull-request-gate.md`
 - Backups for the bucket and the viewer: `agents/skills/back-up-a-service/`
 - Undecided parts: `decisions/open-questions.md`, AI reviewer
 
@@ -246,7 +246,7 @@ The target is a CodeRabbit-like default experience: opening a PR produces a
 useful review without choosing commands; pushes and replies continue that
 review. This is a product target, not a claim of feature parity.
 
-The review sequence is owned by `repo/review.md`, "Default review sequence":
+The review sequence is owned by `agents/review/review.md`, "Default review sequence":
 intent, correctness, security, usability, verification and continuity. Apply
 it proportionately and refine against real PRs; preserve experimentation,
 useful optional features and the existing concise reporting bar.

@@ -30,7 +30,7 @@ So the layout is:
 | What is undecided or unverified? | `decisions/open-questions.md` | agent appends, owner resolves |
 | What happened, when? | `journal/` | whoever did the work |
 | What do the stacks look like? | `apps/<host>/<app>/` | agent, through review |
-| How does this repo's tooling work? | `repo/` | agent, through review |
+| How does this repo's tooling work? | `agents/review/` | agent, through review |
 | How do agents work here? | `AGENTS.md` | owner; agent proposes |
 
 Folders are sorted by the question a person has when they open the repo, not
@@ -55,7 +55,7 @@ Obsidian vaults died because they needed hand-kept notes. So the files stay
 the same and gain a thin layer only Obsidian uses — a property block on every
 page in `systems/`, `inventory/`, `plans/`, tables in `bases/`, and `Home.md`
 as the Obsidian front page. Agents keep it current; the owner only reads.
-How it works and its rules: `repo/obsidian-view.md`.
+How it works and its rules: `agents/obsidian/obsidian-view.md`.
 
 Cost: each property block restates its own page's status and verification,
 and `hosts` restates host names from `inventory/hosts.md`. That is a second
@@ -80,4 +80,4 @@ an agent must never treat an idea page as a fact or start work from it.
 ## Where it lives
 
 `README.md` ("Find something"), every folder's README, `AGENTS.md`,
-`repo/obsidian-view.md`.
+`agents/obsidian/obsidian-view.md`.

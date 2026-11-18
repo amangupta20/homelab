@@ -12,7 +12,7 @@ inventory row says *what and where*; this page says *how it works and what not
 to do*.
 
 Every page starts with a property block (the Obsidian view reads it); the
-schema and rules are in `repo/obsidian-view.md`, and `mise run check:properties`
+schema and rules are in `agents/obsidian/obsidian-view.md`, and `mise run check:properties`
 checks it.
 
 Naming: `systems/<thing>.md`, lowercase, the name you would search for

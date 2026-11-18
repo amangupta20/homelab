@@ -1,28 +1,46 @@
 # Homelab
 
-My bare-metal homelab. One physical server runs many isolated VMs, so one
-compromised service can't take down everything. The goal is that everything
-important is reproducible from code, not hand-configured — it is not there
-yet (see Status).
+My bare-metal homelab. One physical server runs one VM per job, so one
+compromised service can't take down everything; a small remote VPS runs the
+public-facing apps. The goal is that everything important is rebuilt from code,
+not hand-configured. Part of it is; the rest is documented here and migrates
+one app at a time.
 
-- Hypervisor: XCP-ng (type-1, runs directly on hardware). Think Proxmox
-  alternative, Xen-based.
-- Management UI: Xen Orchestra (called XO or XOA). Web UI for start/stop,
-  snapshots, backups.
-- VMs: one per job (storage, proxies, apps). Apps inside VMs run as Docker
-  Compose stacks.
-- Provisioning (partly in use): OpenTofu defines each VM and
-  cloud-init does its first boot (hostname, SSH keys, IP), and Ansible configures
-  it after that. Only `pigsty-1` is defined in code so far (`iac/oci/`,
-  `ansible/`); home VMs are not (`decisions/open-questions.md`, Provisioning).
+- Hypervisor: XCP-ng (type-1, runs directly on hardware; a Xen-based
+  alternative to Proxmox), managed through Xen Orchestra (XO), a web UI for
+  VMs, snapshots and backups.
+- Provisioning: OpenTofu defines a VM, cloud-init does its first boot
+  (hostname, SSH keys, IP), Ansible configures it after that. Apps inside VMs
+  run as Docker Compose stacks.
 - Access: admin only over Tailscale (private mesh VPN). No SSH open to the
   internet.
-- Edge: Cloudflare (filter) -> Nginx Proxy Manager (routing) -> containers.
-  Fail2Ban blocks brute force at the firewall.
-- Remote VPS: the public-facing apps, deployed by Dokploy. Part of this repo,
-  not migrated in yet.
+- Edge: Cloudflare (filter) -> Nginx Proxy Manager (routing) -> containers;
+  Fail2Ban blocks brute force. Internal apps sit behind Traefik at
+  `<app>.home.<zone>`.
+- Remote VPS: apps deployed by Dokploy from the Compose files in `apps/vps/`.
 
-This repo is the source of truth going forward.
+**Never delete an XCP-ng base snapshot by hand** — it can corrupt the VM.
+See `systems/xcp-ng.md`.
+
+## What is in code
+
+| Thing | Where | In code | Details |
+|---|---|---|---|
+| cache-1 (apt and container image cache) | VM, home | yes | `iac/cache-vm.tf`, `ansible/cache.yml`, `apps/homeserver/artifact-keeper/` |
+| proxy-1 (Traefik for `*.home`) | VM, home | yes | `iac/proxy-vm.tf`, `ansible/proxy.yml`, `apps/homeserver/traefik/` |
+| pigsty-1 (shared Postgres) | Oracle Cloud VM | yes | `iac/oci/`, `ansible/base.yml`, `ansible/pigsty/` |
+| xo-ce (Xen Orchestra) | VM, home | Ansible only | `ansible/xcpng.yml` |
+| oob-1 (out-of-band Raspberry Pi) | hardware, home | Ansible only | `ansible/oob.yml`, `systems/oob.md` |
+| OpenBao, Authentik, Langfuse, Hermes WebUI, Blinko, pgAdmin, CloudBeaver, pg-proxy, Sablier | remote VPS (Dokploy) | Compose only | `apps/vps/` |
+| The remote VPS itself | Oracle Cloud | no | `systems/vps.md`, `decisions/vps-outside-opentofu.md` |
+| Other VPS apps | remote VPS (Dokploy) | no | `inventory/services.md` |
+| Home app stacks (Immich, Jellyfin, Nextcloud and others) | Portainer, several VMs | no | `inventory/services.md` |
+| TrueNAS, Garage, backups | VM, home | no | `systems/truenas.md`, `systems/backups.md` |
+| XCP-ng host | hardware, home | no | `systems/xcp-ng.md` |
+| Router, DHCP, DNS | hardware, home | no | `systems/router.md` |
+
+Hand-written from the files above; what runs and whether it is healthy is in
+`inventory/services.md`. The migration plan is `plans/home-overhaul.md`.
 
 ## Why this repo exists
 
@@ -73,17 +91,3 @@ Every folder has a README saying what goes in it and a template to copy.
 4. **Backups that can restore** — a backup only counts when a test restore
    works. What is backed up and what is still untested:
    `systems/backups.md`.
-
-## Status
-
-Where it actually stands (October 2026):
-
-- Documented: services, network, platform rules, backups, secret handling —
-  from memory, not yet checked against the live lab.
-- Guardrails working: secret scanning at commit, push and in CI; OpenTofu
-  static checks in CI.
-- Not yet true: no VM is defined in code (`vm.tf` is git-ignored), homeserver
-  stacks live only in Portainer, nothing configures a VM after first boot.
-
-Migration in progress. Rule: no migration writes until snapshots are verified.
-See `plans/home-overhaul.md`.

@@ -117,10 +117,11 @@ The prompts and traces are private because workflow artifacts and logs of a
 public repository are readable by anyone; the run log shows only the outcome.
 Prime's usage telemetry is off (`DO_NOT_TRACK=1`).
 
-A trace viewer (Phoenix, Langfuse or OpenObserve) is not chosen yet
-(`decisions/open-questions.md`, AI reviewer). The B2 trace archives, plus
-the `state` branch's folders from before the cutover, are the input for it:
-each review comment ends with the run ID that names its trace.
+The trace viewer is Langfuse (owner, 2026-11-10; `decisions/open-questions.md`,
+AI reviewer; `apps/vps/langfuse/`). An importer next to it reads the B2 trace
+archives every 15 minutes and sends each run to Langfuse; its log showed every
+homelab review through pull request 91 imported (read on the VPS, 2026-11-18).
+Each review comment ends with the run ID that names its trace.
 
 ## Setup (done 2026-11-02)
 
@@ -136,11 +137,14 @@ each review comment ends with the run ID that names its trace.
 - Selected model: `muse-spark-1.3-contributor` through OpenCode Go (owner,
   2026-11-03; local Prime smoke test returned `ok`, exit 0), set in the
   private `repos/homelab/config.toml`; pull request 31's run used it.
-  **Trial from 2026-11-18:** `glm-5.3` with `thinking = "max"` (owner),
-  compared with `muse-spark-1.3-contributor` in Langfuse; the config's
-  comment says how to revert. Local check that day: Prime 0.10.2 lists `max`
-  as its highest level and ran `glm-5.3` at it. Before the action read
-  `thinking` (action commit `ef77c84383a5`), every run used `high`.
+  **Trial from 2026-11-18:** `glm-5.3` (owner), compared with
+  `muse-spark-1.3-contributor` in Langfuse; the config's comment says how to
+  revert. Thinking is `high`: `max` ran once on pull request 91 (run
+  `44312632646-1`) and found nothing `high` had missed, so it was set back the
+  same day. That run resumed the `high` run's session, so the comparison is
+  weak; a fresh-session run of both models on a complex pull request is still
+  to do. The thinking level is set in the private config since action commit
+  `ef77c84383a5`; before it, every run used `high`.
   Prime Agent version is pinned by the shared action's `prime-version` input.
 
 ## How it was tested

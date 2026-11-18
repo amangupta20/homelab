@@ -28,13 +28,10 @@ row for the new cache in place of the apt cache row.
 
 ## What exists today
 
-- **apt cache** on the Docker + proxy host. Its port, how clients are pointed
-  at it, and its state are that row's facts: `inventory/services.md`, where the
-  State is "in docs, not verified". `inventory/hosts.md` records a VM
-  `apt-cache` running apt-cacher-ng instead (verified 2026-11-14); the two
-  disagree, and the disagreement is listed in `decisions/open-questions.md`
-  for the owner to settle. Nobody has confirmed how large its cache is or
-  whether clients actually use it.
+- **apt cache** on the VM `apt-cache` (apt-cacher-ng on port 3142, no Docker),
+  verified by SSH 2026-11-14: `inventory/services.md` and `inventory/hosts.md`
+  now agree on it. Nobody has confirmed how large its cache is or whether
+  clients actually use it.
 - **No image cache.** Every `docker pull` on every VM goes to the internet
   registry named in the compose file. The homeserver runs most stacks on
   `latest` and redeploys them, so the same base images come down again and

@@ -28,3 +28,7 @@ gitleaks git --redact --no-banner -v -c "$tmp"
 [tasks."check:properties"]
 description = "Check the page properties the Obsidian view reads (repo/obsidian-view.md)"
 run = "python3 -I .githooks/check-properties.py"
+
+[tasks."check:cache-clients"]
+description = "Check every home VM in ansible/inventory.yml uses the LAN cache or is exempt (ansible/README.md)"
+run = "python3 -I .githooks/check-cache-clients.py"

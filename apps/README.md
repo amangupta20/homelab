@@ -35,7 +35,10 @@ Each app folder holds:
 - A homeserver stack that pulls an image from a registry other than Docker
   Hub, or a machine that gets a new apt source, goes through the LAN cache:
   if its upstream is not in `apps/homeserver/artifact-keeper/remotes.txt`, add it
-  first (`skills/add-a-cache-remote/`). Docker Hub needs nothing.
+  first (`skills/add-a-cache-remote/`). Docker Hub needs nothing. The machine
+  itself is a cache client from its first build (`ansible/README.md`, "Adding a
+  host"); `.githooks/check-cache-clients.py` blocks a commit where a home VM is
+  neither a client nor exempt with a reason.
 
 ## Apps
 

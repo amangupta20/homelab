@@ -1,0 +1,79 @@
+# Point a home VM's apt and Docker at the LAN cache on cache-1
+# (apps/homeserver/artifact-keeper/README.md). Every home VM built from code
+# runs this right after common.yml and xcpng.yml, before its own playbook
+# installs anything (ansible/README.md, "Adding a host"). Run from ansible/:
+#   ansible-playbook cache-client.yml --check --diff     # read this first
+#   ansible-playbook cache-client.yml
+#
+# Which hosts: the `lan_cache_clients` group in inventory.yml. Every host in
+# `xcpng` must be in it or in `lan_cache_exempt`; .githooks/check-cache-clients.py
+# blocks a commit that forgets.
+- name: apt and Docker through the LAN cache
+  hosts: lan_cache_clients
+  become: true
+  vars:
+    # Set to "" and rerun to go straight to the internet again.
+    lan_cache: http://10.22.33.137
+  tasks:
+    # Debian 13's cloud images read their mirrors from these lists
+    # (`mirror+file:` in /etc/apt/sources.list.d/debian.sources). apt tries
+    # them in order and moves to the next when one fails, so with cache-1 down
+    # it falls back to Debian's own mirror by itself.
+    - name: apt mirrors, cache first, Debian's own second
+      ansible.builtin.copy:
+        dest: "/etc/apt/mirrors/{{ item.list }}.list"
+        content: |
+          {% if lan_cache %}
+          {{ lan_cache }}/debian/{{ item.remote }}
+          {% endif %}
+          https://deb.debian.org/{{ item.remote }}
+        owner: root
+        group: root
+        mode: "0644"
+      loop:
+        - { list: debian, remote: debian }
+        - { list: debian-security, remote: debian-security }
+      register: apt_mirrors
+
+    - name: Refresh apt's lists through the new mirrors
+      ansible.builtin.apt:
+        update_cache: true
+      when: apt_mirrors.changed
+
+    # Written before Docker is installed too, so a host that gets Docker later
+    # pulls its first image through the cache.
+    - name: Docker's configuration folder
+      ansible.builtin.file:
+        path: /etc/docker
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    # Image pulls from Docker Hub go to the cache first; Docker falls back to
+    # Docker Hub when the mirror fails. Plain HTTP, hence insecure-registries:
+    # images are still checked against their digests. Other registries
+    # (ghcr.io …) are pulled as 10.22.33.137/<remote>/<image> in the stack's
+    # compose file (README of the cache, "Repositories").
+    - name: Docker's registry mirror
+      ansible.builtin.copy:
+        dest: /etc/docker/daemon.json
+        content: "{{ ({'registry-mirrors': [lan_cache], 'insecure-registries': [lan_cache | regex_replace('^https?://', '')]} if lan_cache else {}) | to_nice_json }}\n"
+        owner: root
+        group: root
+        mode: "0644"
+      register: docker_config
+
+    - name: Is Docker installed yet
+      ansible.builtin.service_facts:
+
+    # Restarts every container on the host; they come back by their restart
+    # policy. A host without Docker yet reads the file when Docker starts.
+    - name: Restart Docker to read it
+      ansible.builtin.systemd_service:
+        name: docker
+        state: restarted
+      when:
+        - docker_config.changed
+        - "'docker.service' in ansible_facts.services"
+        - not ansible_check_mode

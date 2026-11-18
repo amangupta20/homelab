@@ -30,3 +30,15 @@ all:
         proxy-1:
           ansible_host: 10.22.33.138
           ansible_user: debian
+    # The LAN cache rule (ansible/README.md, "Adding a host"): every host in
+    # `xcpng` is in exactly one of these two groups, checked by
+    # .githooks/check-cache-clients.py on every commit and in CI.
+    lan_cache_clients:
+      # apt and Docker through cache-1 (cache-client.yml).
+      hosts:
+        proxy-1:
+    lan_cache_exempt:
+      # Each with its reason.
+      hosts:
+        cache-1: # it is the cache; it must not depend on itself
+        xo-ce: # an old VM, to be replaced (owner, 2026-11-17); updated through the cache by hand once

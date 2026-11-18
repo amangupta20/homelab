@@ -4,8 +4,8 @@
 Checks, over tracked Markdown files:
 
 - paths:  a repo path in backticks, or a relative Markdown link, points at a
-          tracked (or git-ignored) file or folder. `journal/` is exempt: its
-          entries keep the paths of their day.
+          tracked (or git-ignored) file or folder. Journal entries are exempt:
+          they keep the paths of their day (journal/README.md is not).
 - dates:  no `YYYY-MM-DD` in table rows of the human pages (README.md,
           inventory/, systems/, apps/**/README.md). Dates belong in journal
           entries, which those pages link.
@@ -63,10 +63,15 @@ def human_page(f):
             or (f.startswith("apps/") and f.endswith("/README.md")))
 
 
+def journal_entry(f):
+    """A dated journal entry; journal/README.md is a living page, checked like others."""
+    return f.startswith("journal/") and f != "journal/README.md"
+
+
 def cap(f):
     if f == "AGENTS.md" or (f.startswith("apps/") and f.endswith("/README.md")):
         return 40
-    if f.startswith("journal/") and f != "journal/README.md":
+    if journal_entry(f):
         return 40
     if f.startswith("systems/") and f != "systems/README.md":
         return 150
@@ -99,10 +104,10 @@ def findings():
                 found[("dates", f)] += 1
                 detail.append(f"dates  {f}:{n}: {DATE.search(line).group()}")
             for name, pat, owners in RULES:
-                if f not in owners and not f.startswith("journal/") and pat.search(line):
+                if f not in owners and not journal_entry(f) and pat.search(line):
                     found[("rules", f)] += 1
                     detail.append(f"rules  {f}:{n}: restates the {name} rule")
-            if f.startswith("journal/"):
+            if journal_entry(f):
                 continue
             for tok in BACKTICK.findall(line):
                 if "/" in tok and tok.split("/")[0] in tops and not re.search(r"[<>*${}|\[\]]|\.\.\.", tok):

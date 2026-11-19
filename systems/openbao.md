@@ -73,7 +73,7 @@ the tailnet). Never open the box itself.
 - **Audit log:** declared in the server config
   (`apps/vps/openbao/compose.yaml`). OpenBao 2.x refuses `bao audit enable`
   ("use declarative, config-based audit device management instead").
-- **Address and certificate:** `apps/vps/openbao/README.md`, "TLS".
+- **Address and certificate:** `apps/vps/openbao/NOTES.md`, "TLS".
 
 ## Locking it down (once it's running on the tailnet)
 
@@ -106,7 +106,7 @@ kept as a plausible-looking recipe. The order:
 ## Daily use (each checkout, no .env file)
 
 Each machine needs only the address, `BAO_ADDR=https://<bao domain>:8200`
-(`apps/vps/openbao/README.md`, "TLS"). The certificate is a public one, so no
+(`apps/vps/openbao/NOTES.md`, "TLS"). The certificate is a public one, so no
 certificate file. On a desktop session that uses systemd, a file in
 `~/.config/environment.d/` sets it for every terminal without touching the
 shell's startup files (done on the owner's workstation, 2026-10-26).
@@ -181,7 +181,7 @@ The lab has two, and they need different answers:
 ## Backup and token renewal
 
 - **Daily Raft snapshot and token renewal**: Automated via Dokploy scheduled
-  task running `dokploy-schedule-snapshot.sh` (`apps/vps/openbao/README.md`),
+  task running `dokploy-schedule-snapshot.sh` (`apps/vps/openbao/NOTES.md`),
   which streams a Raft snapshot via OpenBao's HTTP API and renews Dokploy's
   provider token. Schedule, upload destinations, retention, and restore tests
   are owned by `systems/backups.md` (restore tested 2026-10-29 from Garage and

@@ -100,7 +100,7 @@ cannot:
 From the edit table in `AGENTS.md`. If an agent's change edits any of these,
 the verdict is `needs_owner`, however good the edit is:
 
-- an existing file in `agents/decisions/` (other than appending to `open-questions.md`) or `agents/rules/`;
+- an existing file in `agents/decisions/` (other than appending to `open-questions.md`, or fixing a moved file's path in one of its items) or `agents/rules/`;
 - `AGENTS.md`, or the README's goal and principles;
 - an existing skill in `agents/skills/` (a new skill is fine);
 - an old `agents/journal/` entry.

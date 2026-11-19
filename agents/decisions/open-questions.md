@@ -358,7 +358,7 @@ Page: `lab/systems/router.md`. Agent's notes, 2026-11-13, for the owner to close
   router with its cron line commented out. Delete it, or keep it for manual
   runs?
 - GitHub release downloads are slow on this line and have no IPv6 address to
-  fall back on (`lab/systems/router.md`, "Why IPv6 matters"). Send only those
+  fall back on (`lab/systems/notes/router.md`, "Why IPv6 matters"). Send only those
   hosts through a tunnel to the VPS (policy routing on the router), or live
   with it?
   Agent's note, 2026-11-14, for the owner to close: set up as a tailnet

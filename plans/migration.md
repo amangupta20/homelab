@@ -67,6 +67,6 @@ Today every homeserver stack exists only inside Portainer: its Compose file and
   written in (`apps/README.md`).
 - A container manager that deploys from that directory, so the repo — not the
   UI — is the source of truth. Which manager is open
-  (`decisions/open-questions.md`).
+  (`agents/decisions/open-questions.md`).
 - One stack at a time; the old copy keeps running until the new one is healthy.
 - Some stacks are three years old and may be retired instead of migrated.

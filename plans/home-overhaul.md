@@ -109,10 +109,10 @@ Turned down, and why (owner, 2026-11-14):
 - **Retention** in this design: critical datasets snapshotted daily and kept two weeks,
   with one copy on the other disk; normal data daily, one week, no copy; scratch none.
   Nextcloud's Borg keeps 7 days, 4 weeks and 6 months. The offsite tier follows
-  `decisions/backup-tiers.md`. Today's TrueNAS tasks already keep two weeks for
+  `agents/decisions/backup-tiers.md`. Today's TrueNAS tasks already keep two weeks for
   `imp/back` and one for `Main/home` (`systems/truenas.md`).
 
-How convenient versus how locked down: `decisions/agent-access.md` — convenient by
+How convenient versus how locked down: `agents/rules/agent-access.md` — convenient by
 default, with two hard guards (no agent credential can delete or overwrite backups; no
 manual XCP-ng snapshot deletion). Restore tests carry the weight that lockdown would.
 
@@ -207,7 +207,7 @@ Rules:
 - **Live data on one disk, its copy on the other.** No single disk failure takes
   out data and its copy together.
 - **Offsite:** important data goes to Backblaze B2, encrypted, later in the overhaul
-  (`decisions/backup-tiers.md`). `Main/home` goes back to Google Drive, split into
+  (`agents/decisions/backup-tiers.md`). `Main/home` goes back to Google Drive, split into
   several smaller sync tasks so each one finishes (Drive caps uploads at about
   750 GB a day — from memory, unverified).
 - **Access from the owner's machines:** containers use NFS. Whether the owner can
@@ -243,7 +243,7 @@ Rules:
   exists.
 - **Container manager:** Arcane (owner, 2026-11-14). B3 checks it can deploy from git,
   give containers secrets from OpenBao and back up volumes; if it cannot read OpenBao,
-  a sidecar writing `/run/secrets` does (`decisions/open-questions.md`, "Container
+  a sidecar writing `/run/secrets` does (`agents/decisions/open-questions.md`, "Container
   runtime").
 - **Accepted risk:** TrueNAS and the Docker VMs share one physical host, so a
   hardware failure stops everything at home at once.
@@ -376,7 +376,7 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
      of the host's 40 GB.
    - **Network:** on the main tailnet with its own tag (for example `tag:agent`) and
      rules in `homelab-private`'s access policy, so it reaches what its rules allow.
-   - **Access** follows `decisions/agent-access.md`: convenient by default, with its own
+   - **Access** follows `agents/rules/agent-access.md`: convenient by default, with its own
      OpenBao policy that holds **no credential able to delete or overwrite backups**
      (no deleting Garage or B2 keys, nothing that writes to BorgWarehouse or the Xen
      Orchestra backup location), and no deleting or merging XCP-ng snapshots by hand.
@@ -440,9 +440,9 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
      - **Wakeups:** a Sablier with a socket proxy on each VM with sleepable apps, as on
        the VPS (`apps/vps/sablier/`); each route's middleware names its VM's Sablier
        (`sablierUrl`). Waking a container on another VM through a file route is
-       **UNTESTED** (`decisions/open-questions.md`, "Multi-node wakeups"). Traefik
+       **UNTESTED** (`agents/decisions/open-questions.md`, "Multi-node wakeups"). Traefik
        fetches the plugin from GitHub at start, which is slow from the LAN
-       (`decisions/open-questions.md`, the GitHub detour): pin it and keep the plugin
+       (`agents/decisions/open-questions.md`, the GitHub detour): pin it and keep the plugin
        cache on disk.
      - **View-only dashboards**, to try together and keep the ones used (owner,
        2026-11-17): Traefik's own dashboard (routes, services, middlewares, their
@@ -528,7 +528,7 @@ move before its public route exists.
 - Which DNS resolver (B4b).
 - Badger or an Authentik outpost (C2).
 - Whether to keep BorgWarehouse once restic or Kopia handle offsite copies.
-- The change to `decisions/backup-tiers.md` this design needs (proposed separately).
+- The change to `agents/decisions/backup-tiers.md` this design needs (proposed separately).
 - How to recover Nextcloud (A4).
 - The agent VM's size and tag (B0).
 - What the clean-up removes (B1).
@@ -538,4 +538,4 @@ move before its public route exists.
 `plans/shared-postgres.md`, `plans/vps-foundations.md`, `plans/sablier-wakeups.md`,
 `ideas/edge-and-security-layers.md`, `systems/backups.md`, `systems/oob.md`,
 `systems/truenas.md`, `ideas/debrid-streaming.md`,
-`decisions/backup-tiers.md`.
+`agents/decisions/backup-tiers.md`.

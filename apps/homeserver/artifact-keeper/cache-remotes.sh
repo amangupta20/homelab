@@ -3,7 +3,7 @@
 # keep one idle rule assigned to all of them. Safe to run again: an existing
 # repository is left as it is and only its cap is set again; the rule is
 # created once and then updated in place. The repository settings live here, so a rebuilt cache-1 gets them
-# back from the repo instead of a backup (decisions/backup-tiers.md, rebuildable
+# back from the repo instead of a backup (agents/decisions/backup-tiers.md, rebuildable
 # state).
 #
 # Usage: ./cache-remotes.sh [base URL]     default http://10.22.33.137

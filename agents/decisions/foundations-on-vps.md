@@ -5,7 +5,7 @@ Decided: 2026-10-26. Status: in force.
 ## Why
 
 Both sides of the lab depend on secrets and sign-in, so the foundations go
-where they stay up when home is down: the VPS (`decisions/vps-role.md`). The
+where they stay up when home is down: the VPS (`agents/decisions/vps-role.md`). The
 homelab and the VPS are both on the tailnet, so anything at home can reach
 them without a public port. Deploying them first means every later app is
 deployed once, with its secrets and sign-in already wired, instead of
@@ -22,7 +22,7 @@ deployed, then patched for OpenBao, then patched again for SSO.
 - If the VPS or the tailnet is down, home services that read secrets at
   deploy time cannot be redeployed until it is back. Running services keep
   working.
-- Which SSO is open (`decisions/open-questions.md`).
+- Which SSO is open (`agents/decisions/open-questions.md`).
 
 ## If OpenBao ever has to face the internet
 

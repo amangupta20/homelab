@@ -10,7 +10,7 @@ second plan reported no changes (`journal/2026-11-06-create-pigsty-node.md`).
 ## What it manages
 
 New resources only. The running VPS stays by-hand
-(`decisions/vps-outside-opentofu.md`; the owner reconfirmed on 2026-11-04).
+(`agents/decisions/vps-outside-opentofu.md`; the owner reconfirmed on 2026-11-04).
 
 This root runs in a separate, new Oracle Cloud account (tenancy), not the one holding
 the running VPS (owner, 2026-11-05). Its key has no access to that other account, so

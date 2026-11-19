@@ -40,5 +40,5 @@ so the folder sorts by date.
 ## How it was verified
 
 ## Still open
-<Anything unresolved; contradictions also go to decisions/open-questions.md.>
+<Anything unresolved; contradictions also go to agents/decisions/open-questions.md.>
 ```

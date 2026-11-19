@@ -92,7 +92,7 @@ tiebreaker, built in two phases:
   Pigsty's passwords; with the tiebreaker it also counts towards the
   database's quorum. Not a loop, but one more reason that host matters.
 
-Open for this topology (also in `decisions/open-questions.md`):
+Open for this topology (also in `agents/decisions/open-questions.md`):
 
 - How the tiebreaker runs on the Dokploy host: a Pigsty-managed etcd
   installed on the host over SSH, or a container under Dokploy outside
@@ -109,7 +109,7 @@ Open for this topology (also in `decisions/open-questions.md`):
   So there is no throwaway `pg-test` VM. The drills in steps 2 and 3 run on this
   cluster before any app data reaches it (agent's reading of "one node only").
 - **The offsite tier comes first.** Backblaze B2 is in place before Garage, the
-  reverse of the usual order in `decisions/backup-tiers.md`, because Garage at
+  reverse of the usual order in `agents/decisions/backup-tiers.md`, because Garage at
   home is not available yet ("Backups").
 - **Few versions on B2** ("not too many", owner). The numbers are in "Backups".
 - **The app questions can wait** ("Decide before step 5").
@@ -277,7 +277,7 @@ trip time (RTT) between members, and the election timeout **at least about
 
 ## Backups
 
-Follows `decisions/backup-tiers.md` (proposed).
+Follows `agents/decisions/backup-tiers.md` (proposed).
 
 - **pgBackRest, B2 first** (owner, 2026-11-06): encrypted offsite (tier 2) is the
   only repository until Garage is back, and Garage (tier 1) is added then.
@@ -290,7 +290,7 @@ Follows `decisions/backup-tiers.md` (proposed).
   incrementals, `retention_full_type: count` and `retention_full: 1`, because Garage
   follows once the lab is up, expected about a week later (owner). So the oldest
   restore point is only 0 to 7 days back. This does not match the "3 daily, 1 weekly,
-  1 monthly" in `decisions/backup-tiers.md`, which pgBackRest cannot express. Garage
+  1 monthly" in `agents/decisions/backup-tiers.md`, which pgBackRest cannot express. Garage
   keeps 3. Size against B2's 10 GB free tier is not measured.
 - **Point-in-time restore:** a base backup plus the WAL (write-ahead log, the
   record of every change) archived after it lets you restore to any second
@@ -389,7 +389,7 @@ Moved from "before step 1" on 2026-11-06 (owner): steps 1 to 4 hold no app data.
 
 The bucket, its key and the encryption passphrase are at `kv/general/pigsty`. The
 owner created the first two; the passphrase is in OpenBao only, by the owner's choice
-(`decisions/backup-tiers.md`, rule 2).
+(`agents/decisions/backup-tiers.md`, rule 2).
 
 The key has `listBuckets`, `listFiles`, `readFiles` and `writeFiles`, for one private
 bucket, with a lifecycle rule that removes hidden files after 7 days (read through B2's
@@ -426,5 +426,5 @@ against a bill).
 
 ## Links
 
-`plans/home-overhaul.md`, `decisions/backup-tiers.md`, `systems/backups.md`,
+`plans/home-overhaul.md`, `agents/decisions/backup-tiers.md`, `systems/backups.md`,
 `systems/openbao.md`, `ideas/multi-site-postgres.md`.

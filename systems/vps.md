@@ -19,9 +19,9 @@ always-on, shared and overflow services, deployed with Dokploy.
 ## What goes here
 
 What must stay up when home is down, what other people use, overflow, and
-quick deploys — the rule and its reasons are `decisions/vps-role.md`. The
+quick deploys — the rule and its reasons are `agents/decisions/vps-role.md`. The
 foundation services (OpenBao, SSO) also live here
-(`decisions/foundations-on-vps.md`).
+(`agents/decisions/foundations-on-vps.md`).
 
 ## How it works
 
@@ -124,5 +124,5 @@ purpose — never Docker's.
 
 ## Open questions
 
-See [`decisions/open-questions.md`](../decisions/open-questions.md),
+See [`agents/decisions/open-questions.md`](../agents/decisions/open-questions.md),
 sections "Remote VPS (Dokploy)", "Secrets (OpenBao)" and "Foundations".

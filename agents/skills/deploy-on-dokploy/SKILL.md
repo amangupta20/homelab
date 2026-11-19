@@ -12,7 +12,7 @@ them and links its journal entry here.
 
 ## When to use / when not to
 
-- Use for any app that belongs on the VPS (`decisions/vps-role.md`): it must
+- Use for any app that belongs on the VPS (`agents/decisions/vps-role.md`): it must
   stay up when home is down, other people use it, it needs more resources than
   home has, or it is a quick deploy.
 - Not for home apps: they go in `apps/homeserver/`, and their container
@@ -23,7 +23,7 @@ them and links its journal entry here.
 ## Before you start
 
 1. Check `plans/vps-foundations.md`. Foundations come first
-   (`decisions/foundations-on-vps.md`): if OpenBao or SSO are not up yet,
+   (`agents/decisions/foundations-on-vps.md`): if OpenBao or SSO are not up yet,
    stop and work on the plan instead. Deploy anyway only if the owner says so
    for this app; then its secrets go in Dokploy's environment for now, and
    the exception is written into the plan as a follow-up so the app gets

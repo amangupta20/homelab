@@ -10,7 +10,7 @@ services:
     restart: unless-stopped
     ports:
       # Tailnet address only, never every interface
-      # (decisions/foundations-on-vps.md). Unset falls back to loopback.
+      # (agents/decisions/foundations-on-vps.md). Unset falls back to loopback.
       - "${TAILSCALE_IP:-127.0.0.1}:8200:8200"
     configs:
       - source: openbao-hcl
@@ -31,7 +31,7 @@ configs:
       # No disable_mlock: OpenBao 2.7.1 ignores it with a warning ("unknown or
       # unsupported field"). Whether it locks memory is unverified, so swap
       # matters
-      # (decisions/open-questions.md, Secrets).
+      # (agents/decisions/open-questions.md, Secrets).
 
       api_addr     = "https://${TAILSCALE_IP:-127.0.0.1}:8200"
       cluster_addr = "https://127.0.0.1:8201"

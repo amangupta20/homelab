@@ -45,7 +45,7 @@ tags:
 <One line + link to `systems/backups.md`; only what is specific to this thing.>
 
 ## Open questions
-<Link to the matching section of `decisions/open-questions.md`.>
+<Link to the matching section of `agents/decisions/open-questions.md`.>
 ```
 
 ## Pages

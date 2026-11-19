@@ -66,4 +66,4 @@ The design below is what was built. Where the build differs, the step says so.
 
 ## Links
 
-`iac/oci/README.md`, `systems/backups.md`, `decisions/backup-tiers.md`.
+`iac/oci/README.md`, `systems/backups.md`, `agents/decisions/backup-tiers.md`.

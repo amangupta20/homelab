@@ -38,7 +38,7 @@ OpenBao and skip the license question. The `bao` command works like `vault`.
 ## Where the box runs
 
 On the VPS, listening only on its Tailscale address
-(`decisions/foundations-on-vps.md`). It must be always-on and reachable from
+(`agents/decisions/foundations-on-vps.md`). It must be always-on and reachable from
 every checkout and from both sides of the lab; the VPS is the always-on side,
 and both sides share the tailnet. No public URL (see below why).
 

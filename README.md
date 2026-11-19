@@ -32,7 +32,7 @@ See `systems/xcp-ng.md`.
 | xo-ce (Xen Orchestra) | VM, home | Ansible only | `ansible/xcpng.yml` |
 | oob-1 (out-of-band Raspberry Pi) | hardware, home | Ansible only | `ansible/oob.yml`, `systems/oob.md` |
 | OpenBao, Authentik, Langfuse, Hermes WebUI, Blinko, pgAdmin, CloudBeaver, pg-proxy, Sablier | remote VPS (Dokploy) | Compose only | `apps/vps/` |
-| The remote VPS itself | Oracle Cloud | no | `systems/vps.md`, `decisions/vps-outside-opentofu.md` |
+| The remote VPS itself | Oracle Cloud | no | `systems/vps.md`, `agents/decisions/vps-outside-opentofu.md` |
 | Other VPS apps | remote VPS (Dokploy) | no | `inventory/services.md` |
 | Home app stacks (Immich, Jellyfin, Nextcloud and others) | Portainer, several VMs | no | `inventory/services.md` |
 | TrueNAS, Garage, backups | VM, home | no | `systems/truenas.md`, `systems/backups.md` |
@@ -66,8 +66,8 @@ never in git. See `systems/openbao.md` for where they live.
 | how to do a task step by step | `agents/skills/` — runbooks and know-how, shared with the agent harnesses (`agents/`) |
 | what is in progress | `plans/` |
 | what could be tried later (researched, not scheduled) | `ideas/` |
-| why something is the way it is | `decisions/` |
-| what is undecided or unverified | `decisions/open-questions.md` |
+| why something is the way it is | `agents/decisions/` |
+| what is undecided or unverified | `agents/decisions/open-questions.md` |
 | what was done, when, and by whom | `journal/` |
 | a stack's Compose file | `apps/homeserver/`, `apps/vps/` |
 | how VMs are created | `iac/README.md` |

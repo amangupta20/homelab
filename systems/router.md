@@ -180,4 +180,4 @@ Neither has been restored. A restore is **UNTESTED**.
 
 ## Open questions
 
-`decisions/open-questions.md`, "Home router (OpenWrt)".
+`agents/decisions/open-questions.md`, "Home router (OpenWrt)".

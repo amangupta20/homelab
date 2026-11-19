@@ -151,4 +151,4 @@ Nextcloud's own Borg backups.
 
 ## Open questions
 
-`decisions/open-questions.md`, "Backups".
+`agents/decisions/open-questions.md`, "Backups".

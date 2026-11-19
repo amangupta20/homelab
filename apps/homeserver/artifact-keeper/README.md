@@ -160,7 +160,7 @@ layers that exist on both Docker Hub and ghcr.io.
 
 Bind mounts on the VM: `/srv/artifact-keeper/{postgres,storage,backups,plugins}`.
 No backups by design: the files refill from upstream and the settings come back
-from `cache-remotes.sh` (`decisions/backup-tiers.md`, rebuildable state).
+from `cache-remotes.sh` (`agents/decisions/backup-tiers.md`, rebuildable state).
 
 ## Quirks
 
@@ -177,4 +177,4 @@ from `cache-remotes.sh` (`decisions/backup-tiers.md`, rebuildable state).
   again.
 - **First fetches from GitHub-hosted registries are slow from the LAN** while
   LAN traffic forwarded into the router's GitHub detour runs at about 125 kB/s
-  (`decisions/open-questions.md`). Later requests are served from disk.
+  (`agents/decisions/open-questions.md`). Later requests are served from disk.

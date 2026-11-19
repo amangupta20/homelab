@@ -5,7 +5,7 @@ description: Use when giving a service its backups, adding the encrypted offsite
 
 # Back up a service (two tiers)
 
-**Status:** UNTESTED — the pattern is proposed in `decisions/backup-tiers.md`
+**Status:** UNTESTED — the pattern is proposed in `agents/decisions/backup-tiers.md`
 and no service has been taken through this runbook yet.
 **Touches:** writes to the service's host (a backup job), Garage, and B2.
 
@@ -16,7 +16,7 @@ or to bring an old backup in line with the pattern.
 
 Not for VM images (Xen Orchestra handles those, `systems/backups.md`) and not
 for deciding *which* services get tier 2: that is the owner's call, recorded in
-`decisions/backup-tiers.md`.
+`agents/decisions/backup-tiers.md`.
 
 ## Before you start
 
@@ -24,7 +24,7 @@ for deciding *which* services get tier 2: that is the owner's call, recorded in
 - Know which tier it gets. Tier 2 only if the owner named it.
 - For tier 2: a B2 bucket, a key limited to that bucket, and the encryption
   password — all in OpenBao, and the password also kept outside the lab by the
-  owner (`decisions/backup-tiers.md`, rule 2). Missing any of these: stop and
+  owner (`agents/decisions/backup-tiers.md`, rule 2). Missing any of these: stop and
   ask.
 - Never write a credential into a command you show, a file in this repo or a
   log. Read them from OpenBao at run time (`systems/openbao.md`, "Daily use").
@@ -73,7 +73,7 @@ for deciding *which* services get tier 2: that is the owner's call, recorded in
 
 5. **Check the B2 bucket:** a lifecycle rule keeps only the current version
    (otherwise deletes only hide files), and deletion protection is set as
-   `decisions/backup-tiers.md` rule 3 describes.
+   `agents/decisions/backup-tiers.md` rule 3 describes.
 
 ## Verify
 
@@ -96,7 +96,7 @@ real data is there.
 - The capture needs a service stopped and there is no agreed window.
 - A restore fails or the restored data is incomplete: the backup does not
   count; record what you saw and ask the owner.
-- A step would delete or overwrite an existing backup (`decisions/agent-access.md`).
+- A step would delete or overwrite an existing backup (`agents/rules/agent-access.md`).
 
 ## Afterwards
 

@@ -62,7 +62,8 @@ them and links its journal entry here.
      address, gets a harmless value of the right shape instead, or step 3
      fails (`invalid IP address: __PASTE_ONCE__`).
    - `README.md`, 40 lines at most: what the app is, where it runs, its
-     address, data, secrets and backups (`apps/README.md`).
+     address, how you sign in (step 8), data, secrets and backups
+     (`apps/README.md`).
    - `NOTES.md` with a "Derived from" table: each source from step 1, the
      version or commit read, and what was taken; then the choices that
      differ from the sources and why, and quirks. On an upgrade, compare the
@@ -100,7 +101,8 @@ them and links its journal entry here.
    (`agents/journal/2026-11-10-deploy-langfuse.md`).
 8. **Sign-in:** once SSO runs, register the app as an OIDC client if it
    supports it; otherwise put it behind the SSO's forward-auth. Write which in
-   the app's `README.md`.
+   the app's `README.md` (one "Sign-in" line), and the client's settings
+   (application, callback, admin group) in its `NOTES.md`.
 9. **Backups:** set up the Dokploy volume or database backup to the Garage
    destination at home, or the app's own backup, and run it once.
 

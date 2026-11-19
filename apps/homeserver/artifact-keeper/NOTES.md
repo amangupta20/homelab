@@ -31,7 +31,7 @@ At `https://cache.home.<zone>/` (the web UI) and `/grafana/`, through the home p
 | Artifact Keeper | `artifact-keeper` | `/api/v1/auth/sso/oidc/callback` | Authentik group `homelab-admins` (`OIDC_ADMIN_GROUP`); others get the default role |
 | Grafana | `cache-grafana` | `/grafana/login/generic_oauth` | `homelab-admins` become Admin, everyone else Viewer (`GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`) |
 
-Both providers copy Langfuse's settings (`apps/vps/langfuse/README.md`, "Sign-in"),
+Both providers copy Langfuse's settings (`apps/vps/langfuse/NOTES.md`, "Sign-in"),
 including the explicit grant types an API-made provider needs; made through Authentik's
 API on 2026-11-18. `homelab-admins` holds the owner's everyday account, not `akadmin`,
 which Authentik refuses outside the tailnet. A first sign-in creates the account. The

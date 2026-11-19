@@ -5,9 +5,7 @@
 
 dates apps/vps/blinko/README.md 1
 dates apps/vps/cloudbeaver/README.md 2
-dates apps/vps/langfuse/README.md 5
 dates apps/vps/pgadmin/README.md 2
-lines apps/vps/langfuse/README.md 213
 lines systems/openbao.md 204
 lines systems/router.md 187
 lines systems/truenas.md 159

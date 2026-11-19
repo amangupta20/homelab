@@ -6,10 +6,12 @@ Checks, over tracked Markdown files:
 - paths:  a repo path in backticks, or a relative Markdown link, points at a
           tracked (or git-ignored) file or folder. Journal entries are exempt:
           they keep the paths of their day (agents/journal/README.md is not).
-- dates:  no `YYYY-MM-DD` in table rows of the human pages (README.md,
-          lab/inventory/, lab/systems/, apps/**/README.md). Dates belong in journal
-          entries, which those pages link; a journal file name in a link
-          does not count.
+- dates:  no `YYYY-MM-DD` on the human pages (README.md, the pages of
+          lab/inventory/ and lab/systems/, apps/**/README.md, the iac/ and
+          ansible/ READMEs), in a table or in prose. Dates belong in journal
+          entries and notes pages (NOTES.md, lab/*/notes/), which those pages
+          link; a journal file name in a link does not count. Each date
+          occurrence counts separately against the allowlist.
 - lines:  length caps (notes pages, an app's NOTES.md or lab/systems/notes/, have
           none): AGENTS.md 40, app READMEs 40, journal entries 40
           (those dated from JOURNAL_CAP_FROM on),
@@ -85,8 +87,8 @@ def git(*args):
 
 
 def human_page(f):
-    return (f == "README.md" or f.startswith("lab/inventory/")
-            or posixpath.dirname(f) == "lab/systems"
+    return (f in ("README.md", "iac/README.md", "iac/oci/README.md", "ansible/README.md")
+            or posixpath.dirname(f) in ("lab/inventory", "lab/systems")
             or (f.startswith("apps/") and f.endswith("/README.md")))
 
 
@@ -122,15 +124,16 @@ def findings():
 
     for f in md:
         lines = (ROOT / f).read_text().splitlines()
+        check_dates = human_page(f)
         limit = cap(f)
         if limit and len(lines) > limit:
             found[("lines", f)] = len(lines)
             detail.append(f"lines  {f}: {len(lines)} lines, cap {limit}")
         for n, line in enumerate(lines, 1):
-            cells = JOURNAL_PATH.sub("", line)
-            if human_page(f) and line.startswith("|") and DATE.search(cells):
-                found[("dates", f)] += 1
-                detail.append(f"dates  {f}:{n}: {DATE.search(cells).group()}")
+            if check_dates:
+                for date in DATE.finditer(JOURNAL_PATH.sub("", line)):
+                    found[("dates", f)] += 1
+                    detail.append(f"dates  {f}:{n}: {date.group()}")
             for name, pat, owner, allowed in RULES:
                 if (f != owner and f not in allowed and not journal_entry(f)
                         and pat.search(line)

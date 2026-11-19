@@ -22,8 +22,9 @@ Create a page when there is something to say beyond the inventory row — not
 before.
 
 A page stays under 150 lines (`mise run check:docs`): how it works now, its
-rules, its backups. Measurements, reasons, closed incidents and sketches go to
-`lab/systems/notes/<thing>.md`, linked from the page; split, never delete.
+rules, its backups. Measurements, reasons, closed incidents, sketches and dates
+go to `lab/systems/notes/<thing>.md`, linked from the page; split, never
+delete. The check fails on a new date on a page (today's are on its allowlist).
 
 ## Template
 

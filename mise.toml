@@ -34,5 +34,5 @@ description = "Check every home VM in ansible/inventory.yml uses the LAN cache o
 run = "python3 -I .githooks/check-cache-clients.py"
 
 [tasks."check:docs"]
-description = "Check doc rules: paths resolve and use the new folders, no dates in human tables, length caps, danger rules in owner files (.githooks/check-docs.py)"
+description = "Check doc rules: paths resolve and use the new folders, no dates on human pages, length caps, danger rules in owner files (.githooks/check-docs.py)"
 run = "python3 -I .githooks/check-docs.py"

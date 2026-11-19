@@ -319,7 +319,7 @@ would not have measured normal use.
    3: hit rate, bytes served from disk against bytes fetched upstream, `df`
    on the volume against the cap, idle memory, and every manual clean-up.
    The cache's dashboard collects all but the clean-ups since 2026-11-17
-   (`apps/homeserver/artifact-keeper/README.md`, "Dashboard").
+   (`apps/homeserver/artifact-keeper/NOTES.md`, "Dashboard").
    — gate: the numbers in an `agents/journal/` entry and in `inventory/services.md`
    or a new `systems/` page, and the owner's keep-or-change decision written
    in "Decisions".
@@ -362,7 +362,7 @@ would not have measured normal use.
   an instance-wide ceiling (which stops storing, not evicts), the per-remote
   caps are generous (Docker Hub 50 GB) and add up to more, and a 30-day idle
   rule, keyed on last serve, drains what nobody fetches
-  (`apps/homeserver/artifact-keeper/README.md`, "How it stays inside the
+  (`apps/homeserver/artifact-keeper/NOTES.md`, "How it stays inside the
   disk").
 - **Operating system.** Debian 13, like every home VM built from code
   (`agents/plans/home-overhaul.md`, "One operating system"; owner, 2026-11-16).

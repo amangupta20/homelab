@@ -15,7 +15,7 @@ apps use, and two apps (Garage and BorgWarehouse).
 **Status:** running. Snapshots run daily again (2026-11-14 and -15). The
 replication failed on 2026-11-15 on a checksum error in `imp`, was redone the
 same evening, and `Main/repli` now holds `auto-2026-11-15_20-00`; a scrub of
-`imp` afterwards found no errors ("Checksum errors on `imp`" below).
+`imp` afterwards found no errors (`systems/notes/truenas.md`, "Checksum errors on `imp`").
 Rows: `inventory/hosts.md`, `inventory/services.md`. Where it is going:
 `agents/plans/home-overhaul.md`.
 
@@ -65,7 +65,7 @@ Read on 2026-11-14 through the TrueNAS API (`system/info`, `disk`, `pool`,
 - **Snapshots:** daily at 19:00 — `imp/back` (recursive, kept 2 weeks),
   `Main/home` (recursive, kept 1 week), `imp/ioapp` (at 00:00, kept 2 weeks).
 - **Replication:** `imp/back` to `Main/repli`, after each snapshot. The
-  19:00 run on 2026-11-15 failed (see "Checksum errors on `imp`" below); the
+  19:00 run on 2026-11-15 failed (see `systems/notes/truenas.md`, "Checksum errors on `imp`"); the
   rerun finished at 20:04 IST with `imp/back@auto-2026-11-15_20-00` as its last
   snapshot, the newest on both sides (TrueNAS API `replication` and
   `pool/snapshot`, 2026-11-16).
@@ -99,39 +99,6 @@ the router's subnet route, which Linux ignores until `sudo tailscale set
 --accept-routes` has been run once. For a one-off: `gio mount smb://10.22.33.160/back`.
 The share names change when the datasets are reorganised (`agents/plans/home-overhaul.md`, B1).
 
-## Checksum errors on `imp` (2026-11-15, closed 2026-11-16)
-
-The 19:00 replication on 2026-11-15 stopped with `cannot send
-'imp/back@auto-2026-11-15_19-00': Input/output error`, and TrueNAS raised a
-critical `ReplicationFailed` alert. `zpool status -v imp` (owner, TrueNAS
-shell) showed 8 checksum errors on `xvdc1`, no read or write errors, and one
-damaged file: a library inside a Python virtual environment
-(`back/nextcloud/admin/files/.../.venv/.../libcublasLt.so.12`), live and in
-that one snapshot. Reading it back gave `Input/output error`, so the bad block
-is on disk.
-
-How it is read, not proved: the file was created at 00:59 on 2026-11-15 during
-a bulk rewrite of `back/nextcloud` (93,535 files changed between 00:30 and
-02:00, `find -newerct`), the owner's Nextcloud restore. The scrub that ended at
-02:08 had started before the file existed, so it never checked it. The disk
-surface is clean and the host logged no disk errors, so the likeliest cause is
-corruption on the way to the disk (non-ECC RAM, or the link with 4 CRC
-errors), not a failing disk.
-
-What was done (owner, 2026-11-15): the damaged virtual environment was
-deleted, `auto-2026-11-15_19-00` destroyed, the partial receive on
-`Main/repli` discarded (`zfs receive -A`), a fresh snapshot
-`auto-2026-11-15_20-00` taken and the replication started by hand.
-
-Checked through the TrueNAS API on 2026-11-16 (`replication`, `pool/snapshot`,
-`pool`): the replication finished at 20:04 IST on 2026-11-15 and `Main/repli`
-holds `auto-2026-11-15_20-00`. A scrub of `imp` ran from 20:14 to 21:18 IST
-that evening and finished with 0 errors; it is the first check of the other
-files the restore wrote. The pool is `ONLINE` and healthy, and `xvdc1` now
-shows 0 read, write and checksum errors. Still to do at the next shutdown:
-reseat or replace the WD's SATA cable and run a memory test on the host, since
-the cause was never found.
-
 ## Rules
 
 - **Never delete a snapshot on the XCP-ng side by hand** (`systems/xcp-ng.md`).
@@ -148,6 +115,12 @@ the cause was never found.
 `systems/backups.md`. TrueNAS itself is not in Xen Orchestra's backup jobs;
 its data is protected by its snapshots, the replica in `Main/repli`, and
 Nextcloud's own Borg backups.
+
+## Still to do
+
+At the next shutdown: reseat or replace the WD's SATA cable and run a memory
+test on the host. The checksum errors of 2026-11-15 were never explained
+(`systems/notes/truenas.md`).
 
 ## Open questions
 

@@ -1,9 +1,5 @@
 ---
 type: plan
-status: "in progress (steps 0-2 completed, step 3 partially; SSO running, its gate open)"
-verified: "partially (steps 0-3 verified on live VPS 2026-10-26/27; step 2 restore tested on workstation 2026-10-29)"
-hosts:
-  - Remote VPS
 tags:
   - plan
   - vps

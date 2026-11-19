@@ -1,7 +1,5 @@
 ---
 type: idea
-status: "researched"
-verified: "partially (each candidate's repository read 2026-11-14; the rest is research, not run here)"
 tags:
   - idea
   - media

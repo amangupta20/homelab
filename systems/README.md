@@ -26,10 +26,6 @@ before.
 ```markdown
 ---
 type: system
-status: "<running | planned | broken | …>"
-verified: "<yes | no | partially> (<how>)"
-hosts:
-  - <exact name from inventory/hosts.md>
 tags:
   - system
 ---

@@ -1,7 +1,5 @@
 ---
 type: idea
-status: "researched"
-verified: "partially (releases, licences, archive status and image tags checked via APIs 2026-11-15; OneDev, Forgejo and Harness tried locally in Docker on the owner's laptop; the rest is research, not run here)"
 tags:
   - idea
   - git

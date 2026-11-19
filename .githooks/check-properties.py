@@ -14,8 +14,8 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 FOLDERS = {"systems": "system", "inventory": "inventory", "plans": "plan", "ideas": "idea"}
-ALLOWED = {"type", "status", "verified", "hosts", "tags"}
-REQUIRED_PAGE = {"type", "status", "verified", "tags"}
+ALLOWED = {"type", "tags"}
+REQUIRED_PAGE = {"type", "tags"}
 REQUIRED_INDEX = {"type", "tags"}
 
 
@@ -40,25 +40,9 @@ def parse(text):
     return props
 
 
-def host_names():
-    """First column of the table in inventory/hosts.md, the host list's owner."""
-    names, in_table = set(), False
-    for line in (ROOT / "inventory/hosts.md").read_text().splitlines():
-        if line.startswith("| Host |"):
-            in_table = True
-            continue
-        if in_table:
-            if not line.startswith("|"):
-                break
-            cell = line.split("|")[1].strip()
-            if cell and not set(cell) <= {"-", ":"}:
-                names.add(cell)
-    return names
-
 
 def main():
     errors = []
-    hosts = host_names()
     for folder, base_type in FOLDERS.items():
         for page in sorted((ROOT / folder).glob("*.md")):
             rel = page.relative_to(ROOT)
@@ -79,12 +63,9 @@ def main():
                 errors.append(f"{rel}: unknown property {key!r} (allowed: {', '.join(sorted(ALLOWED))})")
             for key in sorted((REQUIRED_INDEX if is_index else REQUIRED_PAGE) - set(props)):
                 errors.append(f"{rel}: missing property {key!r}")
-            for key in ("status", "verified", "tags"):
+            for key in ("tags",):
                 if key in props and not any(props[key]):
                     errors.append(f"{rel}: property {key!r} is empty")
-            for host in props.get("hosts", []):
-                if host not in hosts:
-                    errors.append(f"{rel}: host {host!r} is not a row in inventory/hosts.md")
 
     home = ROOT / "agents/obsidian/Home.md"
     if home.exists():

@@ -1,10 +1,5 @@
 ---
 type: plan
-status: "in progress (OpenBao tier 2 complete; next is learning service)"
-verified: "partially (OpenBao restore tested from B2 2026-10-31; learning service pending)"
-hosts:
-  - Remote VPS
-  - TrueNAS VM
 tags:
   - plan
   - backups

@@ -1,9 +1,5 @@
 ---
 type: system
-status: "running, stable (from docs, not checked live)"
-verified: "partially (host hardware checked at the console 2026-11-13; pool from docs, not checked live)"
-hosts:
-  - XCP-ng host
 tags:
   - system
   - hypervisor

@@ -1,7 +1,5 @@
 ---
 type: idea
-status: "researched"
-verified: "no (research only; no tool was run)"
 tags:
   - idea
   - opentofu

@@ -1,10 +1,5 @@
 ---
 type: plan
-status: "in progress (A1, A2 and A3 done; B4a phase 1 done)"
-verified: "partially (A1 verified 2026-11-14; A2 read live 2026-11-14 through the Xen Orchestra, TrueNAS and Portainer APIs and SSH)"
-hosts:
-  - XCP-ng host
-  - TrueNAS VM
 tags:
   - plan
   - migration

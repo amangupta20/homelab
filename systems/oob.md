@@ -1,9 +1,5 @@
 ---
 type: system
-status: "running, subnet router on its own tailnet"
-verified: "yes (over SSH and tailscale status 2026-11-14; route tested by the owner from a device on the second tailnet)"
-hosts:
-  - oob-1
 tags:
   - system
   - network

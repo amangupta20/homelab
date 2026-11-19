@@ -1,9 +1,5 @@
 ---
 type: plan
-status: "done"
-verified: "yes (built and restore-tested 2026-11-16)"
-hosts:
-  - TrueNAS VM
 tags:
   - plan
   - backups

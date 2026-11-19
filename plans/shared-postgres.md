@@ -1,12 +1,5 @@
 ---
 type: plan
-status: "in progress (installed on pigsty-1; drills done; Blinko running as a test)"
-verified: "partly (pigsty-1 read over SSH and Pigsty's docs read 2026-11-06; the rest is design from research 2026-10-31)"
-hosts:
-  - pigsty-1
-  - XCP-ng host
-  - TrueNAS VM
-  - Remote VPS
 tags:
   - plan
   - postgres

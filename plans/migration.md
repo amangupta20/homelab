@@ -1,10 +1,5 @@
 ---
 type: plan
-status: "replaced by plans/home-overhaul.md"
-verified: "no (current step unrecorded; restore tests open in systems/backups.md)"
-hosts:
-  - XCP-ng host
-  - TrueNAS VM
 tags:
   - plan
   - migration

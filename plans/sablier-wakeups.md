@@ -1,9 +1,5 @@
 ---
 type: plan
-status: "done (Blinko sleeps; 20-minute idle time)"
-verified: "yes (wake, idle stop and outage cases tried on the VPS 2026-11-07, journal/2026-11-07-deploy-sablier.md)"
-hosts:
-  - Remote VPS
 tags:
   - plan
   - docker

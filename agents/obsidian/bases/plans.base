@@ -7,15 +7,7 @@ views:
     name: Plans Overview
     order:
       - file.name
-      - status
-      - verified
-      - hosts
       - tags
     sort:
       - property: file.name
         direction: ASC
-  - type: kanban
-    name: Plan Status Kanban
-    groupBy:
-      property: status
-      direction: ASC

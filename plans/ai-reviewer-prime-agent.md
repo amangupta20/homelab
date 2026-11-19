@@ -1,7 +1,5 @@
 ---
 type: plan
-status: "in progress (step 7)"
-verified: "partly (run by hand on pull requests 21, 25, 27, 28 on 2026-11-02; first GitHub run on pull request 29)"
 tags:
   - plan
   - ai-review

@@ -1,7 +1,5 @@
 ---
 type: idea
-status: "researched"
-verified: "no (research only; NetBird was not run)"
 tags:
   - idea
   - networking

@@ -1,7 +1,5 @@
 ---
 type: idea
-status: "researched"
-verified: "no (research only, 2026-10-25 to 2026-11-01; nothing built or tested)"
 tags:
   - idea
   - security

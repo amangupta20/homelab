@@ -1,7 +1,5 @@
 ---
 type: idea
-status: "researched"
-verified: "no (research only, from both projects' READMEs and docs read 2026-11-02; nothing installed or run)"
 tags:
   - idea
   - agents

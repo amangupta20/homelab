@@ -1,7 +1,5 @@
 ---
 type: idea
-status: "researched"
-verified: "no (research only, from a conversation 2026-10-31; nothing built or tested)"
 tags:
   - idea
   - postgres

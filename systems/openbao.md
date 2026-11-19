@@ -1,9 +1,5 @@
 ---
 type: system
-status: "running on VPS, backup and restore tested"
-verified: "yes (running unsealed verified 2026-10-26; Dokploy integration verified 2026-10-27; backup to Garage S3 and restore test verified 2026-10-29; Tier 2 Backblaze B2 backup and restore test verified 2026-10-31)"
-hosts:
-  - Remote VPS
 tags:
   - system
   - openbao

@@ -1,7 +1,5 @@
 ---
 type: idea
-status: "idea"
-verified: "no (design only; nothing built or run)"
 tags:
   - idea
   - updates

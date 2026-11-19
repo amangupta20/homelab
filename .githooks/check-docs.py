@@ -10,7 +10,8 @@ Checks, over tracked Markdown files:
           inventory/, systems/, apps/**/README.md). Dates belong in journal
           entries, which those pages link; a journal file name in a link
           does not count.
-- lines:  length caps: AGENTS.md 40, app READMEs 40, journal entries 40,
+- lines:  length caps: AGENTS.md 40, app READMEs 40, journal entries 40
+          (those dated from JOURNAL_CAP_FROM on),
           systems pages 150.
 - rules:  each danger rule is spelled out only in its owner file, the root
           AGENTS.md and the README's first screen; elsewhere, a line naming
@@ -43,6 +44,9 @@ ROOT_ENTRIES = {
     "inventory", "systems",
 }
 
+# The 40-line cap applies to journal entries written after the clean-up; older
+# entries are append-only and keep their length.
+JOURNAL_CAP_FROM = "2026-11-20"
 DATE = re.compile(r"\b20\d\d-\d\d-\d\d\b")
 # A journal entry's file name starts with its date; a link to one is evidence, not a date.
 JOURNAL_PATH = re.compile(r"agents/journal/20\d\d-\d\d-\d\d[\w.-]*")
@@ -78,7 +82,7 @@ def journal_entry(f):
 def cap(f):
     if f == "AGENTS.md" or (f.startswith("apps/") and f.endswith("/README.md")):
         return 40
-    if journal_entry(f):
+    if journal_entry(f) and posixpath.basename(f)[:10] >= JOURNAL_CAP_FROM:
         return 40
     if f.startswith("systems/") and f != "systems/README.md":
         return 150

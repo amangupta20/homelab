@@ -1,7 +1,7 @@
 # Authentik
 
 **Status:** running on the VPS since 2026-11-10 (`journal/2026-11-10-deploy-authentik.md`), the single sign-on (SSO)
-provider of `plans/vps-foundations.md`, step 4 (the owner chose Authentik on 2026-11-10). No app signs in through it
+provider of `agents/plans/vps-foundations.md`, step 4 (the owner chose Authentik on 2026-11-10). No app signs in through it
 yet, and its database restore is not tested.
 
 ## Derived from

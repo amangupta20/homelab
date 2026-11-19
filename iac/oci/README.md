@@ -128,7 +128,7 @@ is down. The bucket has no lifecycle rules (B2 API, 2026-11-04), so B2 keeps eve
 old version of the state.
 
 After every command, `run.sh` syncs the encrypted object to Garage at home when
-Garage's newest copy differs (`../lib/state-copy.sh`, `plans/oci-state-backup.md`).
+Garage's newest copy differs (`../lib/state-copy.sh`, `agents/plans/oci-state-backup.md`).
 Garage being down never fails a command; the next run catches up. `./run.sh
 backup` runs the sync on its own and exits 1 if it fails. Restore-tested 2026-11-16
 (`journal/2026-11-16-restore-test-tofu-state-garage.md`).

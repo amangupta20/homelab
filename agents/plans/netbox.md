@@ -61,7 +61,7 @@ Read from the NetBox repositories on 2026-11-05 unless marked otherwise.
   the owner changes this, `inventory/` stays the owner.
 - **Which host runs it.** Not chosen.
 - **Which Postgres.** The Compose file's own container, or a database on the
-  server in `plans/shared-postgres.md` if that exists by then.
+  server in `agents/plans/shared-postgres.md` if that exists by then.
 
 ## Steps
 
@@ -86,6 +86,6 @@ Read from the NetBox repositories on 2026-11-05 unless marked otherwise.
 
 - `inventory/network.md`, `inventory/services.md` — what NetBox would be fed
   from or replace
-- `plans/shared-postgres.md` — possible home for its database
-- `plans/home-overhaul.md` — the Portainer replacement would change the sync's
+- `agents/plans/shared-postgres.md` — possible home for its database
+- `agents/plans/home-overhaul.md` — the Portainer replacement would change the sync's
   container source

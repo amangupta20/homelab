@@ -1,5 +1,5 @@
 # Artifact Keeper: the LAN's package and image cache, on cache-1
-# (plans/package-and-image-cache.md). Trimmed from the project's own
+# (agents/plans/package-and-image-cache.md). Trimmed from the project's own
 # docker-compose.yml at commit 825b75e9 to the four services a pull-through
 # cache needs; search (OpenSearch), scanners (Trivy, OpenSCAP) and
 # Dependency-Track are left out, which the backend allows when their URLs are
@@ -164,7 +164,7 @@ services:
   # Monitoring (owner, 2026-11-17): the web UI shows no hit rate, so Prometheus
   # keeps the backend's counters and the VM's load, and Grafana draws them at
   # http://10.22.33.137/grafana/. Moves to the lab's central monitoring once
-  # that is chosen (plans/home-overhaul.md, A6).
+  # that is chosen (agents/plans/home-overhaul.md, A6).
   prometheus:
     image: docker.io/prom/prometheus:v3.16.0@sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06
     command:

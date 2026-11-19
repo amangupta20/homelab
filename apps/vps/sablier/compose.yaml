@@ -1,5 +1,5 @@
 # Sablier: starts a sleeping app on its first request and stops it after an idle period
-# (plans/sablier-wakeups.md). Only reachable by Traefik, on dokploy-network.
+# (agents/plans/sablier-wakeups.md). Only reachable by Traefik, on dokploy-network.
 # Source of the shape and what differs: README.
 
 services:

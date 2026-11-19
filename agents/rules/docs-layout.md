@@ -24,7 +24,7 @@ So the layout is:
 | What exists? (lookup tables) | `inventory/` | agent, saying how it verified |
 | How does a thing work, what never to do? | `systems/` | agent, saying how it verified |
 | How do I do X? | `agents/skills/` (agentskills.io `SKILL.md`, shared by every harness) | agent adds new ones; changes to existing ones are proposed |
-| What is in flight? | `plans/` | agent updates status; owner sets goals |
+| What is in flight? | `agents/plans/` | agent updates status; owner sets goals |
 | What could be tried later? | `ideas/` | owner adds or asks; agent corrects facts, never promotes |
 | Why is it this way? | `agents/decisions/` | owner; agent proposes |
 | What is undecided or unverified? | `agents/decisions/open-questions.md` | agent appends, owner resolves |
@@ -53,7 +53,7 @@ The owner reads the repo through Obsidian, not only GitHub: the plain lab
 pages were readable but did not feel like somewhere to browse, and earlier
 Obsidian vaults died because they needed hand-kept notes. So the files stay
 the same and gain a thin layer only Obsidian uses — a property block on every
-page in `systems/`, `inventory/`, `plans/`, tables in `agents/obsidian/bases/`, and `agents/obsidian/Home.md`
+page in `systems/`, `inventory/`, `agents/plans/`, tables in `agents/obsidian/bases/`, and `agents/obsidian/Home.md`
 as the Obsidian front page. Agents keep it current; the owner only reads.
 How it works and its rules: `agents/obsidian/obsidian-view.md`.
 
@@ -76,7 +76,7 @@ status columns and kanban views.
 ## Addendum 2026-10-31: `ideas/` (proposed by an agent, at the owner's request)
 
 Research for things to try once there is time or hardware (a database
-replica on the VPS, for example) had nowhere to go: `plans/` promises the work
+replica on the VPS, for example) had nowhere to go: `agents/plans/` promises the work
 will happen in order, and `agents/decisions/open-questions.md` is for what is unknown
 about the lab as it is. Left in a chat or in memory, the research gets
 redone. So `ideas/` holds designs that were researched but not scheduled. An

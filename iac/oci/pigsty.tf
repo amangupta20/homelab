@@ -1,4 +1,4 @@
-# The Pigsty node in phase 1 of plans/shared-postgres.md. It uses 3 of the 4 free
+# The Pigsty node in phase 1 of agents/plans/shared-postgres.md. It uses 3 of the 4 free
 # Ampere OCPUs, 18 of the 24 GB and 150 of the 200 GB of disk; the rest is kept for
 # Pangolin. To stay free, the shape must stay on Ampere and the disk total at 200 GB.
 data "oci_core_images" "ubuntu" {

@@ -1,7 +1,7 @@
 # Traefik: the home reverse proxy
 
 **Status:** running since 2026-11-18 (`journal/2026-11-18-build-proxy-1-traefik.md`):
-HTTPS with a valid wildcard certificate over Tailscale and on the LAN. Phase 1 of step B4a of `plans/home-overhaul.md`. Runs on
+HTTPS with a valid wildcard certificate over Tailscale and on the LAN. Phase 1 of step B4a of `agents/plans/home-overhaul.md`. Runs on
 `proxy-1` (`iac/proxy-vm.tf`), deployed by `ansible/proxy.yml`.
 
 ## What it does
@@ -71,7 +71,7 @@ Not backed up: losing them only means Traefik requests a new certificate.
 - **The view-only dashboards** (traefik-log-dashboard, GoAccess), which read
   the access log in `/srv/traefik/log`.
 - **Sablier wakeups.** No sleepable app at home yet; when there is one, pin the
-  plugin and keep `plugins-storage` on disk (`plans/home-overhaul.md`).
+  plugin and keep `plugins-storage` on disk (`agents/plans/home-overhaul.md`).
 - **Pulling through the cache.** `proxy-1` pulls Traefik's image and its apt
   packages directly; the cache client playbook is step 4 of
-  `plans/package-and-image-cache.md`.
+  `agents/plans/package-and-image-cache.md`.

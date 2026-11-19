@@ -40,7 +40,7 @@ See `systems/xcp-ng.md`.
 | Router, DHCP, DNS | hardware, home | no | `systems/router.md` |
 
 Hand-written from the files above; what runs and whether it is healthy is in
-`inventory/services.md`. The migration plan is `plans/home-overhaul.md`.
+`inventory/services.md`. The migration plan is `agents/plans/home-overhaul.md`.
 
 ## Why this repo exists
 
@@ -64,7 +64,7 @@ never in git. See `systems/openbao.md` for where they live.
 | how a thing works and what never to do to it | `systems/` — one page per thing (`xcp-ng.md`, `backups.md`, `openbao.md`) |
 | what is backed up, and which restores are untested | `systems/backups.md` |
 | how to do a task step by step | `agents/skills/` — runbooks and know-how, shared with the agent harnesses (`agents/`) |
-| what is in progress | `plans/` |
+| what is in progress | `agents/plans/` |
 | what could be tried later (researched, not scheduled) | `ideas/` |
 | why something is the way it is | `agents/decisions/` |
 | what is undecided or unverified | `agents/decisions/open-questions.md` |

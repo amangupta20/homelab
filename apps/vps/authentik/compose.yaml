@@ -1,4 +1,4 @@
-# Authentik: the lab's single sign-on (plans/vps-foundations.md, step 4).
+# Authentik: the lab's single sign-on (agents/plans/vps-foundations.md, step 4).
 # Login is public; the admin interface and first-start setup answer on a tailnet-only hostname.
 # Its database is on the shared Postgres (pigsty-1) through pg-proxy. Source of the shape and what differs: README.
 

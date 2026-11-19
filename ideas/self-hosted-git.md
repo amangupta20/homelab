@@ -22,7 +22,7 @@ solo repo. A host of our own removes both, and is itself something to show: the
 owner wants their own instance linked first on a resume for homelab work, with
 GitHub second.
 **Needs first:** nothing hard; it fits on Dokploy or a small VM. Better after
-`plans/home-overhaul.md`, so it does not stack a new platform on a migration.
+`agents/plans/home-overhaul.md`, so it does not stack a new platform on a migration.
 
 ## What the owner wants (2026-11-15)
 
@@ -140,7 +140,7 @@ owner's laptop with this repo and pull request #79 imported. Seen:
   baseline and 8 GB as the minimum.
 
 Idle memory from `docker stats` with two repositories each. The host has 40 GB
-and the running VMs take about 22 (`plans/home-overhaul.md`), which rules GitLab
+and the running VMs take about 22 (`agents/plans/home-overhaul.md`), which rules GitLab
 out beside `agent-1` and `gpu-1`. Forgejo fits the agent VM best: its runner on
 `agent-1` would give every agent branch the CI and prime-reviewer it gets on
 GitHub today. OneDev is the most agent-minded (AI users, a CLI that runs CI
@@ -221,7 +221,7 @@ What "everything switched on" would look like. Marked by how each part is known.
 | Part | What it does | How known |
 |---|---|---|
 | Forgejo server | Container; Catppuccin themes, custom landing page in `custom/templates/home.tmpl`, code search with the built-in indexer | Tried locally 2026-11-15 |
-| Database | Postgres on the shared cluster (`plans/shared-postgres.md`) instead of SQLite | Supported per Forgejo docs; not tried |
+| Database | Postgres on the shared cluster (`agents/plans/shared-postgres.md`) instead of SQLite | Supported per Forgejo docs; not tried |
 | Object storage | Attachments, LFS, packages, Actions logs and artifacts in Garage (S3); git repos stay on disk | Forgejo docs; not tried |
 | Runners | `forgejo-runner` on `agent-1` running the existing `.github/workflows` | Registered and picked up the jobs locally; no job finished, because the job images would not download over the laptop's connection |
 | Reviewers | prime-reviewer as a workflow, with its posting step ported from GitHub's API to Forgejo's; PR-Agent has a Gitea provider as a second reviewer | Forgejo looked for `prime-reviewer-action` on its own action mirror and hung, so the action must be referenced by full URL; PR-Agent's Gitea provider file exists (checked), untried with Forgejo |

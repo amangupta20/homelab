@@ -1,5 +1,5 @@
 # Pigsty v4.5.0 config for pigsty-1, made from conf/rich.yml and the choices in
-# plans/shared-postgres.md. Secrets and addresses are placeholders: render.sh fills them
+# agents/plans/shared-postgres.md. Secrets and addresses are placeholders: render.sh fills them
 # from kv/general/pigsty. The real file stays on the node.
 all:
   children:

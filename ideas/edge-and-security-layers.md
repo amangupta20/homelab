@@ -48,8 +48,8 @@ Each choice constrains the next:
 
 Not blocked by any of this: SSO's identity provider on the VPS, wakeups on
 the VPS (Dokploy's Traefik stays either way), Pigsty
-(`plans/shared-postgres.md`), migrating internal-only stacks, Vuls, Nuclei
-and the read-only security baseline (`plans/migration.md`, step 1).
+(`agents/plans/shared-postgres.md`), migrating internal-only stacks, Vuls, Nuclei
+and the read-only security baseline (`agents/plans/migration.md`, step 1).
 
 ## Layers at a glance
 
@@ -332,7 +332,7 @@ both from docs, not checked on the live lab).
 ## Hardening and penetration testing
 
 The migration plan's order already covers it: a read-only security baseline
-in step 1 and a re-hardening pass in step 3 (`plans/migration.md`). Tools
+in step 1 and a re-hardening pass in step 3 (`agents/plans/migration.md`). Tools
 proposed for those steps (Hindsight, 2026-10-26): nmap or RustScan for
 exposure from outside and across the LAN, Nuclei, Lynis, docker-bench, Trivy,
 later Greenbone.

@@ -1,14 +1,14 @@
 # pg-proxy
 
 **Status:** running since 2026-11-09 (`journal/2026-11-09-deploy-pg-proxy.md`); Blinko connects through it since the same day. One HAProxy container that gives apps on the VPS one address for
-the shared Postgres, `pg-proxy:5432` on `dokploy-network` (`plans/shared-postgres.md`, "Proxy"). It keeps no data.
+the shared Postgres, `pg-proxy:5432` on `dokploy-network` (`agents/plans/shared-postgres.md`, "Proxy"). It keeps no data.
 
 ## Derived from
 
 | Source | Version read | What was taken |
 |---|---|---|
 | HAProxy configuration manual (`docs.haproxy.org/3.2/configuration.html`) | 3.2, 2026-11-09 | `mode tcp`, the timeouts, `clitcpka`/`srvtcpka`, `dontlog-normal`, server `check` options |
-| Pigsty's service ports (`plans/shared-postgres.md`, "What the node and Pigsty's docs say") | as installed 2026-11-06 | port 5433, the primary service on each node |
+| Pigsty's service ports (`agents/plans/shared-postgres.md`, "What the node and Pigsty's docs say") | as installed 2026-11-06 | port 5433, the primary service on each node |
 | `haproxy` image on Docker Hub | `3.2.26-alpine`, 2026-11-09 | runs as `haproxy` (uid 99); BusyBox `nc` is in the image |
 
 Dokploy has no HAProxy template (`blueprints/` in `Dokploy/templates`, 2026-11-09). Choices:

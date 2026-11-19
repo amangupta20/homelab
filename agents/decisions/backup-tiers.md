@@ -17,18 +17,18 @@ broken backup in Garage never reaches B2. The procedure is
 `agents/skills/back-up-a-service/`.
 
 **Tier 2 services (owner to confirm):** OpenBao first. Others get a lighter
-version for learning, chosen one at a time (`plans/offsite-backups.md`).
+version for learning, chosen one at a time (`agents/plans/offsite-backups.md`).
 
 **Shared Postgres gets tier 2, ahead of its tier 1** (owner, 2026-11-06). Garage at
 home is not available yet, so B2 is its only repository until home is back. It keeps
-few versions, in pgBackRest's own terms (`plans/shared-postgres.md`, "Backups").
+few versions, in pgBackRest's own terms (`agents/plans/shared-postgres.md`, "Backups").
 Its encryption passphrase is kept in OpenBao only, an exception to rule 2 below (owner,
 2026-11-06): OpenBao restores from B2 (tested 2026-10-31) with unseal keys kept offline.
 
 **Rebuildable state is exempt** (owner, 2026-11-16). A service whose data refills
 itself from upstream, and whose configuration lives in this repo, needs no backup
 tier: losing it costs a rebuild from the repo and some download time, not data.
-The first one is the package and image cache (`plans/package-and-image-cache.md`):
+The first one is the package and image cache (`agents/plans/package-and-image-cache.md`):
 the cache refills on demand, and its remotes, caps and users are recreated by a
 script kept with its stack. A manual VM snapshot before an upgrade is still taken
 when useful. If a service also holds something that is not in the repo and cannot
@@ -68,7 +68,7 @@ be fetched again, it is not exempt.
 
 ## Proposed change, 2026-11-14 (not in force until the owner approves)
 
-From `plans/home-overhaul.md`, "Design". Tier 1 is no longer always Garage:
+From `agents/plans/home-overhaul.md`, "Design". Tier 1 is no longer always Garage:
 
 - **Data in a ZFS dataset on TrueNAS:** tier 1 is ZFS snapshots plus either the
   app's own backup tool writing to the other disk (Nextcloud's Borg to
@@ -90,5 +90,5 @@ From `plans/home-overhaul.md`, "Design". Tier 1 is no longer always Garage:
 ## Where it lives
 
 `systems/backups.md` (what each service actually has),
-`agents/skills/back-up-a-service/` (how), `plans/offsite-backups.md` (OpenBao first),
+`agents/skills/back-up-a-service/` (how), `agents/plans/offsite-backups.md` (OpenBao first),
 `agents/decisions/open-questions.md` ("Backups").

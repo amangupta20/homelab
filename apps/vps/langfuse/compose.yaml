@@ -1,4 +1,4 @@
-# Langfuse: the AI reviewer's trace viewer and evaluation tool (plans/ai-reviewer-prime-agent.md, step 6).
+# Langfuse: the AI reviewer's trace viewer and evaluation tool (agents/plans/ai-reviewer-prime-agent.md, step 6).
 # Public, signed in through Authentik only (owner's choice, 2026-11-10). Asleep when idle behind Sablier.
 # Postgres is the shared cluster (pigsty-1) through pg-proxy; object storage is a B2 bucket.
 # Source of the shape and what differs: README.
@@ -89,7 +89,7 @@ services:
       - traefik.http.routers.langfuse-http.middlewares=langfuse-https
       - traefik.http.routers.langfuse-http.service=langfuse
       - traefik.http.middlewares.langfuse-https.redirectscheme.scheme=https
-      # Stops after 20 minutes without traffic, and starts on the next request (plans/sablier-wakeups.md).
+      # Stops after 20 minutes without traffic, and starts on the next request (agents/plans/sablier-wakeups.md).
       - traefik.http.middlewares.langfuse-sablier.plugin.sablier.sablierUrl=http://sablier:10000
       - traefik.http.middlewares.langfuse-sablier.plugin.sablier.group=langfuse
       - traefik.http.middlewares.langfuse-sablier.plugin.sablier.sessionDuration=20m

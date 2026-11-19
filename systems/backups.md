@@ -74,7 +74,7 @@ line was read from Dokploy, and the OpenBao backup and restore were tested on
 
 In force: every service keeps its local tier on Garage, and the important ones
 add an offsite tier on B2 (`agents/decisions/backup-tiers.md`, how: `agents/skills/back-up-a-service/`,
-plan: `plans/offsite-backups.md`). OpenBao has both tiers in place.
+plan: `agents/plans/offsite-backups.md`). OpenBao has both tiers in place.
 
 ## The rule
 
@@ -99,7 +99,7 @@ plan: `plans/offsite-backups.md`). OpenBao has both tiers in place.
 - [ ] TrueNAS: wipe-and-reimport from backup (clean-import test)
 - [ ] Nextcloud: full recovery from Borg backup
 - [ ] XO config + pool metadata: no restore on record
-- [ ] Pre-migration re-audit (before the migration in `plans/home-overhaul.md`)
+- [ ] Pre-migration re-audit (before the migration in `agents/plans/home-overhaul.md`)
 - [x] OpenTofu state: Oracle Cloud state restored from its Garage copy, `tofu plan` reported no changes (2026-11-16)
 - [x] OpenTofu state: Xen Orchestra state restored from its Garage copy (`xcp-ng/20261116T172306Z.tfstate`), `tofu plan` reported no changes with `cache-1` in it (2026-11-16)
 - [ ] VPS: restore one Dokploy app backup and Dokploy's own database backup from Garage

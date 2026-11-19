@@ -13,7 +13,7 @@ tags:
 **Status:** researched — not scheduled. The owner's choice for the migration
 agent on the home server's dedicated agent VM, once home is back up (owner,
 2026-11-02). The AI reviewer starts on Prime Agent instead
-(`plans/ai-reviewer-prime-agent.md`).
+(`agents/plans/ai-reviewer-prime-agent.md`).
 **In one line:** an agent that takes work from one GitHub repo only when the
 owner asks, tracks each job as a ticket with its own session and checkout, and
 has its prompts, skills and guardrails tuned automatically from how past jobs

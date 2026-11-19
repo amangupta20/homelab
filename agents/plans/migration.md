@@ -10,7 +10,7 @@ tags:
 
 The current migration, in order. Each step gates the next.
 
-**Status:** replaced by `plans/home-overhaul.md` on 2026-11-14 (owner). Kept as
+**Status:** replaced by `agents/plans/home-overhaul.md` on 2026-11-14 (owner). Kept as
 history; do not work from this page.
 **Goal** (proposed, owner to confirm): move every workload onto the new setup
 without losing data, with each one's definition in this repo.
@@ -24,7 +24,7 @@ journal entry.
    (done in `inventory/`) and probe what is exposed, without changing
    anything.
 2. **Migrate.** Move workloads to the new setup. Apps' databases move to the
-   shared server where that fits (`plans/shared-postgres.md`).
+   shared server where that fits (`agents/plans/shared-postgres.md`).
 3. **Re-harden.** Audit again after boot — the migrated setup gets its own
    security pass, not the old one's assumptions.
 4. **Docs from day 1.** Notes start as raw dumps during the work and get
@@ -38,10 +38,10 @@ journal entry.
 Each service's shape when it moves — where its database lives, how it signs
 in, how it is exposed — comes from three things decided first:
 
-1. **SSO** on the VPS (`plans/vps-foundations.md`, step 4). Not blocked by the
+1. **SSO** on the VPS (`agents/plans/vps-foundations.md`, step 4). Not blocked by the
    edge decision: only forward-auth for apps with no sign-in of their own
    waits on it.
-2. **Pigsty** (`plans/shared-postgres.md`), so each app's database moves once.
+2. **Pigsty** (`agents/plans/shared-postgres.md`), so each app's database moves once.
 3. **The edge** (`ideas/edge-and-security-layers.md`), on hold until the
    Pangolin decision. It only changes how a service is *exposed*: keep
    routing (labels or proxy entries) out of the Compose file, so internal-only

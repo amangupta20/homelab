@@ -18,7 +18,7 @@ is the Xen Orchestra root.
   same for Oracle Cloud.
 - `lib/state-copy.sh` — that copy, shared by both roots.
 - `cache-vm.tf` — `cache-1`, the package and image cache VM
-  (`plans/package-and-image-cache.md`). Built 2026-11-16 (`journal/2026-11-16-build-cache-1.md`).
+  (`agents/plans/package-and-image-cache.md`). Built 2026-11-16 (`journal/2026-11-16-build-cache-1.md`).
 - `proxy-vm.tf` — `proxy-1`, the home reverse proxy, and the public `*.home.<zone>`
   record pointing at it (`apps/homeserver/traefik/`). Built 2026-11-18
   (`journal/2026-11-18-build-proxy-1-traefik.md`).
@@ -64,7 +64,7 @@ without that fails the pre-commit hook and CI.
 Every home VM is cloned from one template, `debian-13-cloud-<build>`: Debian
 13's official generic cloud image with cloud-init, on `Local storage` (the host's
 own disk; owner, 2026-11-16). One OS for every home VM is the rule in
-`plans/home-overhaul.md`, "One operating system". A clone onto `Nvme` copies the
+`agents/plans/home-overhaul.md`, "One operating system". A clone onto `Nvme` copies the
 3.2 GB disk, which takes seconds.
 
 `templates/debian-13.sh <build>` makes it: it checks the image's SHA-512
@@ -97,7 +97,7 @@ created, so no state was lost by the move.
 copy in Garage's `opentofu` bucket with the encrypted object in B2. When they
 differ it copies the object as `xcp-ng/<UTC time>.tfstate`, checks the copy byte
 for byte, and keeps the newest 14 (`lib/state-copy.sh`,
-`plans/oci-state-backup.md`). Garage is only the second copy, so it never
+`agents/plans/oci-state-backup.md`). Garage is only the second copy, so it never
 changes the exit code (owner, 2026-11-16): when Garage is down the command
 prints a warning, and the next run of any command, even a `plan`, catches up.
 Never copy with `tofu state pull`: it prints the state decrypted.

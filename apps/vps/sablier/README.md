@@ -1,6 +1,6 @@
 # Sablier
 
-**Status:** see `plans/sablier-wakeups.md`. Nothing in this stack is public, and it keeps no data.
+**Status:** see `agents/plans/sablier-wakeups.md`. Nothing in this stack is public, and it keeps no data.
 
 ## Derived from
 

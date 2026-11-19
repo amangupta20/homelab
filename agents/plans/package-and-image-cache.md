@@ -256,7 +256,7 @@ snapshot before each upgrade.
 
 The recon of the old apt cache and the week's pull count, step 0 until
 2026-11-16, were dropped by the owner: every VM is recreated from code in
-`plans/home-overhaul.md`, so no old VM is moved over to the new cache, and
+`agents/plans/home-overhaul.md`, so no old VM is moved over to the new cache, and
 the lab has been offline and unmaintained for a while, so a week's pulls
 would not have measured normal use.
 
@@ -277,7 +277,7 @@ would not have measured normal use.
    config` passes in CI. Written 2026-11-16 (`apps/homeserver/artifact-keeper/`,
    deployed by `ansible/cache.yml`); the gate waits for the merge.
 3. **Its own VM, built from code, and proved there.** The VM is the first one
-   of `plans/home-overhaul.md`'s step B. On it, check what the local test did
+   of `agents/plans/home-overhaul.md`'s step B. On it, check what the local test did
    not: a full Ubuntu or Debian archive as an apt remote with `apt` itself as
    the client, a vendor HTTPS apt repository, `docker pull` through Docker
    Hub and one other registry, and a remote filled past its cap.
@@ -332,7 +332,7 @@ would not have measured normal use.
 ## Decisions this plan needs from the owner
 
 - **Where it runs.** Decided by the owner on 2026-11-15: **its own VM**, built
-  from code as the first VM of `plans/home-overhaul.md`'s step B, before the
+  from code as the first VM of `agents/plans/home-overhaul.md`'s step B, before the
   agent VM. (The alternative was the Docker + proxy host, which would have
   made it share fate with the reverse proxy.)
 - **Whether apt stays with the current software.** Answered by the owner's
@@ -365,7 +365,7 @@ would not have measured normal use.
   (`apps/homeserver/artifact-keeper/README.md`, "How it stays inside the
   disk").
 - **Operating system.** Debian 13, like every home VM built from code
-  (`plans/home-overhaul.md`, "One operating system"; owner, 2026-11-16).
+  (`agents/plans/home-overhaul.md`, "One operating system"; owner, 2026-11-16).
 - **How clients find it.** Decided by the owner on 2026-11-16: the cache
   VM's fixed address is set on the VM itself, in its OpenTofu and cloud-init
   configuration, not by a DHCP reservation or DNS entry on the OpenWrt router,
@@ -387,6 +387,6 @@ would not have measured normal use.
 
 `inventory/services.md` (the service list, and the apt cache row this
 replaces), `inventory/hosts.md`, `inventory/network.md` (proxy host and
-addresses), `apps/README.md` (what a stack page holds), `plans/README.md`,
+addresses), `apps/README.md` (what a stack page holds), `agents/plans/README.md`,
 `agents/decisions/open-questions.md` ("Nothing verified yet", and the container
 runtime question that decides where a homeserver stack is deployed from).

@@ -3,7 +3,7 @@
 OpenTofu creates a machine (`iac/`), cloud-init gets it onto the tailnet once at first
 boot, and Ansible configures everything inside it from then on. Pigsty is separate: it
 has its own playbooks and `pigsty.yml`, and runs after `base.yml`
-(`plans/shared-postgres.md`).
+(`agents/plans/shared-postgres.md`).
 
 **Status:** `base.yml` ran against `pigsty-1` on 2026-11-06. A second run changed
 nothing, and its firewall rule survived a reboot.
@@ -57,7 +57,7 @@ For a home VM built from code, in this order and in the same change that builds 
 4. Then the host's own playbook. Its packages and images now come through cache-1; an
    upstream the cache does not have yet is added first (`agents/skills/add-a-cache-remote/`).
 
-**The LAN cache rule** (owner; `apps/README.md`, `plans/home-overhaul.md` step B00):
+**The LAN cache rule** (owner; `apps/README.md`, `agents/plans/home-overhaul.md` step B00):
 every home VM downloads through cache-1, so a package or image leaves home once.
 `.githooks/check-cache-clients.py` enforces step 2: the pre-commit hook and CI fail when
 a host in `xcpng` is in neither group (`mise run check:cache-clients`). Added on

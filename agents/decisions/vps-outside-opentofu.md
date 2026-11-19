@@ -10,9 +10,9 @@ The VPS is an Oracle Cloud free-tier Ampere instance that has run for months
 into OpenTofu state would buy nothing: OpenTofu's value here is recreating a
 machine from code, and this machine is not going to be recreated. What runs on
 it is what changes, and that is moving into `apps/vps/` as Compose files that
-Dokploy deploys (`plans/vps-foundations.md`, step 5).
+Dokploy deploys (`agents/plans/vps-foundations.md`, step 5).
 
-This answers step 1 of `plans/vps-foundations.md`.
+This answers step 1 of `agents/plans/vps-foundations.md`.
 
 ## Cost / what this rules out
 
@@ -26,4 +26,4 @@ This answers step 1 of `plans/vps-foundations.md`.
 
 ## Where it lives
 
-`systems/vps.md`, `plans/vps-foundations.md`.
+`systems/vps.md`, `agents/plans/vps-foundations.md`.

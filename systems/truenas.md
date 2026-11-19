@@ -17,7 +17,7 @@ replication failed on 2026-11-15 on a checksum error in `imp`, was redone the
 same evening, and `Main/repli` now holds `auto-2026-11-15_20-00`; a scrub of
 `imp` afterwards found no errors ("Checksum errors on `imp`" below).
 Rows: `inventory/hosts.md`, `inventory/services.md`. Where it is going:
-`plans/home-overhaul.md`.
+`agents/plans/home-overhaul.md`.
 
 ## How it works
 
@@ -71,7 +71,7 @@ Read on 2026-11-14 through the TrueNAS API (`system/info`, `disk`, `pool`,
   `pool/snapshot`, 2026-11-16).
 - **Cloud sync:** only `config-back`, the TrueNAS configuration, which last
   succeeded 2026-11-13. The Google Drive tasks were deleted by the owner on
-  2026-11-14, to be set up again properly (`plans/home-overhaul.md`).
+  2026-11-14, to be set up again properly (`agents/plans/home-overhaul.md`).
 - **Apps:** Garage 1.2.5 and BorgWarehouse 1.1.10, both with an update
   available. A cron job copies the apps' own folder (`/mnt/.ix-apps/`) into
   `imp/ioapp` with `rsync --delete`.
@@ -97,7 +97,7 @@ sudo systemctl daemon-reload
 A share mounts on first access and unmounts when idle. Away from home it goes through
 the router's subnet route, which Linux ignores until `sudo tailscale set
 --accept-routes` has been run once. For a one-off: `gio mount smb://10.22.33.160/back`.
-The share names change when the datasets are reorganised (`plans/home-overhaul.md`, B1).
+The share names change when the datasets are reorganised (`agents/plans/home-overhaul.md`, B1).
 
 ## Checksum errors on `imp` (2026-11-15, closed 2026-11-16)
 

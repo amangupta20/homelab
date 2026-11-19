@@ -10,14 +10,14 @@ tags:
 # Streaming from TorBox through our own server
 
 **Status:** researched (2026-11-14); a hands-on comparison is a later step of
-`plans/home-overhaul.md`, after the GPU cutover.
+`agents/plans/home-overhaul.md`, after the GPU cutover.
 **In one line:** play films and series from the owner's TorBox debrid account through a
 self-hosted media server that transcodes on the GPU, instead of keeping the files on
 disk.
 **Why try it:** Jellyfin today needs every file on local disk (`Main/home/media`), which
 costs space; Stremio stores nothing but plays on the phone, which brings codec and
 compatibility problems and no server-side transcoding.
-**Needs first:** `gpu-1` (`plans/home-overhaul.md`).
+**Needs first:** `gpu-1` (`agents/plans/home-overhaul.md`).
 
 ## What the owner wants (2026-11-14)
 
@@ -71,7 +71,7 @@ Stopped for about 14 months on `gpu_docker`: Sonarr, Radarr, Prowlarr, Lidarr, R
 Bazarr, qBittorrent behind gluetun, NZBGet, pyLoad, Jellyseerr, a FlareSolverr
 replacement and tdarr, with configs under `/docker/<app>` and media in
 `Main/home/media` (SSH and Portainer API, 2026-11-14). It is a clean-up candidate
-(`plans/home-overhaul.md`, B1); the Decypharr route would bring Sonarr, Radarr and
+(`agents/plans/home-overhaul.md`, B1); the Decypharr route would bring Sonarr, Radarr and
 Prowlarr back.
 
 ## Sources

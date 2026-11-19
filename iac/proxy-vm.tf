@@ -1,4 +1,4 @@
-# proxy-1: the home reverse proxy, Traefik (plans/home-overhaul.md, step B4a).
+# proxy-1: the home reverse proxy, Traefik (agents/plans/home-overhaul.md, step B4a).
 # Built the same way as cache-1 (cache-vm.tf, whose template, storage, network
 # and LAN settings it reuses): OpenTofu owns the VM's shape and its DNS name,
 # cloud-init sets its address and first key once, Ansible does the rest

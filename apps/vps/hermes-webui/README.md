@@ -65,7 +65,7 @@ Follows `agents/skills/deploy-on-dokploy/` steps 4–7 and 9, with these differe
 - **Domain:** public, Cloudflare DNS, Dokploy-managed, pointing at port 8787.
   Public for now, possibly tailnet-only later (owner, 2026-10-27). SSO is not
   up yet, so the app's own password is the only login;
-  `plans/vps-foundations.md` lists it for SSO once that runs. Whether Dokploy
+  `agents/plans/vps-foundations.md` lists it for SSO once that runs. Whether Dokploy
   joins the service to its Traefik network on its own is UNTESTED.
 
 ## First deploy: put the agent in the volume

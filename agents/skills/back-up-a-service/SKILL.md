@@ -36,7 +36,7 @@ for deciding *which* services get tier 2: that is the owner's call, recorded in
 
    | Data | Capture with | Notes |
    |---|---|---|
-   | Postgres (shared server) | pgBackRest: `repo1` Garage, `repo2` B2 | `plans/shared-postgres.md`, "Backups" |
+   | Postgres (shared server) | pgBackRest: `repo1` Garage, `repo2` B2 | `agents/plans/shared-postgres.md`, "Backups" |
    | Postgres or MySQL bundled in a stack | `pg_dump` / `mysqldump` | dump, then back up the dump |
    | OpenBao | Raft snapshot through OpenBao's API | already done for tier 1 (`apps/vps/openbao/README.md`) |
    | SQLite | `sqlite3 <db> ".backup <file>"` | safe while the app runs |

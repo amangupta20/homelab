@@ -189,7 +189,7 @@ The lab has two, and they need different answers:
 
 ## Still to do
 
-The OpenTofu half of step 3 in `plans/vps-foundations.md` (checkouts reading
+The OpenTofu half of step 3 in `agents/plans/vps-foundations.md` (checkouts reading
 OpenBao at runtime).
 
 ## Rules

@@ -49,4 +49,4 @@ Conditions if it happens, decided again at that time:
 
 ## Where it lives
 
-`systems/vps.md`, `systems/openbao.md`, `plans/vps-foundations.md`.
+`systems/vps.md`, `systems/openbao.md`, `agents/plans/vps-foundations.md`.

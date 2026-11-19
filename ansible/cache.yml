@@ -1,4 +1,4 @@
-# Artifact Keeper on cache-1 (plans/package-and-image-cache.md). Run from ansible/
+# Artifact Keeper on cache-1 (agents/plans/package-and-image-cache.md). Run from ansible/
 # after common.yml and xcpng.yml:
 #   ansible-playbook cache.yml --check --diff      # read this first
 #   ansible-playbook cache.yml

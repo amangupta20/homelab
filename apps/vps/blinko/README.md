@@ -1,7 +1,7 @@
 # Blinko
 
 **Status:** running on the VPS since 2026-11-07, with its database on `pigsty-1`
-(`plans/shared-postgres.md`, `journal/2026-11-07-deploy-blinko.md`). It is here to test the shared Postgres with an app nothing depends on (owner, 2026-11-06).
+(`agents/plans/shared-postgres.md`, `journal/2026-11-07-deploy-blinko.md`). It is here to test the shared Postgres with an app nothing depends on (owner, 2026-11-06).
 
 ## Derived from
 

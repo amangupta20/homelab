@@ -22,7 +22,7 @@ rendered.
 
 | Piece | Where | What it does |
 |---|---|---|
-| Page properties | the YAML block at the top of every page in `systems/`, `inventory/`, `plans/`, `ideas/` | the data the tables are built from |
+| Page properties | the YAML block at the top of every page in `systems/`, `inventory/`, `agents/plans/`, `ideas/` | the data the tables are built from |
 | Tables | `agents/obsidian/bases/*.base` ([Obsidian Bases](https://obsidian.md/help/bases/syntax)) | one file per table; each defines its filters and views |
 | Front page | `agents/obsidian/Home.md` | links to every area and embeds the tables with `![[agents/obsidian/bases/<name>.base]]` |
 | Callouts | `> [!WARNING]`, `> [!NOTE]`, `> [!IMPORTANT]` | boxed warnings that render in Obsidian and on GitHub |
@@ -54,7 +54,7 @@ and this page in the same commit.
 
 - **Properties never add a fact.** `type` says which folder template the
   page follows; `tags` are for finding pages in Obsidian.
-- **New page in `systems/`, `inventory/`, `plans/` or `ideas/`:** copy the
+- **New page in `systems/`, `inventory/`, `agents/plans/` or `ideas/`:** copy the
   template from that folder's README; it includes the property block.
 - **Links stay relative markdown links** (`[text](path.md)`), never
   `[[wikilinks]]`, so GitHub and agents keep working. The one exception is

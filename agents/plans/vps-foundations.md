@@ -63,7 +63,7 @@ Why this order and why on the VPS: `agents/decisions/foundations-on-vps.md`.
    `agents/skills/deploy-on-dokploy/` with OpenBao and SSO from the start. Apps
    already on Dokploy move into `apps/vps/` one at a time. The first new one
    is the reviewer's trace viewer, Langfuse, right after the step-4 SSO
-   (owner, 2026-11-10; `plans/ai-reviewer-prime-agent.md`, step 6) —
+   (owner, 2026-11-10; `agents/plans/ai-reviewer-prime-agent.md`, step 6) —
    Authentik, chosen by the owner on 2026-11-10, recorded in PR #61.
 
 ## Follow-ups: apps deployed before the foundations
@@ -77,4 +77,4 @@ Why this order and why on the VPS: `agents/decisions/foundations-on-vps.md`.
 ## Links
 
 `systems/vps.md`, `systems/openbao.md`, `agents/decisions/vps-role.md`,
-`agents/decisions/foundations-on-vps.md`, `plans/home-overhaul.md` (the homelab side).
+`agents/decisions/foundations-on-vps.md`, `agents/plans/home-overhaul.md` (the homelab side).

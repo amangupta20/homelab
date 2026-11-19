@@ -21,6 +21,10 @@ Naming: `systems/<thing>.md`, lowercase, the name you would search for
 Create a page when there is something to say beyond the inventory row — not
 before.
 
+A page stays under 150 lines (`mise run check:docs`): how it works now, its
+rules, its backups. Measurements, reasons, closed incidents and sketches go to
+`systems/notes/<thing>.md`, linked from the page; split, never delete.
+
 ## Template
 
 ```markdown

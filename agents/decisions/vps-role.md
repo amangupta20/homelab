@@ -24,8 +24,8 @@ Everything else runs at home. The two sides reach each other over Tailscale.
 - Dokploy is the deployment tool for the VPS only; the homeserver's container
   manager is a separate, still open question.
 - Whether an app goes home or VPS is decided per app against the list above,
-  and recorded in its `inventory/services.md` row.
+  and recorded in its `lab/inventory/services.md` row.
 
 ## Where it lives
 
-`systems/vps.md`, `inventory/hosts.md`, `inventory/services.md`, `apps/vps/`.
+`lab/systems/vps.md`, `lab/inventory/hosts.md`, `lab/inventory/services.md`, `apps/vps/`.

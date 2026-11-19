@@ -10,7 +10,7 @@
     # nothing without this. It gives Tailscale a direct path from networks where hole
     # punching fails.
     #
-    # The boot file is edited, never saved from the live rules: see systems/vps.md,
+    # The boot file is edited, never saved from the live rules: see lab/systems/vps.md,
     # "Firewall". That is why this uses two tasks and not netfilter-persistent.
     - name: Allow Tailscale at every boot
       ansible.builtin.lineinfile:

@@ -132,7 +132,7 @@ Each review comment ends with the run ID that names its trace.
   pushes made with the workflow's own token would not.
 - Repository settings: variable `PRIME_APP_ID`; secrets
   `PRIME_APP_PRIVATE_KEY` and `OPENCODE_API_KEY` (the model provider, OpenCode
-  Go). Both secrets are also kept in OpenBao (`systems/openbao.md`). Five
+  Go). Both secrets are also kept in OpenBao (`lab/systems/openbao.md`). Five
   more `PRIME_B2_*` secrets hold the B2 storage fields (see below).
 - Selected model: `muse-spark-1.3-contributor` through OpenCode Go (owner,
   2026-11-03; local Prime smoke test returned `ok`, exit 0), set in the

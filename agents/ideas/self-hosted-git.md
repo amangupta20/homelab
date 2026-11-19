@@ -207,7 +207,7 @@ code, history and a pull request, and keep one. The local trial on 2026-11-15
   mirror on Forgejo; a CI step on OneDev). The GitHub repo description and README
   point back to it.
 - Public repositories can be browsed without signing in; sign-up is off; the
-  owner signs in through Authentik, as Langfuse already does (`inventory/services.md`).
+  owner signs in through Authentik, as Langfuse already does (`lab/inventory/services.md`).
 - It runs as a container (Dokploy or `docker-1`); its CI runners run on
   `agent-1`, because a runner needs the Docker socket.
 - Mirrored commits still count on the GitHub contribution graph when the author

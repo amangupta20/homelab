@@ -25,7 +25,7 @@ When a choice gets a file here: when it rules out something an agent would
 otherwise try to "fix" or re-open, and its reason does not fit in one line.
 Keeping the VPS outside OpenTofu passes (an agent reading "reproducible from
 code" would try to import it); choosing Raft storage for OpenBao does not, so
-it is a sentence with its reason on `systems/openbao.md`.
+it is a sentence with its reason on `lab/systems/openbao.md`.
 
 Who edits: the owner of the lab decides. An agent may propose a new decision or
 a change in a separate commit, but does not rewrite an existing one on its own.

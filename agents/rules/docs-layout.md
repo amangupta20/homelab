@@ -21,8 +21,8 @@ So the layout is:
 
 | Question it answers | Folder | Who edits |
 |---|---|---|
-| What exists? (lookup tables) | `inventory/` | agent, saying how it verified |
-| How does a thing work, what never to do? | `systems/` | agent, saying how it verified |
+| What exists? (lookup tables) | `lab/inventory/` | agent, saying how it verified |
+| How does a thing work, what never to do? | `lab/systems/` | agent, saying how it verified |
 | How do I do X? | `agents/skills/` (agentskills.io `SKILL.md`, shared by every harness) | agent adds new ones; changes to existing ones are proposed |
 | What is in flight? | `agents/plans/` | agent updates status; owner sets goals |
 | What could be tried later? | `agents/ideas/` | owner adds or asks; agent corrects facts, never promotes |
@@ -54,12 +54,12 @@ The owner reads the repo through Obsidian, not only GitHub: the plain lab
 pages were readable but did not feel like somewhere to browse, and earlier
 Obsidian vaults died because they needed hand-kept notes. So the files stay
 the same and gain a thin layer only Obsidian uses — a property block on every
-page in `systems/`, `inventory/`, `agents/plans/`, tables in `agents/obsidian/bases/`, and `agents/obsidian/Home.md`
+page in `lab/systems/`, `lab/inventory/`, `agents/plans/`, tables in `agents/obsidian/bases/`, and `agents/obsidian/Home.md`
 as the Obsidian front page. Agents keep it current; the owner only reads.
 How it works and its rules: `agents/obsidian/obsidian-view.md`.
 
 Cost: each property block restates its own page's status and verification,
-and `hosts` restates host names from `inventory/hosts.md`. That is a second
+and `hosts` restates host names from `lab/inventory/hosts.md`. That is a second
 copy, which this decision otherwise forbids; it is allowed because the copy
 sits on the same page (or is a name the check verifies against the owner),
 and the page body always wins. `.githooks/check-properties.py` catches a

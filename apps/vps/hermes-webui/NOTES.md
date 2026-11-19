@@ -52,7 +52,7 @@ Follows `agents/skills/deploy-on-dokploy/` steps 4–7 and 9, with these differe
   value lives in OpenBao at the path named there. Dokploy reads it at deploy
   time through its OpenBao provider, as
   `${{vault.<provider>.dokploy/hermes-webui:password}}`; nothing is copied into
-  the service environment (`systems/openbao.md`).
+  the service environment (`lab/systems/openbao.md`).
 - **Domain:** public, Cloudflare DNS, Dokploy-managed, pointing at port 8787.
   Public for now, possibly tailnet-only later (owner, 2026-10-27). SSO is not
   up yet, so the app's own password is the only login;

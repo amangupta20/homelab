@@ -1,6 +1,6 @@
 # TrueNAS — notes
 
-History and detail behind `systems/truenas.md`.
+History and detail behind `lab/systems/truenas.md`.
 
 ## Checksum errors on `imp` (2026-11-15, closed 2026-11-16)
 

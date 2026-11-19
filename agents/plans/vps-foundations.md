@@ -25,8 +25,8 @@ Why this order and why on the VPS: `agents/decisions/foundations-on-vps.md`.
 
 0. **Document the VPS as it is**, read-only: provider and size, OS, Dokploy
    version, what already runs there, how public traffic enters (Dokploy's own
-   proxy or something else), where its backups go. Fill `systems/vps.md` and
-   the inventory rows. — gate: `systems/vps.md` has no "not documented yet"
+   proxy or something else), where its backups go. Fill `lab/systems/vps.md` and
+   the inventory rows. — gate: `lab/systems/vps.md` has no "not documented yet"
    left in "How it works".
 1. **Decide how OpenTofu manages the VPS.** Depends on the provider having an
    OpenTofu provider, and on whether the existing VPS is imported into state or
@@ -37,7 +37,7 @@ Why this order and why on the VPS: `agents/decisions/foundations-on-vps.md`.
    journal entry. Then: storage backend chosen; listener on the Tailscale
    address only, TLS on; initialised with keys kept offline; root token
    deleted; backup to Garage at home; one restore tested
-   (`systems/openbao.md`). — gate: restore test in `agents/journal/`. Completed
+   (`lab/systems/openbao.md`). — gate: restore test in `agents/journal/`. Completed
    2026-10-29 (`agents/journal/2026-10-29-restore-test-openbao.md`): scheduled daily
    Raft snapshot via Dokploy task `openbao-raft-snapshot` to Garage S3, restore
    verified on throwaway podman instance.
@@ -47,7 +47,7 @@ Why this order and why on the VPS: `agents/decisions/foundations-on-vps.md`.
    it for OpenTofu (`iac/vault.tf.example`). — gate: one throwaway app on
    Dokploy reads a test secret from OpenBao. Satisfied 2026-10-27 by a real app
    instead of a throwaway: `apps/vps/hermes-webui/` reads its password from
-   `kv/dokploy/hermes-webui` (gotchas in `systems/openbao.md`). The step's
+   `kv/dokploy/hermes-webui` (gotchas in `lab/systems/openbao.md`). The step's
    required backup is the boot-volume backup `ui`, named in that journal entry;
    whether it had finished was not checked, so the "verified" half of the
    precondition stays open. Dokploy's OpenBao provider token renewal is automated
@@ -76,5 +76,5 @@ Why this order and why on the VPS: `agents/decisions/foundations-on-vps.md`.
 
 ## Links
 
-`systems/vps.md`, `systems/openbao.md`, `agents/decisions/vps-role.md`,
+`lab/systems/vps.md`, `lab/systems/openbao.md`, `agents/decisions/vps-role.md`,
 `agents/decisions/foundations-on-vps.md`, `agents/plans/home-overhaul.md` (the homelab side).

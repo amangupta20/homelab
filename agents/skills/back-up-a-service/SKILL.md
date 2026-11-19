@@ -14,20 +14,20 @@ and no service has been taken through this runbook yet.
 Use it for a new service with state, when the owner adds a service to tier 2,
 or to bring an old backup in line with the pattern.
 
-Not for VM images (Xen Orchestra handles those, `systems/backups.md`) and not
+Not for VM images (Xen Orchestra handles those, `lab/systems/backups.md`) and not
 for deciding *which* services get tier 2: that is the owner's call, recorded in
 `agents/decisions/backup-tiers.md`.
 
 ## Before you start
 
-- Read the service's `systems/` page and its row in `systems/backups.md`.
+- Read the service's `lab/systems/` page and its row in `lab/systems/backups.md`.
 - Know which tier it gets. Tier 2 only if the owner named it.
 - For tier 2: a B2 bucket, a key limited to that bucket, and the encryption
   password — all in OpenBao, and the password also kept outside the lab by the
   owner (`agents/decisions/backup-tiers.md`, rule 2). Missing any of these: stop and
   ask.
 - Never write a credential into a command you show, a file in this repo or a
-  log. Read them from OpenBao at run time (`systems/openbao.md`, "Daily use").
+  log. Read them from OpenBao at run time (`lab/systems/openbao.md`, "Daily use").
 
 ## Steps
 
@@ -100,7 +100,7 @@ real data is there.
 
 ## Afterwards
 
-- Update the service's line in `systems/backups.md` with both tiers, and tick
+- Update the service's line in `lab/systems/backups.md` with both tiers, and tick
   its restore under "Tested restores" only after the restore worked.
 - Write `agents/journal/YYYY-MM-DD-backup-<service>.md`.
 - If a step here was wrong, propose the fix (`agents/skills/write-a-skill/`).

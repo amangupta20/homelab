@@ -9,7 +9,7 @@ tags:
 
 Multi-step work that is under way or next: migrations, moves, rebuilds. A plan
 says where it is going, what gates each step, and how you know it is done. When
-it is finished, the outcome lands in `systems/` and `inventory/`, the story in
+it is finished, the outcome lands in `lab/systems/` and `lab/inventory/`, the story in
 `agents/journal/`, and the plan is marked done (kept, not deleted — it is history).
 
 Every page starts with a property block (the Obsidian view reads it); the

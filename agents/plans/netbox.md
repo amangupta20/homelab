@@ -15,7 +15,7 @@ each, filled and kept current by a sync from the live systems rather than by
 hand.
 **Done when:** a VM or service added to the lab appears in NetBox after the next
 sync run with nobody typing it in, a test restore of NetBox's data has worked
-(`systems/backups.md`), and `inventory/services.md` has a NetBox row.
+(`lab/systems/backups.md`), and `lab/inventory/services.md` has a NetBox row.
 
 ## Why, and what went wrong last time
 
@@ -28,7 +28,7 @@ not documented anywhere in this repo).
 Why it lapsed is an inference, not something the owner said: a list that depends
 on someone remembering to update it goes stale once they stop. So the sync is
 part of this plan's goal, not an extra for later. It is also why
-`inventory/network.md` and most rows of `inventory/services.md` are still
+`lab/inventory/network.md` and most rows of `lab/inventory/services.md` are still
 marked unverified.
 
 ## What NetBox gives and costs
@@ -55,10 +55,10 @@ Read from the NetBox repositories on 2026-11-05 unless marked otherwise.
 ## Decide before step 1
 
 - **Who owns the facts.** `agents/rules.md` gives every fact one owner, and today
-  `inventory/network.md` owns IPs and `inventory/services.md` owns the service
+  `lab/inventory/network.md` owns IPs and `lab/inventory/services.md` owns the service
   list. Three options: NetBox stays a read-only view fed from the same sources,
-  `inventory/` is generated from NetBox, or NetBox replaces those files. Until
-  the owner changes this, `inventory/` stays the owner.
+  `lab/inventory/` is generated from NetBox, or NetBox replaces those files. Until
+  the owner changes this, `lab/inventory/` stays the owner.
 - **Which host runs it.** Not chosen.
 - **Which Postgres.** The Compose file's own container, or a database on the
   server in `agents/plans/shared-postgres.md` if that exists by then.
@@ -72,19 +72,19 @@ Read from the NetBox repositories on 2026-11-05 unless marked otherwise.
 2. **Build the sync.** Read VMs and IPs from Xen Orchestra, containers and ports
    from Portainer, and leases from the router, using read-only credentials; try
    Diode and orb-agent first, and write a script if they do not fit. Credentials
-   live in OpenBao (`systems/openbao.md`). — gate: a second run with nothing
+   live in OpenBao (`lab/systems/openbao.md`). — gate: a second run with nothing
    changed on the lab changes nothing in NetBox.
 3. **Deploy it for real.** Install on the chosen host, reachable for admin only,
    with its secrets in OpenBao. — gate: the sync fills it without errors.
 4. **Back it up.** Follow `agents/skills/back-up-a-service/`. — gate: a test restore
    works.
-5. **Schedule the sync and record it.** Add the `inventory/services.md` row and a
-   NetBox page in `systems/`, and apply the fact-ownership decision. — gate: the
+5. **Schedule the sync and record it.** Add the `lab/inventory/services.md` row and a
+   NetBox page in `lab/systems/`, and apply the fact-ownership decision. — gate: the
    "Done when" check passes.
 
 ## Links
 
-- `inventory/network.md`, `inventory/services.md` — what NetBox would be fed
+- `lab/inventory/network.md`, `lab/inventory/services.md` — what NetBox would be fed
   from or replace
 - `agents/plans/shared-postgres.md` — possible home for its database
 - `agents/plans/home-overhaul.md` — the Portainer replacement would change the sync's

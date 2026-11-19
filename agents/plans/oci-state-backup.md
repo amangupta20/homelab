@@ -62,8 +62,8 @@ The design below is what was built. Where the build differs, the step says so.
    and the next `plan` copied nothing.
 4. Restore test. — gate: the "Done when" check, recorded in `agents/journal/`. Done
    2026-11-16.
-5. Update `iac/oci/README.md` and `systems/backups.md`. Done 2026-11-16.
+5. Update `iac/oci/README.md` and `lab/systems/backups.md`. Done 2026-11-16.
 
 ## Links
 
-`iac/oci/README.md`, `systems/backups.md`, `agents/decisions/backup-tiers.md`.
+`iac/oci/README.md`, `lab/systems/backups.md`, `agents/decisions/backup-tiers.md`.

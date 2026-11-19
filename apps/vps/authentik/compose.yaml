@@ -78,7 +78,7 @@ services:
       - traefik.http.routers.authentik-admin.entrypoints=websecure
       - traefik.http.routers.authentik-admin.middlewares=authentik-tailnet
       - traefik.http.routers.authentik-admin.service=authentik
-      # The zone's wildcard certificate, over DNS-01 (systems/vps.md, "Certificates").
+      # The zone's wildcard certificate, over DNS-01 (lab/systems/vps.md, "Certificates").
       - traefik.http.routers.authentik-admin.tls.certresolver=cloudflare
       - traefik.http.routers.authentik-admin.tls.domains[0].main=${ZONE:?}
       - traefik.http.routers.authentik-admin.tls.domains[0].sans=*.${ZONE:?}

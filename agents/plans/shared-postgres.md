@@ -121,7 +121,7 @@ Open for this topology (also in `agents/decisions/open-questions.md`):
   non-superuser member of each app's role (`apps/vps/pgadmin/`, `apps/vps/cloudbeaver/`; owner,
   2026-11-09).
 - **Certificates:** Pigsty's own CA first, then a wildcard Let's Encrypt certificate
-  over DNS-01 at the proxy. Traefik's `cloudflare` resolver does this since 2026-11-09 (`systems/vps.md`,
+  over DNS-01 at the proxy. Traefik's `cloudflare` resolver does this since 2026-11-09 (`lab/systems/vps.md`,
   "Certificates"). Pigsty's certbot needs public DNS and a public port 80
   (`pigsty.io/docs/infra/admin/cert`), which this node does not have.
 - **Proxy:** a small HAProxy container on Dokploy right after the install, so apps
@@ -212,7 +212,7 @@ serves them all. Pigsty runs one Postgres cluster per machine, as recalled
 `pg-test` first.
 
 `pigsty.yml` holds passwords. It never enters this public repo as it is: the
-passwords live in OpenBao (`systems/openbao.md`), and only a copy with
+passwords live in OpenBao (`lab/systems/openbao.md`), and only a copy with
 `__PASTE_ONCE__` placeholders may be committed.
 
 ## Sizing
@@ -419,12 +419,12 @@ against a bill).
 5. **First app.** Blinko first, as a test with nothing to lose (`apps/vps/blinko/`, owner, 2026-11-06). Then answer "Decide before step 5". Migrate one small app's database
    with `pg_dump`/`pg_restore`; the bundled database keeps running until the app
    works on the new one. — gate: the scratch-instance restore in "Done when".
-6. **Remaining apps,** one at a time; record each in `inventory/services.md`.
+6. **Remaining apps,** one at a time; record each in `lab/inventory/services.md`.
 7. **When the lab is up:** Garage as a second repository, then phase 2 of
    "Topology". XCP-ng's snapshot rule applies to the home node
-   (`systems/xcp-ng.md`). — gate: a restore from Garage is recorded.
+   (`lab/systems/xcp-ng.md`). — gate: a restore from Garage is recorded.
 
 ## Links
 
-`agents/plans/home-overhaul.md`, `agents/decisions/backup-tiers.md`, `systems/backups.md`,
-`systems/openbao.md`, `agents/ideas/multi-site-postgres.md`.
+`agents/plans/home-overhaul.md`, `agents/decisions/backup-tiers.md`, `lab/systems/backups.md`,
+`lab/systems/openbao.md`, `agents/ideas/multi-site-postgres.md`.

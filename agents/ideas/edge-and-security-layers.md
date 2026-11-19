@@ -56,7 +56,7 @@ and the read-only security baseline (`agents/plans/migration.md`, step 1).
 | Layer | Today (from docs, unverified) | Considered | State |
 |---|---|---|---|
 | Cloudflare | proxies and filters public names | custom WAF rules with a Country condition for geoblocking (works on the free plan, needs proxied records) | open |
-| Getting in | Cloudflare → NPM (`inventory/network.md`) | Pangolin: no inbound ports at home | on hold |
+| Getting in | Cloudflare → NPM (`lab/inventory/network.md`) | Pangolin: no inbound ports at home | on hold |
 | Edge proxy | Nginx Proxy Manager (NPM) | BunkerWeb, NPMplus, Caddy, Traefik, Pangolin's Traefik | open |
 | WAF | Cloudflare only | CrowdSec AppSec, BunkerWeb (ModSecurity + OWASP Core Rule Set), Coraza, SafeLine, open-appsec | open |
 | Ban tool | Fail2Ban | CrowdSec | CrowdSec preferred (owner, 2026-11-01) |
@@ -309,7 +309,7 @@ first — false positives are where CRS costs time.
 - **Physical router** (Hindsight, 2026-10-27): the ISP router locks DHCP and
   DNS; bridge mode or passthrough to an owned OpenWrt/OPNsense router was the
   long-term recommendation. Since 2026-11-12 an owned OpenWrt router
-  sits behind the ISP router, which still routes (`systems/router.md`).
+  sits behind the ISP router, which still routes (`lab/systems/router.md`).
 - **Earlier layout** (Hindsight, 2026-08-18): a critical VM for Tailscale and
   DNS, an edge VM as a kill switch, a main services VM, a 30-day soak VM, and
   a Raspberry Pi as out-of-band access and backup DNS.
@@ -326,7 +326,7 @@ first — false positives are where CRS costs time.
 
 CrowdSec, Fail2Ban and Suricata in IPS mode prevent; they do not detect a
 compromise after the fact. Today's detection is ntfy plus the OpenBao audit
-log (`inventory/services.md`, "ntfy bus"; `systems/openbao.md`, "Audit log";
+log (`lab/inventory/services.md`, "ntfy bus"; `lab/systems/openbao.md`, "Audit log";
 both from docs, not checked on the live lab).
 
 ## Hardening and penetration testing

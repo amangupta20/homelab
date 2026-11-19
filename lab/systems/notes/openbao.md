@@ -1,6 +1,6 @@
 # OpenBao — notes
 
-Reasons, the pre-setup checklist and sketches behind `systems/openbao.md`.
+Reasons, the pre-setup checklist and sketches behind `lab/systems/openbao.md`.
 
 ## OpenBao vs HashiCorp Vault
 

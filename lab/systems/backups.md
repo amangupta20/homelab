@@ -63,7 +63,7 @@ Read live on 2026-11-14 (Xen Orchestra's REST API, the TrueNAS API, the Nextclou
   on TrueNAS, keeping everything from the last 7 days plus 4 weekly and 6 monthly
   archives; the last run, 2026-11-13, succeeded (73 GB, 59 GB stored after
   deduplication across all archives).
-- TrueNAS snapshots and the `imp/back` to `Main/repli` replica: `systems/truenas.md`.
+- TrueNAS snapshots and the `imp/back` to `Main/repli` replica: `lab/systems/truenas.md`.
   Snapshots run daily again (2026-11-14 and -15); the replica's last good copy is
   still 2026-10-30 and is being redone after a checksum error.
 

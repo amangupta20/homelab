@@ -18,7 +18,7 @@ set up yet; the deploy is recorded in
 - `hermes-webui-workspace` holds the files the chat works on.
 - **Backups (UNTESTED):** the plan is both volumes to the Garage destination
   at home (step 9 of the skill), run once, with a restore tried per
-  `systems/backups.md` — a backup counts only when the restore works.
+  `lab/systems/backups.md` — a backup counts only when the restore works.
 - Neither volume is shared with any other stack. The intent is that a restore
   touches this chat and nothing else — UNTESTED, never restored yet.
 

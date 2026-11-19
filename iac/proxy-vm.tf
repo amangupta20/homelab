@@ -7,7 +7,7 @@
 locals {
   proxy = {
     hostname = "proxy-1"
-    address  = "10.22.33.138" # inventory/network.md
+    address  = "10.22.33.138" # lab/inventory/network.md
     mac      = "02:22:33:00:01:38"
   }
 }

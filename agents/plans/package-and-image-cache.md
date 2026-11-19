@@ -21,13 +21,13 @@ itself inside a disk budget the owner chooses, so a redeploy stops coming down
 from the internet again.
 **Done when:** an `apt install` and a `docker pull` on a VM both show a miss
 then a hit in the cache's own log, the cache volume has stayed under its
-ceiling through a month of normal use, and `inventory/services.md` carries one
+ceiling through a month of normal use, and `lab/inventory/services.md` carries one
 row for the new cache in place of the apt cache row.
 
 ## What exists today
 
 - **apt cache** on the VM `apt-cache` (apt-cacher-ng on port 3142, no Docker),
-  verified by SSH 2026-11-14: `inventory/services.md` and `inventory/hosts.md`
+  verified by SSH 2026-11-14: `lab/inventory/services.md` and `lab/inventory/hosts.md`
   now agree on it. Nobody has confirmed how large its cache is or whether
   clients actually use it.
 - **No image cache.** Every `docker pull` on every VM goes to the internet
@@ -119,7 +119,7 @@ memory are the vendors' own numbers unless marked.
 | **Gitea / Forgejo packages** | MIT / GPLv3 | hosted only, no pull-through proxy | not applicable | Fails requirement 1: a place to upload, not a cache |
 | **rpardini/docker-registry-proxy** | Apache-2.0, nginx in one container | container images from every registry, as an intercepting HTTPS proxy; no apt | **byte ceiling with nginx's least-recently-used eviction** (`CACHE_MAX_SIZE`) | Images-only fallback. Every client must trust its certificate authority; no UI and no per-repository sizes (worker research 2026-11-15, not run) |
 | **nginx caching proxy** | BSD, one process | anything over HTTP(S), with a configuration block per upstream | **byte ceiling with least-recently-used eviction** (`proxy_cache_path ... max_size`) | Smallest way to cache HTTPS apt inside a ceiling; no UI, hand-written configuration, a dead end for more formats (worker research 2026-11-15, not run) |
-| **apt-cacher-ng, kept** | the software `inventory/hosts.md` records on the `apt-cache` VM | apt only; an HTTPS upstream is cached through a `Remap-` rule per repository or a `http://HTTPS///host/...` source line on the client, not through `PassThroughPattern` | expiry only, no byte ceiling | The do-nothing option: covers apt and HTTPS apt, nothing else (worker research 2026-11-15, from its documentation; **UNTESTED** here) |
+| **apt-cacher-ng, kept** | the software `lab/inventory/hosts.md` records on the `apt-cache` VM | apt only; an HTTPS upstream is cached through a `Remap-` rule per repository or a `http://HTTPS///host/...` source line on the client, not through `PassThroughPattern` | expiry only, no byte ceiling | The do-nothing option: covers apt and HTTPS apt, nothing else (worker research 2026-11-15, from its documentation; **UNTESTED** here) |
 
 ### Why Nexus is ruled out
 
@@ -304,7 +304,7 @@ would not have measured normal use.
    so if the cache goes wrong, a rerun of the role takes the LAN off it. Old
    VMs are not reconfigured; apt-cacher-ng goes when its VM, `.254`, is
    dropped with the rest. — gate: the role is in the repo, a test VM is
-   switched to upstream and back with it, and `inventory/services.md` has the
+   switched to upstream and back with it, and `lab/inventory/services.md` has the
    new cache's row in place of the apt cache row once `.254` is gone.
    **Mostly done 2026-11-18:** `ansible/cache-client.yml` (a playbook, not a
    role), on every host in the inventory's `lan_cache_clients` group, which a
@@ -320,8 +320,8 @@ would not have measured normal use.
    on the volume against the cap, idle memory, and every manual clean-up.
    The cache's dashboard collects all but the clean-ups since 2026-11-17
    (`apps/homeserver/artifact-keeper/NOTES.md`, "Dashboard").
-   — gate: the numbers in an `agents/journal/` entry and in `inventory/services.md`
-   or a new `systems/` page, and the owner's keep-or-change decision written
+   — gate: the numbers in an `agents/journal/` entry and in `lab/inventory/services.md`
+   or a new `lab/systems/` page, and the owner's keep-or-change decision written
    in "Decisions".
 6. **Move from `main` to a release.** When a release carries the per-remote
    byte cap (1.12.0, or whichever release first includes the `main` build
@@ -374,7 +374,7 @@ would not have measured normal use.
   addressed by repository URL, not as a proxy), intercepting HTTPS needs a
   certificate on every client, and answering `archive.ubuntu.com` with the
   cache's address would break every apt client on the LAN whenever the cache
-  is down. The address is `.137` (`inventory/network.md`, chosen 2026-11-16).
+  is down. The address is `.137` (`lab/inventory/network.md`, chosen 2026-11-16).
 - **Backups.** Decided by the owner on 2026-11-16: **no automatic backups**
   of the cache VM, so it does not fill backup space with cached packages. A
   manual VM snapshot before an upgrade, when needed; if the cache breaks, it
@@ -385,8 +385,8 @@ would not have measured normal use.
 
 ## Links
 
-`inventory/services.md` (the service list, and the apt cache row this
-replaces), `inventory/hosts.md`, `inventory/network.md` (proxy host and
+`lab/inventory/services.md` (the service list, and the apt cache row this
+replaces), `lab/inventory/hosts.md`, `lab/inventory/network.md` (proxy host and
 addresses), `apps/README.md` (what a stack page holds), `agents/plans/README.md`,
 `agents/decisions/open-questions.md` ("Nothing verified yet", and the container
 runtime question that decides where a homeserver stack is deployed from).

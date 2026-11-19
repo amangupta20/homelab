@@ -1,6 +1,6 @@
 # Short names only for tailnet hosts: they resolve over the tailnet, so the tailnet's
 # own name and addresses stay out of this public repo. LAN hosts use their LAN address
-# (inventory/network.md); from outside the LAN it is reached through the router's
+# (lab/inventory/network.md); from outside the LAN it is reached through the router's
 # subnet route.
 all:
   children:

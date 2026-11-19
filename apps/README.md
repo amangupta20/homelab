@@ -36,5 +36,5 @@ Each app folder holds:
 
 ## Apps
 
-The list of apps and their state is `inventory/services.md`; each row links
+The list of apps and their state is `lab/inventory/services.md`; each row links
 its folder here.

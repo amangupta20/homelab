@@ -22,11 +22,11 @@ rendered.
 
 | Piece | Where | What it does |
 |---|---|---|
-| Page properties | the YAML block at the top of every page in `systems/`, `inventory/`, `agents/plans/`, `agents/ideas/` | the data the tables are built from |
+| Page properties | the YAML block at the top of every page in `lab/systems/`, `lab/inventory/`, `agents/plans/`, `agents/ideas/` | the data the tables are built from |
 | Tables | `agents/obsidian/bases/*.base` ([Obsidian Bases](https://obsidian.md/help/bases/syntax)) | one file per table; each defines its filters and views |
 | Front page | `agents/obsidian/Home.md` | links to every area and embeds the tables with `![[agents/obsidian/bases/<name>.base]]` |
 | Callouts | `> [!WARNING]`, `> [!NOTE]`, `> [!IMPORTANT]` | boxed warnings that render in Obsidian and on GitHub |
-| Diagram | Mermaid block in `inventory/network.md` | renders in Obsidian and on GitHub |
+| Diagram | Mermaid block in `lab/inventory/network.md` | renders in Obsidian and on GitHub |
 | Check | `.githooks/check-properties.py` | fails a commit (pre-commit hook) or CI when properties are missing or wrong |
 
 `agents/obsidian/Home.md` is the Obsidian front page; `README.md` stays the GitHub front page.
@@ -54,9 +54,9 @@ and this page in the same commit.
 
 - **Properties never add a fact.** `type` says which folder template the
   page follows; `tags` are for finding pages in Obsidian.
-- **New page in `systems/`, `inventory/`, `agents/plans/` or `agents/ideas/`:** copy the
+- **New page in `lab/systems/`, `lab/inventory/`, `agents/plans/` or `agents/ideas/`:** copy the
   template from that folder's README; it includes the property block.
-- **Links stay relative markdown links** (`[text](../../systems/xcp-ng.md)`), never
+- **Links stay relative markdown links** (`[text](../../lab/systems/xcp-ng.md)`), never
   `[[wikilinks]]`, so GitHub and agents keep working. The one exception is
   `agents/obsidian/Home.md`'s `![[agents/obsidian/bases/...]]` embeds, which only Obsidian needs.
 - **A new table** goes in `agents/obsidian/bases/` and is embedded from

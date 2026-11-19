@@ -15,7 +15,7 @@ DHCP server and DNS forwarder for the home subnet.
 
 **Status:** running, behind the ISP router (double NAT: the ISP router
 translates addresses once and this router does it again). Rows:
-`inventory/hosts.md`, `inventory/network.md`, `inventory/services.md`.
+`lab/inventory/hosts.md`, `lab/inventory/network.md`, `lab/inventory/services.md`.
 
 ## How it works
 
@@ -34,7 +34,7 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
   official OpenWrt yet: pull requests `openwrt/openwrt` #26498 and #26551
   were both open on 2026-11-14 (`gh pr view`), and neither publishes images.
 - **LAN:** `10.22.33.1/24`, DHCP from dnsmasq, leases 12 hours. Addresses are
-  in `inventory/network.md`.
+  in `lab/inventory/network.md`.
 - **WAN:** the `wan` port takes a private address by DHCP from the ISP
   router. The firewall masquerades LAN traffic and rejects everything
   arriving on the WAN side. The ISP uses carrier-grade NAT, so nothing is
@@ -53,12 +53,12 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
   (`wpad-mbedtls`) replaced the image's `wpad-mesh-mbedtls` on 2026-11-14,
   with 802.11k and 802.11v on and 802.11r off. `usteer` runs on top of it
   and sees both radios (`ubus call usteer local_info`); it moves devices
-  between the two bands. How well it does that here is untested. Why: `systems/notes/router.md`.
+  between the two bands. How well it does that here is untested. Why: `lab/systems/notes/router.md`.
 - **Admin access:** SSH with a key only, and the LuCI web interface over HTTP
   and HTTPS (self-signed certificate), both reachable from the LAN only.
 - **Added packages:** traffic and statistics graphs, upgrade helpers, Tailscale,
   the full Wi-Fi daemon with `usteer`, and a theme; the list and its caveats
-  are in `systems/notes/router.md`, "Added packages".
+  are in `lab/systems/notes/router.md`, "Added packages".
 
 - **Tailscale:** the router is signed in to the tailnet and is the subnet
   router for the home subnet: it advertises the subnet and the route is
@@ -72,8 +72,8 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
 - **Detour for GitHub downloads:** the router accepts routes from the
   tailnet, and the Remote VPS advertises the address range GitHub serves
   release and raw files from, so that traffic would leave through the VPS
-  instead of the slow IPv4 path (`systems/notes/router.md`, "Why IPv6 matters"). Tested 2026-11-14
-  (`systems/notes/router.md`, "Detour test"). The range itself is not written here: the secret scan
+  instead of the slow IPv4 path (`lab/systems/notes/router.md`, "Why IPv6 matters"). Tested 2026-11-14
+  (`lab/systems/notes/router.md`, "Detour test"). The range itself is not written here: the secret scan
   rejects public addresses.
 
 ## Rules
@@ -132,7 +132,7 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
 
 ## Backups
 
-Not in `systems/backups.md` yet: nothing is scheduled. Two manual copies
+Not in `lab/systems/backups.md` yet: nothing is scheduled. Two manual copies
 exist on the owner's workstation, outside this repo because they hold
 credentials and factory calibration data:
 

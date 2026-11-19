@@ -13,13 +13,13 @@ This file owns the service list. Other pages link here, never copy this table.
 
 **Source:** every row is from the docs or the owner's memory and is not
 verified against the live lab, unless its State says `verified: …`.
-IPs live in `inventory/network.md` and hosts in `inventory/hosts.md`; "unknown" in the Host column means no
+IPs live in `lab/inventory/network.md` and hosts in `lab/inventory/hosts.md`; "unknown" in the Host column means no
 document says, and the read-only recon pass has not filled it in yet.
 
 | Service | What it is | Host | State |
 |---|---|---|---|
-| Xen Orchestra | Web UI that manages all VMs: start/stop, snapshots, scheduled backups (`systems/backups.md`). | Xen Orchestra (`xo-ce`) | running — verified: REST API; ntfy alerts in docs, not verified |
-| TrueNAS VM | Storage OS: pools, file shares, snapshots and replication (`systems/truenas.md`). | XCP-ng host | running — verified: TrueNAS API; full clean-import restore still to test |
+| Xen Orchestra | Web UI that manages all VMs: start/stop, snapshots, scheduled backups (`lab/systems/backups.md`). | Xen Orchestra (`xo-ce`) | running — verified: REST API; ntfy alerts in docs, not verified |
+| TrueNAS VM | Storage OS: pools, file shares, snapshots and replication (`lab/systems/truenas.md`). | XCP-ng host | running — verified: TrueNAS API; full clean-import restore still to test |
 | Garage (S3) | S3-compatible object store, port 30188. Holds Dokploy backups and, once created, the OpenTofu state bucket. A TrueNAS app; data in `Main/S3_Garage`, 345 GiB. | TrueNAS VM | running — verified: TrueNAS API; single node, no redundancy |
 | BorgWarehouse | Web UI for BorgBackup. Holds Nextcloud AIO's own Borg backups (about 59 GB after deduplication). A TrueNAS app; data in `Main/borgwarehouse`. | TrueNAS VM | running — verified: TrueNAS API and the Nextcloud backup log |
 | Portainer CE | Web UI for the homeserver's Docker stacks: 7 Docker hosts (4 reachable) and 32 stacks. The long-standing home stacks are still deployed from here; the apps on `cache-1` and `proxy-1` deploy from code (`ansible/cache.yml`, `ansible/proxy.yml`). | portainer instance | running — verified: API; to be replaced by Arcane (`agents/plans/home-overhaul.md`) |
@@ -28,7 +28,7 @@ document says, and the read-only recon pass has not filled it in yet.
 | Traefik (home proxy) | Reverse proxy for internal apps at `<app>.home.<zone>`, one wildcard Let's Encrypt certificate by DNS challenge; routes are files in `apps/homeserver/traefik/routes/`. First route: `cache.home.<zone>` to `cache-1`, whose web UI and Grafana sign in through Authentik (OIDC). Forward-auth for apps without single sign-on not set up yet. | `proxy-1` | running — verified: HTTPS 200 with a valid certificate over Tailscale and on the LAN (`agents/journal/2026-11-18-build-proxy-1-traefik.md`) |
 | apt cache | Package cache on port 3142 so local VMs don't re-download packages. apt-cacher-ng, no Docker. Clients point at it in `/etc/apt/apt.conf.d/00proxy` (in docs, not verified). | apt-cache | running — verified: SSH |
 | Fail2Ban | Bans brute-force IPs at the firewall by watching Nginx Proxy Manager's logs and the host's SSH log. | NPM-set | running — verified: Portainer API |
-| Home network DHCP and DNS | dnsmasq on the router: hands out addresses on the home subnet and forwards DNS (`systems/router.md`). | Home router | running — verified: `uci show dhcp`, leases in `logread` |
+| Home network DHCP and DNS | dnsmasq on the router: hands out addresses on the home subnet and forwards DNS (`lab/systems/router.md`). | Home router | running — verified: `uci show dhcp`, leases in `logread` |
 | Tailscale | Private mesh VPN; the only admin path. | every admin-reachable machine | in docs, not verified |
 | Shared Postgres (Pigsty) | Postgres 18 cluster, with monitoring, for apps to share (`agents/plans/shared-postgres.md`). Blinko runs on it as a test. | `pigsty-1` | running; restore and alert drills passed (`agents/journal/2026-11-06-install-pigsty.md`, `agents/journal/2026-11-07-restore-test-blinko-copy.md`, `agents/journal/2026-11-07-backup-age-alerts.md`) |
 | Blinko | Note-taking app, to test the shared Postgres (`apps/vps/blinko/`). Public domain, behind its own login. Stops after 20 idle minutes (Sablier). | remote VPS, database on `pigsty-1` | running, as a test (`agents/journal/2026-11-07-deploy-blinko.md`) |
@@ -42,8 +42,8 @@ document says, and the read-only recon pass has not filled it in yet.
 | pg-proxy | One address on the VPS for the shared Postgres (`apps/vps/pg-proxy/`): 5432 for apps, 5436 for the database UIs. | remote VPS | running — verified: a login as `blinko` through `pg-proxy:5432` reached the primary, and `dbuser_owner` through 5436 (`agents/journal/2026-11-09-deploy-pg-proxy.md`) |
 | pgAdmin | Web UI for the shared Postgres (`apps/vps/pgadmin/`). Tailnet only. | remote VPS | running — verified: 200 over the tailnet, 403 from the public address (`agents/journal/2026-11-09-deploy-db-admin-uis.md`) |
 | CloudBeaver | Web UI for the shared Postgres (`apps/vps/cloudbeaver/`). Tailnet only. | remote VPS | running — verified: 200 over the tailnet, 403 from the public address, setup wizard skipped (`agents/journal/2026-11-09-deploy-db-admin-uis.md`) |
-| Dokploy | Deploys every app on the VPS (`systems/vps.md`). `apps/vps/openbao/`, `apps/vps/hermes-webui/`, `apps/vps/blinko/`, `apps/vps/sablier/`, `apps/vps/pg-proxy/`, `apps/vps/pgadmin/`, `apps/vps/cloudbeaver/`, `apps/vps/authentik/` and `apps/vps/langfuse/` are in this repo; the rest are not yet. | remote VPS | running — verified: SSH recon |
-| OpenBao | Secret store. See `systems/openbao.md`. | remote VPS | running, unsealed — verified: `/v1/sys/health` 200 (`agents/journal/2026-10-26-install-openbao.md`); Dokploy reads it at deploy time; backup to Garage S3 and restore verified (`agents/journal/2026-10-29-restore-test-openbao.md`) |
+| Dokploy | Deploys every app on the VPS (`lab/systems/vps.md`). `apps/vps/openbao/`, `apps/vps/hermes-webui/`, `apps/vps/blinko/`, `apps/vps/sablier/`, `apps/vps/pg-proxy/`, `apps/vps/pgadmin/`, `apps/vps/cloudbeaver/`, `apps/vps/authentik/` and `apps/vps/langfuse/` are in this repo; the rest are not yet. | remote VPS | running — verified: SSH recon |
+| OpenBao | Secret store. See `lab/systems/openbao.md`. | remote VPS | running, unsealed — verified: `/v1/sys/health` 200 (`agents/journal/2026-10-26-install-openbao.md`); Dokploy reads it at deploy time; backup to Garage S3 and restore verified (`agents/journal/2026-10-29-restore-test-openbao.md`) |
 | Hermes WebUI (second) | Chat web UI for someone without lab access: own container, volumes and password; `apps/vps/hermes-webui/`. | remote VPS | running — login, provider and chat work (owner; `agents/journal/2026-10-27-deploy-hermes-webui.md`); backups not set up |
 | Immich | Photo and video library. Library on the TrueNAS share `back` (`imp/back/immich`); its Postgres (with VectorChord) and machine learning on local disk, machine learning on the GPU. | gpu_docker | running — verified: SSH |
 | Jellyfin | Media server. Media on the TrueNAS share `home` (`Main/home/media`), config and cache on local disk; transcodes on the GPU. | gpu_docker | running — verified: SSH |
@@ -94,7 +94,7 @@ checked either.
 | router9 | 9router (2/2) | remote VPS | running |
 | supa | supabase (13/13) | remote VPS | running |
 
-How each service is backed up: `systems/backups.md`.
+How each service is backed up: `lab/systems/backups.md`.
 
 ## To do
 

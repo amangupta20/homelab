@@ -1,12 +1,12 @@
 # The out-of-band box: a Raspberry Pi that is a second way into the home LAN, on its
 # own Tailscale account so a mistake in the main tailnet cannot lock the owner out.
-# See systems/oob.md. Run from ansible/:
+# See lab/systems/oob.md. Run from ansible/:
 #
 #   ansible-playbook oob.yml --check --diff     # read this first
 #   TS_AUTHKEY=<from OpenBao, or unset> ansible-playbook oob.yml
 #
 # Without TS_AUTHKEY the Tailscale login is skipped; log in once by hand instead
-# (systems/oob.md, "Rebuild").
+# (lab/systems/oob.md, "Rebuild").
 - name: Out-of-band box
   hosts: oob
   become: true

@@ -14,8 +14,8 @@ How this view works and how to keep it working: [obsidian-view.md](obsidian-view
 
 | Area | Answers | Start at |
 |---|---|---|
-| Inventory | What exists: services, machines, IPs | [inventory/](../../inventory/README.md) |
-| Systems | How each thing works, what never to do | [systems/](../../systems/README.md) |
+| Inventory | What exists: services, machines, IPs | [lab/inventory/](../../lab/inventory/README.md) |
+| Systems | How each thing works, what never to do | [lab/systems/](../../lab/systems/README.md) |
 | Plans | What is in flight | [agents/plans/](../plans/README.md) |
 | Ideas | What could be tried later, not scheduled | [agents/ideas/](../ideas/README.md) |
 | Decisions | Why it is this way | [agents/decisions/](../decisions/README.md) |
@@ -25,7 +25,7 @@ How this view works and how to keep it working: [obsidian-view.md](obsidian-view
 | Agent rules | How agents work here | [AGENTS.md](../../AGENTS.md) |
 
 > [!WARNING]
-> Never delete an XCP-ng base snapshot by hand — see [systems/xcp-ng.md](../../systems/xcp-ng.md).
+> Never delete an XCP-ng base snapshot by hand — see [lab/systems/xcp-ng.md](../../lab/systems/xcp-ng.md).
 
 ## Systems
 
@@ -45,4 +45,4 @@ Researched, not scheduled. Nothing here is live.
 
 ![[agents/obsidian/bases/services.base]]
 
-How traffic flows (diagram): [inventory/network.md](../../inventory/network.md).
+How traffic flows (diagram): [lab/inventory/network.md](../../lab/inventory/network.md).

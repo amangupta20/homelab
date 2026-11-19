@@ -19,9 +19,9 @@ setup, its definition is in this repo, and the re-hardening pass (step 3) has a
 journal entry.
 
 0. **Backups verified + re-audit.** Confirm snapshots exist and pass the
-   restore rule in `systems/backups.md`. Re-audit the current setup first.
+   restore rule in `lab/systems/backups.md`. Re-audit the current setup first.
 1. **Inventory + read-only security baseline, in parallel.** List what exists
-   (done in `inventory/`) and probe what is exposed, without changing
+   (done in `lab/inventory/`) and probe what is exposed, without changing
    anything.
 2. **Migrate.** Move workloads to the new setup. Apps' databases move to the
    shared server where that fits (`agents/plans/shared-postgres.md`).

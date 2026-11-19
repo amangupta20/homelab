@@ -1,6 +1,6 @@
 # Home router — notes
 
-Measurements, reasons and lists behind `systems/router.md`.
+Measurements, reasons and lists behind `lab/systems/router.md`.
 
 ## Why IPv6 matters
 

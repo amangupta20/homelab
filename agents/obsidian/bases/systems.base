@@ -1,6 +1,6 @@
 filters:
   and:
-    - file.inFolder("systems")
+    - file.inFolder("lab/systems")
     - type == "system"
 views:
   - type: table

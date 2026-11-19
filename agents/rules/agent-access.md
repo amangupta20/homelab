@@ -7,8 +7,8 @@ Decided: 2026-10-26. Status: in force.
 The owner would rather accept the risk of an agent breaking something than
 lose convenience to tight lockdown, and relies on backups and documented
 recovery instead (what is backed up, and which restores are proven:
-`systems/backups.md`). With the lab documented properly, a rebuild should be a
-procedure, not a repeat of the July 2026 loss (`systems/xcp-ng.md`). An agent deleting the system is unlikely;
+`lab/systems/backups.md`). With the lab documented properly, a rebuild should be a
+procedure, not a repeat of the July 2026 loss (`lab/systems/xcp-ng.md`). An agent deleting the system is unlikely;
 recovering from it is planned for.
 
 So agents get the access a task needs to be done smoothly. Read-only first and
@@ -26,18 +26,18 @@ Two guards cost no convenience and keep recovery possible:
   API token in a file, deleted a production volume, and the backups on that
   same volume went with it.
 - **No agent deletes or merges an XCP-ng base snapshot by hand**
-  (`systems/xcp-ng.md`).
+  (`lab/systems/xcp-ng.md`).
 
 ## Cost / what this rules out
 
 - No read-only proxies, command allowlists or approval gateways in front of
   every tool by default. They can be added for a specific risky tool when one
   turns out to need it.
-- Recovery has to be real: the restore tests in `systems/backups.md` matter
+- Recovery has to be real: the restore tests in `lab/systems/backups.md` matter
   more under this decision, not less.
 - Reviewers (`agents/review/review.md`) should not ask for extra lockdown beyond the
   two guards above.
 
 ## Where it lives
 
-`AGENTS.md`, `systems/backups.md`, `systems/xcp-ng.md`.
+`AGENTS.md`, `lab/systems/backups.md`, `lab/systems/xcp-ng.md`.

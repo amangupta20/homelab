@@ -15,8 +15,8 @@ apps use, and two apps (Garage and BorgWarehouse).
 **Status:** running. Snapshots run daily again (2026-11-14 and -15). The
 replication failed on 2026-11-15 on a checksum error in `imp`, was redone the
 same evening, and `Main/repli` now holds `auto-2026-11-15_20-00`; a scrub of
-`imp` afterwards found no errors (`systems/notes/truenas.md`, "Checksum errors on `imp`").
-Rows: `inventory/hosts.md`, `inventory/services.md`. Where it is going:
+`imp` afterwards found no errors (`lab/systems/notes/truenas.md`, "Checksum errors on `imp`").
+Rows: `lab/inventory/hosts.md`, `lab/inventory/services.md`. Where it is going:
 `agents/plans/home-overhaul.md`.
 
 ## How it works
@@ -65,7 +65,7 @@ Read on 2026-11-14 through the TrueNAS API (`system/info`, `disk`, `pool`,
 - **Snapshots:** daily at 19:00 — `imp/back` (recursive, kept 2 weeks),
   `Main/home` (recursive, kept 1 week), `imp/ioapp` (at 00:00, kept 2 weeks).
 - **Replication:** `imp/back` to `Main/repli`, after each snapshot. The
-  19:00 run on 2026-11-15 failed (see `systems/notes/truenas.md`, "Checksum errors on `imp`"); the
+  19:00 run on 2026-11-15 failed (see `lab/systems/notes/truenas.md`, "Checksum errors on `imp`"); the
   rerun finished at 20:04 IST with `imp/back@auto-2026-11-15_20-00` as its last
   snapshot, the newest on both sides (TrueNAS API `replication` and
   `pool/snapshot`, 2026-11-16).
@@ -101,7 +101,7 @@ The share names change when the datasets are reorganised (`agents/plans/home-ove
 
 ## Rules
 
-- **Never delete a snapshot on the XCP-ng side by hand** (`systems/xcp-ng.md`).
+- **Never delete a snapshot on the XCP-ng side by hand** (`lab/systems/xcp-ng.md`).
   TrueNAS's own ZFS snapshots are separate and safe to manage in TrueNAS.
 - **Read disk health on the XCP-ng host**, not in TrueNAS: the passed-through
   disks hide their SMART data from the VM.
@@ -112,7 +112,7 @@ The share names change when the datasets are reorganised (`agents/plans/home-ove
 
 ## Backups
 
-`systems/backups.md`. TrueNAS itself is not in Xen Orchestra's backup jobs;
+`lab/systems/backups.md`. TrueNAS itself is not in Xen Orchestra's backup jobs;
 its data is protected by its snapshots, the replica in `Main/repli`, and
 Nextcloud's own Borg backups.
 
@@ -120,7 +120,7 @@ Nextcloud's own Borg backups.
 
 At the next shutdown: reseat or replace the WD's SATA cable and run a memory
 test on the host. The checksum errors of 2026-11-15 were never explained
-(`systems/notes/truenas.md`).
+(`lab/systems/notes/truenas.md`).
 
 ## Open questions
 

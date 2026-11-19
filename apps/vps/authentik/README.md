@@ -15,14 +15,14 @@ yet, and its database restore is not tested.
    tailnet address.
 4. Dokploy: a Compose service from this repo's `main`, path `apps/vps/authentik/compose.yaml`, no domain set in
    Dokploy (the routers are labels here), environment from OpenBao, and the project added to the OpenBao
-   provider's assignments (`systems/openbao.md`). Dokploy named it `compose-reboot-optical-matrix-gsjyeo`; renaming
+   provider's assignments (`lab/systems/openbao.md`). Dokploy named it `compose-reboot-optical-matrix-gsjyeo`; renaming
    it through the API did not take, so its containers and volume carry that name.
 5. On the admin hostname: the initial setup, then the policy and second factor (`NOTES.md`, "Set in
    Authentik, not in this repo").
 
 ## Backups
 
-The database is in the shared cluster's backups (`systems/backups.md`). The `authentik-data` volume holds uploaded
+The database is in the shared cluster's backups (`lab/systems/backups.md`). The `authentik-data` volume holds uploaded
 icons and branding only, which can be uploaded again; no backup for it yet. Restoring Authentik means restoring the
 database **and** having `AUTHENTIK_SECRET_KEY` from OpenBao.
 

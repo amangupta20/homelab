@@ -16,7 +16,7 @@ owner file, and is deleted from this list.
 
 ## Platform (XCP-ng, Xen Orchestra)
 
-- Do the live XO backup schedules and retention match `systems/backups.md`?
+- Do the live XO backup schedules and retention match `lab/systems/backups.md`?
 
 ## Backups
 
@@ -39,7 +39,7 @@ owner file, and is deleted from this list.
   `ansible/` started 2026-11-06. The item stays for the owner to close.
 - cloud-init: one committed template per VM, or generated?
 - `iac/oci/run.sh` reads `kv/general/`, where the owner keeps OpenTofu's secrets
-  because they are not specific to one host (2026-11-05). `systems/openbao.md` says
+  because they are not specific to one host (2026-11-05). `lab/systems/openbao.md` says
   checkouts read `kv/homelab/*` only. It works today with an admin token; a
   narrower checkout policy would need those paths added. Who updates which?
 - Is the live VPS outside the `homelab-iac` compartment? `iac/oci/README.md`
@@ -78,10 +78,10 @@ owner file, and is deleted from this list.
   `apps/vps/hermes-webui/compose.yaml`, no copy kept — a merged change reached
   the container only when the service was deployed by hand (auto-deploy off).
 - Which apps run on it — listed by the recon on 2026-10-26 in
-  `inventory/services.md`; for the owner to close.
+  `lab/inventory/services.md`; for the owner to close.
 - Contradiction, found 2026-10-27 while updating the app lists: `apps/README.md`
   and `apps/vps/README.md` both call OpenBao "defined, not deployed", while
-  `inventory/services.md` says it is "running, unsealed — verified 2026-10-26"
+  `lab/inventory/services.md` says it is "running, unsealed — verified 2026-10-26"
   and `agents/journal/2026-10-26-install-openbao.md` records the install. Which is
   current?
   Answered 2026-10-27, on the owner's instruction: OpenBao is deployed. Dokploy
@@ -89,11 +89,11 @@ owner file, and is deleted from this list.
   deploy time that day, which neither a stopped OpenBao nor an absent one can
   do, so the two `apps/` READMEs were the stale side and now say deployed. The
   item stays here for the owner to close.
-- Found by the step-0 recon (2026-10-26, `systems/vps.md`):
+- Found by the step-0 recon (2026-10-26, `lab/systems/vps.md`):
   - The `odysseus` backup always fails and the `Odyssues` project has no
-    containers (`systems/backups.md`, `inventory/services.md`). Retire the
+    containers (`lab/systems/backups.md`, `lab/inventory/services.md`). Retire the
     app, or fix the backup?
-  - Several apps have no running containers (`inventory/services.md`, "Apps
+  - Several apps have no running containers (`lab/inventory/services.md`, "Apps
     on the VPS"). Still wanted, or retire?
   - The owner says the Dokploy dashboard's domain is not proxied by
     Cloudflare; a request to it on 2026-10-26 got a response with the header
@@ -112,7 +112,7 @@ owner file, and is deleted from this list.
 
 - Observability: wanted, not deployed. Prometheus/Grafana is an assumption,
   not a choice. Whether Uptime Kuma runs at all is unknown
-  (`inventory/services.md`).
+  (`lab/inventory/services.md`).
   Owner, 2026-11-14: when this is planned, include the Home router. The
   package `prometheus-node-exporter-lua` is in its feed and not installed
   (`apk search`, 2026-11-14).
@@ -182,13 +182,13 @@ owner file, and is deleted from this list.
 
 ## Home VMs (recon 2026-11-14)
 
-- The docs disagree with the live lab about the "Docker + proxy host". `inventory/hosts.md`,
-  `inventory/network.md` (`.254`) and `inventory/services.md` (Nginx Proxy Manager, apt cache)
+- The docs disagree with the live lab about the "Docker + proxy host". `lab/inventory/hosts.md`,
+  `lab/inventory/network.md` (`.254`) and `lab/inventory/services.md` (Nginx Proxy Manager, apt cache)
   put the proxy and the apt cache together on one Docker host at `.254`. Live on 2026-11-14:
   `.254` is the VM `apt-cache`, with apt-cacher-ng and no Docker (SSH); Nginx Proxy Manager runs
   on `NPM-set` at `.99` (Portainer API, SSH). Those rows are left as they were for the owner to
   settle.
-  Agent's note, 2026-11-19: PR 97 changed the rows in `inventory/` to match the live lab (this
+  Agent's note, 2026-11-19: PR 97 changed the rows in `lab/inventory/` to match the live lab (this
   item's recon); `.254` in the Home router section below is now named too. Closing both is the
   owner's.
 - Nextcloud's state is unclear. `agents/plans/home-overhaul.md` (A4) says it is parked: containers
@@ -219,7 +219,7 @@ group waits on the first item.
   Agent's note, 2026-11-14: the two sources disagree on the premise. The
   Pangolin research (`agents/ideas/edge-and-security-layers.md`, "Getting in",
   from Hindsight 2026-07-19) assumes a paid static IP and inbound port
-  forwards at home. `systems/router.md` ("WAN", owner 2026-11-13) says the
+  forwards at home. `lab/systems/router.md` ("WAN", owner 2026-11-13) says the
   ISP uses carrier-grade NAT and nothing is forwarded inward. If the second
   is current, there is no static IP to keep, and a tunnel such as Pangolin
   is the only way to publish anything from home. Which is true today?
@@ -301,21 +301,21 @@ these parts are open:
   lowered only when an app's usage needs it; `agents/plans/shared-postgres.md` now says so, with the caveat that the
   setting covers the whole server.
 - The `hermes` Dokploy project (agent, WebUI, Hindsight) and its updater schedule are not in this repo;
-  `inventory/services.md` only lists the project. The updater follows `:latest` and, on every new agent
+  `lab/inventory/services.md` only lists the project. The updater follows `:latest` and, on every new agent
   image, re-seeds the volume that loses the Hindsight plugin's client
   (`agents/journal/2026-11-08-hermes-hindsight-plugin-import.md`). Bring the stack in, pin its images, or keep it
   outside? Agent's note, 2026-11-08.
 
 ## Home router (OpenWrt)
 
-Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
+Page: `lab/systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
 
 - IPv6 for LAN devices: the ISP router gives the Home router an address but
   delegates no prefix (`ifstatus wan6`, 2026-11-13), so devices behind it are
   IPv4-only. Relay mode on the Home router, bridge mode on the ISP router, or
   stay IPv4-only on the LAN?
   Agent's note, 2026-11-14, for the owner to close: relay mode is on and a
-  laptop gets IPv6 through it (`systems/router.md`). It has run for minutes,
+  laptop gets IPv6 through it (`lab/systems/router.md`). It has run for minutes,
   not days.
 - IPv6 on the ISP line was measured dead on 2026-11-12 (address and default
   route present, 100% loss to two public hosts, from the router and a laptop;
@@ -337,7 +337,7 @@ Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
 - The serial-console recovery and both manual backups are untested. Is a
   recovery drill wanted before the router carries the lab?
 - Nothing backs up the router's config on a schedule, and
-  `systems/backups.md` has no row for it. Should it get one
+  `lab/systems/backups.md` has no row for it. Should it get one
   (`agents/skills/back-up-a-service/`)?
 - Tailscale is installed on the router but not logged in. Should the router
   become the subnet router for the home subnet, and which machine advertises
@@ -345,26 +345,26 @@ Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
   flashing session because it accepted a subnet route for the same range from
   the tailnet.
   Agent's note, 2026-11-14, for the owner to close: the router is signed in
-  and advertises the home subnet (`systems/router.md`). The route is not
+  and advertises the home subnet (`lab/systems/router.md`). The route is not
   approved yet, an older approval for the same range may still exist on
   another machine, and a laptop that accepts routes will send home-subnet
   traffic through the tailnet even when it is at home.
-- `inventory/network.md` lists `.254` and `.160` from the docs. Both answer on
+- `lab/inventory/network.md` lists `.254` and `.160` from the docs. Both answer on
   the router's LAN (`ip neigh`, 2026-11-13), but which machines they are was
   not checked.
 - The hourly channel-scan script from the flashing session is still on the
   router with its cron line commented out. Delete it, or keep it for manual
   runs?
 - GitHub release downloads are slow on this line and have no IPv6 address to
-  fall back on (`systems/router.md`, "Why IPv6 matters"). Send only those
+  fall back on (`lab/systems/router.md`, "Why IPv6 matters"). Send only those
   hosts through a tunnel to the VPS (policy routing on the router), or live
   with it?
   Agent's note, 2026-11-14, for the owner to close: set up as a tailnet
-  route advertised by the VPS (`systems/router.md`, "Detour for GitHub
+  route advertised by the VPS (`lab/systems/router.md`, "Detour for GitHub
   downloads"), approved and measured the same day. Every tailnet device that
   accepts routes will use it too.
 - The router's package database names a Wi-Fi daemon that is not the one on
-  disk (`systems/router.md`, Rules). Leave it until the next firmware image,
+  disk (`lab/systems/router.md`, Rules). Leave it until the next firmware image,
   or take another short Wi-Fi outage to put the database right?
   Agent's note, 2026-11-14, for the owner to close: the firmware upgrade
   replaced the database, and the full daemon is now installed properly.
@@ -375,7 +375,7 @@ Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
 ## Home network (added 2026-11-16)
 
 - LAN traffic forwarded into the router's GitHub detour is slow, which
-  disagrees with `systems/router.md` ("Detour for GitHub downloads": 4.6–4.7
+  disagrees with `lab/systems/router.md` ("Detour for GitHub downloads": 4.6–4.7
   MB/s from a laptop through the router, 2026-11-14). Measured 2026-11-16 with
   `curl -4` and `wget -4`, the same 52 MB ghcr.io layer from
   `pkg-containers.githubusercontent.com`, whose addresses are inside the
@@ -398,7 +398,7 @@ Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
   Read in the repo only; the live VM was not checked. The NOTES.md line is left
   as it was for the owner to settle.
 - `apps/vps/authentik/README.md`, "Status", says no app signs in through
-  Authentik yet. `inventory/services.md` (Authentik and Langfuse rows) says
+  Authentik yet. `lab/inventory/services.md` (Authentik and Langfuse rows) says
   Langfuse signs in through it, by the owner on 2026-11-10, and
   `apps/homeserver/artifact-keeper/README.md` has a "Sign-in" section through
   Authentik. Read in the repo only. The status line is left as it was.

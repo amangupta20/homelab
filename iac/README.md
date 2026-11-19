@@ -122,7 +122,7 @@ Read the full plan before applying; this short form is for the record, not for
 deciding. Still check what it prints: a resource's name can identify something too.
 
 **Backup:** losing the bucket loses the mapping between code and real VMs.
-Whether it is backed up is tracked in `systems/backups.md`.
+Whether it is backed up is tracked in `lab/systems/backups.md`.
 
 The backend was first used against the real bucket on 2026-11-16 (`./run.sh
 init`). One thing CI cannot check: `tofu init -backend=false` skips the backend block

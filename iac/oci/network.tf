@@ -1,4 +1,4 @@
-# One network for this account. The address range is owned by inventory/network.md.
+# One network for this account. The address range is owned by lab/inventory/network.md.
 resource "oci_core_vcn" "main" {
   compartment_id = var.compartment_ocid
   display_name   = "homelab"

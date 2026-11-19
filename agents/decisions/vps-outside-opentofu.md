@@ -6,7 +6,7 @@ agent. Status: in force.
 ## Why
 
 The VPS is an Oracle Cloud free-tier Ampere instance that has run for months
-(`systems/vps.md`). The owner has no reason to rebuild it, and importing it
+(`lab/systems/vps.md`). The owner has no reason to rebuild it, and importing it
 into OpenTofu state would buy nothing: OpenTofu's value here is recreating a
 machine from code, and this machine is not going to be recreated. What runs on
 it is what changes, and that is moving into `apps/vps/` as Compose files that
@@ -19,11 +19,11 @@ This answers step 1 of `agents/plans/vps-foundations.md`.
 - If the VPS is lost, it is rebuilt by hand: create the instance, install
   Tailscale and Dokploy, restore Dokploy and the apps from backups. That
   procedure is not written yet and is only as good as the restore tests in
-  `systems/backups.md`.
+  `lab/systems/backups.md`.
 - "Reproducible from code" (`README.md`) covers the VPS's apps, not the VPS
   itself.
 - Revisit if the free tier ends or the instance has to move.
 
 ## Where it lives
 
-`systems/vps.md`, `agents/plans/vps-foundations.md`.
+`lab/systems/vps.md`, `agents/plans/vps-foundations.md`.

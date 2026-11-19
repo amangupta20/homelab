@@ -99,7 +99,7 @@ Done once on 2026-11-05 in the OCI console; labels may change.
    expire. `pigsty-1` joined untagged and was tagged in the admin console on 2026-11-06.
 
 **Recovery:** there is no offline copy of these (owner's choice, 2026-11-05). If the
-VPS is lost they come back by restoring an OpenBao snapshot (`systems/openbao.md`).
+VPS is lost they come back by restoring an OpenBao snapshot (`lab/systems/openbao.md`).
 Losing the passphrase loses the state.
 
 ## Use

@@ -19,14 +19,14 @@ data "xenorchestra_network" "lan" {
 locals {
   cache = {
     hostname = "cache-1"
-    address  = "10.22.33.137" # inventory/network.md
+    address  = "10.22.33.137" # lab/inventory/network.md
     # Fixed, locally administered MAC address, so the network configuration
     # below can match the interface by it instead of guessing its name.
     mac = "02:22:33:00:01:37"
   }
   lan = {
     prefix  = 24
-    gateway = "10.22.33.1" # the home router (inventory/network.md)
+    gateway = "10.22.33.1" # the home router (lab/inventory/network.md)
     dns     = ["10.22.33.1"]
   }
 }

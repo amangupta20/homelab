@@ -9,7 +9,7 @@ tags:
 
 Lookup tables you can scan in seconds. One row per thing; the row says what it
 is, where it runs, and its state. How a thing works belongs on its page in
-`systems/`, and the row links there once that page exists.
+`lab/systems/`, and the row links there once that page exists.
 
 Every page starts with a property block (the Obsidian view reads it); the
 schema and rules are in `agents/obsidian/obsidian-view.md`, and `mise run check:properties`
@@ -24,7 +24,7 @@ checks it.
 ## Rules
 
 - Tables, not prose. If a row needs a paragraph, the paragraph goes in
-  `systems/`.
+  `lab/systems/`.
 - Each fact appears once. An IP is written in `network.md` only; other tables
   name the host.
 - Every table says at the top that its rows are from the docs and not

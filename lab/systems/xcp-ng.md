@@ -15,9 +15,9 @@ backups. This pair is the base everything else sits on.
 
 **Status:** running, stable — from the docs, not yet checked against the live
 pool. The host's hardware was checked at the console on 2026-11-13
-("Hardware" below). Rows: `inventory/hosts.md`, `inventory/services.md`.
+("Hardware" below). Rows: `lab/inventory/hosts.md`, `lab/inventory/services.md`.
 
-How VMs and XO itself are backed up: `systems/backups.md`.
+How VMs and XO itself are backed up: `lab/systems/backups.md`.
 
 ## The one rule that destroys VMs
 
@@ -35,7 +35,7 @@ of work).
 **Source:** everything in this section was read by the owner at the machine
 on 2026-11-13 (BIOS screens, Memtest86+ 9.00, a live Linux USB stick), with
 Claude Code advising. The work is in
-[`agents/journal/2026-11-13-xcp-ng-host-ram-and-bios.md`](../agents/journal/2026-11-13-xcp-ng-host-ram-and-bios.md).
+[`agents/journal/2026-11-13-xcp-ng-host-ram-and-bios.md`](../../agents/journal/2026-11-13-xcp-ng-host-ram-and-bios.md).
 XCP-ng was started on this layout the same evening (owner); the memory total
 has not yet been read from XCP-ng itself.
 

@@ -19,7 +19,7 @@ OpenBao ships no Compose file of its own.
 
 Choices that differ from those sources, and why:
 
-- Real server with Raft storage, not dev mode (`systems/openbao.md`).
+- Real server with Raft storage, not dev mode (`lab/systems/openbao.md`).
 - Port bound to the tailnet address only, no Dokploy domain
   (`agents/decisions/foundations-on-vps.md`).
 - The config lives inside `compose.yaml` (`configs.content`), so the stack
@@ -82,7 +82,7 @@ certificate for the name, `curl` with the system trust store got 200 from
   token renewal.
   - Configured in Dokploy Scheduled Tasks as task `openbao-raft-snapshot`
     (type `dokploy-server`, command `bash ./script.sh`). Schedule, destinations,
-    retention, and restore tests are owned by `systems/backups.md`.
+    retention, and restore tests are owned by `lab/systems/backups.md`.
   - Reads `/etc/dokploy/snapshot.env` on the VPS host (mode 600, root only).
   - Writes the snapshot to a private `/etc/dokploy/backups/openbao` folder
     (mode 700), mounts only that directory read-only into an ephemeral

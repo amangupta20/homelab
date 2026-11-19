@@ -19,6 +19,10 @@ Checks, over tracked Markdown files:
           it must point at the owner file on the same line or the next
           (a wrapped sentence).
 - root:   the visible (not dot-) entries at the repo root are on a fixed list.
+- moved:  a backticked path under a root folder that moved in the clean-up
+          (MOVED) and that exists at its new place: the old spelling of a
+          live path. The paths check misses these, since it only looks at
+          paths whose first folder still exists. Journal entries are exempt.
 
 Today's offenders are listed in .githooks/check-docs-allow.txt as
 `<check> <file> <count>`. A finding not covered there fails; so does an entry
@@ -43,6 +47,15 @@ ROOT_ENTRIES = {
     "secret-scan.toml", "secret-scan.local.toml.example",
     "agents", "ansible", "apps", "iac",
     "lab",
+}
+
+# Root folders the clean-up moved, old -> new places. A path is flagged only
+# when it exists at a new place, so another repo's `skills/...` is left alone.
+MOVED = {
+    "systems": ["lab/systems"], "inventory": ["lab/inventory"],
+    "plans": ["agents/plans"], "ideas": ["agents/ideas"],
+    "journal": ["agents/journal"], "skills": ["agents/skills"],
+    "repo": ["agents/review"], "decisions": ["agents/decisions", "agents/rules"],
 }
 
 # The 40-line cap applies to journal entries written after the clean-up; older
@@ -126,6 +139,13 @@ def findings():
             if journal_entry(f):
                 continue
             for tok in BACKTICK.findall(line):
+                head, _, rest = tok.partition("/")
+                rest = re.sub(r"(#.*|:\d+(-\d+)?)$", "", rest).rstrip("/")
+                if head in MOVED and head not in tops and rest:
+                    new = [f"{d}/{rest}" for d in MOVED[head] if f"{d}/{rest}" in exists]
+                    if new:
+                        found[("moved", f)] += 1
+                        detail.append(f"moved  {f}:{n}: `{tok}` is now `{new[0]}`")
                 if "/" in tok and tok.split("/")[0] in tops and not re.search(r"[<>*${}|\[\]]|\.\.\.", tok):
                     path = re.sub(r"(#.*|:\d+(-\d+)?)$", "", tok).rstrip("/")
                     candidates.append((f, n, path))

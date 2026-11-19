@@ -459,8 +459,8 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
      whichever resolver answers; a stopped test container on another VM wakes through
      its route; the dashboards ask for Authentik.
    - **4b. Resolver** (to be researched, owner 2026-11-14). Nothing in 4a waits on it.
-5. **Pilot:** one small internal app, end to end, then a skill
-   (`agents/skills/migrate-a-home-app/`) with the steps as they were done. — gate: the app
+5. **Pilot:** one small internal app, end to end, then a new skill
+   in `agents/skills/` (working name `migrate-a-home-app`) with the steps as they were done. — gate: the app
    runs from `apps/homeserver/<app>/`, and its data restore has been tested.
 
 ### C. Before the first public app

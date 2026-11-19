@@ -79,7 +79,7 @@ Read from the NetBox repositories on 2026-11-05 unless marked otherwise.
 4. **Back it up.** Follow `agents/skills/back-up-a-service/`. — gate: a test restore
    works.
 5. **Schedule the sync and record it.** Add the `inventory/services.md` row and a
-   `systems/netbox.md` page, and apply the fact-ownership decision. — gate: the
+   NetBox page in `systems/`, and apply the fact-ownership decision. — gate: the
    "Done when" check passes.
 
 ## Links

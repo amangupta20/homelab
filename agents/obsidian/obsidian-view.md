@@ -56,7 +56,7 @@ and this page in the same commit.
   page follows; `tags` are for finding pages in Obsidian.
 - **New page in `systems/`, `inventory/`, `agents/plans/` or `agents/ideas/`:** copy the
   template from that folder's README; it includes the property block.
-- **Links stay relative markdown links** (`[text](path.md)`), never
+- **Links stay relative markdown links** (`[text](../../systems/xcp-ng.md)`), never
   `[[wikilinks]]`, so GitHub and agents keep working. The one exception is
   `agents/obsidian/Home.md`'s `![[agents/obsidian/bases/...]]` embeds, which only Obsidian needs.
 - **A new table** goes in `agents/obsidian/bases/` and is embedded from

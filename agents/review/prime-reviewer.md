@@ -85,6 +85,22 @@ re-review of that push decides again. A normal merge button therefore means Prim
 found nothing for the owner to decide; on `needs_owner` or a failed run the
 owner reads the comments and uses the bypass. The merge stays the owner's.
 
+Changing a pull request's base (a stacked pull request retargeted to `main`
+after the one below it merged) also dismisses the approval. The workflow listens
+for `edited`, and the action re-approves without a model run when its last run
+reviewed this exact commit clean and the old merge-base is an ancestor of the
+new one; otherwise it reviews the whole pull request. That only holds when the
+lower pull request's merge kept its commits (a fast-forward or a merge
+commit); a rebase or squash merge rewrites them, so the old merge-base is no
+longer an ancestor of the new base and the stack has to be rebased anyway. A
+title or description edit reuses the last verdict. **UNTESTED live** (action
+tests only, 2026-11-19).
+
+When Prime stops without writing a result, the action asks it to finish after
+30, 60 and 120 seconds and logs how its last turn ended. On 2026-11-19 every
+such failure ran beside 4 to 11 other reviews and ended on an empty turn, so
+keep the number of pull requests open for review at once small.
+
 **UNTESTED live** (action tests only, with fake API calls, 2026-11-06): that
 GitHub counts the App's approval toward the requirement, that the App may
 dismiss its own approval, and how the ruleset's
@@ -107,7 +123,7 @@ free for a public repository. Nothing runs on the lab.
 | What | Where |
 |---|---|
 | The rules it judges by | `agents/review/review.md`, `AGENTS.md` and `agents/rules.md`, always from `main`, so a pull request cannot rewrite them |
-| Shared execution code | public `prime-reviewer-action`, called as a composite action at commit `280578b3eac0` (pinned by full SHA) by this repo's workflow |
+| Shared execution code | public `prime-reviewer-action`, called as a composite action at commit `7103c2b42cdb` (pinned by full SHA) by this repo's workflow |
 | Its prompts, playbook and model settings | the owner's private repo `prime-reviewer` (`main`): shared `APPEND_SYSTEM.md` and `skills/common-review/`, with homelab settings and playbook in `repos/homelab/` |
 | Changes it makes to its own playbook | a pull request on `prime-reviewer`, which the owner merges or closes |
 | Each pull request's session (so `/prime <instruction>` continues it) | B2: `sessions/<owner>/<repo>/<pr>/latest.json` references its saved session archive; the private Git `state` branch keeps the sessions from before the cutover as rollback |

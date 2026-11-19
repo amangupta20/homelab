@@ -21,9 +21,15 @@ name: prime review
 # with a model key and a token that can push; that is safe only because the
 # action's first step stops every pull request and comment not from the owner. Keep
 # that guard first in the action.
+#
+# `edited` is for stacked pull requests: changing the base dismisses the
+# approval, and the action re-approves without a model run when the reviewed
+# commits are unchanged (a full review otherwise). A title or description edit
+# reuses the last verdict. Do not filter `edited` out in the job's `if`: a
+# skipped `ai review` counts as a passing check.
 on:
   pull_request_target:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, edited]
   issue_comment:
     types: [created]
   pull_request_review_comment:
@@ -56,12 +62,14 @@ jobs:
       - name: Review with Prime
         # Immutable action revision with explicit commands, review coverage
         # tracking, a persistent interaction status comment and clean-review
-        # approval, one retry when Prime exits without a result, protected
-        # paths open to the owner's own /prime instructions, and /prime resolve
-        # merging the base branch into a conflicting pull request, the
-        # thinking level read from the private config, the PR description
-        # given to Prime as a file, and a review kept when its push is refused.
-        uses: amangupta20/prime-reviewer-action@280578b3eac03ce90d17768f43377606467ac3d1
+        # approval, protected paths open to the owner's own /prime
+        # instructions, /prime resolve merging the base branch into a
+        # conflicting pull request, the thinking level read from the private
+        # config, the PR description given to Prime as a file, a review kept
+        # when its push is refused, three retries after 30, 60 and 120 s when
+        # Prime stops without a result, and re-approval of a retargeted pull
+        # request whose commits were reviewed.
+        uses: amangupta20/prime-reviewer-action@7103c2b42cdb1ee1d496fcde3d1ebe205c704f13
         with:
           app-id: ${{ vars.PRIME_APP_ID }}
           app-private-key: ${{ secrets.PRIME_APP_PRIVATE_KEY }}

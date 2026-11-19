@@ -5,4 +5,3 @@
 
 lines systems/openbao.md 204
 lines systems/router.md 187
-lines systems/truenas.md 159

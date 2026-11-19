@@ -1,10 +1,5 @@
 ---
 type: system
-status: "running; replica current and imp scrubbed clean after a checksum error (2026-11-15)"
-verified: "yes (TrueNAS API and Xen Orchestra's REST API, 2026-11-14; disk SMART and pool errors read by the owner on the hosts, 2026-11-15; replica and scrub read through the TrueNAS API, 2026-11-16)"
-hosts:
-  - TrueNAS VM
-  - XCP-ng host
 tags:
   - system
   - storage

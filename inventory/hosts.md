@@ -1,7 +1,5 @@
 ---
 type: inventory
-status: "documented, partially verified"
-verified: "partially (Remote VPS verified 2026-10-26 over SSH; pigsty-1 verified 2026-11-06 over SSH; XCP-ng host hardware verified 2026-11-13 at the console; Home router verified 2026-11-13 over SSH; oob-1 verified 2026-11-14 over SSH; the home VMs and TrueNAS verified 2026-11-14 through the Xen Orchestra, TrueNAS and Portainer APIs; cache-1 verified 2026-11-16 and proxy-1 2026-11-18 over SSH; other hosts from docs)"
 tags:
   - inventory
   - hosts

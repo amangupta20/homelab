@@ -1,7 +1,5 @@
 ---
 type: plan
-status: "in progress (running on cache-1 since 2026-11-16; step 4, the clients, mostly done)"
-verified: "partially (Artifact Keeper run on the workstation 2026-11-15; deployed and tested on cache-1 2026-11-16; the client playbook verified on proxy-1 2026-11-18; the month's trial not measured)"
 tags:
   - plan
   - cache

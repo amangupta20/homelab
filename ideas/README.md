@@ -43,8 +43,6 @@ Naming: `ideas/<what>.md`, lowercase with hyphens (`multi-site-postgres.md`).
 ```markdown
 ---
 type: idea
-status: "<idea | researched | promoted to plans/<x>.md | dropped>"
-verified: "no (research only)"
 tags:
   - idea
 ---

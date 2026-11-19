@@ -1,9 +1,5 @@
 ---
 type: system
-status: "running"
-verified: "yes (recon 2026-10-26; timezone, agent access and backup verified 2026-10-29)"
-hosts:
-  - Remote VPS
 tags:
   - system
   - vps

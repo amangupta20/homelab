@@ -1,9 +1,5 @@
 ---
 type: system
-status: "running, behind the ISP router (double NAT)"
-verified: "yes (read over SSH 2026-11-13; the flash and recovery notes are from the flashing session's notes)"
-hosts:
-  - Home router
 tags:
   - system
   - router

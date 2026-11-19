@@ -7,14 +7,7 @@ views:
     name: Ideas Overview
     order:
       - file.name
-      - status
-      - verified
       - tags
     sort:
       - property: file.name
         direction: ASC
-  - type: kanban
-    name: Idea Status Kanban
-    groupBy:
-      property: status
-      direction: ASC

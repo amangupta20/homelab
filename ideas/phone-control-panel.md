@@ -1,7 +1,5 @@
 ---
 type: idea
-status: "idea"
-verified: "no (nothing tried)"
 tags:
   - idea
 ---

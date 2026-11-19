@@ -1,10 +1,5 @@
 ---
 type: plan
-status: "not started"
-verified: "no (owner's description and model docs 2026-10-31; nothing measured on the GPU VM)"
-hosts:
-  - XCP-ng host
-  - Remote VPS
 tags:
   - plan
   - hindsight

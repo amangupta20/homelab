@@ -26,8 +26,6 @@ Naming: `plans/<what>.md` (`migration.md`, `portainer-to-git.md`, `vps-into-repo
 ```markdown
 ---
 type: plan
-status: "<not started | in progress (step N) | blocked | done>"
-verified: "<yes | no | partially> (<how>)"
 tags:
   - plan
 ---

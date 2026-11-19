@@ -1,7 +1,5 @@
 ---
 type: plan
-status: "not started"
-verified: "no (NetBox facts read from its repositories 2026-11-05; nothing installed on the lab)"
 tags:
   - plan
   - netbox

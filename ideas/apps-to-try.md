@@ -1,7 +1,5 @@
 ---
 type: idea
-status: "idea"
-verified: "no (one-line notes from each project's README)"
 tags:
   - idea
   - backlog

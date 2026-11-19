@@ -1,7 +1,5 @@
 ---
 type: idea
-status: "promoted to plans/sablier-wakeups.md"
-verified: "no (upstream docs and source read 2026-11-01; nothing run on the lab)"
 tags:
   - idea
   - docker

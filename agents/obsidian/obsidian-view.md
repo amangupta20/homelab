@@ -37,33 +37,25 @@ On GitHub, `Home.md`'s embeds show as plain `![[...]]` text — expected.
 ```yaml
 ---
 type: system            # system | inventory | plan | idea; READMEs: system-index, inventory-index, plan-index, idea-index
-status: "running"       # the page's own Status line, shortened
-verified: "yes (recon 2026-10-26 over SSH)"   # yes / no / partially, and how — from the page's Source/State lines
-hosts:                  # optional; exact host names from inventory/hosts.md
-  - Remote VPS
 tags:
   - system
   - vps
 ---
 ```
 
-Folder READMEs carry only `type` and `tags`. No other keys: the check
-rejects them, so a new property means changing the check and this page in
-the same commit.
+Only `type` and `tags`. Until 2026-11-19 the block also carried `status`,
+`verified` and `hosts`; the owner cut them (repo clean-up, decision B)
+because they restated the page body and drifted from it. A page's status
+lives in its body's Status line, its sources in its Source line or table.
+The check rejects any other key, so a new property means changing the check
+and this page in the same commit.
 
 ### Rules
 
-- **Properties summarise the page; they never add a fact.** Every value must
-  already be stated in the page body (its Status line, Source line or text).
-  An agent that cannot find it in the body writes `unknown`.
-- **Change both in one commit.** When a page's Status line, verification or
-  host changes, its properties change in the same commit. The owner files
-  still win: if a property disagrees with the body or with
-  `inventory/hosts.md` / `inventory/services.md`, the property is wrong.
-- **`hosts` must match `inventory/hosts.md` exactly.** The check enforces it.
-  A renamed host is renamed in its properties in the same commit.
-- **New page in `systems/`, `inventory/`, `plans/` or `ideas/`:** copy the template from
-  that folder's README; it includes the property block.
+- **Properties never add a fact.** `type` says which folder template the
+  page follows; `tags` are for finding pages in Obsidian.
+- **New page in `systems/`, `inventory/`, `plans/` or `ideas/`:** copy the
+  template from that folder's README; it includes the property block.
 - **Links stay relative markdown links** (`[text](path.md)`), never
   `[[wikilinks]]`, so GitHub and agents keep working. The one exception is
   `Home.md`'s `![[agents/obsidian/bases/...]]` embeds, which only Obsidian needs.
@@ -74,7 +66,6 @@ Run the check by hand: `mise run check:properties`.
 
 ## What it does not catch
 
-The check sees a missing, misspelled or unknown property and a host that does
-not exist. It cannot tell whether `status` still matches the page's Status
-line; that is on whoever edits the page, and on the reviewer
-(`agents/review/review.md`).
+The check sees a missing, misspelled or unknown property, a wrong `type`
+for the folder, and an embed in `Home.md` whose table file does not exist.
+Whether the tags are useful is on whoever edits the page.

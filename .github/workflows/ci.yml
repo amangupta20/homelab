@@ -69,7 +69,7 @@ jobs:
 
       # Same job again, so no new required check. Only offenders missing from
       # .githooks/check-docs-allow.txt fail.
-      - name: Check doc rules (paths, dates in tables, caps, danger rules)
+      - name: Check doc rules (paths, dates on human pages, caps, danger rules)
         run: python3 -I .githooks/check-docs.py
 
   compose:

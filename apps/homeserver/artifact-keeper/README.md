@@ -8,6 +8,9 @@ The LAN's pull-through cache for apt packages and container images
 Clients: `oob-1` (its own apt sources) and every VM in the inventory's `lan_cache_clients`
 group (`ansible/cache-client.yml`, from 2026-11-18; `proxy-1` first).
 
+**Sign-in:** the web UI and Grafana, at `https://cache.home.<zone>/`, through Authentik
+by OIDC (`NOTES.md`, "Sign-in"). apt and Docker clients need none.
+
 ## Repositories
 
 | Key | Upstream | Cap | How a client uses it |

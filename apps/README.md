@@ -16,9 +16,9 @@ Each app folder holds:
 - `.env.example` — every variable the stack reads, with placeholders
   (`__PASTE_ONCE__`) and a comment saying where the real value lives in OpenBao.
 - `README.md` — 40 lines at most: what it is, where it runs, its address,
-  data, secrets, backups, and links to the foundation pages it builds on
-  (never a copy of them). `NOTES.md` beside it holds everything else worth
-  keeping — sources, design choices, tests, hard-won gotchas — with no cap.
+  how you sign in (Authentik OIDC or forward-auth, or its own login), data,
+  secrets, backups, and links to the foundation pages (never a copy).
+  `NOTES.md` beside it holds the rest, uncapped: sources, choices, tests, gotchas.
 - `host/` — only for what the container manager cannot run: scripts and
   systemd units installed by hand, steps in the app's README or `NOTES.md` (`vps/openbao/host/`).
 

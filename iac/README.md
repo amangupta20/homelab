@@ -18,16 +18,16 @@ is the Xen Orchestra root.
   same for Oracle Cloud.
 - `lib/state-copy.sh` — that copy, shared by both roots.
 - `cache-vm.tf` — `cache-1`, the package and image cache VM
-  (`agents/plans/package-and-image-cache.md`). Built 2026-11-16 (`agents/journal/2026-11-16-build-cache-1.md`).
+  (`agents/plans/package-and-image-cache.md`, `agents/journal/2026-11-16-build-cache-1.md`).
 - `proxy-vm.tf` — `proxy-1`, the home reverse proxy, and the public `*.home.<zone>`
-  record pointing at it (`apps/homeserver/traefik/`). Built 2026-11-18
-  (`agents/journal/2026-11-18-build-proxy-1-traefik.md`).
+  record pointing at it (`apps/homeserver/traefik/`,
+  `agents/journal/2026-11-18-build-proxy-1-traefik.md`).
 - `cloud-init/` — the first-boot user data (hostname, the homelab VM key from
   `kv/general/vm-ssh`) and the static network configuration every VM gets.
 - `backend.tf` — where the state lives, and its encryption.
 - `provider.tf` — declares the Xen Orchestra and Cloudflare providers. Holds no
   credentials: `run.sh` sets `XOA_URL`, `XOA_TOKEN` and `XOA_INSECURE` (Xen
-  Orchestra's certificate is self-signed, `CN=xo-ce`, read 2026-11-16), and
+  Orchestra's certificate is self-signed, `CN=xo-ce`), and
   `CLOUDFLARE_API_TOKEN` (`kv/general/cloudflare`, field `zonedns`).
 - `variables.tf` — the state passphrase, the VM key, and the lab's zone
   (`kv/general/cloudflare`, field `zone`; kept out of this public repo).
@@ -38,9 +38,6 @@ is the Xen Orchestra root.
   vault provider instead. Not used: `run.sh` reads it with `bao`.
 
 ## Use
-
-Ran on 2026-11-16 with no resources yet: `init` reached B2 and `plan` reached
-Xen Orchestra and reported no changes.
 
 ```bash
 ./run.sh init
@@ -63,7 +60,7 @@ without that fails the pre-commit hook and CI.
 
 Every home VM is cloned from one template, `debian-13-cloud-<build>`: Debian
 13's official generic cloud image with cloud-init, on `Local storage` (the host's
-own disk; owner, 2026-11-16). One OS for every home VM is the rule in
+own disk; the owner's choice). One OS for every home VM is the rule in
 `agents/plans/home-overhaul.md`, "One operating system". A clone onto `Nvme` copies the
 3.2 GB disk, which takes seconds.
 
@@ -74,36 +71,36 @@ The template is built on Xen Orchestra's `Other install media`, set to UEFI,
 because that is the only built-in template with a static memory minimum of
 128 MiB; `Debian Trixie 13` fixes it at 1 GiB, which Xen Orchestra cannot
 lower, and a VM's dynamic minimum cannot go below its static minimum.
-Debian publishes `SHA512SUMS` over HTTPS with no signature file next to it
-(checked 2026-11-16), so HTTPS is what vouches for the checksums.
+Debian publishes `SHA512SUMS` over HTTPS with no signature file next to it,
+so HTTPS is what vouches for the checksums.
 
-**In place:** `debian-13-cloud-20261111-2659`, made 2026-11-16 with the steps
-that script strings together (`agents/journal/2026-11-16-debian-13-template.md`). The
+**In place:** `debian-13-cloud-20261111-2659`, made with the steps that script
+strings together (`agents/journal/2026-11-16-debian-13-template.md`). The
 script as a whole is **UNTESTED**; it was written from those steps.
 
 **Boot-test a new build before using it:** clone a throwaway VM from it with a
 cloud-init user and a temporary SSH key, log in, and check `cloud-init status
 --long` says `done` with no errors. Then delete the VM with its disks.
 
+## State
 
 Encrypted by OpenTofu before upload, with the same passphrase as `iac/oci/`, in
 the same private Backblaze B2 bucket, at key `xcp-ng/terraform.tfstate`; never
-in git (owner, 2026-11-16). B2 is the primary because it stays reachable when
+in git (the owner's choice). B2 is the primary because it stays reachable when
 home is down, and because state about the home machines should not live only on
-them. Until 2026-11-16 this backend pointed at a Garage bucket that was never
-created, so no state was lost by the move.
+them.
 
 **Second copy in Garage.** After every command, `run.sh` compares the newest
 copy in Garage's `opentofu` bucket with the encrypted object in B2. When they
 differ it copies the object as `xcp-ng/<UTC time>.tfstate`, checks the copy byte
 for byte, and keeps the newest 14 (`lib/state-copy.sh`,
 `agents/plans/oci-state-backup.md`). Garage is only the second copy, so it never
-changes the exit code (owner, 2026-11-16): when Garage is down the command
+changes the exit code (the owner's choice): when Garage is down the command
 prints a warning, and the next run of any command, even a `plan`, catches up.
 Never copy with `tofu state pull`: it prints the state decrypted.
 
 **One writer.** B2 answers OpenTofu's conditional write with `501
-NotImplemented` (tested 2026-11-04), so OpenTofu cannot take a lock. No command
+NotImplemented` (tested: `NOTES.md`), so OpenTofu cannot take a lock. No command
 can detect that someone else applied in between: a plan always reads whatever
 is in the bucket now. So the rule is the whole protection — one checkout runs
 `./run.sh apply`, the plan summarised in the pull request comes from that same
@@ -111,8 +108,8 @@ checkout, produced immediately before the apply.
 
 **Plans in pull requests.** This repo is public and a full plan can show IDs and
 addresses, so paste only the summary and resource actions, and keep the full plan
-out of the repo, pull requests and CI logs. This keeps only those lines (ran
-against a scratch config on 2026-11-05; attribute values did not appear):
+out of the repo, pull requests and CI logs. This keeps only those lines (tested:
+`NOTES.md`):
 
 ```bash
 ./run.sh plan -no-color | grep -E '^ +# |^Plan:|^No changes'
@@ -124,8 +121,7 @@ deciding. Still check what it prints: a resource's name can identify something t
 **Backup:** losing the bucket loses the mapping between code and real VMs.
 Whether it is backed up is tracked in `lab/systems/backups.md`.
 
-The backend was first used against the real bucket on 2026-11-16 (`./run.sh
-init`). One thing CI cannot check: `tofu init -backend=false` skips the backend block
+One thing CI cannot check: `tofu init -backend=false` skips the backend block
 entirely, so a typo in `backend.tf` surfaces at your first real `tofu init`, not
 in a pull request.
 

@@ -10,7 +10,8 @@ Checks, over tracked Markdown files:
           inventory/, systems/, apps/**/README.md). Dates belong in journal
           entries, which those pages link; a journal file name in a link
           does not count.
-- lines:  length caps: AGENTS.md 40, app READMEs 40, journal entries 40
+- lines:  length caps (notes pages, an app's NOTES.md or systems/notes/, have
+          none): AGENTS.md 40, app READMEs 40, journal entries 40
           (those dated from JOURNAL_CAP_FROM on),
           systems pages 150.
 - rules:  each danger rule is spelled out only in its owner file, the root
@@ -70,7 +71,8 @@ def git(*args):
 
 
 def human_page(f):
-    return (f == "README.md" or f.startswith(("inventory/", "systems/"))
+    return (f == "README.md" or f.startswith("inventory/")
+            or posixpath.dirname(f) == "systems"
             or (f.startswith("apps/") and f.endswith("/README.md")))
 
 
@@ -84,7 +86,7 @@ def cap(f):
         return 40
     if journal_entry(f) and posixpath.basename(f)[:10] >= JOURNAL_CAP_FROM:
         return 40
-    if f.startswith("systems/") and f != "systems/README.md":
+    if posixpath.dirname(f) == "systems" and f != "systems/README.md":
         return 150
     return None
 

@@ -11,7 +11,6 @@ dates apps/vps/langfuse/README.md 5
 dates apps/vps/openbao/README.md 4
 dates apps/vps/pgadmin/README.md 2
 lines apps/homeserver/artifact-keeper/README.md 180
-lines apps/homeserver/traefik/README.md 77
 lines apps/vps/authentik/README.md 140
 lines apps/vps/hermes-webui/README.md 185
 lines apps/vps/langfuse/README.md 213

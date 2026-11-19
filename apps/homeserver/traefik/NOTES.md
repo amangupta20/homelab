@@ -51,3 +51,9 @@ Set `network.trr.allow-rfc1918` to `true` in `about:config` (the owner's fix,
 - **Pulling through the cache.** `proxy-1` pulls Traefik's image and its apt
   packages directly; the cache client playbook is step 4 of
   `agents/plans/package-and-image-cache.md`.
+
+## Dates
+
+When the facts in `README.md` were true from, or were checked.
+
+- The route clean-up was tested on 2026-11-19 with a planted file.

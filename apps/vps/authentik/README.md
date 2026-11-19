@@ -1,7 +1,7 @@
 # Authentik
 
-**Status:** running on the VPS since 2026-11-10 (`agents/journal/2026-11-10-deploy-authentik.md`), the single sign-on (SSO)
-provider of `agents/plans/vps-foundations.md`, step 4 (the owner chose Authentik on 2026-11-10). No app signs in through it
+**Status:** running on the VPS (`agents/journal/2026-11-10-deploy-authentik.md`), the single sign-on (SSO)
+provider of `agents/plans/vps-foundations.md`, step 4 (the owner's choice). No app signs in through it
 yet, and its database restore is not tested.
 
 ## Deploying
@@ -9,7 +9,7 @@ yet, and its database restore is not tested.
 1. Pigsty: put the role's password in OpenBao (`kv/general/pigsty`, field `pg_user_authentik`), run
    `ansible/pigsty/render.sh`, then on the node `bin/pgsql-user pg-meta authentik`,
    `bin/pgsql-db pg-meta authentik` and `bin/pgsql-user pg-meta dbuser_owner` (the database UIs' access,
-   `apps/vps/pgadmin/README.md`). Ran on 2026-11-10; each reported OK (journal).
+   `apps/vps/pgadmin/README.md`). Each reported OK when run (journal).
 2. OpenBao: the fields of `.env.example` at `kv/dokploy/authentik`.
 3. DNS: the public record for `AUTHENTIK_DOMAIN`, and a DNS-only record for `AUTHENTIK_ADMIN_HOST` to the VPS's
    tailnet address.

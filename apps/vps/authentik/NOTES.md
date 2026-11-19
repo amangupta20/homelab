@@ -108,3 +108,10 @@ Used for password recovery and Authentik's notifications. Recovery is the exampl
 `flows-recovery-email-mfa-verification.yaml`, set as the brand's recovery flow: it asks for the second factor as
 well as the emailed link, so access to the mailbox alone does not reset the `akadmin` password. The owner's test
 reset on 2026-11-10 went through.
+
+## Dates
+
+When the facts in `README.md` were true from, or were checked.
+
+- Running since 2026-11-10; the owner chose Authentik that day.
+- The Pigsty role and database commands in step 1 ran on 2026-11-10.

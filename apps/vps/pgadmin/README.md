@@ -1,6 +1,6 @@
 # pgAdmin
 
-**Status:** running since 2026-11-09 (`agents/journal/2026-11-09-deploy-db-admin-uis.md`). A web UI for the shared Postgres, reachable from the tailnet only
+**Status:** running (`agents/journal/2026-11-09-deploy-db-admin-uis.md`). A web UI for the shared Postgres, reachable from the tailnet only
 (`agents/plans/shared-postgres.md`, "Database UIs"). The owner keeps whichever of pgAdmin and CloudBeaver gets used more.
 
 ## Derived from
@@ -9,7 +9,7 @@ The sources and the versions read are in `NOTES.md`.
 
 Dokploy's template was not read. Choices:
 
-- **Tailnet only.** Traefik's `ipallowlist` lets in `100.64.0.0/10` only. Tried with a throwaway router on 2026-11-09:
+- **Tailnet only.** Traefik's `ipallowlist` lets in `100.64.0.0/10` only. Tried with a throwaway router:
   200 over the tailnet, 403 over the public IP, and 403 over the public IP with `X-Forwarded-For` and `X-Real-Ip`
   set to a tailnet address (the check uses the connection's own address). The hostname's DNS record points at the
   VPS's tailnet address, so it is not reachable from outside anyway; the allowlist covers someone sending the right

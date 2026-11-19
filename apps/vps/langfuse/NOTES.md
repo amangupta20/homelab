@@ -186,3 +186,10 @@ container named `pg-proxy` and placeholder values for everything else; B2 and Au
 - Memory while idle and awake: worker 734 MB, web 410 MB, ClickHouse 227 MB, Redis 8 MB (`docker stats`).
 - A Sablier-style cold start, all four stopped and then started together with `docker start`: all healthy after 14 s,
   web restarted once because ClickHouse was not up yet. On the VPS's ARM CPU it may be slower.
+
+## Dates
+
+When the facts in `README.md` were true from, or were checked.
+
+- Running since 2026-11-10, the day the owner chose Langfuse; the owner signed in and made the reviewer's organisation, project and API keys that day. The importer runs since 2026-11-11.
+- The memory figures under "Things to watch" are from `docker stats` on 2026-11-10, and the open-tab requests from Traefik's access log, 12:00 to 17:00 UTC that day.

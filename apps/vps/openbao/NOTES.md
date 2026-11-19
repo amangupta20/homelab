@@ -107,3 +107,9 @@ disable_mlock`, so that setting was removed. Live Dokploy scheduled task
 execution was verified on 2026-10-29 (Garage) and 2026-10-31 (Garage timeout
 fallback and B2 offsite backup; see Host scripts above and
 `agents/journal/2026-10-31-restore-test-openbao-b2.md`).
+
+## Dates
+
+When the facts in `README.md` were true from, or were checked.
+
+- Running since 2026-10-26. Restore tests: 2026-10-29 from Garage, 2026-10-31 from Backblaze B2. The audit log was tested locally on 2026-10-27.

@@ -59,3 +59,9 @@ Sablier for it; it recovers on its own.
 Traefik downloads the plugin from `plugins.traefik.io` on every start, even with a copy in the container. Tried on the workstation with
 Traefik v3.6.7, 2026-11-07, with that host and then DNS made unreachable: Traefik answered after 12 s instead of 4 s, other routes worked,
 and routes using the plugin returned 404. They stay that way until Traefik restarts with the server reachable.
+
+## Dates
+
+When the facts in `README.md` were true from, or were checked.
+
+- Dokploy's Docker cleanup removed sleeping apps on 2026-11-08, -09, -10 and -12.

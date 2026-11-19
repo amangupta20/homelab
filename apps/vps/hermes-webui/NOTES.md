@@ -163,3 +163,9 @@ and a redeploy could change version under the person using it.
   /app/venv/bin/hermes model`, which writes `~/.hermes/config.yaml` and `.env`
   in the volume (owner, 2026-10-27).
 - Still UNTESTED: upgrading either image, the backups below, and a restore.
+
+## Dates
+
+When the facts in `README.md` were true from, or were checked.
+
+- Deployed on Dokploy on 2026-10-27; the owner checked the login, provider and chat that day.

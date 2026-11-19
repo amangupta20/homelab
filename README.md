@@ -74,7 +74,7 @@ never in git. See `systems/openbao.md` for where they live.
 | how a machine is configured after it boots | `ansible/README.md` |
 | the tailnet's access rules | the private repo `homelab-private`, not this one |
 | how this repo's checks work, setting up a checkout | `agents/review/` |
-| a dashboard view of the lab (Obsidian) | `Home.md`, set up in `agents/obsidian/obsidian-view.md` |
+| a dashboard view of the lab (Obsidian) | `agents/obsidian/Home.md`, set up in `agents/obsidian/obsidian-view.md` |
 | how an AI agent is expected to work here | `AGENTS.md` |
 | how each agent harness gets the skills and rules | `agents/` |
 

@@ -53,7 +53,7 @@ The owner reads the repo through Obsidian, not only GitHub: the plain lab
 pages were readable but did not feel like somewhere to browse, and earlier
 Obsidian vaults died because they needed hand-kept notes. So the files stay
 the same and gain a thin layer only Obsidian uses — a property block on every
-page in `systems/`, `inventory/`, `plans/`, tables in `bases/`, and `Home.md`
+page in `systems/`, `inventory/`, `plans/`, tables in `agents/obsidian/bases/`, and `agents/obsidian/Home.md`
 as the Obsidian front page. Agents keep it current; the owner only reads.
 How it works and its rules: `agents/obsidian/obsidian-view.md`.
 

@@ -2,7 +2,7 @@
 """Check the page properties the Obsidian view reads (agents/obsidian/obsidian-view.md).
 
 Every page in systems/, inventory/, plans/ and ideas/ starts with a small YAML block.
-The Bases tables in bases/ are built from it, so a missing or misspelled
+The Bases tables in agents/obsidian/bases/ are built from it, so a missing or misspelled
 property silently drops a page from the dashboard. This fails loudly instead.
 
 Standard library only: the property block is a restricted YAML subset
@@ -86,11 +86,11 @@ def main():
                 if host not in hosts:
                     errors.append(f"{rel}: host {host!r} is not a row in inventory/hosts.md")
 
-    home = ROOT / "Home.md"
+    home = ROOT / "agents/obsidian/Home.md"
     if home.exists():
         for target in re.findall(r"!\[\[([^\]|#]+)", home.read_text()):
             if not (ROOT / target).exists():
-                errors.append(f"Home.md: embeds {target!r}, which does not exist")
+                errors.append(f"agents/obsidian/Home.md: embeds {target!r}, which does not exist")
 
     for e in errors:
         print(f"check-properties: {e}", file=sys.stderr)

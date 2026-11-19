@@ -34,9 +34,9 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 ALLOW = ROOT / ".githooks" / "check-docs-allow.txt"
 
 ROOT_ENTRIES = {
-    "AGENTS.md", "CLAUDE.md", "README.md", "Home.md", "mise.toml",
+    "AGENTS.md", "CLAUDE.md", "README.md", "mise.toml",
     "secret-scan.toml", "secret-scan.local.toml.example",
-    "agents", "ansible", "apps", "bases", "decisions", "iac", "ideas",
+    "agents", "ansible", "apps", "decisions", "iac", "ideas",
     "inventory", "journal", "plans", "systems",
 }
 

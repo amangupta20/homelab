@@ -8,7 +8,7 @@ in Obsidian and does not write in it; agents keep it current.
 
 ## Open it
 
-Obsidian → Open folder as vault → this checkout. Start at `Home.md`.
+Obsidian → Open folder as vault → this checkout. Start at `agents/obsidian/Home.md`.
 
 - Settings → Files and links → turn **Use [[Wikilinks]]** off, so a link
   Obsidian inserts stays a normal relative link GitHub and agents can follow.
@@ -23,8 +23,8 @@ rendered.
 | Piece | Where | What it does |
 |---|---|---|
 | Page properties | the YAML block at the top of every page in `systems/`, `inventory/`, `plans/`, `ideas/` | the data the tables are built from |
-| Tables | `bases/*.base` ([Obsidian Bases](https://obsidian.md/help/bases/syntax)) | one file per table; each defines its filters and views |
-| Front page | `Home.md` | links to every area and embeds the tables with `![[bases/<name>.base]]` |
+| Tables | `agents/obsidian/bases/*.base` ([Obsidian Bases](https://obsidian.md/help/bases/syntax)) | one file per table; each defines its filters and views |
+| Front page | `agents/obsidian/Home.md` | links to every area and embeds the tables with `![[agents/obsidian/bases/<name>.base]]` |
 | Callouts | `> [!WARNING]`, `> [!NOTE]`, `> [!IMPORTANT]` | boxed warnings that render in Obsidian and on GitHub |
 | Diagram | Mermaid block in `inventory/network.md` | renders in Obsidian and on GitHub |
 | Check | `.githooks/check-properties.py` | fails a commit (pre-commit hook) or CI when properties are missing or wrong |
@@ -66,8 +66,8 @@ the same commit.
   that folder's README; it includes the property block.
 - **Links stay relative markdown links** (`[text](path.md)`), never
   `[[wikilinks]]`, so GitHub and agents keep working. The one exception is
-  `Home.md`'s `![[bases/...]]` embeds, which only Obsidian needs.
-- **A new table** goes in `bases/` and is embedded from `Home.md`; do not paste
+  `Home.md`'s `![[agents/obsidian/bases/...]]` embeds, which only Obsidian needs.
+- **A new table** goes in `agents/obsidian/bases/` and is embedded from `Home.md`; do not paste
   table definitions into pages, or two copies drift.
 
 Run the check by hand: `mise run check:properties`.

@@ -9,7 +9,6 @@ dates apps/vps/cloudbeaver/README.md 2
 dates apps/vps/hermes-webui/README.md 4
 dates apps/vps/langfuse/README.md 5
 dates apps/vps/openbao/README.md 4
-dates apps/vps/pg-proxy/README.md 3
 dates apps/vps/pgadmin/README.md 2
 dates apps/vps/sablier/README.md 3
 lines apps/README.md 49
@@ -19,7 +18,6 @@ lines apps/vps/authentik/README.md 140
 lines apps/vps/hermes-webui/README.md 185
 lines apps/vps/langfuse/README.md 213
 lines apps/vps/openbao/README.md 133
-lines apps/vps/pg-proxy/README.md 44
 lines apps/vps/sablier/README.md 76
 lines systems/openbao.md 204
 lines systems/router.md 187

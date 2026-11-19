@@ -311,7 +311,7 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
    `imp/back`'s. The 2026-10-30 copy was stale on 2026-11-14. On 2026-11-15 the
    snapshots ran again but the replication failed on a checksum error in `imp`;
    the damaged file and snapshot were removed and the replication rerun by hand
-   (`lab/systems/truenas.md`, "Checksum errors on `imp`"). **Done 2026-11-15**, checked
+   (`lab/systems/notes/truenas.md`, "Checksum errors on `imp`"). **Done 2026-11-15**, checked
    2026-11-16 through the TrueNAS API: `Main/repli` and `imp/back` both have
    `auto-2026-11-15_20-00` as their newest snapshot, and the scrub of `imp` that
    followed found 0 errors.
@@ -321,7 +321,7 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
    passed the same day. **2026-11-14 to -15, read on the GPU VM:** the owner restored
    it that evening (the data folder, an SMB mount of `back/nextcloud`, was rewritten
    around 19:30 UTC); the restore brought `daily_backup_time` (22:00) back, so the
-   nightly backup ran, failed on the damaged file in `imp` (`lab/systems/truenas.md`,
+   nightly backup ran, failed on the damaged file in `imp` (`lab/systems/notes/truenas.md`,
    "Checksum errors on `imp`") and then started every container. It ran on Nextcloud
    34.0.5 with `files_archive` 1.2.8 still installed until 2026-11-15, when the
    agent stopped all twelve containers at the owner's request and renamed

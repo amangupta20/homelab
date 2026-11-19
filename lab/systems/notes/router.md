@@ -18,7 +18,7 @@ Measurements, reasons and lists behind `lab/systems/router.md`.
   Bandwidth Monitor; its database is in RAM and is written to flash once a
   day, so a reboot can lose up to a day), `luci-ssl`,
   `luci-app-attendedsysupgrade` and `owut` (upgrade helpers, **UNTESTED** on
-  this build), `tailscale` (see Tailscale below), `luci-app-statistics`
+  this build), `tailscale` (see Tailscale in `lab/systems/router.md`), `luci-app-statistics`
   (history graphs of load, memory, interfaces and Wi-Fi under Statistics;
   kept in RAM, so a reboot clears them), `luci-app-sqm` (traffic shaping,
   installed and switched off), `wpad-mbedtls`, `usteer` with

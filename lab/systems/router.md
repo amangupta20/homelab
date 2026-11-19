@@ -128,7 +128,7 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
   ships its own module archive.
 - **An upgrade drops every added package** unless the upgrade helper rebuilds
   the image with them, and that is untested on this build. Reinstall from the
-  list above.
+  list in `lab/systems/notes/router.md`, "Added packages".
 
 ## Backups
 

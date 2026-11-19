@@ -20,7 +20,7 @@ Blinko uses about 172 MB (`docker stats`, 2026-11-07), with 17 GB available on t
 
 - Blinko first. Its scheduled jobs not running while it sleeps is acceptable.
 - Start with a 10-minute idle time, because it is easy to test, then choose the real one. It is set per app.
-- Plugin downloads on each Traefik start are acceptable once tested ("If the plugin server is down" in `apps/vps/sablier/README.md`).
+- Plugin downloads on each Traefik start are acceptable once tested ("If the plugin server is down" in `apps/vps/sablier/NOTES.md`).
 
 Agent's choices:
 

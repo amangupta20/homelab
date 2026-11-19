@@ -55,7 +55,8 @@ MOVED = {
     "systems": ["lab/systems"], "inventory": ["lab/inventory"],
     "plans": ["agents/plans"], "ideas": ["agents/ideas"],
     "journal": ["agents/journal"], "skills": ["agents/skills"],
-    "repo": ["agents/review"], "decisions": ["agents/decisions", "agents/rules"],
+    "repo": ["agents/review", "agents/obsidian"], "bases": ["agents/obsidian/bases"],
+    "decisions": ["agents/decisions", "agents/rules"],
 }
 
 # The 40-line cap applies to journal entries written after the clean-up; older

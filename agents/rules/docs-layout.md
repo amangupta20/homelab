@@ -32,6 +32,7 @@ So the layout is:
 | What do the stacks look like? | `apps/<host>/<app>/` | agent, through review |
 | How does this repo's tooling work? | `agents/review/` | agent, through review |
 | How do agents work here? | `AGENTS.md` | owner; agent proposes |
+| Who edits what, what a change must pass, how much access an agent gets? | `agents/rules/` | owner; agent proposes |
 
 Folders are sorted by the question a person has when they open the repo, not
 by document type, because the first reader is the owner scrolling for

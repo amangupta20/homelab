@@ -33,15 +33,7 @@ Private subnet `10.22.33.0/24`, served by the Home router
 | `.160` | TrueNAS VM | verified: TrueNAS API |
 | `.253` | adguard-docker | verified: SSH and Portainer API |
 
-**When each check ran** (the State cells say how):
-
-- Home router (`.1`): 2026-11-13 (`agents/journal/2026-11-13-openwrt-home-router.md`).
-  The DHCP pool (`.10`–`.54`): 2026-11-16, when it was narrowed from
-  `.100`–`.249` at the owner's request.
-- oob-1 and the home VMs (`.55`, `.99`, `.100`, `.123`, `.160`, `.252`–`.254`):
-  the read-only recon of 2026-11-14.
-- cache-1 (`.137`): 2026-11-16. proxy-1 (`.138`): 2026-11-18. Both in the linked
-  journal entries.
+When each row was checked: `lab/inventory/notes/network.md`.
 
 Upstream of the Home router is the ISP router's own private network,
 `192.168.1.0/24`: the Home router takes an address there by DHCP and the ISP

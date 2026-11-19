@@ -37,8 +37,8 @@ document says, and the read-only recon pass has not filled it in yet.
 | Nextcloud AIO | Self-hosted file sync (Dropbox replacement), all-in-one container. Data folder on the TrueNAS share `back` (`imp/back/nextcloud`); daily Borg backup at 22:00 to BorgWarehouse. | gpu_docker | down: its automatic update failed (read from the container's log); full restore test still to do |
 | Uptime Kuma | Up/down monitoring. One copy ran on the Raspberry Pi until its rebuild (`agents/journal/2026-11-14-rebuild-oob-pi.md`); another runs on the Portainer host. A fresh one on the VPS is planned. | portainer instance | running — verified: Portainer API |
 | Sablier | Stops idle apps and starts them on the next request (`agents/plans/sablier-wakeups.md`, `apps/vps/sablier/`). | remote VPS | running; Blinko, pgAdmin and CloudBeaver sleep behind it (`agents/journal/2026-11-07-deploy-sablier.md`) |
-| Authentik | Single sign-on for the lab (`apps/vps/authentik/`). Public login; admin interface on a tailnet-only hostname. Mail through Resend. | remote VPS, database on `pigsty-1` | running — verified: both containers healthy, public login 200, admin paths 403 publicly, admin hostname 403 from the public address; first app sign-in: Langfuse (owner) |
-| Langfuse | The AI reviewer's trace viewer and evaluation tool (`apps/vps/langfuse/`). Public, sign-in through Authentik only. Stops after 20 idle minutes (Sablier). Event files in a B2 bucket. | remote VPS, database on `pigsty-1` | running — verified: four containers healthy, public health 200 with a Let's Encrypt certificate, password sign-up 422 and login 401, Sablier wake 27–35 s; owner's first sign-in worked and a probe trace went in over OpenTelemetry; no real traces yet (`agents/journal/2026-11-10-deploy-langfuse.md` covers the deploy) |
+| Authentik | Single sign-on for the lab (`apps/vps/authentik/`). Public login; admin interface on a tailnet-only hostname. Mail through Resend. | remote VPS, database on `pigsty-1` | running — verified: health and access checks (`lab/inventory/notes/services.md`); first app sign-in: Langfuse |
+| Langfuse | The AI reviewer's trace viewer and evaluation tool (`apps/vps/langfuse/`). Public, sign-in through Authentik only. Stops after 20 idle minutes (Sablier). Event files in a B2 bucket. | remote VPS, database on `pigsty-1` | running — verified: health, sign-in and a probe trace (`lab/inventory/notes/services.md`); no real traces yet |
 | pg-proxy | One address on the VPS for the shared Postgres (`apps/vps/pg-proxy/`): 5432 for apps, 5436 for the database UIs. | remote VPS | running — verified: a login as `blinko` through `pg-proxy:5432` reached the primary, and `dbuser_owner` through 5436 (`agents/journal/2026-11-09-deploy-pg-proxy.md`) |
 | pgAdmin | Web UI for the shared Postgres (`apps/vps/pgadmin/`). Tailnet only. | remote VPS | running — verified: 200 over the tailnet, 403 from the public address (`agents/journal/2026-11-09-deploy-db-admin-uis.md`) |
 | CloudBeaver | Web UI for the shared Postgres (`apps/vps/cloudbeaver/`). Tailnet only. | remote VPS | running — verified: 200 over the tailnet, 403 from the public address, setup wizard skipped (`agents/journal/2026-11-09-deploy-db-admin-uis.md`) |
@@ -54,21 +54,7 @@ document says, and the read-only recon pass has not filled it in yet.
 | OCI Borgmatic | Planned: run Borg backups on a cheap cloud VM. | — | design only — do not deploy yet |
 | Object storage lab | Experiment: S3-compatible storage (Garage/SeaweedFS) across two sites. | — | idea, not built |
 
-**When each check ran** (the State cells say how; linked journal entries hold the detail):
-
-- Home services on TrueNAS, the home VMs and Portainer: the read-only recon
-  of 2026-11-14, through the Xen Orchestra, TrueNAS and Portainer APIs and SSH.
-  Nextcloud AIO went down at 2026-11-13 22:56 UTC, read from its container's
-  log in that recon.
-- Home network DHCP and DNS: 2026-11-13, over SSH on the router.
-- Dokploy and OpenBao's health: the VPS recon of 2026-10-26. Dokploy reading
-  OpenBao at deploy time: 2026-10-27. OpenBao's restore test: 2026-10-29.
-- Deploys, each checked the same day: the shared Postgres 2026-11-06; Blinko and Sablier deployed 2026-11-07;
-  pg-proxy, pgAdmin and CloudBeaver 2026-11-09; Authentik and Langfuse
-  2026-11-10, the day the owner first signed in to Langfuse through Authentik
-  and sent the probe trace; Artifact Keeper 2026-11-16, its first client
-  (`oob-1`) 2026-11-17; Traefik on proxy-1 2026-11-18. Hermes WebUI (second):
-  deployed 2026-10-27.
+When each row was checked: `lab/inventory/notes/services.md`.
 
 ### Apps on the VPS
 

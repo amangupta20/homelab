@@ -29,8 +29,9 @@ checks it.
   name the host.
 - Every table says at the top that its rows are from the docs and not
   verified. A row checked against the live lab names the how in its State
-  column (`verified: SSH`); the date goes in the page's "When each check ran"
-  list, never in a cell (`mise run check:docs` fails on a dated cell).
+  column (`verified: SSH`); the date, and any detail longer than a few words,
+  goes in the page's notes file (`lab/inventory/notes/<page>.md`, "When each
+  check ran"), never in a cell (`mise run check:docs` fails on a dated cell).
 - Unknown is written as `unknown`, never guessed.
 - Only private addresses and placeholders. The scan blocks public IPs and
   tailnet names (`agents/review/secret-scanning.md`).

@@ -397,3 +397,8 @@ Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
   `agents/plans/package-and-image-cache.md` step 4 says it ran on `proxy-1`.
   Read in the repo only; the live VM was not checked. The NOTES.md line is left
   as it was for the owner to settle.
+- `apps/vps/authentik/README.md`, "Status", says no app signs in through
+  Authentik yet. `inventory/services.md` (Authentik and Langfuse rows) says
+  Langfuse signs in through it, by the owner on 2026-11-10, and
+  `apps/homeserver/artifact-keeper/README.md` has a "Sign-in" section through
+  Authentik. Read in the repo only. The status line is left as it was.

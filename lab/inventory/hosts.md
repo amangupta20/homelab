@@ -34,13 +34,4 @@ names, sizes and the unknowns.
 | Stopped VMs | `Dokploy` (5 CPU / 5 GB), `Minecraft` (6 / 10 GB), `arkserver` (6 / 24 GB), `zorin os test` (6 / 6 GB), two `XOA` (2 / 2 GB each) | XCP-ng host | not running; whether to keep each is open (`agents/plans/home-overhaul.md`) | various | halted — verified: Xen Orchestra's REST API |
 | Agent VM | VM `agent-1` (proposed 4 CPU; memory 1–8 GB static, 1–4 GB dynamic) | XCP-ng host | runs coding and maintenance agents (Claude Code, Codex, opencode, Hermes, pi/omp), mostly as Orca workers, and is the owner's general development machine (`agents/plans/home-overhaul.md`, B0) | — | planned |
 
-**When each check ran** (the State cells say how; journal entries hold the detail):
-
-- Home VMs, TrueNAS and the stopped VMs: the read-only recon of 2026-11-14,
-  through the Xen Orchestra, TrueNAS and Portainer APIs and SSH.
-- XCP-ng host hardware, read by the owner at the console: 2026-11-13
-  (`agents/journal/2026-11-13-xcp-ng-host-ram-and-bios.md`).
-- Home router, over SSH: 2026-11-13 (`agents/journal/2026-11-13-openwrt-home-router.md`).
-- oob-1: 2026-11-14, after its rebuild. Remote VPS: recon of 2026-10-26.
-  pigsty-1: 2026-11-06, the day Pigsty was installed.
-- cache-1: 2026-11-16. proxy-1: 2026-11-18. Both in the linked journal entries.
+When each row was checked: `lab/inventory/notes/hosts.md`.

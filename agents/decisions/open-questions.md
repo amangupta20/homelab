@@ -387,3 +387,13 @@ Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
   link to the VPS was direct, its CPU 97% idle, flow offloading off, the
   `tailscale` zone with `masq` on. Cause unknown; left for the owner, who set up
   the detour.
+
+## Docs that disagree (added 2026-11-19, during the repo clean-up)
+
+- `apps/homeserver/traefik/NOTES.md`, "Not done yet (phase 2)", says `proxy-1`
+  pulls Traefik's image and apt packages directly and that the cache client
+  playbook is still to come. `ansible/inventory.yml` lists `proxy-1` in
+  `lan_cache_clients`, `ansible/cache-client.yml` exists, and
+  `agents/plans/package-and-image-cache.md` step 4 says it ran on `proxy-1`.
+  Read in the repo only; the live VM was not checked. The NOTES.md line is left
+  as it was for the owner to settle.

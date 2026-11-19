@@ -6,7 +6,7 @@ agent. Status: proposed, for the owner to confirm in review.
 ## Why
 
 The owner chose Authentik for step 4 of `plans/vps-foundations.md`. The
-earlier note against it (`decisions/open-questions.md`, "Foundations": tried
+earlier note against it (`agents/decisions/open-questions.md`, "Foundations": tried
 around 2024 and found too heavy) dated from early in learning self-hosting,
 and was never final. Since version 2025.10 it no longer needs Redis, and its
 database goes on the shared Postgres cluster (`plans/shared-postgres.md`), so

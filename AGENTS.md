@@ -5,9 +5,9 @@ how to work here without breaking things.
 
 Read in this order:
 1. `README.md` — what this homelab is, and the "Find something" map
-2. `decisions/open-questions.md` — what is undecided or unverified; do not
+2. `agents/decisions/open-questions.md` — what is undecided or unverified; do not
    treat anything listed there as fact
-3. `decisions/docs-layout.md` — which file owns which kind of fact, and who
+3. `agents/rules/docs-layout.md` — which file owns which kind of fact, and who
    may edit what
 4. `inventory/` — services, hosts, IPs
 5. `systems/xcp-ng.md` — the platform rule that destroys VMs
@@ -23,16 +23,16 @@ Read in this order:
 | `ideas/` | correct facts and add sources; never promote, drop or act on an idea without the owner (`ideas/README.md`) |
 | `journal/` | add an entry when a task changed the live lab, handled an incident, or tested a restore (`journal/README.md`); never edit an old one except to append a follow-up |
 | `agents/skills/` | follow; add new skills and propose changes to existing ones (`agents/skills/write-a-skill/`) |
-| `decisions/open-questions.md` | append; never delete or resolve an item |
-| `decisions/` (everything else), `AGENTS.md`, `README.md` goal and principles | propose only, in a separate commit for the owner to review |
+| `agents/decisions/open-questions.md` | append; never delete or resolve an item |
+| `agents/decisions/` (everything else), `agents/rules/`, `AGENTS.md`, `README.md` goal and principles | propose only, in a separate commit for the owner to review |
 
 The owner keeps the design; you keep the facts current.
 
 ## When facts disagree
 
 If two files disagree, or a file disagrees with what you observe on the live
-lab, or a file contradicts `decisions/open-questions.md`: do not pick a side.
-Add the contradiction to `decisions/open-questions.md` — what each source says
+lab, or a file contradicts `agents/decisions/open-questions.md`: do not pick a side.
+Add the contradiction to `agents/decisions/open-questions.md` — what each source says
 and how you saw it — and stop that part of the task. Whichever source you read
 first is not automatically right.
 
@@ -131,7 +131,7 @@ repo, never only inside your own harness:
   repo.
 - **You need access you do not have** (an MCP server, an API, a tool): propose
   it in `agents/` so every harness gets it. If it needs a credential, write in
-  `decisions/open-questions.md` that one is needed and that it will live in
+  `agents/decisions/open-questions.md` that one is needed and that it will live in
   OpenBao — never the credential itself. Do not wire it into your harness's
   private config only.
 - **Something only works in one harness:** `agents/extensions/<harness>/`.

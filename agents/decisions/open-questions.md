@@ -22,7 +22,7 @@ owner file, and is deleted from this list.
 
 - Where does the offsite copy land, and is it encrypted at rest?
 - Does OpenBao's backup travel the same offsite path or need its own?
-- Proposal 2026-10-31 for the two items above: `decisions/backup-tiers.md`
+- Proposal 2026-10-31 for the two items above: `agents/decisions/backup-tiers.md`
   (encrypted B2 tier sent from the source, OpenBao first). Also open with it:
   which services besides OpenBao get that tier, and where the offsite
   encryption keys are kept outside the lab.
@@ -105,7 +105,7 @@ owner file, and is deleted from this list.
   that was early in learning self-hosting, so dropping it is not final.
   Lighter candidates (Authelia, Pocket ID, Kanidm) have not been compared.
 - Answered by the owner, 2026-11-10, for the item above: Authentik, without
-  comparing the lighter candidates (`decisions/sso-authentik.md`,
+  comparing the lighter candidates (`agents/decisions/sso-authentik.md`,
   `apps/vps/authentik/`).
 
 ## Not planned yet
@@ -284,7 +284,7 @@ these parts are open:
   `agents/skills/back-up-a-service/` says `repo1` Garage, `repo2` B2; the owner wants B2
   first (`plans/shared-postgres.md`, "Backups"). Which numbering wins, and how a
   second repository gets added, is untested.
-- `decisions/backup-tiers.md` keeps "3 daily, 1 weekly, 1 monthly" on B2, which
+- `agents/decisions/backup-tiers.md` keeps "3 daily, 1 weekly, 1 monthly" on B2, which
   pgBackRest cannot express; the owner chose one full backup for now
   (`plans/shared-postgres.md`, "Backups"). Which wording should the decision keep?
 - For later, not now (agent's notes, owner has not decided): `pg_vault_tde` encrypts table values

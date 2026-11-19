@@ -28,7 +28,7 @@ Oracle Cloud): the cache answers on the LAN only.
 
 - Read `apps/homeserver/artifact-keeper/README.md` ("Repositories", "Quirks").
 - No snapshot: a remote repository holds only a cache, and `cache-remotes.sh`
-  recreates the settings (`decisions/backup-tiers.md`, rebuildable state).
+  recreates the settings (`agents/decisions/backup-tiers.md`, rebuildable state).
 
 ## Steps
 
@@ -80,7 +80,7 @@ second fetch is far faster than the first.
   credentials go in OpenBao and the remote needs upstream authentication, which
   this skill does not cover; ask the owner;
 - the first fetch is very slow and the upstream is GitHub-hosted: that is the
-  router's GitHub detour (`decisions/open-questions.md`, "Home network"), not
+  router's GitHub detour (`agents/decisions/open-questions.md`, "Home network"), not
   the cache.
 
 ## Afterwards

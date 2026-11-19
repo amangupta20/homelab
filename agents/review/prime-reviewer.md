@@ -5,7 +5,7 @@ storage since pull request 30 merged. The first run of that setup was pull
 request 31 on 2026-11-03: approve, run `41576294219-1` (job log read through
 the GitHub API). The same reviewer was run by hand on pull requests 21, 25,
 27 and 28 first; see "How it was tested". It runs the required `ai review` check
-(`decisions/pull-request-gate.md`), replacing the earlier reviewer that sent
+(`agents/rules/pull-request-gate.md`), replacing the earlier reviewer that sent
 the diff to a model in one call.
 
 ## What it does
@@ -21,7 +21,7 @@ source coding agent) reads the pull request against `agents/review/review.md` an
 | 3 | design, or anything in a protected path | a comment with no code; reply `/prime <instruction>` (for example "do it") and it continues the same session and commits |
 
 It reports only findings that meet the bar in `agents/review/review.md`
-("Blockers and warnings"), not wording or style. Never on its own: `iac/`, `decisions/`, `.github/`,
+("Blockers and warnings"), not wording or style. Never on its own: `iac/`, `agents/decisions/`, `.github/`,
 `.githooks/`, `agents/skills/`, `journal/`, `AGENTS.md`, `README.md`, `CLAUDE.md`,
 `agents/review/review.md` — anything there is level 3. Source: `protected` in the
 private `repos/homelab/config.toml`, read 2026-11-14.
@@ -117,7 +117,7 @@ The prompts and traces are private because workflow artifacts and logs of a
 public repository are readable by anyone; the run log shows only the outcome.
 Prime's usage telemetry is off (`DO_NOT_TRACK=1`).
 
-The trace viewer is Langfuse (owner, 2026-11-10; `decisions/open-questions.md`,
+The trace viewer is Langfuse (owner, 2026-11-10; `agents/decisions/open-questions.md`,
 AI reviewer; `apps/vps/langfuse/`). An importer next to it reads the B2 trace
 archives every 15 minutes and sends each run to Langfuse; its log showed every
 homelab review through pull request 91 imported (read on the VPS, 2026-11-18).

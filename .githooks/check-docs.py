@@ -36,7 +36,7 @@ ALLOW = ROOT / ".githooks" / "check-docs-allow.txt"
 ROOT_ENTRIES = {
     "AGENTS.md", "CLAUDE.md", "README.md", "mise.toml",
     "secret-scan.toml", "secret-scan.local.toml.example",
-    "agents", "ansible", "apps", "decisions", "iac", "ideas",
+    "agents", "ansible", "apps", "iac", "ideas",
     "inventory", "journal", "plans", "systems",
 }
 

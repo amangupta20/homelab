@@ -19,7 +19,7 @@ after them is deployed once with secrets and sign-in already wired.
 first app deployed with `agents/skills/deploy-on-dokploy/` reads its secrets from
 OpenBao and signs in through SSO.
 
-Why this order and why on the VPS: `decisions/foundations-on-vps.md`.
+Why this order and why on the VPS: `agents/decisions/foundations-on-vps.md`.
 
 ## Steps
 
@@ -30,8 +30,8 @@ Why this order and why on the VPS: `decisions/foundations-on-vps.md`.
    left in "How it works".
 1. **Decide how OpenTofu manages the VPS.** Depends on the provider having an
    OpenTofu provider, and on whether the existing VPS is imported into state or
-   rebuilt from code. — gate: a decision file in `decisions/`. Done
-   2026-10-26: it doesn't (`decisions/vps-outside-opentofu.md`).
+   rebuilt from code. — gate: a decision file in `agents/decisions/`. Done
+   2026-10-26: it doesn't (`agents/decisions/vps-outside-opentofu.md`).
 2. **OpenBao on the VPS.** Before installing: a VPS snapshot from the
    provider, or a verified backup of every Dokploy app's data, named in the
    journal entry. Then: storage backend chosen; listener on the Tailscale
@@ -52,7 +52,7 @@ Why this order and why on the VPS: `decisions/foundations-on-vps.md`.
    whether it had finished was not checked, so the "verified" half of the
    precondition stays open. Dokploy's OpenBao provider token renewal is automated
    daily by the `openbao-raft-snapshot` scheduled task. Still open: the OpenTofu half.
-4. **SSO.** Choose one (`decisions/open-questions.md`, Foundations), deploy it
+4. **SSO.** Choose one (`agents/decisions/open-questions.md`, Foundations), deploy it
    with `agents/skills/deploy-on-dokploy/`, public login, tailnet-only admin, backup
    tested. — gate: the throwaway app from step 3 signs in through it.
    Choosing and deploying the provider does not wait on the edge decision:
@@ -76,5 +76,5 @@ Why this order and why on the VPS: `decisions/foundations-on-vps.md`.
 
 ## Links
 
-`systems/vps.md`, `systems/openbao.md`, `decisions/vps-role.md`,
-`decisions/foundations-on-vps.md`, `plans/home-overhaul.md` (the homelab side).
+`systems/vps.md`, `systems/openbao.md`, `agents/decisions/vps-role.md`,
+`agents/decisions/foundations-on-vps.md`, `plans/home-overhaul.md` (the homelab side).

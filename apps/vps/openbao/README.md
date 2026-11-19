@@ -26,7 +26,7 @@ Choices that differ from those sources, and why:
 
 - Real server with Raft storage, not dev mode (`systems/openbao.md`).
 - Port bound to the tailnet address only, no Dokploy domain
-  (`decisions/foundations-on-vps.md`).
+  (`agents/decisions/foundations-on-vps.md`).
 - The config lives inside `compose.yaml` (`configs.content`), so the stack
   does not depend on how Dokploy lays out the git checkout.
 - TLS 1.3 only: every client is ours.

@@ -252,7 +252,7 @@ How CrowdSec is built (CrowdSec docs, via Hindsight 2026-10-26):
 | Virtual router, if built | firewall logs | OPNsense's CrowdSec plugin (unverified) |
 
 Open: where the LAPI lives — the VPS (always on, the same reasoning as
-OpenBao in `decisions/foundations-on-vps.md`) or home. Known limit: log-based
+OpenBao in `agents/decisions/foundations-on-vps.md`) or home. Known limit: log-based
 bans arrive after the response, so a single-request exploit gets through;
 AppSec's in-band virtual patching is what closes part of that.
 
@@ -283,8 +283,8 @@ first — false positives are where CRS costs time.
 
 - The SSO provider (Pocket ID, Authelia, Kanidm; Authentik found too heavy in
   a 2024 trial, not final) runs on the VPS, public, admin tailnet-only, with
-  its own bundled database (`decisions/foundations-on-vps.md`,
-  `decisions/open-questions.md`). All three are OpenID Connect providers, and
+  its own bundled database (`agents/decisions/foundations-on-vps.md`,
+  `agents/decisions/open-questions.md`). All three are OpenID Connect providers, and
   every edge candidate can use one, so **choosing and deploying the provider
   is not blocked by the edge decision.**
 - Only forward-auth — a sign-in in front of apps with none of their own —
@@ -372,7 +372,7 @@ later Greenbone.
 ## Promote when
 
 The owner decides on Pangolin. Then the edge proxy and CrowdSec placement
-become a plan, and the decisions above go to `decisions/`.
+become a plan, and the decisions above go to `agents/decisions/`.
 
 ## Sources
 

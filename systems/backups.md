@@ -73,7 +73,7 @@ line was read from Dokploy, and the OpenBao backup and restore were tested on
 2026-10-29 (Garage) and 2026-10-31 (Backblaze B2).
 
 In force: every service keeps its local tier on Garage, and the important ones
-add an offsite tier on B2 (`decisions/backup-tiers.md`, how: `agents/skills/back-up-a-service/`,
+add an offsite tier on B2 (`agents/decisions/backup-tiers.md`, how: `agents/skills/back-up-a-service/`,
 plan: `plans/offsite-backups.md`). OpenBao has both tiers in place.
 
 ## The rule

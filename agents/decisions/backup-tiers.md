@@ -58,7 +58,7 @@ be fetched again, it is not exempt.
    whose B2 key can delete files lets an attacker on that host wipe both tiers.
    Options: B2 Object Lock for a few days, or a key that cannot delete plus B2
    lifecycle rules for cleanup. Whether either works with the chosen tool's
-   pruning is untested. Same principle as `decisions/agent-access.md`: backups sit
+   pruning is untested. Same principle as `agents/rules/agent-access.md`: backups sit
    on a boundary the lab's own credentials cannot write to.
 4. **B2 hides deleted files by default** instead of removing them; the bucket
    needs a lifecycle rule that keeps only the current version, or cleanup frees
@@ -91,4 +91,4 @@ From `plans/home-overhaul.md`, "Design". Tier 1 is no longer always Garage:
 
 `systems/backups.md` (what each service actually has),
 `agents/skills/back-up-a-service/` (how), `plans/offsite-backups.md` (OpenBao first),
-`decisions/open-questions.md` ("Backups").
+`agents/decisions/open-questions.md` ("Backups").

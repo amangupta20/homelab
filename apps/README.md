@@ -29,7 +29,7 @@ Each app folder holds:
 
 - No real `.env` files; `.env` is git-ignored and the scan blocks secrets.
 - CI runs `docker compose config` on every compose file here
-  (`decisions/pull-request-gate.md`).
+  (`agents/rules/pull-request-gate.md`).
 - Moving a stack in is a plan, not a drive-by: old copy keeps running until
   the new one is healthy (`plans/home-overhaul.md`).
 - A homeserver stack that pulls an image from a registry other than Docker

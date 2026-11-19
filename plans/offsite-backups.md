@@ -26,7 +26,7 @@ for each service is `agents/skills/back-up-a-service/`; commands below are
 
 ## Steps
 
-0. **Owner approves the pattern** in `decisions/backup-tiers.md` and confirms
+0. **Owner approves the pattern** in `agents/decisions/backup-tiers.md` and confirms
    the tier-2 list. — gate: its Status line says in force (approved 2026-10-31).
 1. **B2 set up by the owner.** Bucket created with lifecycle rule keeping only
    the last version; Application Key limited to that bucket with read/write and
@@ -61,6 +61,6 @@ for each service is `agents/skills/back-up-a-service/`; commands below are
 
 ## Links
 
-`decisions/backup-tiers.md`, `agents/skills/back-up-a-service/`,
+`agents/decisions/backup-tiers.md`, `agents/skills/back-up-a-service/`,
 `systems/backups.md`, `systems/openbao.md`, `apps/vps/openbao/README.md`,
-`decisions/open-questions.md` ("Backups").
+`agents/decisions/open-questions.md` ("Backups").

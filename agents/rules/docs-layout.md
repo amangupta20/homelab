@@ -1,4 +1,4 @@
-# Facts live in one owner file each; reasons live in decisions/
+# Facts live in one owner file each; reasons live in agents/decisions/
 
 Decided: 2026-10-26. Status: in force.
 
@@ -26,8 +26,8 @@ So the layout is:
 | How do I do X? | `agents/skills/` (agentskills.io `SKILL.md`, shared by every harness) | agent adds new ones; changes to existing ones are proposed |
 | What is in flight? | `plans/` | agent updates status; owner sets goals |
 | What could be tried later? | `ideas/` | owner adds or asks; agent corrects facts, never promotes |
-| Why is it this way? | `decisions/` | owner; agent proposes |
-| What is undecided or unverified? | `decisions/open-questions.md` | agent appends, owner resolves |
+| Why is it this way? | `agents/decisions/` | owner; agent proposes |
+| What is undecided or unverified? | `agents/decisions/open-questions.md` | agent appends, owner resolves |
 | What happened, when? | `journal/` | whoever did the work |
 | What do the stacks look like? | `apps/<host>/<app>/` | agent, through review |
 | How does this repo's tooling work? | `agents/review/` | agent, through review |
@@ -77,7 +77,7 @@ status columns and kanban views.
 
 Research for things to try once there is time or hardware (a database
 replica on the VPS, for example) had nowhere to go: `plans/` promises the work
-will happen in order, and `decisions/open-questions.md` is for what is unknown
+will happen in order, and `agents/decisions/open-questions.md` is for what is unknown
 about the lab as it is. Left in a chat or in memory, the research gets
 redone. So `ideas/` holds designs that were researched but not scheduled. An
 idea becomes a plan only when the owner decides, and the idea page stays as

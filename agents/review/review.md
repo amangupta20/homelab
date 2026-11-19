@@ -78,7 +78,7 @@ cannot:
   unverified"). A number nobody measured is labelled a guess.
 - Every command added was run, or is marked **UNTESTED**.
 - Nothing is invented to fill a gap — a missing reason stays marked missing.
-- Nothing states as fact what `decisions/open-questions.md` lists as open,
+- Nothing states as fact what `agents/decisions/open-questions.md` lists as open,
   unless the same change resolves the question there.
 - The repo leads the lab: a stack, config or decision has to merge before it
   can be deployed or put in force, so a change may describe something the
@@ -100,7 +100,7 @@ cannot:
 From the edit table in `AGENTS.md`. If an agent's change edits any of these,
 the verdict is `needs_owner`, however good the edit is:
 
-- an existing file in `decisions/` (other than appending to `open-questions.md`);
+- an existing file in `agents/decisions/` (other than appending to `open-questions.md`) or `agents/rules/`;
 - `AGENTS.md`, or the README's goal and principles;
 - an existing skill in `agents/skills/` (a new skill is fine);
 - an old `journal/` entry.
@@ -120,7 +120,7 @@ the verdict is `needs_owner`, however good the edit is:
 - Compose files hold secrets and identifying values (domains, public IPs,
   tailnet IPs and names) as references, never as values. Any other value
   written into the file is fine (`apps/README.md`).
-- Access for agents follows `decisions/agent-access.md`: convenience first,
+- Access for agents follows `agents/rules/agent-access.md`: convenience first,
   with two hard guards (backups out of an agent's reach, no manual snapshot
   deletion). Asking for lockdown beyond that is not a finding.
 
@@ -140,7 +140,7 @@ moved here from the Prime reviewer's private playbook on 2026-11-03):
   defect, supported by a realistic trigger and consequence;
 - someone acting on the page would be misled or do the wrong thing: a false
   or unsourced claim about the live lab, a contradiction with another page or
-  with `decisions/open-questions.md`, an open question stated as decided, a
+  with `agents/decisions/open-questions.md`, an open question stated as decided, a
   stale line the change left behind elsewhere;
 - a path, link, command or property block is broken or wrong;
 - the change needs the owner (section 4).

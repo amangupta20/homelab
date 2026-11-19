@@ -188,7 +188,7 @@ Four paths, cheapest first:
    blast radius is one container. Caddy needs a custom build with the module
    compiled in (see below), so it is an image to maintain.
 3. **Replace the edge with Caddy or Traefik.** That is the "which proxy owns
-   the home edge" item in `decisions/open-questions.md`; not a decision this
+   the home edge" item in `agents/decisions/open-questions.md`; not a decision this
    idea should force.
 4. **Hand-written njs/nginx logic calling the wake API.** There is no
    maintained module; this is our own code at the edge. Not recommended.
@@ -245,5 +245,5 @@ wake tile** if nothing else changes.
 
 All four that block this — the edge proxy, NPM's Wasm support, one Traefik
 versus one per node, and whether the VPS Traefik is new enough — are appended to
-`decisions/open-questions.md` under "Reverse proxy (home edge and VPS)", so
+`agents/decisions/open-questions.md` under "Reverse proxy (home edge and VPS)", so
 they live in one list and are not restated here.

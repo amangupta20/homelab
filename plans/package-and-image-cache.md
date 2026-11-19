@@ -381,12 +381,12 @@ would not have measured normal use.
   is cleared and refills from upstream. What is lost with the VM is the
   remotes, caps and users in PostgreSQL, which step 2's script recreates.
   It falls under the rebuildable-state exemption in
-  `decisions/backup-tiers.md` (owner, 2026-11-16).
+  `agents/decisions/backup-tiers.md` (owner, 2026-11-16).
 
 ## Links
 
 `inventory/services.md` (the service list, and the apt cache row this
 replaces), `inventory/hosts.md`, `inventory/network.md` (proxy host and
 addresses), `apps/README.md` (what a stack page holds), `plans/README.md`,
-`decisions/open-questions.md` ("Nothing verified yet", and the container
+`agents/decisions/open-questions.md` ("Nothing verified yet", and the container
 runtime question that decides where a homeserver stack is deployed from).

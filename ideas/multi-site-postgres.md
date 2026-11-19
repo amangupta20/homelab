@@ -118,7 +118,7 @@ primary as backup, as recalled — check before relying on it.
   there.
 - Replication copies mistakes instantly. It protects against losing a site,
   not against a bad migration or a deleted table — only backups and
-  point-in-time restore do (`decisions/backup-tiers.md`).
+  point-in-time restore do (`agents/decisions/backup-tiers.md`).
 
 ## Promote when
 

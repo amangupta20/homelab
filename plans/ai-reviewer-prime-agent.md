@@ -90,7 +90,7 @@ Three levels of finding, one rule each:
 
 Limits on every level:
 
-- Nothing it changes by itself touches `iac/` resources, `decisions/`,
+- Nothing it changes by itself touches `iac/` resources, `agents/decisions/`,
   `AGENTS.md` or another folder's rules; those are level 3 only.
 - Its own commits never start another review.
 - A cap on rounds per pull request.
@@ -115,7 +115,7 @@ private instructions. A one-line summary (pull request, duration, cost, result,
 trace ID) goes to ntfy.
 
 Which tool shows the traces: Langfuse, chosen by the owner on 2026-11-10
-(step 6). The entry in `decisions/open-questions.md`, AI reviewer, stays
+(step 6). The entry in `agents/decisions/open-questions.md`, AI reviewer, stays
 until the owner closes it.
 
 ### Model calls: direct or through a proxy
@@ -160,7 +160,7 @@ export its log before adding LiteLLM. None of it is checked.
    (`mise.toml`, an apt package list, a `Dockerfile`) and `/refine` lessons
    live in a private repo, cloned at run time. The rules everyone follows stay
    public in `agents/review/review.md` and `AGENTS.md`. — gate: the owner decides the
-   public and private split (`decisions/open-questions.md`, AI reviewer).
+   public and private split (`agents/decisions/open-questions.md`, AI reviewer).
 3. **Container image.** CI builds the image from the manifest whenever it
    changes and pushes it to a private registry. Every tool in it is pinned (a
    version in mise, a digest for images). A tool the reviewer finds it needs is
@@ -231,9 +231,9 @@ export its log before adding LiteLLM. None of it is checked.
 
 - Candidates kept for the migration agent: `ideas/dsh-superagent-and-harness2.md`
 - On-demand starting of the trace viewer: `ideas/on-demand-container-wakeups.md`
-- The required review check: `agents/review/review.md`, `decisions/pull-request-gate.md`
+- The required review check: `agents/review/review.md`, `agents/rules/pull-request-gate.md`
 - Backups for the bucket and the viewer: `agents/skills/back-up-a-service/`
-- Undecided parts: `decisions/open-questions.md`, AI reviewer
+- Undecided parts: `agents/decisions/open-questions.md`, AI reviewer
 
 
 ## Next iteration: complete default review experience

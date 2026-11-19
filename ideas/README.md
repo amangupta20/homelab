@@ -18,7 +18,7 @@ How this folder relates to the others:
 | `ideas/` | could do, someday; nothing is promised |
 | `plans/` | will do, in this order, with gates |
 | `systems/`, `inventory/` | is true now |
-| `decisions/` | why it is the way it is |
+| `agents/decisions/` | why it is the way it is |
 
 **Promoting an idea:** when the owner decides to do it, write `plans/<what>.md`,
 set the idea's Status to `promoted to plans/<what>.md` and keep the page — it

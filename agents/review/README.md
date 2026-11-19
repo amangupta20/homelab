@@ -15,7 +15,7 @@ do not wade through them when looking for something about the lab.
   change merges.
 - `prime-reviewer.md` — the agent that reviews the owner's pull requests,
   pushes mechanical fixes and answers `/prime` comments.
-- What must pass before a change merges: `decisions/pull-request-gate.md`.
+- What must pass before a change merges: `agents/rules/pull-request-gate.md`.
 - How agents work here: `AGENTS.md` at the root.
 
 Setup for a new checkout:

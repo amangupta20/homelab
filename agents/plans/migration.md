@@ -42,7 +42,7 @@ in, how it is exposed — comes from three things decided first:
    edge decision: only forward-auth for apps with no sign-in of their own
    waits on it.
 2. **Pigsty** (`agents/plans/shared-postgres.md`), so each app's database moves once.
-3. **The edge** (`ideas/edge-and-security-layers.md`), on hold until the
+3. **The edge** (`agents/ideas/edge-and-security-layers.md`), on hold until the
    Pangolin decision. It only changes how a service is *exposed*: keep
    routing (labels or proxy entries) out of the Compose file, so internal-only
    stacks can move before the edge is chosen and public ones get their route

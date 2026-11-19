@@ -58,7 +58,7 @@ Why this order and why on the VPS: `agents/decisions/foundations-on-vps.md`.
    Choosing and deploying the provider does not wait on the edge decision:
    all three candidates are OpenID Connect providers that every edge option
    can use. Forward-auth for apps with no sign-in of their own does wait on
-   it (`ideas/edge-and-security-layers.md`, "Sign-in").
+   it (`agents/ideas/edge-and-security-layers.md`, "Sign-in").
 5. **Apps.** From here, every VPS app goes through
    `agents/skills/deploy-on-dokploy/` with OpenBao and SSO from the start. Apps
    already on Dokploy move into `apps/vps/` one at a time. The first new one

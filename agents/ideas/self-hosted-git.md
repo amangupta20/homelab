@@ -298,7 +298,7 @@ sides is refused and flagged). Forgejo's own push and pull mirrors cannot do
 this: a push mirror deletes branches that only exist on the other side, and a
 pull mirror makes the repo read-only. Pull requests and comments live in the
 database, so they stay single-primary: both Forgejo instances use the one
-Postgres primary at home, with a replica on the VPS (`ideas/multi-site-postgres.md`).
+Postgres primary at home, with a replica on the VPS (`agents/ideas/multi-site-postgres.md`).
 Radicle gets two-site sync without any of this.
 
 ## Risks and costs

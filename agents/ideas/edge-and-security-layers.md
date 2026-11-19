@@ -20,7 +20,7 @@ firewall (WAF), a ban tool to replace Fail2Ban, sign-in, Tailscale and DNS,
 network segmentation, detection, hardening and penetration testing.
 **Why try it:** the edge proxy decides how every migrated service is exposed
 and which WAF, ban tool, sign-in layer and wakeup plugin
-(`ideas/on-demand-container-wakeups.md`) can sit in front of it. The research
+(`agents/ideas/on-demand-container-wakeups.md`) can sit in front of it. The research
 was spread over a week of conversations and partly forgotten; this page
 collects it so the decision can be made once.
 **Needs first:** the Pangolin decision (below). The other parts follow from

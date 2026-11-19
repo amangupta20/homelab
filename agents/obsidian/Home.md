@@ -17,7 +17,7 @@ How this view works and how to keep it working: [obsidian-view.md](obsidian-view
 | Inventory | What exists: services, machines, IPs | [inventory/](../../inventory/README.md) |
 | Systems | How each thing works, what never to do | [systems/](../../systems/README.md) |
 | Plans | What is in flight | [agents/plans/](../plans/README.md) |
-| Ideas | What could be tried later, not scheduled | [ideas/](../../ideas/README.md) |
+| Ideas | What could be tried later, not scheduled | [agents/ideas/](../ideas/README.md) |
 | Decisions | Why it is this way | [agents/decisions/](../decisions/README.md) |
 | Open questions | What is undecided or unverified | [agents/decisions/open-questions.md](../decisions/open-questions.md) |
 | Skills | How to do X | [agents/skills/](../../agents/skills/README.md) |

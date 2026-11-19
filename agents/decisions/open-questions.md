@@ -121,7 +121,7 @@ owner file, and is deleted from this list.
 
 - Which proxy owns the home edge — stay on Nginx Proxy Manager, put a small
   Caddy behind it for wakeable hosts, or replace it with Caddy or Traefik? Only
-  matters if on-demand wakeups are adopted (`ideas/on-demand-container-wakeups.md`);
+  matters if on-demand wakeups are adopted (`agents/ideas/on-demand-container-wakeups.md`);
   the edge choice gates that idea, and whether NPM can load the plugin at all
   is part of this question rather than settled above it.
 - Answered by the owner, 2026-11-17, for the internal side of the item above:
@@ -144,7 +144,7 @@ owner file, and is deleted from this list.
   storage; MIT outside its `ee/` folder) and has the stronger workflow for
   scoring runs. Both publish ARM64 images (`docker buildx imagetools inspect`,
   2026-11-02). Langfuse's size matters less if it runs only when needed behind
-  Sablier (`ideas/on-demand-container-wakeups.md`), which depends on that
+  Sablier (`agents/ideas/on-demand-container-wakeups.md`), which depends on that
   idea's open reverse-proxy questions.
   - 2026-11-10: the owner chose Langfuse in a working session, over Phoenix
     and Opik, to deploy next after Authentik and to learn evaluation on
@@ -209,7 +209,7 @@ owner file, and is deleted from this list.
 
 ## Edge and security layers (on hold until the Pangolin decision)
 
-Research: `ideas/edge-and-security-layers.md`. Owner, 2026-11-01: the whole
+Research: `agents/ideas/edge-and-security-layers.md`. Owner, 2026-11-01: the whole
 group waits on the first item.
 
 - Pangolin or not: no inbound ports at home through a tunnel to an edge VPS,
@@ -217,7 +217,7 @@ group waits on the first item.
   E2.1.Micro or the A1), and Option A (the edge Traefik with CrowdSec AppSec
   only) or Option B (plus BunkerWeb at home)?
   Agent's note, 2026-11-14: the two sources disagree on the premise. The
-  Pangolin research (`ideas/edge-and-security-layers.md`, "Getting in",
+  Pangolin research (`agents/ideas/edge-and-security-layers.md`, "Getting in",
   from Hindsight 2026-07-19) assumes a paid static IP and inbound port
   forwards at home. `systems/router.md` ("WAN", owner 2026-11-13) says the
   ISP uses carrier-grade NAT and nothing is forwarded inward. If the second
@@ -325,7 +325,7 @@ Page: `systems/router.md`. Agent's notes, 2026-11-13, for the owner to close.
   it stalls again, check IPv6 first.
 - Double NAT: the Home router sits behind the ISP router. Bridge mode on the
   ISP router, or keep it routing? The earlier research is in
-  `ideas/edge-and-security-layers.md`, "Physical router".
+  `agents/ideas/edge-and-security-layers.md`, "Physical router".
 - Firmware source: the router runs a community build that is one community
   release behind (flashing session notes, 2026-11-12), and official support is
   two open pull requests. Stay on community builds, or move to an official

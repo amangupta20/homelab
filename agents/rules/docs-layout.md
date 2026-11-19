@@ -25,7 +25,7 @@ So the layout is:
 | How does a thing work, what never to do? | `systems/` | agent, saying how it verified |
 | How do I do X? | `agents/skills/` (agentskills.io `SKILL.md`, shared by every harness) | agent adds new ones; changes to existing ones are proposed |
 | What is in flight? | `agents/plans/` | agent updates status; owner sets goals |
-| What could be tried later? | `ideas/` | owner adds or asks; agent corrects facts, never promotes |
+| What could be tried later? | `agents/ideas/` | owner adds or asks; agent corrects facts, never promotes |
 | Why is it this way? | `agents/decisions/` | owner; agent proposes |
 | What is undecided or unverified? | `agents/decisions/open-questions.md` | agent appends, owner resolves |
 | What happened, when? | `journal/` | whoever did the work |
@@ -73,15 +73,15 @@ decision B) to keep the Obsidian layer under `agents/obsidian/` with only
 `type` and `tags`. Status stays in each page's body; the tables lose their
 status columns and kanban views.
 
-## Addendum 2026-10-31: `ideas/` (proposed by an agent, at the owner's request)
+## Addendum 2026-10-31: `agents/ideas/` (proposed by an agent, at the owner's request)
 
 Research for things to try once there is time or hardware (a database
 replica on the VPS, for example) had nowhere to go: `agents/plans/` promises the work
 will happen in order, and `agents/decisions/open-questions.md` is for what is unknown
 about the lab as it is. Left in a chat or in memory, the research gets
-redone. So `ideas/` holds designs that were researched but not scheduled. An
+redone. So `agents/ideas/` holds designs that were researched but not scheduled. An
 idea becomes a plan only when the owner decides, and the idea page stays as
-the research behind it (`ideas/README.md`).
+the research behind it (`agents/ideas/README.md`).
 
 Cost: one more folder to keep honest. Nothing in it describes the live lab, so
 an agent must never treat an idea page as a fact or start work from it.

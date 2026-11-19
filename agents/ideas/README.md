@@ -15,7 +15,7 @@ How this folder relates to the others:
 
 | Folder | Holds |
 |---|---|
-| `ideas/` | could do, someday; nothing is promised |
+| `agents/ideas/` | could do, someday; nothing is promised |
 | `agents/plans/` | will do, in this order, with gates |
 | `systems/`, `inventory/` | is true now |
 | `agents/decisions/` | why it is the way it is |
@@ -36,7 +36,7 @@ schema is in `agents/obsidian/obsidian-view.md`, and `mise run check:properties`
 holds apps the owner found and might host, one line each with no research.
 An entry gets its own idea page once someone researches it.
 
-Naming: `ideas/<what>.md`, lowercase with hyphens (`multi-site-postgres.md`).
+Naming: `agents/ideas/<what>.md`, lowercase with hyphens (`multi-site-postgres.md`).
 
 ## Template
 

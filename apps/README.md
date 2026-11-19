@@ -20,7 +20,7 @@ Each app folder holds:
   (never a copy of them). `NOTES.md` beside it holds everything else worth
   keeping — sources, design choices, tests, hard-won gotchas — with no cap.
 - `host/` — only for what the container manager cannot run: scripts and
-  systemd units installed by hand, steps in the app's notes (`vps/openbao/host/`).
+  systemd units installed by hand, steps in the app's README or `NOTES.md` (`vps/openbao/host/`).
 
 ## Rules
 

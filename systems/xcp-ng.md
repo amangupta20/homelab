@@ -44,7 +44,7 @@ has not yet been read from XCP-ng itself.
 | Motherboard | Gigabyte B450M DS3H (the plain model: not the V2, not the WIFI) |
 | CPU | AMD Ryzen 5 1600, 6 cores / 12 threads |
 | Memory | 40 GB: two 16 GB sticks and one 8 GB stick, DDR4, running at 2400 MHz |
-| BIOS | updated on 2026-11-13; the version is not recorded here |
+| BIOS | updated by the owner (`agents/journal/2026-11-13-xcp-ng-host-ram-and-bios.md`); the version is not recorded here |
 
 ### Memory layout
 

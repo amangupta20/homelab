@@ -4,7 +4,9 @@ Everything undecided, or written down but never checked against the live lab.
 One list, so nothing hides in a section of some other page.
 
 Agents append here when they find a contradiction or a claim they cannot
-verify — and stop there, rather than picking a side. Only the owner resolves an
+verify — and stop there, rather than picking a side. When a file moves, an
+agent may fix the path in an item that cites it; nothing else in an item
+changes. Only the owner resolves an
 item; when resolved, it becomes a decision in this folder or a fact in its
 owner file, and is deleted from this list.
 

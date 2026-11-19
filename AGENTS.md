@@ -31,7 +31,7 @@ lab is `README.md`, `lab/inventory/`, `lab/systems/`, `apps/`, `iac/` and `ansib
 | `agents/ideas/` | correct facts and add sources; never promote, drop or act on an idea without the owner (`agents/ideas/README.md`) |
 | `agents/journal/` | add an entry when a task changed the live lab, handled an incident, or tested a restore (`agents/journal/README.md`); never edit an old one except to append a follow-up |
 | `agents/skills/` | follow; add new skills and propose changes to existing ones (`agents/skills/write-a-skill/`) |
-| `agents/decisions/open-questions.md` | append; never delete or resolve an item |
+| `agents/decisions/open-questions.md` | append, and fix a path in an item when its file moves; never delete or resolve an item |
 | `agents/decisions/` (everything else), `agents/rules/`, `agents/rules.md`, `AGENTS.md`, `README.md` goal and principles | propose only, in a separate commit for the owner to review |
 
 The owner keeps the design; you keep the facts current. When two sources

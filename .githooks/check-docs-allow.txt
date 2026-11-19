@@ -3,5 +3,4 @@
 # raising one or adding a new one is the owner's call. For `lines` the
 # count is the file's allowed length.
 
-lines systems/openbao.md 204
 lines systems/router.md 187

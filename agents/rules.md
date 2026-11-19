@@ -75,6 +75,19 @@ first is not automatically right.
   commit, and no "and also" commits. Commit subjects are plain prose, present
   tense, saying what changed (this repo does not use a prefix convention).
 
+## How many pull requests
+
+One pull request per theme, its commits still atomic: "split the app READMEs"
+is one pull request with a commit per app, not one pull request per app.
+Owner-only "Propose:" commits ride in the same pull request as their own
+commits, and its description names the ones that need the owner's OK. Open
+another pull request only for an unrelated theme, or when one would be too big
+to review (a large scripted move). Avoid stacks; if one cannot be avoided, keep
+it to two or three. Why: the 2026-11-19 clean-up used 19 pull requests where
+about five would have done; each cost a review run and a merge, the stack
+needed the admin bypass, and many reviews at once made the reviewer fail
+without a verdict (`agents/review/prime-reviewer.md`).
+
 ## Before you open a pull request
 
 Run a reviewer over your change with `agents/review/review.md` as its instructions —

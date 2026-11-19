@@ -48,7 +48,7 @@ description: <What it does and when to use it, in one or two sentences.>
 
 # <Title>
 
-**Status:** UNTESTED | followed YYYY-MM-DD (`journal/<entry>.md`)
+**Status:** UNTESTED | followed YYYY-MM-DD (`agents/journal/<entry>.md`)
 **Touches:** read-only | writes to <which VM/service>
 
 ## When to use / when not to
@@ -66,7 +66,7 @@ description: <What it does and when to use it, in one or two sentences.>
 <Conditions that mean: stop, write down what you saw, ask the owner.>
 
 ## Afterwards
-Write `journal/YYYY-MM-DD-<what>.md`.
+Write `agents/journal/YYYY-MM-DD-<what>.md`.
 ```
 
 ## Know-how template

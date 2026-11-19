@@ -28,7 +28,7 @@ So the layout is:
 | What could be tried later? | `agents/ideas/` | owner adds or asks; agent corrects facts, never promotes |
 | Why is it this way? | `agents/decisions/` | owner; agent proposes |
 | What is undecided or unverified? | `agents/decisions/open-questions.md` | agent appends, owner resolves |
-| What happened, when? | `journal/` | whoever did the work |
+| What happened, when? | `agents/journal/` | whoever did the work |
 | What do the stacks look like? | `apps/<host>/<app>/` | agent, through review |
 | How does this repo's tooling work? | `agents/review/` | agent, through review |
 | How do agents work here? | `AGENTS.md` | owner; agent proposes |
@@ -45,7 +45,7 @@ of inventing one.
 - No machine-readable spec tree. The ThinkRail spec pages were removed; their
   open questions moved to `open-questions.md`, their goal to the README, and
   their invariants were already in `AGENTS.md`.
-- Empty folders (`journal/`, `apps/`) exist before their first
+- Empty folders (`agents/journal/`, `apps/`) exist before their first
   file, holding only a README.
 
 ## Addendum 2026-10-28: the Obsidian view

@@ -1,7 +1,7 @@
 #!/bin/bash
 # docker-cleanup: Dokploy schedule of type dokploy-server, daily 05:20 IST. Replaces Dokploy's own
 # "Daily Docker Cleanup", which must stay off: it removes every stopped container, and an app that
-# Sablier has put to sleep is a stopped container (journal/2026-11-13-cleanup-removed-sleeping-apps.md).
+# Sablier has put to sleep is a stopped container (agents/journal/2026-11-13-cleanup-removed-sleeping-apps.md).
 set -u
 
 # Stopped containers, except the ones Sablier may start again.

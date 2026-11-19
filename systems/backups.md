@@ -30,9 +30,9 @@ to test").
   (`iac/lib/state-copy.sh`). Garage being down never fails a command; the next
   run catches up. The Oracle
   state's copy was restore-tested on 2026-11-16
-  (`journal/2026-11-16-restore-test-tofu-state-garage.md`), and the Xen
+  (`agents/journal/2026-11-16-restore-test-tofu-state-garage.md`), and the Xen
   Orchestra state's the same evening, once it held `cache-1`
-  (`journal/2026-11-16-build-cache-1.md`).
+  (`agents/journal/2026-11-16-build-cache-1.md`).
 - Remote VPS: Dokploy backs up its own database and the volumes or
   databases of 12 service names to one destination, `garage` — the Garage
   store at home, addressed by its home LAN IP, presumably through a Tailscale
@@ -46,8 +46,8 @@ to test").
   internal AES-256-GCM barrier keyring; source: OpenBao architecture / Raft storage docs),
   uploads to Tier 1 Garage destination `s3://dockploy/openbao/` (10s connection timeout fallback if offline)
   and Tier 2 Backblaze B2 offsite (`s3://<b2-bucket>/openbao/`), pruning to keep 14 backups on each destination.
-  Restore tested 2026-10-29 from Garage (`journal/2026-10-29-restore-test-openbao.md`)
-  and 2026-10-31 from Backblaze B2 (`journal/2026-10-31-restore-test-openbao-b2.md`).
+  Restore tested 2026-10-29 from Garage (`agents/journal/2026-10-29-restore-test-openbao.md`)
+  and 2026-10-31 from Backblaze B2 (`agents/journal/2026-10-31-restore-test-openbao-b2.md`).
 
 Read live on 2026-11-14 (Xen Orchestra's REST API, the TrueNAS API, the Nextcloud backup container's log):
 
@@ -85,14 +85,14 @@ plan: `agents/plans/offsite-backups.md`). OpenBao has both tiers in place.
 ## Tested restores
 
 - [x] OpenBao (Tier 1 Garage S3): Raft snapshot restore from Garage S3 into a fresh throwaway
-  instance on the workstation (`journal/2026-10-29-restore-test-openbao.md`).
+  instance on the workstation (`agents/journal/2026-10-29-restore-test-openbao.md`).
 - [x] Shared Postgres (Tier 2 Backblaze B2 offsite): pgBackRest point-in-time restore into a
-  scratch folder on `pigsty-1` (`journal/2026-11-06-install-pigsty.md`).
+  scratch folder on `pigsty-1` (`agents/journal/2026-11-06-install-pigsty.md`).
 - [x] Shared Postgres, one database (Tier 2 Backblaze B2 offsite): `blinko` restored and copied into a new database, on `pigsty-1`
-  and then on the workstation with only OpenBao and the repo, and compared (`journal/2026-11-07-restore-test-blinko-copy.md`).
+  and then on the workstation with only OpenBao and the repo, and compared (`agents/journal/2026-11-07-restore-test-blinko-copy.md`).
   The app did not run on the copy.
 - [x] OpenBao (Tier 2 Backblaze B2 offsite): Raft snapshot restore from Backblaze B2 into
-  a fresh throwaway instance on the workstation (`journal/2026-10-31-restore-test-openbao-b2.md`).
+  a fresh throwaway instance on the workstation (`agents/journal/2026-10-31-restore-test-openbao-b2.md`).
 
 ## Still to test
 

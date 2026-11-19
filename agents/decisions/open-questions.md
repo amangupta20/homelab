@@ -82,7 +82,7 @@ owner file, and is deleted from this list.
 - Contradiction, found 2026-10-27 while updating the app lists: `apps/README.md`
   and `apps/vps/README.md` both call OpenBao "defined, not deployed", while
   `inventory/services.md` says it is "running, unsealed — verified 2026-10-26"
-  and `journal/2026-10-26-install-openbao.md` records the install. Which is
+  and `agents/journal/2026-10-26-install-openbao.md` records the install. Which is
   current?
   Answered 2026-10-27, on the owner's instruction: OpenBao is deployed. Dokploy
   read the second Hermes WebUI's password out of `kv/dokploy/hermes-webui` at
@@ -177,7 +177,7 @@ owner file, and is deleted from this list.
 
 - Follow-up, 2026-11-03: cutover happened. PR 30 merged after the final
   refresh, and PR 31 was the first B2 run
-  (`journal/2026-11-03-prime-reviewer-b2-migration.md`). Left for the owner
+  (`agents/journal/2026-11-03-prime-reviewer-b2-migration.md`). Left for the owner
   to close.
 
 ## Home VMs (recon 2026-11-14)
@@ -227,7 +227,7 @@ group waits on the first item.
   moves from Nginx Proxy Manager to Pangolin. The item stays for the owner
   to close.
 - DNS for the LAN and the tailnet: the Pi-hole on the Raspberry Pi was removed
-  on 2026-11-14 (`journal/2026-11-14-rebuild-oob-pi.md`); nothing used it.
+  on 2026-11-14 (`agents/journal/2026-11-14-rebuild-oob-pi.md`); nothing used it.
   Which resolver replaces it, and where it runs, is to be researched (owner,
   2026-11-14).
 - The two-NPM split (public and private by listener), approved 2026-10-27, is
@@ -277,7 +277,7 @@ these parts are open:
   owner to close.
 - For "Pigsty on arm64 / Ubuntu 24.04": Pigsty v4.5.0's docs list it as supported
   (`pigsty.io/docs/ref/linux`, read 2026-11-06), and it has run on `pigsty-1` since then
-  (`journal/2026-11-06-install-pigsty.md`). The item stays for the owner to close.
+  (`agents/journal/2026-11-06-install-pigsty.md`). The item stays for the owner to close.
 - For "Where Pigsty's manager runs": on `pigsty-1` in phase 1 (agent's recommendation,
   2026-11-06, after the owner chose one node only). The item stays for the owner to close.
 - Pigsty's pgBackRest setup makes the one selected repository `repo1`, while
@@ -293,7 +293,7 @@ these parts are open:
 - Nothing alerts when a scheduled pgBackRest backup stops running; the rule added on 2026-11-06 covers
   only WAL archiving. What should watch backup age?
   Agent's note, 2026-11-07, for the owner to close: `vmalert` now watches it, with the rules in
-  `ansible/pigsty/patch-node.sh` (`journal/2026-11-07-backup-age-alerts.md`). They run on `pigsty-1`, so they
+  `ansible/pigsty/patch-node.sh` (`agents/journal/2026-11-07-backup-age-alerts.md`). They run on `pigsty-1`, so they
   say nothing if that node is down.
 - `archive_timeout`: `agents/plans/shared-postgres.md` says 60 s; the live cluster has 300 s, from Pigsty's `oltp`
   template (`pg_settings`, 2026-11-07). A quiet database can lose up to 5 minutes rather than 1. Which is wanted?
@@ -303,7 +303,7 @@ these parts are open:
 - The `hermes` Dokploy project (agent, WebUI, Hindsight) and its updater schedule are not in this repo;
   `inventory/services.md` only lists the project. The updater follows `:latest` and, on every new agent
   image, re-seeds the volume that loses the Hindsight plugin's client
-  (`journal/2026-11-08-hermes-hindsight-plugin-import.md`). Bring the stack in, pin its images, or keep it
+  (`agents/journal/2026-11-08-hermes-hindsight-plugin-import.md`). Bring the stack in, pin its images, or keep it
   outside? Agent's note, 2026-11-08.
 
 ## Home router (OpenWrt)

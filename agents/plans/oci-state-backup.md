@@ -12,12 +12,12 @@ tags:
 **Status:** done 2026-11-16. Built for both OpenTofu roots, not only Oracle Cloud
 (owner, 2026-11-16): `iac/lib/state-copy.sh`, called by `iac/run.sh` and
 `iac/oci/run.sh`. The Oracle state's copy passed the restore test the same day
-(`journal/2026-11-16-restore-test-tofu-state-garage.md`).
+(`agents/journal/2026-11-16-restore-test-tofu-state-garage.md`).
 
 **Goal:** the encrypted state in Backblaze B2 (`iac/oci/README.md`) also exists in
 Garage at home, so losing the B2 account or bucket does not lose the state.
 
-**Done when:** a restore test from a Garage copy is recorded in `journal/`: a
+**Done when:** a restore test from a Garage copy is recorded in `agents/journal/`: a
 temporary checkout using that copy runs `tofu plan` and reports no changes.
 
 **Until then:** the state is a single copy in B2. B2 keeps old versions (the
@@ -60,7 +60,7 @@ The design below is what was built. Where the build differs, the step says so.
    keeps `tofu`'s exit code; `./run.sh backup` exits 1. Catching up was tested the
    same day: with the Garage copies moved aside, a plain `plan` made a new copy,
    and the next `plan` copied nothing.
-4. Restore test. — gate: the "Done when" check, recorded in `journal/`. Done
+4. Restore test. — gate: the "Done when" check, recorded in `agents/journal/`. Done
    2026-11-16.
 5. Update `iac/oci/README.md` and `systems/backups.md`. Done 2026-11-16.
 

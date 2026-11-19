@@ -4,7 +4,7 @@ The LAN's pull-through cache for apt packages and container images
 (`agents/plans/package-and-image-cache.md`). One Compose stack on its own VM, `cache-1`
 (`iac/`), at `http://10.22.33.137` on the LAN only.
 
-**Status:** running since 2026-11-16 (`journal/2026-11-16-deploy-artifact-keeper.md`).
+**Status:** running since 2026-11-16 (`agents/journal/2026-11-16-deploy-artifact-keeper.md`).
 Clients: `oob-1` (its own apt sources) and every VM in the inventory's `lan_cache_clients`
 group (`ansible/cache-client.yml`, from 2026-11-18; `proxy-1` first).
 
@@ -42,7 +42,7 @@ including the explicit grant types an API-made provider needs; made through Auth
 API on 2026-11-18. `homelab-admins` holds the owner's everyday account, not `akadmin`,
 which Authentik refuses outside the tailnet. A first sign-in creates the account. The
 owner's first sign-ins worked in both apps, as admin (2026-11-18,
-`journal/2026-11-18-cache-1-sign-in-authentik.md`).
+`agents/journal/2026-11-18-cache-1-sign-in-authentik.md`).
 
 Grafana signs in through Authentik only (owner, 2026-11-18): no password form, no basic
 auth on its API, and `/grafana/login` goes straight to Authentik. Its local `admin`

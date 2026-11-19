@@ -14,7 +14,7 @@ way in is broken.
 
 **Status:** running since 2026-11-14 — subnet router for the home subnet on a
 second Tailscale account. Rows: `inventory/hosts.md`, `inventory/network.md`.
-Story: `journal/2026-11-14-rebuild-oob-pi.md`.
+Story: `agents/journal/2026-11-14-rebuild-oob-pi.md`.
 
 ## Why it exists
 
@@ -98,7 +98,7 @@ reach LAN addresses directly (for example `10.22.33.1`). SSH to the Pi itself:
 1. Write a fresh Raspberry Pi OS Lite 64-bit image to the card, with
    `user-data` and `network-config` on its boot partition as described above.
    On 2026-11-14 the image was streamed onto the running Pi's own card over
-   SSH (`journal/2026-11-14-rebuild-oob-pi.md`); a card reader and Raspberry
+   SSH (`agents/journal/2026-11-14-rebuild-oob-pi.md`); a card reader and Raspberry
    Pi Imager work as well.
 2. From `ansible/`: `ansible-playbook oob.yml --check --diff`, read it, then
    `ansible-playbook oob.yml`. A second run should report `changed=0`.

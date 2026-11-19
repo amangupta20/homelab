@@ -35,7 +35,7 @@ of work).
 **Source:** everything in this section was read by the owner at the machine
 on 2026-11-13 (BIOS screens, Memtest86+ 9.00, a live Linux USB stick), with
 Claude Code advising. The work is in
-[`journal/2026-11-13-xcp-ng-host-ram-and-bios.md`](../journal/2026-11-13-xcp-ng-host-ram-and-bios.md).
+[`agents/journal/2026-11-13-xcp-ng-host-ram-and-bios.md`](../agents/journal/2026-11-13-xcp-ng-host-ram-and-bios.md).
 XCP-ng was started on this layout the same evening (owner); the memory total
 has not yet been read from XCP-ng itself.
 

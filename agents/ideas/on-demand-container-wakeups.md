@@ -130,7 +130,7 @@ Any of: the VPS runs out of RAM with several dormant stacks already installed;
 the number of stacks recorded as not running passes roughly ten; or one disposable
 stack gets a healthcheck and two weeks of real use without a failed wake.
 opendota was named here as the natural pilot. It was deleted on 2026-11-13
-(`journal/2026-11-13-remove-opendota.md`), so a pilot needs another stack.
+(`agents/journal/2026-11-13-remove-opendota.md`), so a pilot needs another stack.
 
 ## Sources
 

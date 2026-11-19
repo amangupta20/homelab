@@ -71,7 +71,7 @@ access setup are kept out of this public repo on purpose.
   so the token is not in the container's environment. Certificates are kept in
   `dynamic/acme-cloudflare.json`. Verified 2026-11-09 with a throwaway router: the
   wildcard was issued and served, and existing sites kept their own certificates
-  (`journal/2026-11-09-traefik-dns-challenge.md`).
+  (`agents/journal/2026-11-09-traefik-dns-challenge.md`).
 - **How apps are defined:** each Dokploy app is a Compose service. Most store
   their Compose file inside Dokploy (source type `raw`); a few pull it from
   GitHub repositories, none of them this one. Dokploy checks each app out at
@@ -98,7 +98,7 @@ purpose — never Docker's.
   2026-10-29 outage survived two months of boots), so they come back at every
   boot and later block whatever container gets their old addresses. This took
   Hindsight down on 2026-10-29
-  (`journal/2026-10-29-hindsight-down-stale-firewall-rules.md`).
+  (`agents/journal/2026-10-29-hindsight-down-stale-firewall-rules.md`).
 - To change a rule for good, edit the file by hand, then check it with
   `sudo iptables-restore --test < /etc/iptables/rules.v4`.
 - **When a container cannot reach another one on the same network** (the

@@ -216,7 +216,7 @@ separate internal proxy, and a Cloudflare record pointing a wildcard
 - Some routers and resolvers drop answers that point at private addresses
   (DNS rebinding protection). The Home router does by default; with
   `home.<domain>` in its allowlist it answers the real record (tested
-  2026-11-18, `journal/2026-11-18-build-proxy-1-traefik.md`). Firefox and Zen
+  2026-11-18, `agents/journal/2026-11-18-build-proxy-1-traefik.md`). Firefox and Zen
   with secure DNS reject such answers too unless `network.trr.allow-rfc1918`
   is on (`apps/homeserver/traefik/README.md`).
 - Off the LAN it resolves only to something reachable over Tailscale's
@@ -246,7 +246,7 @@ How CrowdSec is built (CrowdSec docs, via Hindsight 2026-10-26):
 
 | Place | Agent reads | Bouncer |
 |---|---|---|
-| VPS | Traefik access logs, sshd journal | Traefik plugin (maxlerebourg, v1.8.1) with AppSec, set to block when AppSec is unreachable; firewall bouncer, tested first against Docker's chains given `journal/2026-10-29-hindsight-down-stale-firewall-rules.md` |
+| VPS | Traefik access logs, sshd journal | Traefik plugin (maxlerebourg, v1.8.1) with AppSec, set to block when AppSec is unreachable; firewall bouncer, tested first against Docker's chains given `agents/journal/2026-10-29-hindsight-down-stale-firewall-rules.md` |
 | Home edge | proxy logs (NPM needs type `nginx-proxy-manager`, not `nginx`, or nothing parses) | whatever the chosen proxy supports: NPMplus, Traefik plugin, Caddy bouncer, BunkerWeb |
 | Cloudflare | — | Workers bouncer, for proxied names |
 | Virtual router, if built | firewall logs | OPNsense's CrowdSec plugin (unverified) |

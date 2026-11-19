@@ -33,7 +33,7 @@ nothing, and its firewall rule survived a reboot.
 - `cache.yml` — `cache-1` only: Docker from Debian, then Artifact Keeper from
   `apps/homeserver/artifact-keeper/` with its secrets from OpenBao
   (`kv/homelab/artifact-keeper`). First ran on 2026-11-16
-  (`journal/2026-11-16-deploy-artifact-keeper.md`).
+  (`agents/journal/2026-11-16-deploy-artifact-keeper.md`).
 - `cache-client.yml` — group `lan_cache_clients`: apt's Debian mirrors and Docker's
   registry mirror pointed at cache-1, with Debian's own mirror and Docker Hub as the
   fallback when it is down; `lan_cache: ""` switches a host back to the internet. First
@@ -42,7 +42,7 @@ nothing, and its firewall rule survived a reboot.
 - `proxy.yml` — `proxy-1` only: Docker from Debian, then Traefik from
   `apps/homeserver/traefik/` with the Cloudflare token and the zone from OpenBao
   (`kv/general/cloudflare`). First ran on 2026-11-18
-  (`journal/2026-11-18-build-proxy-1-traefik.md`).
+  (`agents/journal/2026-11-18-build-proxy-1-traefik.md`).
 
 ## Adding a host
 

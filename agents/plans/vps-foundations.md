@@ -15,7 +15,7 @@ runs since 2026-11-10 (`apps/vps/authentik/`), but its gate (an app signing in
 through it, a tested backup) is open.
 **Goal:** OpenBao and SSO running on the VPS with tested backups, so every app
 after them is deployed once with secrets and sign-in already wired.
-**Done when:** OpenBao and SSO each have a restore test in `journal/`, and the
+**Done when:** OpenBao and SSO each have a restore test in `agents/journal/`, and the
 first app deployed with `agents/skills/deploy-on-dokploy/` reads its secrets from
 OpenBao and signs in through SSO.
 
@@ -37,8 +37,8 @@ Why this order and why on the VPS: `agents/decisions/foundations-on-vps.md`.
    journal entry. Then: storage backend chosen; listener on the Tailscale
    address only, TLS on; initialised with keys kept offline; root token
    deleted; backup to Garage at home; one restore tested
-   (`systems/openbao.md`). — gate: restore test in `journal/`. Completed
-   2026-10-29 (`journal/2026-10-29-restore-test-openbao.md`): scheduled daily
+   (`systems/openbao.md`). — gate: restore test in `agents/journal/`. Completed
+   2026-10-29 (`agents/journal/2026-10-29-restore-test-openbao.md`): scheduled daily
    Raft snapshot via Dokploy task `openbao-raft-snapshot` to Garage S3, restore
    verified on throwaway podman instance.
 3. **Wire secrets into deploys.** Before changing Dokploy's settings: a

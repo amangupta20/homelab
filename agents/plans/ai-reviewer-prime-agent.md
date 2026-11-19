@@ -200,7 +200,7 @@ export its log before adding LiteLLM. None of it is checked.
      only, and asleep when idle behind Sablier (`agents/plans/sablier-wakeups.md`)
      from the start, back to always on if that causes trouble. A cold start
      took 14 s on the workstation; on the VPS untested.
-   - Deployed on the VPS on 2026-11-10 (`journal/2026-11-10-deploy-langfuse.md`);
+   - Deployed on the VPS on 2026-11-10 (`agents/journal/2026-11-10-deploy-langfuse.md`);
      a wake took 27–35 s there. ClickHouse, which holds
      the hand-made scores, has no backup yet (`apps/vps/langfuse/README.md`).
      The importer (`apps/vps/langfuse/importer/`, 2026-11-10) reads the

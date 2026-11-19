@@ -16,7 +16,7 @@ OpenBao's internal AES-256-GCM barrier keyring (sealed with Shamir keys; source:
 OpenBao architecture docs / `/v1/sys/storage/raft/snapshot`), so no
 additional encryption layer (such as restic) is needed before S3 upload.
 **Done when:** a restore of OpenBao from the B2 copy into a throwaway
-instance is recorded in `journal/`, and `systems/backups.md` lists both tiers
+instance is recorded in `agents/journal/`, and `systems/backups.md` lists both tiers
 for OpenBao.
 
 Today OpenBao's only backup is tier 1: a daily Raft snapshot from the VPS to
@@ -51,8 +51,8 @@ for each service is `agents/skills/back-up-a-service/`; commands below are
    updated in Dokploy and repo; manual execution reaches B2. (Done 2026-10-31).
 3. **Restore test from B2.** Restore the latest snapshot from B2 into a scratch
    directory on the workstation and load it into a throwaway OpenBao, the way
-   `journal/2026-10-29-restore-test-openbao.md` did from Garage. — gate:
-   journal entry (`journal/2026-10-31-restore-test-openbao-b2.md`); `systems/backups.md` updated. (Done 2026-10-31).
+   `agents/journal/2026-10-29-restore-test-openbao.md` did from Garage. — gate:
+   journal entry (`agents/journal/2026-10-31-restore-test-openbao-b2.md`); `systems/backups.md` updated. (Done 2026-10-31).
 4. **One learning service, lighter pattern.** The owner picks a small service
    (a candidate with little data, suggested in an earlier session: ntfy). Same
    steps with fewer versions, to practise the procedure and correct

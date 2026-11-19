@@ -9,7 +9,7 @@ in Dokploy, not in this public repo.
 provider chosen inside the container, chat answers (owner, 2026-10-27). Its
 password comes from OpenBao through Dokploy's secret provider. Backups are not
 set up yet; the deploy is recorded in
-`journal/2026-10-27-deploy-hermes-webui.md`.
+`agents/journal/2026-10-27-deploy-hermes-webui.md`.
 
 ## Derived from
 

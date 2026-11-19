@@ -1,5 +1,10 @@
 # Journal — what happened
 
+Entries keep the paths of their day. On 2026-11-19 the repo clean-up moved
+agent material under `agents/` (`skills/`, `repo/`, `decisions/`, `plans/`,
+`ideas/` and this folder), so a path in an older entry may name the old place.
+Only relative links were updated, so they still open.
+
 One dated entry for each of these, and nothing else:
 
 - a change to the live lab — a server, VM, container or setting, whether or
@@ -14,7 +19,7 @@ No entry for read-only checks or changes to this repo alone: facts found by a
 check go into their owner file with their source ("verified: recon
 2026-11-02"), and the pull request describes the repo change.
 
-Naming: `journal/YYYY-MM-DD-<what>.md` (`2026-11-02-restore-test-openbao.md`),
+Naming: `agents/journal/YYYY-MM-DD-<what>.md` (`2026-11-02-restore-test-openbao.md`),
 so the folder sorts by date.
 
 ## Rules

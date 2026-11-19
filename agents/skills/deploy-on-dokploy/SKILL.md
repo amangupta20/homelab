@@ -96,7 +96,7 @@ them and links its journal entry here.
    wildcard already points at the VPS, so no new record is needed (Authentik,
    Blinko, Langfuse). A name directly under the zone falls under the
    Cloudflare-proxied wildcard instead and answered 522
-   (`journal/2026-11-10-deploy-langfuse.md`).
+   (`agents/journal/2026-11-10-deploy-langfuse.md`).
 8. **Sign-in:** once SSO runs, register the app as an OIDC client if it
    supports it; otherwise put it behind the SSO's forward-auth. Write which in
    the app's `README.md`.
@@ -125,6 +125,6 @@ Write down what you saw, and ask the owner.
 - Add or update the app's row in `inventory/services.md` (host: remote VPS,
   state with how it was verified).
 - If the app needs more than a row, a page in `systems/`.
-- Write `journal/YYYY-MM-DD-deploy-<app>.md`.
+- Write `agents/journal/YYYY-MM-DD-deploy-<app>.md`.
 - If any step above was wrong, propose the fix to this skill
   (`agents/skills/write-a-skill/`).

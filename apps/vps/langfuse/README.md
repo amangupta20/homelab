@@ -6,6 +6,9 @@ viewer and the place to learn evaluation on (`agents/plans/ai-reviewer-prime-age
 probe trace went through end to end (`NOTES.md`, "Sending traces"). The reviewer's runs are imported by the stack's `importer`
 service since 2026-11-11 (`NOTES.md`, "Importer"); ClickHouse has no backup.
 
+**Sign-in:** through Authentik by OIDC only; password sign-up and login are off (`NOTES.md`,
+"Sign-in"). Traces come in with a project's API key.
+
 ## Backups
 
 - Postgres (users, projects, API keys, prompts, data set definitions): in the shared cluster's backups

@@ -1,10 +1,9 @@
 # Langfuse
 
-**Status:** running on the VPS since 2026-11-10 (`agents/journal/2026-11-10-deploy-langfuse.md`). The AI reviewer's trace
-viewer and the place to learn evaluation on (`agents/plans/ai-reviewer-prime-agent.md`, step 6; the owner chose Langfuse on
-2026-11-10). The owner signed in and made the reviewer's organisation, project and API keys on 2026-11-10; one
+**Status:** running on the VPS (`agents/journal/2026-11-10-deploy-langfuse.md`). The AI reviewer's trace
+viewer and the place to learn evaluation on (`agents/plans/ai-reviewer-prime-agent.md`, step 6; the owner's choice). The owner signed in and made the reviewer's organisation, project and API keys; one
 probe trace went through end to end (`NOTES.md`, "Sending traces"). The reviewer's runs are imported by the stack's `importer`
-service since 2026-11-11 (`NOTES.md`, "Importer"); ClickHouse has no backup.
+service (`NOTES.md`, "Importer"); ClickHouse has no backup.
 
 **Sign-in:** through Authentik by OIDC only; password sign-up and login are off (`NOTES.md`,
 "Sign-in"). Traces come in with a project's API key.
@@ -22,9 +21,9 @@ service since 2026-11-11 (`NOTES.md`, "Importer"); ClickHouse has no backup.
 ## Things to watch
 
 - Memory under load. Just after the first start on the VPS: worker 620 MB, ClickHouse 359 MB, web 241 MB, Redis 9 MB
-  (`docker stats`, 2026-11-10).
+  (`docker stats`).
 - A Langfuse tab left open keeps the stack awake: it polls `/api/auth/session` about every 5 minutes, which renews
-  Sablier's 20-minute session. From 12:00 to 17:00 UTC on 2026-11-10 there were 12 to 14 such requests an hour
+  Sablier's 20-minute session. Over five hours of one afternoon there were 12 to 14 such requests an hour
   and no other traffic (Traefik's access log), and the stack never slept. Close the tab to let it sleep.
 - The idle stop after 20 minutes is not observed yet, and whether the first request after a redeploy gets 500 (the
   Sablier rename issue, `apps/vps/sablier/NOTES.md`).

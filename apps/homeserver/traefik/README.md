@@ -30,7 +30,7 @@ the names and certificate work, the token's scope, a browser gotcha and phase 2:
 To add an app: copy `routes/cache.yml.j2`, change the router and service names,
 the hostname and the address, and run `ansible-playbook proxy.yml`. To remove one,
 delete its file here and run the playbook: it deletes every route file on `proxy-1`
-that no template produces (tested 2026-11-19 with a planted file; the rest kept serving).
+that no template produces (tested with a planted file; the rest kept serving).
 
 ## Secrets and data
 

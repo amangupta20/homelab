@@ -1,6 +1,6 @@
 # CloudBeaver
 
-**Status:** running since 2026-11-09 (`agents/journal/2026-11-09-deploy-db-admin-uis.md`). A web UI for the shared Postgres, reachable from the tailnet only
+**Status:** running (`agents/journal/2026-11-09-deploy-db-admin-uis.md`). A web UI for the shared Postgres, reachable from the tailnet only
 (`agents/plans/shared-postgres.md`, "Database UIs"). The owner keeps whichever of pgAdmin and CloudBeaver gets used more.
 
 ## Derived from
@@ -14,7 +14,7 @@ Dokploy's template was not read. Choices, the same as pgAdmin's (`apps/vps/pgadm
   `postgres`. Its password is in OpenBao (`kv/general/pigsty`, field `pg_user_dbuser_owner`); do not save it in
   CloudBeaver.
 - **"Show all databases"** is off by default, so only `postgres` appears. It is the provider property
-  `@dbeaver-show-non-default-db@` on the connection; on 2026-11-09 it was set in the workspace's
+  `@dbeaver-show-non-default-db@` on the connection; it is set in the workspace's
   `GlobalConfiguration/.dbeaver/data-sources.json` with CloudBeaver stopped (backup `data-sources.json.bak-20261109`
   beside it). A new connection needs it again.
 - **Asleep when idle,** behind Sablier (`apps/vps/sablier/README.md`, "Making an app sleep"): stopped after 30 minutes
@@ -22,4 +22,4 @@ Dokploy's template was not read. Choices, the same as pgAdmin's (`apps/vps/pgadm
   middleware, so a request from outside the tailnet gets 403 and wakes nothing.
 - No backup: the workspace holds CloudBeaver's admin account and saved connections only.
 - The auto-configuration works on 26.2.4: after the first start, its API reported `configurationMode` false, so
-  no setup wizard (2026-11-09).
+  no setup wizard.

@@ -26,7 +26,6 @@ The app must have a trigger a person opens. Anything waiting on webhooks, or doi
 ## Dokploy's Docker cleanup stays off
 
 Dokploy's "Daily Docker Cleanup" (Settings → Server) removes every stopped container, and a sleeping app is a stopped container. Once
-it is removed, Traefik has no route for it (404) and Sablier has nothing to start; only a redeploy brings it back. This happened on
-2026-11-08, -09, -10 and -12 (`agents/journal/2026-11-13-cleanup-removed-sleeping-apps.md`).
+it is removed, Traefik has no route for it (404) and Sablier has nothing to start; only a redeploy brings it back. It has happened four times (`agents/journal/2026-11-13-cleanup-removed-sleeping-apps.md`).
 
 Sources, upgrade checks, the replacement cleanup schedule and known failure modes: `NOTES.md`.

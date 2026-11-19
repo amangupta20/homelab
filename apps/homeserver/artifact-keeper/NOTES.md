@@ -151,3 +151,10 @@ layers that exist on both Docker Hub and ghcr.io.
 - **First fetches from GitHub-hosted registries are slow from the LAN** while
   LAN traffic forwarded into the router's GitHub detour runs at about 125 kB/s
   (`agents/decisions/open-questions.md`). Later requests are served from disk.
+
+## Dates
+
+When the facts in `README.md` were true from, or were checked.
+
+- Running since 2026-11-16.
+- Clients: `oob-1` through `ansible/oob.yml` from 2026-11-17; `proxy-1` (apt and the Docker Hub mirror) and the rest of `lan_cache_clients` through `ansible/cache-client.yml` from 2026-11-18.

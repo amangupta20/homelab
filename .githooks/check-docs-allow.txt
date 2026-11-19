@@ -53,7 +53,3 @@ lines systems/truenas.md 159
 paths agents/plans/home-overhaul.md 1
 paths agents/plans/netbox.md 1
 paths agents/obsidian/obsidian-view.md 1
-rules agents/obsidian/Home.md 1
-rules apps/homeserver/artifact-keeper/README.md 1
-rules agents/rules/agent-access.md 1
-rules agents/plans/package-and-image-cache.md 1

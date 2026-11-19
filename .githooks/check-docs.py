@@ -13,7 +13,9 @@ Checks, over tracked Markdown files:
 - lines:  length caps: AGENTS.md 40, app READMEs 40, journal entries 40,
           systems pages 150.
 - rules:  each danger rule is spelled out only in its owner file, the root
-          AGENTS.md and the README's first screen; elsewhere, link the owner.
+          AGENTS.md and the README's first screen; elsewhere, a line naming
+          it must point at the owner file on the same line or the next
+          (a wrapped sentence).
 - root:   the visible (not dot-) entries at the repo root are on a fixed list.
 
 Today's offenders are listed in .githooks/check-docs-allow.txt as
@@ -47,12 +49,14 @@ JOURNAL_PATH = re.compile(r"agents/journal/20\d\d-\d\d-\d\d[\w.-]*")
 BACKTICK = re.compile(r"`([^`\s]+)`")
 LINK = re.compile(r"\]\(([^)\s]+)\)")
 
-# Danger rules: (name, pattern, files allowed to spell it out).
+# Danger rules: (name, pattern, owner file, other files allowed to spell it out).
+# Elsewhere a line may name the rule if it also points at the owner file;
+# naming it with no pointer is a copy that drifts.
 RULES = [
     ("base-snapshot", re.compile(r"base snapshot", re.I),
-     {"systems/xcp-ng.md", "AGENTS.md", "README.md"}),
-    ("lan-cache", re.compile(r"LAN cache rule|lan_cache_clients", re.I),
-     {"ansible/README.md", "AGENTS.md"}),
+     "systems/xcp-ng.md", {"AGENTS.md", "README.md"}),
+    ("lan-cache", re.compile(r"LAN cache rule|every (new )?home VM downloads through", re.I),
+     "ansible/README.md", {"AGENTS.md"}),
 ]
 
 
@@ -107,8 +111,10 @@ def findings():
             if human_page(f) and line.startswith("|") and DATE.search(cells):
                 found[("dates", f)] += 1
                 detail.append(f"dates  {f}:{n}: {DATE.search(cells).group()}")
-            for name, pat, owners in RULES:
-                if f not in owners and not journal_entry(f) and pat.search(line):
+            for name, pat, owner, allowed in RULES:
+                if (f != owner and f not in allowed and not journal_entry(f)
+                        and pat.search(line)
+                        and owner not in line + (lines[n] if n < len(lines) else "")):
                     found[("rules", f)] += 1
                     detail.append(f"rules  {f}:{n}: restates the {name} rule")
             if journal_entry(f):

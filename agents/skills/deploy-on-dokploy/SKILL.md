@@ -61,11 +61,12 @@ them and links its journal entry here.
      `__PASTE_ONCE__`; a non-secret value that Compose checks, such as an IP
      address, gets a harmless value of the right shape instead, or step 3
      fails (`invalid IP address: __PASTE_ONCE__`).
-   - `README.md` with a "Derived from" table: each source from step 1, the
+   - `README.md`, 40 lines at most: what the app is, where it runs, its
+     address, data, secrets and backups (`apps/README.md`).
+   - `NOTES.md` with a "Derived from" table: each source from step 1, the
      version or commit read, and what was taken; then the choices that
-     differ from the sources and why. On an upgrade, compare the sources
-     against those versions. Example: `apps/vps/openbao/README.md`. Add data
-     location, ports and quirks as needed.
+     differ from the sources and why, and quirks. On an upgrade, compare the
+     sources against those versions. Example: `apps/vps/openbao/NOTES.md`.
 3. **Validate locally:** `cp apps/vps/<app>/.env.example /tmp/<app>.env` then
    `docker compose -f apps/vps/<app>/compose.yaml --env-file /tmp/<app>.env config`
    — expect the resolved config and no error (run for `openbao`,

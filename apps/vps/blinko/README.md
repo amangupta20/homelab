@@ -5,9 +5,7 @@
 
 ## Derived from
 
-| Source | Version read | What was taken |
-|---|---|---|
-| `blinkospace/blinko`: `docker-compose.yml` and `docker-compose.prod.yml` | `main`, 2026-11-06 | image, port 1111, environment, health check |
+The sources and the versions read are in `NOTES.md`.
 
 Dokploy's template was not read. Choices that differ from the sources:
 

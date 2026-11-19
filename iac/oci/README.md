@@ -36,7 +36,7 @@ The instance has `prevent_destroy`, so a plan that would destroy it fails, and i
 boot volume survives termination.
 
 Security list and firewall rules for anything public need a decision on what the
-public repo may show before they are written here (`AGENTS.md`, "Security flaws").
+public repo may show before they are written here (`agents/rules.md`, "Rules": security flaws).
 
 ## Staying free
 

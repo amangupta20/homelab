@@ -54,7 +54,7 @@ Read from the NetBox repositories on 2026-11-05 unless marked otherwise.
 
 ## Decide before step 1
 
-- **Who owns the facts.** `AGENTS.md` gives every fact one owner, and today
+- **Who owns the facts.** `agents/rules.md` gives every fact one owner, and today
   `inventory/network.md` owns IPs and `inventory/services.md` owns the service
   list. Three options: NetBox stays a read-only view fed from the same sources,
   `inventory/` is generated from NetBox, or NetBox replaces those files. Until

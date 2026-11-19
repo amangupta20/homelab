@@ -32,11 +32,11 @@ a change in a separate commit, but does not rewrite an existing one on its own.
 
 ## Index
 
-- `agent-access.md` — convenient access for agents; disaster recovery is the safety net.
+Decisions about how agents and the repo work are in `agents/rules/`.
+
 - `foundations-on-vps.md` — OpenBao and SSO on the VPS, over Tailscale.
 - `vps-role.md` — what runs on the VPS instead of at home.
-- `docs-layout.md` — facts in owner files, reasons here, no spec graph.
 - `backup-tiers.md` — local tier for every service, encrypted offsite tier for the important ones (in force).
-- `pull-request-gate.md` — what has to pass before a change merges.
 - `remote-vps-in-scope.md` — the Dokploy VPS belongs here and will be migrated in.
 - `vps-outside-opentofu.md` — the VPS itself is not managed by OpenTofu.
+- `sso-authentik.md` — single sign-on for the lab through Authentik.

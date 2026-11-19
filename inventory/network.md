@@ -20,18 +20,28 @@ Private subnet `10.22.33.0/24`, served by the Home router
 
 | IP | Host | State |
 |---|---|---|
-| `.1` | Home router: gateway, DHCP, DNS | verified: `uci show network` over SSH 2026-11-13 |
-| `.10`–`.54` | DHCP pool, 12-hour leases. Moved from `.100`–`.249` on 2026-11-16 (owner's request), so addresses above `.100` are free for fixed addresses set by each machine; it stops at `.54` to stay clear of `.55`, `.99` and `.100`, which are set on their machines. The router has no DHCP reservations | verified: `uci show dhcp` and the generated `dhcp-range` over SSH 2026-11-16 |
-| `.252` | oob-1, static, outside the DHCP pool (`systems/oob.md`) | verified: `ip -br a` over SSH 2026-11-14 |
-| `.254` | apt-cache (apt-cacher-ng, no Docker) | verified: SSH 2026-11-14 |
-| `.55` | portainer instance | verified: SSH and Portainer API 2026-11-14 |
-| `.99` | NPM-set | verified: SSH and Portainer API 2026-11-14 |
-| `.100` | Xen Orchestra (`xo-ce`) | verified: its REST API answered 2026-11-14 |
-| `.137` | cache VM `cache-1` (`agents/plans/package-and-image-cache.md`); set on the VM by OpenTofu and cloud-init | verified: over SSH `eth0` at `.137/24`, and Xen Orchestra's agent reported it, 2026-11-16 (`agents/journal/2026-11-16-build-cache-1.md`) |
-| `.138` | home reverse proxy `proxy-1` (`apps/homeserver/traefik/`); set on the VM by OpenTofu and cloud-init. The public record `*.home.<zone>` points here | verified: over SSH `eth0` at `.138/24`, and the router's dnsmasq answering `cache.home.<zone>` with it, 2026-11-18 (`agents/journal/2026-11-18-build-proxy-1-traefik.md`) |
-| `.123` | gpu_docker | verified: SSH 2026-11-14 |
-| `.160` | TrueNAS VM | verified: TrueNAS API 2026-11-14 |
-| `.253` | adguard-docker | verified: SSH and Portainer API 2026-11-14 |
+| `.1` | Home router: gateway, DHCP, DNS | verified: `uci show network` over SSH |
+| `.10`–`.54` | DHCP pool, 12-hour leases. Addresses above `.100` are free for fixed addresses set by each machine; it stops at `.54` to stay clear of `.55`, `.99` and `.100`, which are set on their machines. The router has no DHCP reservations | verified: `uci show dhcp` and the generated `dhcp-range` over SSH |
+| `.252` | oob-1, static, outside the DHCP pool (`systems/oob.md`) | verified: `ip -br a` over SSH |
+| `.254` | apt-cache (apt-cacher-ng, no Docker) | verified: SSH |
+| `.55` | portainer instance | verified: SSH and Portainer API |
+| `.99` | NPM-set | verified: SSH and Portainer API |
+| `.100` | Xen Orchestra (`xo-ce`) | verified: its REST API answered |
+| `.137` | cache VM `cache-1` (`agents/plans/package-and-image-cache.md`); set on the VM by OpenTofu and cloud-init | verified: over SSH `eth0` at `.137/24`, and Xen Orchestra's agent reported it (`agents/journal/2026-11-16-build-cache-1.md`) |
+| `.138` | home reverse proxy `proxy-1` (`apps/homeserver/traefik/`); set on the VM by OpenTofu and cloud-init. The public record `*.home.<zone>` points here | verified: over SSH `eth0` at `.138/24`, and the router's dnsmasq answering `cache.home.<zone>` with it (`agents/journal/2026-11-18-build-proxy-1-traefik.md`) |
+| `.123` | gpu_docker | verified: SSH |
+| `.160` | TrueNAS VM | verified: TrueNAS API |
+| `.253` | adguard-docker | verified: SSH and Portainer API |
+
+**When each check ran** (the State cells say how):
+
+- Home router (`.1`): 2026-11-13 (`agents/journal/2026-11-13-openwrt-home-router.md`).
+  The DHCP pool (`.10`–`.54`): 2026-11-16, when it was narrowed from
+  `.100`–`.249` at the owner's request.
+- oob-1 and the home VMs (`.55`, `.99`, `.100`, `.123`, `.160`, `.252`–`.254`):
+  the read-only recon of 2026-11-14.
+- cache-1 (`.137`): 2026-11-16. proxy-1 (`.138`): 2026-11-18. Both in the linked
+  journal entries.
 
 Upstream of the Home router is the ISP router's own private network,
 `192.168.1.0/24`: the Home router takes an address there by DHCP and the ISP

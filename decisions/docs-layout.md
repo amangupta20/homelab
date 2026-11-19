@@ -64,6 +64,15 @@ sits on the same page (or is a name the check verifies against the owner),
 and the page body always wins. `.githooks/check-properties.py` catches a
 broken shape in CI; it cannot catch a stale status.
 
+## Addendum 2026-11-19: properties cut to `type` and `tags` (owner)
+
+The cost above came true: the `status`, `verified` and `hosts` properties
+drifted from the page bodies they restated, and every review of the repo's
+clean-up named them a second source of truth. The owner decided (clean-up
+decision B) to keep the Obsidian layer under `agents/obsidian/` with only
+`type` and `tags`. Status stays in each page's body; the tables lose their
+status columns and kanban views.
+
 ## Addendum 2026-10-31: `ideas/` (proposed by an agent, at the owner's request)
 
 Research for things to try once there is time or hardware (a database

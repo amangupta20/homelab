@@ -1,6 +1,6 @@
 filters:
   and:
-    - file.inFolder("ideas")
+    - file.inFolder("agents/ideas")
     - type == "idea"
 views:
   - type: table

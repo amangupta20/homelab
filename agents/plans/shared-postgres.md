@@ -27,7 +27,7 @@ broken on purpose.
 Everything here comes from a research conversation on 2026-10-31. Numbers
 marked as guesses were not measured; commands are **UNTESTED** unless they say
 otherwise. The multi-site parts (a standby on the VPS, reads from the nearest
-copy, FerretDB) are not in this plan: `ideas/multi-site-postgres.md`.
+copy, FerretDB) are not in this plan: `agents/ideas/multi-site-postgres.md`.
 
 ## Topology (owner, 2026-11-01)
 
@@ -52,7 +52,7 @@ tiebreaker, built in two phases:
   jitter is the real test, so measure with `mtr` over hours before phase 2.
 - **This replaces the rule "every etcd member sits on the home LAN"** that
   this plan had, and goes against the reasoning in
-  `ideas/multi-site-postgres.md` ("Why etcd must not span home and the VPS").
+  `agents/ideas/multi-site-postgres.md` ("Why etcd must not span home and the VPS").
   What it means, from that reasoning:
   - Home internet down: home holds one of three etcd members, so the home
     node cannot be primary. If the primary is at home, Patroni demotes it and
@@ -267,7 +267,7 @@ trip time (RTT) between members, and the election timeout **at least about
 - **etcd spans sites in this plan** (owner, 2026-11-01; "Topology", above).
   Earlier this plan kept every member on the home LAN, because a member on the
   VPS makes the home primary depend on the home internet connection
-  (`ideas/multi-site-postgres.md`, "Why etcd must not span home and the VPS").
+  (`agents/ideas/multi-site-postgres.md`, "Why etcd must not span home and the VPS").
 - **Apps:** a query from an app to a database over the internet pays one round
   trip each time; apps that send many small queries feel it most. Keep each
   app on the same LAN as the database it writes to.
@@ -427,4 +427,4 @@ against a bill).
 ## Links
 
 `agents/plans/home-overhaul.md`, `agents/decisions/backup-tiers.md`, `systems/backups.md`,
-`systems/openbao.md`, `ideas/multi-site-postgres.md`.
+`systems/openbao.md`, `agents/ideas/multi-site-postgres.md`.

@@ -20,7 +20,7 @@ Read in this order:
 | Files | You may |
 |---|---|
 | `inventory/`, `systems/`, `agents/plans/`, `apps/`, `iac/README.md`, `agents/review/` | edit, as long as every fact you add says how you know it |
-| `ideas/` | correct facts and add sources; never promote, drop or act on an idea without the owner (`ideas/README.md`) |
+| `agents/ideas/` | correct facts and add sources; never promote, drop or act on an idea without the owner (`agents/ideas/README.md`) |
 | `journal/` | add an entry when a task changed the live lab, handled an incident, or tested a restore (`journal/README.md`); never edit an old one except to append a follow-up |
 | `agents/skills/` | follow; add new skills and propose changes to existing ones (`agents/skills/write-a-skill/`) |
 | `agents/decisions/open-questions.md` | append; never delete or resolve an item |
@@ -79,7 +79,7 @@ first is not automatically right.
   `inventory/network.md` owns IPs, `systems/<thing>.md` owns how each thing
   works. Update the owner file, link to it from elsewhere — don't copy the
   fact.
-- Pages in `systems/`, `inventory/`, `agents/plans/` and `ideas/` start with a
+- Pages in `systems/`, `inventory/`, `agents/plans/` and `agents/ideas/` start with a
   property block that the owner's Obsidian view reads
   (`agents/obsidian/obsidian-view.md`): `type` and `tags` only. A page's
   status lives in its body. `mise run check:properties` and CI check it.

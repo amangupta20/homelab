@@ -256,7 +256,7 @@ Home is behind carrier-grade NAT, so nothing can be forwarded in; that is why th
 edge moves from Nginx Proxy Manager to Pangolin (owner, 2026-11-14). The Pangolin
 server runs on a new VM in `pigsty-1`'s Oracle Cloud account, using the capacity
 `iac/oci/pigsty.tf` keeps for it: 1 Ampere CPU, 6 GB RAM, 50 GB disk. Newt runs at
-home. Design and open choices: `ideas/edge-and-security-layers.md`.
+home. Design and open choices: `agents/ideas/edge-and-security-layers.md`.
 
 The VM should get a reserved public IP, so the Cloudflare records never change; an
 ephemeral IP cannot be turned into a reserved one with the same address later.
@@ -351,7 +351,7 @@ Every VM built from code, and every CI runner, downloads the same packages and i
 again; with the cache first, only the first download leaves home. The cache runs on its
 own VM, which becomes the first VM built from code (`agents/plans/package-and-image-cache.md`).
 A self-hosted git host does not wait for any of B: it can start on the VPS
-(`ideas/self-hosted-git.md`, pull request #79).
+(`agents/ideas/self-hosted-git.md`, pull request #79).
 
 00. **Package and image cache** on its own VM, the first VM built the new way: OpenTofu
     through Xen Orchestra, cloud-init for the first key, Ansible for the rest. Its steps
@@ -420,7 +420,7 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
        dashboards, and Sablier.
      - **Names:** one public Cloudflare record, `*.home.<domain>`, pointing at the
        proxy's LAN address, so any resolver that forwards to the internet answers it,
-       and over Tailscale through the subnet route (`ideas/edge-and-security-layers.md`,
+       and over Tailscale through the subnet route (`agents/ideas/edge-and-security-layers.md`,
        "Internal names"). OpenWrt's dnsmasq drops public answers that point at private
        addresses by default (rebind protection). The Home router has it on, with no
        allowlist (`uci show dhcp`: `rebind_protection='1'`, no `rebind_domain`,
@@ -503,7 +503,7 @@ After the GPU cutover, try streaming from TorBox on `gpu-1` with nothing stored:
 Remux on its own; Decypharr feeding Remux (Sonarr/Radarr choose, Decypharr adds and
 exposes only those items, Remux reads them); and Rex, the one with seek-bar
 thumbnails. Compare start time, seeking, transcoding to a phone over Tailscale, and
-per-user libraries. Candidates, verdicts and trade-offs: `ideas/debrid-streaming.md`. — gate: the owner
+per-user libraries. Candidates, verdicts and trade-offs: `agents/ideas/debrid-streaming.md`. — gate: the owner
 picks one, or keeps Jellyfin with local media.
 
 ### After the last app
@@ -536,6 +536,6 @@ move before its public route exists.
 ## Links
 
 `agents/plans/shared-postgres.md`, `agents/plans/vps-foundations.md`, `agents/plans/sablier-wakeups.md`,
-`ideas/edge-and-security-layers.md`, `systems/backups.md`, `systems/oob.md`,
-`systems/truenas.md`, `ideas/debrid-streaming.md`,
+`agents/ideas/edge-and-security-layers.md`, `systems/backups.md`, `systems/oob.md`,
+`systems/truenas.md`, `agents/ideas/debrid-streaming.md`,
 `agents/decisions/backup-tiers.md`.

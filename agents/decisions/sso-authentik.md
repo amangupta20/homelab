@@ -24,7 +24,7 @@ Kanidm) were not compared.
 - SSO depends on pigsty-1 being up, because its database is there.
 - Forward-auth for apps without their own sign-in can use Authentik's
   embedded outpost through Traefik; the wider forward-auth question for the
-  home edge stays open (`ideas/edge-and-security-layers.md`, "Sign-in").
+  home edge stays open (`agents/ideas/edge-and-security-layers.md`, "Sign-in").
 
 ## Where it lives
 

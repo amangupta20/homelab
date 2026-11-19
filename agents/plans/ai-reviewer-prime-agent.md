@@ -14,7 +14,7 @@ tags:
 GitHub's hosted runners instead of spot VMs (steps 2 to 6 below were replaced
 by that design; how it works now: `agents/review/prime-reviewer.md`). Chosen 2026-11-02 by the owner over PR-Agent,
 dsh-superagent and Harness² for this job; dsh-superagent and Harness² are kept
-for the migration agent (`ideas/dsh-superagent-and-harness2.md`).
+for the migration agent (`agents/ideas/dsh-superagent-and-harness2.md`).
 
 **Goal:** Prime Agent reviews the owner's pull requests on this repo against
 `agents/review/review.md`, on a spot VM started only for that review, answers the
@@ -229,8 +229,8 @@ export its log before adding LiteLLM. None of it is checked.
 
 ## Links
 
-- Candidates kept for the migration agent: `ideas/dsh-superagent-and-harness2.md`
-- On-demand starting of the trace viewer: `ideas/on-demand-container-wakeups.md`
+- Candidates kept for the migration agent: `agents/ideas/dsh-superagent-and-harness2.md`
+- On-demand starting of the trace viewer: `agents/ideas/on-demand-container-wakeups.md`
 - The required review check: `agents/review/review.md`, `agents/rules/pull-request-gate.md`
 - Backups for the bucket and the viewer: `agents/skills/back-up-a-service/`
 - Undecided parts: `agents/decisions/open-questions.md`, AI reviewer

@@ -160,7 +160,7 @@ agent does not re-derive it, and it is the reason the status above is *needs
 more research* rather than *researched*.
 
 The edge-proxy choice itself, with the WAF, ban-tool and sign-in layers that
-come with it, is researched in `ideas/edge-and-security-layers.md` and on hold
+come with it, is researched in `agents/ideas/edge-and-security-layers.md` and on hold
 until the Pangolin decision (owner, 2026-11-01). Wakeups on the VPS do not
 wait for it: Dokploy's Traefik stays either way.
 

@@ -65,7 +65,7 @@ never in git. See `systems/openbao.md` for where they live.
 | what is backed up, and which restores are untested | `systems/backups.md` |
 | how to do a task step by step | `agents/skills/` — runbooks and know-how, shared with the agent harnesses (`agents/`) |
 | what is in progress | `agents/plans/` |
-| what could be tried later (researched, not scheduled) | `ideas/` |
+| what could be tried later (researched, not scheduled) | `agents/ideas/` |
 | why something is the way it is | `agents/decisions/` |
 | what is undecided or unverified | `agents/decisions/open-questions.md` |
 | what was done, when, and by whom | `journal/` |

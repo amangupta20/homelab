@@ -8,7 +8,7 @@ tags:
 
 # Sablier wakeups
 
-**Status:** done 2026-11-07 (`journal/2026-11-07-deploy-sablier.md`). Promoted from `ideas/on-demand-container-wakeups.md`, which holds the research (owner, 2026-11-07).
+**Status:** done 2026-11-07 (`journal/2026-11-07-deploy-sablier.md`). Promoted from `agents/ideas/on-demand-container-wakeups.md`, which holds the research (owner, 2026-11-07).
 
 **Goal:** a rarely used app on the VPS stops when idle and starts again on its next request, with Blinko as the test.
 **Done when:** Blinko stops after its idle time, a request through its domain starts it and gets a normal answer, and stopping Sablier does not
@@ -42,4 +42,4 @@ To undo it: clear the domain's middleware and redeploy Blinko. To remove the plu
 
 ## Links
 
-`ideas/on-demand-container-wakeups.md`, `apps/vps/sablier/README.md`, `apps/vps/blinko/`.
+`agents/ideas/on-demand-container-wakeups.md`, `apps/vps/sablier/README.md`, `apps/vps/blinko/`.

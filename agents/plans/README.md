@@ -16,7 +16,7 @@ Every page starts with a property block (the Obsidian view reads it); the
 schema and rules are in `agents/obsidian/obsidian-view.md`, and `mise run check:properties`
 checks it.
 
-Not scheduled yet? It belongs in `ideas/` until the owner decides to do it;
+Not scheduled yet? It belongs in `agents/ideas/` until the owner decides to do it;
 a plan promoted from an idea links back to it.
 
 Naming: `agents/plans/<what>.md` (`migration.md`, `portainer-to-git.md`, `vps-into-repo.md`).

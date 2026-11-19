@@ -92,7 +92,7 @@ cannot:
 - New pages follow the template in their folder's README and open with what
   the thing is and a **Status:** line.
 - Every path mentioned in backticks exists after the change.
-- A page in `systems/`, `inventory/`, `agents/plans/` or `agents/ideas/` has a property
+- A page in `lab/systems/`, `lab/inventory/`, `agents/plans/` or `agents/ideas/` has a property
   block with only `type` and `tags` (`agents/obsidian/obsidian-view.md`).
 
 ## 4. Within the author's permission
@@ -116,7 +116,7 @@ the verdict is `needs_owner`, however good the edit is:
 - A write to infrastructure that could lose data names the snapshot or
   verified backup taken first. A service that keeps no data needs only a
   copy of its configuration; that copy needs no restore test.
-- Nothing deletes or merges an XCP-ng snapshot by hand (`systems/xcp-ng.md`).
+- Nothing deletes or merges an XCP-ng snapshot by hand (`lab/systems/xcp-ng.md`).
 - Compose files hold secrets and identifying values (domains, public IPs,
   tailnet IPs and names) as references, never as values. Any other value
   written into the file is fine (`apps/README.md`).

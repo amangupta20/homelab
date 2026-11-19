@@ -1,6 +1,6 @@
 filters:
   and:
-    - file.inFolder("inventory")
+    - file.inFolder("lab/inventory")
 views:
   - type: table
     name: Inventory Overview

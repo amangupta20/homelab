@@ -17,7 +17,7 @@ How this folder relates to the others:
 |---|---|
 | `agents/ideas/` | could do, someday; nothing is promised |
 | `agents/plans/` | will do, in this order, with gates |
-| `systems/`, `inventory/` | is true now |
+| `lab/systems/`, `lab/inventory/` | is true now |
 | `agents/decisions/` | why it is the way it is |
 
 **Promoting an idea:** when the owner decides to do it, write `agents/plans/<what>.md`,

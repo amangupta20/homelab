@@ -52,7 +52,7 @@ one-line `CLAUDE.md` that points at it — one copy of the rules, never two.
 
 - Each harness's own memory, sessions and settings stay in its home directory
   and are not a source of truth. Facts an agent learns go into the repo.
-- Credentials never: they come from OpenBao (`systems/openbao.md`) or the
+- Credentials never: they come from OpenBao (`lab/systems/openbao.md`) or the
   environment.
 ## Shared MCP servers
 
@@ -68,7 +68,7 @@ Shared MCP server launchers live in `agents/mcp/`.
   - `DOKPLOY_URL` in the environment (e.g. `http://<tailscale-ip>:3000`); the
     launcher exits if it is missing (`${DOKPLOY_URL:?}` in the launcher).
   - `BAO_ADDR` in the environment, and the `bao` CLI on `PATH`, logged in so
-    that `bao kv get` can read `kv/general/dokploy` (`systems/openbao.md`,
+    that `bao kv get` can read `kv/general/dokploy` (`lab/systems/openbao.md`,
     "Daily use").
 
   Loading it in a harness:

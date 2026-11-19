@@ -9,7 +9,7 @@ service since 2026-11-11 (`NOTES.md`, "Importer"); ClickHouse has no backup.
 ## Backups
 
 - Postgres (users, projects, API keys, prompts, data set definitions): in the shared cluster's backups
-  (`systems/backups.md`). Restoring it needs `LANGFUSE_SALT` and `LANGFUSE_ENCRYPTION_KEY` from OpenBao.
+  (`lab/systems/backups.md`). Restoring it needs `LANGFUSE_SALT` and `LANGFUSE_ENCRYPTION_KEY` from OpenBao.
 - The B2 bucket: the raw event files, kept by B2 itself; no second copy.
 - **ClickHouse (traces, observations and scores): no backup.** Traces can be imported again from the reviewer's run
   archives in B2, but hand-made scores and annotations live only here. A ClickHouse backup (its `BACKUP` command to

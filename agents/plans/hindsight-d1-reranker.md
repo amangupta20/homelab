@@ -54,7 +54,7 @@ anything else is built.
 - **Not open to the network.** `llama-server` has no authentication unless
   started with `--api-key`. Listen on the GPU VM's tailnet or LAN address only,
   with an API key that lives in OpenBao and that 9router sends.
-- **GPU.** Which card the VM gets is not recorded in `inventory/` yet. If it
+- **GPU.** Which card the VM gets is not recorded in `lab/inventory/` yet. If it
   is a 4 GB Pascal card such as a GTX 1050 Ti: no hardware bfloat16, so the
   unquantised BF16 weights are out; use a GGUF quant with every layer on the
   GPU (`-ngl 99`).
@@ -102,7 +102,7 @@ table, not from the model card.
    take a slot as is, or needs an adapter, and the largest request size.
 2. **GPU VM.** A VM on the XCP-ng host with the GPU passed through, NVIDIA
    driver, llama.cpp b11960 or newer built with CUDA. Snapshot rule for new VMs
-   first (`systems/xcp-ng.md`). Add the VM to `inventory/hosts.md`. — gate:
+   first (`lab/systems/xcp-ng.md`). Add the VM to `lab/inventory/hosts.md`. — gate:
    `nvidia-smi` shows the card inside the VM.
 3. **Measure.** Fill the table above for Q8_0 and Q4_K_M, and compare their
    answers on the same 20 real rerank requests. — gate: table filled; quant and
@@ -118,7 +118,7 @@ table, not from the model card.
 6. **Compare and decide.** A few days of normal use against the current
    chain: answer quality on recalls the owner checks, latency, misses. — gate:
    owner keeps, moves or removes the slot; the outcome goes to `agents/journal/` and
-   the running state to `inventory/services.md`.
+   the running state to `lab/inventory/services.md`.
 
 ## What the build needs
 
@@ -141,5 +141,5 @@ measurements above. No earlier draft is the reference.
 
 ## Links
 
-`agents/plans/README.md`, `systems/xcp-ng.md`, `systems/openbao.md`,
-`inventory/hosts.md`, `inventory/services.md`.
+`agents/plans/README.md`, `lab/systems/xcp-ng.md`, `lab/systems/openbao.md`,
+`lab/inventory/hosts.md`, `lab/inventory/services.md`.

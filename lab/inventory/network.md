@@ -16,13 +16,13 @@ on each is in `services.md`.
 `verified: …`.
 
 Private subnet `10.22.33.0/24`, served by the Home router
-(`systems/router.md`).
+(`lab/systems/router.md`).
 
 | IP | Host | State |
 |---|---|---|
 | `.1` | Home router: gateway, DHCP, DNS | verified: `uci show network` over SSH |
 | `.10`–`.54` | DHCP pool, 12-hour leases. Addresses above `.100` are free for fixed addresses set by each machine; it stops at `.54` to stay clear of `.55`, `.99` and `.100`, which are set on their machines. The router has no DHCP reservations | verified: `uci show dhcp` and the generated `dhcp-range` over SSH |
-| `.252` | oob-1, static, outside the DHCP pool (`systems/oob.md`) | verified: `ip -br a` over SSH |
+| `.252` | oob-1, static, outside the DHCP pool (`lab/systems/oob.md`) | verified: `ip -br a` over SSH |
 | `.254` | apt-cache (apt-cacher-ng, no Docker) | verified: SSH |
 | `.55` | portainer instance | verified: SSH and Portainer API |
 | `.99` | NPM-set | verified: SSH and Portainer API |

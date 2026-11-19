@@ -13,8 +13,8 @@ A small rented server outside the home network that runs the lab's
 always-on, shared and overflow services, deployed with Dokploy.
 
 **Status:** running. Step 0 of `agents/plans/vps-foundations.md` documented it on
-2026-10-26 with a read-only recon. Rows: `inventory/hosts.md`,
-`inventory/services.md`.
+2026-10-26 with a read-only recon. Rows: `lab/inventory/hosts.md`,
+`lab/inventory/services.md`.
 
 ## What goes here
 
@@ -41,7 +41,7 @@ access setup are kept out of this public repo on purpose.
   an upgrade on 2026-10-28, `/var/log/apt/history.log`).
 - **Tailnet route for GitHub files:** since 2026-11-14 the VPS advertises
   the address range GitHub serves release and raw files from, so home devices
-  can fetch them through the VPS (`systems/router.md`, "Detour for GitHub
+  can fetch them through the VPS (`lab/systems/router.md`, "Detour for GitHub
   downloads"). Set with `tailscale set --advertise-routes`; it was empty
   before. Approved by the owner and tested from home on 2026-11-14; the
   figures are on the router's page.
@@ -81,8 +81,8 @@ access setup are kept out of this public repo on purpose.
   The launcher reads a scoped agent API key from OpenBao (`kv/general/dokploy`,
   field `api_key`).
 - **Backups** go to Garage at home through a Dokploy destination
-  (`systems/backups.md`), with OpenBao automated snapshots detailed in
-  `systems/openbao.md`.
+  (`lab/systems/backups.md`), with OpenBao automated snapshots detailed in
+  `lab/systems/openbao.md`.
 
 ## Firewall
 
@@ -124,5 +124,5 @@ purpose — never Docker's.
 
 ## Open questions
 
-See [`agents/decisions/open-questions.md`](../agents/decisions/open-questions.md),
+See [`agents/decisions/open-questions.md`](../../agents/decisions/open-questions.md),
 sections "Remote VPS (Dokploy)", "Secrets (OpenBao)" and "Foundations".

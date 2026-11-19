@@ -165,7 +165,7 @@ How it works: `apps/vps/sablier/README.md`. What is different here:
 4. OpenBao: the fields of `.env.example` at `kv/dokploy/langfuse`.
 5. Dokploy: a Compose service from this repo's `main`, path `apps/vps/langfuse/compose.yaml`, no domain set in
    Dokploy (the routers are labels here), environment from OpenBao, and the project added to the OpenBao
-   provider's assignments (`systems/openbao.md`). The domain goes under `*.app.<zone>`, the DNS-only wildcard to
+   provider's assignments (`lab/systems/openbao.md`). The domain goes under `*.app.<zone>`, the DNS-only wildcard to
    the VPS, as `langfuse.app.<zone>`; a name directly under the zone hits the Cloudflare-proxied wildcard and got
    522 (2026-11-10).
 6. The first Authentik login, then an organisation, a project and its API keys for the importer.

@@ -40,7 +40,7 @@ quickstart, read 2026-11-06). arm64 was not covered on that page.
 - **Capacity:** on the Oracle account that holds `pigsty-1` it would compete with
   Pangolin for the remaining free allowance.
 - **Upkeep:** another always-on service with its own updates, backups and restore test
-  (`systems/backups.md`).
+  (`lab/systems/backups.md`).
 - **Licence:** the server components are AGPLv3. One comparison says production
   self-hosting needs a commercial tier, while the quickstart does not mention one.
   Unverified; check before relying on it.

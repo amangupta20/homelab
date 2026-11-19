@@ -13,7 +13,7 @@ OpenBao is the secret store: every password and token in one place on the
 tailnet, read by machines at deploy time, never written into git.
 
 **Status:** running on the VPS since 2026-10-26 (`apps/vps/openbao/`); backup
-details owned by `systems/backups.md`; restore tested 2026-10-29 from Garage
+details owned by `lab/systems/backups.md`; restore tested 2026-10-29 from Garage
 (`agents/journal/2026-10-29-restore-test-openbao.md`) and 2026-10-31 from Backblaze B2
 (`agents/journal/2026-10-31-restore-test-openbao-b2.md`).
 Commands not marked as run have not been run against a real OpenBao server
@@ -77,7 +77,7 @@ certificate file. On a desktop session that uses systemd, a file in
 shell's startup files (done on the owner's workstation, 2026-10-26).
 
 How OpenTofu would read secrets from it is an **UNTESTED** sketch, in
-`systems/notes/openbao.md`, "OpenTofu reading the box".
+`lab/systems/notes/openbao.md`, "OpenTofu reading the box".
 
 ## Two container managers
 
@@ -118,7 +118,7 @@ The lab has two, and they need different answers:
   with `bao token lookup -accessor` on 2026-10-30; an earlier note here said
   768h), so it dies unless renewed within about 42 days.
   Renewing it is automated daily by the `openbao-raft-snapshot` scheduled task
-  (`systems/backups.md`).
+  (`lab/systems/backups.md`).
 - **Homeserver — Portainer today.** Portainer does not read OpenBao, so secrets
   have to reach the container another way: a sidecar logs in with its own
   AppRole and writes files into `/run/secrets`, and the stack reads files
@@ -132,7 +132,7 @@ The lab has two, and they need different answers:
   task running `dokploy-schedule-snapshot.sh` (`apps/vps/openbao/NOTES.md`, "Host scripts"),
   which streams a Raft snapshot via OpenBao's HTTP API and renews Dokploy's
   provider token. Schedule, upload destinations, retention, and restore tests
-  are owned by `systems/backups.md` (restore tested 2026-10-29 from Garage and
+  are owned by `lab/systems/backups.md` (restore tested 2026-10-29 from Garage and
   2026-10-31 from Backblaze B2).
 
 ## Still to do
@@ -146,4 +146,4 @@ OpenBao at runtime).
 > - Never commit `.env`, `*.tfvars` with secrets, `*.tfstate`, `.vault-token`.
 > - If a secret was ever committed, rotate it in the box. Deleting it from git
 >   is not enough — git history keeps it.
-> - Patch it like Xen Orchestra and read its audit log (`systems/notes/openbao.md`, "Locking it down").
+> - Patch it like Xen Orchestra and read its audit log (`lab/systems/notes/openbao.md`, "Locking it down").

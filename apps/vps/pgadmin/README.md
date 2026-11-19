@@ -14,7 +14,7 @@ Dokploy's template was not read. Choices:
   set to a tailnet address (the check uses the connection's own address). The hostname's DNS record points at the
   VPS's tailnet address, so it is not reachable from outside anyway; the allowlist covers someone sending the right
   `Host` to the public address.
-- **The zone's wildcard certificate** from Traefik's `cloudflare` resolver (`systems/vps.md`, "Certificates"), so
+- **The zone's wildcard certificate** from Traefik's `cloudflare` resolver (`lab/systems/vps.md`, "Certificates"), so
   the hostname needs no public HTTP challenge and does not appear in certificate transparency logs by name.
 - **Connects as `dbuser_owner` to `pg-proxy:5436`,** Pigsty's direct Postgres service, not PgBouncer
   (`apps/vps/pg-proxy/README.md`). `dbuser_owner` is in `dbrole_admin` and in each app's role, not a superuser

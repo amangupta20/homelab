@@ -1,4 +1,4 @@
-# OpenBao, the lab's secret store (systems/openbao.md). Where this file came
+# OpenBao, the lab's secret store (lab/systems/openbao.md). Where this file came
 # from and how to deploy it: README.md next to it.
 
 services:

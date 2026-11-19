@@ -13,13 +13,13 @@ A Raspberry Pi that is a second way into the home LAN, for the day the main
 way in is broken.
 
 **Status:** running since 2026-11-14 — subnet router for the home subnet on a
-second Tailscale account. Rows: `inventory/hosts.md`, `inventory/network.md`.
+second Tailscale account. Rows: `lab/inventory/hosts.md`, `lab/inventory/network.md`.
 Story: `agents/journal/2026-11-14-rebuild-oob-pi.md`.
 
 ## Why it exists
 
 The main way in from outside is the Home router's Tailscale subnet route
-(`systems/router.md`, "Tailscale"). If the router's Tailscale stops, or a
+(`lab/systems/router.md`, "Tailscale"). If the router's Tailscale stops, or a
 change to the main tailnet's access rules or keys goes wrong, nothing at home
 can be reached until someone is in the house. `oob-1` covers that: it is on a
 **separate Tailscale account** (its own tailnet), so nothing done to the main

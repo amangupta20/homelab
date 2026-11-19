@@ -11,11 +11,11 @@ Read in this order:
    treat anything listed there as fact
 3. `agents/rules/docs-layout.md` — which file owns which kind of fact, and who
    may edit what
-4. `inventory/` — services, hosts, IPs
-5. `systems/xcp-ng.md` — the platform rule that destroys VMs
+4. `lab/inventory/` — services, hosts, IPs
+5. `lab/systems/xcp-ng.md` — the platform rule that destroys VMs
 6. The README of the folder you are about to write in — it has the naming
    rules and the template
-7. The `systems/` page, `agents/plans/` file or `agents/skills/` entry for your task
+7. The `lab/systems/` page, `agents/plans/` file or `agents/skills/` entry for your task
 
 ## When facts disagree
 
@@ -37,7 +37,7 @@ first is not automatically right.
   **UNTESTED**. A plausible-looking recipe nobody ran is worse than none.
 - No secrets in this repo. No tokens, passwords, private keys, real public
   domains, or full configs containing secrets. Examples use placeholders like
-  `__PASTE_ONCE__`. See `systems/openbao.md` for where secrets live, and
+  `__PASTE_ONCE__`. See `lab/systems/openbao.md` for where secrets live, and
   `agents/review/secret-scanning.md` for the scan that blocks a commit or push.
 - Security flaws you find are fixed with the owner, never published. This
   repo is public: a weakness that is not fixed yet — an exposed port or admin
@@ -60,11 +60,11 @@ first is not automatically right.
   gets only the plan's summary and its list of resource actions
   (`iac/README.md`, "Plans in pull requests"). The full plan can show IDs and
   addresses; it stays in your private task or chat.
-- One fact, one owner. `inventory/services.md` owns the service list,
-  `inventory/network.md` owns IPs, `systems/<thing>.md` owns how each thing
+- One fact, one owner. `lab/inventory/services.md` owns the service list,
+  `lab/inventory/network.md` owns IPs, `lab/systems/<thing>.md` owns how each thing
   works. Update the owner file, link to it from elsewhere — don't copy the
   fact.
-- Pages in `systems/`, `inventory/`, `agents/plans/` and `agents/ideas/` start with a
+- Pages in `lab/systems/`, `lab/inventory/`, `agents/plans/` and `agents/ideas/` start with a
   property block that the owner's Obsidian view reads
   (`agents/obsidian/obsidian-view.md`): `type` and `tags` only. A page's
   status lives in its body. `mise run check:properties` and CI check it.

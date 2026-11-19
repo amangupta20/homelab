@@ -48,7 +48,7 @@ them and links its journal entry here.
    and the Compose file or container docs in the app's own repository. Do
    not copy either as is — templates often run dev modes, generate secrets
    into the environment, or attach a public domain. Check the image exists
-   for `arm64`: the VPS is ARM (`systems/vps.md`):
+   for `arm64`: the VPS is ARM (`lab/systems/vps.md`):
    `docker manifest inspect <image>:<tag>` lists `"architecture": "arm64"`
    (run for `openbao/openbao:2.7.1`, 2026-10-26).
 2. **Write the definition** in `apps/vps/<app>/` (rules: `apps/README.md`):
@@ -72,11 +72,11 @@ them and links its journal entry here.
    2026-10-26). CI runs
    `docker compose config` on every compose file (`.github/workflows/ci.yml`).
 4. **Store the secrets:** in OpenBao at `kv/dokploy/<app>`, one field per
-   key — Dokploy's token reads that folder only (`systems/openbao.md`, "Two
+   key — Dokploy's token reads that folder only (`lab/systems/openbao.md`, "Two
    container managers"). Never in the repo. In Dokploy the value is the
    reference `${{vault.<provider>.dokploy/<app>:<key>}}`, with the provider's
    KV Mount set to `kv`. The traps that cost one deploy, and the token's
-   32-day renewal, are `systems/openbao.md`'s to describe.
+   32-day renewal, are `lab/systems/openbao.md`'s to describe.
 5. **Open a pull request** and get it through review: Dokploy deploys these
    services from this repo's `main`, so nothing here goes live before the merge
    (verified 2026-10-27 on `apps/vps/hermes-webui/` — a merged compose change
@@ -109,7 +109,7 @@ them and links its journal entry here.
   green in Dokploy.
 - Dokploy shows the deployed commit equal to `main`.
 - For a stateful app: a backup exists in Garage **and** one restore was tried
-  (`systems/backups.md` — a backup counts when a restore works).
+  (`lab/systems/backups.md` — a backup counts when a restore works).
 
 ## Stop if
 
@@ -122,9 +122,9 @@ Write down what you saw, and ask the owner.
 
 ## Afterwards
 
-- Add or update the app's row in `inventory/services.md` (host: remote VPS,
+- Add or update the app's row in `lab/inventory/services.md` (host: remote VPS,
   state with how it was verified).
-- If the app needs more than a row, a page in `systems/`.
+- If the app needs more than a row, a page in `lab/systems/`.
 - Write `agents/journal/YYYY-MM-DD-deploy-<app>.md`.
 - If any step above was wrong, propose the fix to this skill
   (`agents/skills/write-a-skill/`).

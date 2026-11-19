@@ -7,10 +7,10 @@ Checks, over tracked Markdown files:
           tracked (or git-ignored) file or folder. Journal entries are exempt:
           they keep the paths of their day (agents/journal/README.md is not).
 - dates:  no `YYYY-MM-DD` in table rows of the human pages (README.md,
-          inventory/, systems/, apps/**/README.md). Dates belong in journal
+          lab/inventory/, lab/systems/, apps/**/README.md). Dates belong in journal
           entries, which those pages link; a journal file name in a link
           does not count.
-- lines:  length caps (notes pages, an app's NOTES.md or systems/notes/, have
+- lines:  length caps (notes pages, an app's NOTES.md or lab/systems/notes/, have
           none): AGENTS.md 40, app READMEs 40, journal entries 40
           (those dated from JOURNAL_CAP_FROM on),
           systems pages 150.
@@ -42,7 +42,7 @@ ROOT_ENTRIES = {
     "AGENTS.md", "CLAUDE.md", "README.md", "mise.toml",
     "secret-scan.toml", "secret-scan.local.toml.example",
     "agents", "ansible", "apps", "iac",
-    "inventory", "systems",
+    "lab",
 }
 
 # The 40-line cap applies to journal entries written after the clean-up; older
@@ -59,7 +59,7 @@ LINK = re.compile(r"\]\(([^)\s]+)\)")
 # naming it with no pointer is a copy that drifts.
 RULES = [
     ("base-snapshot", re.compile(r"base snapshot", re.I),
-     "systems/xcp-ng.md", {"AGENTS.md", "README.md"}),
+     "lab/systems/xcp-ng.md", {"AGENTS.md", "README.md"}),
     ("lan-cache", re.compile(r"LAN cache rule|every (new )?home VM downloads through", re.I),
      "ansible/README.md", {"AGENTS.md"}),
 ]
@@ -71,8 +71,8 @@ def git(*args):
 
 
 def human_page(f):
-    return (f == "README.md" or f.startswith("inventory/")
-            or posixpath.dirname(f) == "systems"
+    return (f == "README.md" or f.startswith("lab/inventory/")
+            or posixpath.dirname(f) == "lab/systems"
             or (f.startswith("apps/") and f.endswith("/README.md")))
 
 
@@ -86,7 +86,7 @@ def cap(f):
         return 40
     if journal_entry(f) and posixpath.basename(f)[:10] >= JOURNAL_CAP_FROM:
         return 40
-    if posixpath.dirname(f) == "systems" and f != "systems/README.md":
+    if posixpath.dirname(f) == "lab/systems" and f != "lab/systems/README.md":
         return 150
     return None
 

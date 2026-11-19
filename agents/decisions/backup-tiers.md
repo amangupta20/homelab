@@ -7,7 +7,7 @@ Decided: 2026-10-31. Status: in force — approved by the owner.
 | | Tier 1: local | Tier 2: offsite |
 |---|---|---|
 | Who gets it | every service with state | services the owner names (list below) |
-| Where | Garage at home (`systems/backups.md`) | Backblaze B2, encrypted before upload |
+| Where | Garage at home (`lab/systems/backups.md`) | Backblaze B2, encrypted before upload |
 | How many versions | many (OpenBao keeps 14 today) | few: 3 daily, 1 weekly, 1 monthly |
 | Protects against | everyday mistakes: a bad upgrade, a deleted file, "go back to last Tuesday" | losing the site: the house, TrueNAS, or a compromise that wipes Garage |
 | Restore speed | fast, on the LAN | slower; downloads are free up to 3× what is stored (B2 pricing as noted by the owner, 2026-10-14) |
@@ -64,7 +64,7 @@ be fetched again, it is not exempt.
    needs a lifecycle rule that keeps only the current version, or cleanup frees
    no space.
 5. **The restore rule still applies.** A tier counts only after a test restore
-   from it (`systems/backups.md`, "The rule").
+   from it (`lab/systems/backups.md`, "The rule").
 
 ## Proposed change, 2026-11-14 (not in force until the owner approves)
 
@@ -89,6 +89,6 @@ From `agents/plans/home-overhaul.md`, "Design". Tier 1 is no longer always Garag
 
 ## Where it lives
 
-`systems/backups.md` (what each service actually has),
+`lab/systems/backups.md` (what each service actually has),
 `agents/skills/back-up-a-service/` (how), `agents/plans/offsite-backups.md` (OpenBao first),
 `agents/decisions/open-questions.md` ("Backups").

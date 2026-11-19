@@ -14,7 +14,7 @@ deployed, then patched for OpenBao, then patched again for SSO.
 ## Cost / what this rules out
 
 - **OpenBao listens on the VPS's Tailscale address only**, never a public
-  port: it holds every secret at once (`systems/openbao.md`). A compromise of
+  port: it holds every secret at once (`lab/systems/openbao.md`). A compromise of
   the VPS itself would still expose it, which is the price of putting it on the
   always-on side; its backup lives at home.
 - **SSO has to be public** for the people who use the shared apps; its admin
@@ -49,4 +49,4 @@ Conditions if it happens, decided again at that time:
 
 ## Where it lives
 
-`systems/vps.md`, `systems/openbao.md`, `agents/plans/vps-foundations.md`.
+`lab/systems/vps.md`, `lab/systems/openbao.md`, `agents/plans/vps-foundations.md`.

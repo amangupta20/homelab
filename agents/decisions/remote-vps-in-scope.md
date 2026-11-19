@@ -13,7 +13,7 @@ Portainer.
 ## Cost / what this rules out
 
 - Nothing about the VPS is documented yet beyond one row in
-  `inventory/services.md`.
+  `lab/inventory/services.md`.
 - Its stacks go in `apps/vps/`, next to `apps/homeserver/` (decided
   2026-10-26). How Dokploy deploys from that folder is undecided
   (`open-questions.md`).
@@ -23,5 +23,5 @@ Portainer.
 
 ## Where it lives
 
-`inventory/services.md` (Dokploy row), `systems/openbao.md` (how Dokploy
+`lab/inventory/services.md` (Dokploy row), `lab/systems/openbao.md` (how Dokploy
 reads secrets).

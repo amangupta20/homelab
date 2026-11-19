@@ -10,7 +10,7 @@ One dated entry for each of these, and nothing else:
 - a change to the live lab — a server, VM, container or setting, whether or
   not a pull request went with it;
 - an incident — something broke or was found broken;
-- a restore test — the proof `systems/backups.md` and the plans ask for.
+- a restore test — the proof `lab/systems/backups.md` and the plans ask for.
 
 It answers "what did we do to the lab, when, and how did we check it?" —
 what git history cannot show, because none of it is a file in this repo.
@@ -27,7 +27,7 @@ so the folder sorts by date.
 
 - Written by whoever did the work, human or agent, at the end of the work.
 - Entries are not edited later except to add a "Follow-up" note at the bottom.
-- Facts learned go into their owner file (`inventory/`, `systems/`) in the same
+- Facts learned go into their owner file (`lab/inventory/`, `lab/systems/`) in the same
   commit; the entry links them instead of being the only place they live.
 
 ## Template

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check the page properties the Obsidian view reads (agents/obsidian/obsidian-view.md).
 
-Every page in systems/, inventory/, agents/plans/ and agents/ideas/ starts with a small YAML block.
+Every page in lab/systems/, lab/inventory/, agents/plans/ and agents/ideas/ starts with a small YAML block.
 The Bases tables in agents/obsidian/bases/ are built from it, so a missing or misspelled
 property silently drops a page from the dashboard. This fails loudly instead.
 
@@ -17,7 +17,7 @@ import sys
 # pull request's tree (`check-properties.py .`), so it must not assume its own.
 ROOT = (pathlib.Path(sys.argv[1]) if len(sys.argv) > 1
         else pathlib.Path(__file__).resolve().parent.parent).resolve()
-FOLDERS = {"systems": "system", "inventory": "inventory", "agents/plans": "plan", "agents/ideas": "idea"}
+FOLDERS = {"lab/systems": "system", "lab/inventory": "inventory", "agents/plans": "plan", "agents/ideas": "idea"}
 ALLOWED = {"type", "tags"}
 REQUIRED_PAGE = {"type", "tags"}
 REQUIRED_INDEX = {"type", "tags"}

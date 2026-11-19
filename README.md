@@ -20,7 +20,7 @@ one app at a time.
 - Remote VPS: apps deployed by Dokploy from the Compose files in `apps/vps/`.
 
 **Never delete an XCP-ng base snapshot by hand** — it can corrupt the VM.
-See `systems/xcp-ng.md`.
+See `lab/systems/xcp-ng.md`.
 
 ## What is in code
 
@@ -30,17 +30,17 @@ See `systems/xcp-ng.md`.
 | proxy-1 (Traefik for `*.home`) | VM, home | yes | `iac/proxy-vm.tf`, `ansible/proxy.yml`, `apps/homeserver/traefik/` |
 | pigsty-1 (shared Postgres) | Oracle Cloud VM | yes | `iac/oci/`, `ansible/base.yml`, `ansible/pigsty/` |
 | xo-ce (Xen Orchestra) | VM, home | Ansible only | `ansible/xcpng.yml` |
-| oob-1 (out-of-band Raspberry Pi) | hardware, home | Ansible only | `ansible/oob.yml`, `systems/oob.md` |
+| oob-1 (out-of-band Raspberry Pi) | hardware, home | Ansible only | `ansible/oob.yml`, `lab/systems/oob.md` |
 | OpenBao, Authentik, Langfuse, Hermes WebUI, Blinko, pgAdmin, CloudBeaver, pg-proxy, Sablier | remote VPS (Dokploy) | Compose only | `apps/vps/` |
-| The remote VPS itself | Oracle Cloud | no | `systems/vps.md`, `agents/decisions/vps-outside-opentofu.md` |
-| Other VPS apps | remote VPS (Dokploy) | no | `inventory/services.md` |
-| Home app stacks (Immich, Jellyfin, Nextcloud and others) | Portainer, several VMs | no | `inventory/services.md` |
-| TrueNAS, Garage, backups | VM, home | no | `systems/truenas.md`, `systems/backups.md` |
-| XCP-ng host | hardware, home | no | `systems/xcp-ng.md` |
-| Router, DHCP, DNS | hardware, home | no | `systems/router.md` |
+| The remote VPS itself | Oracle Cloud | no | `lab/systems/vps.md`, `agents/decisions/vps-outside-opentofu.md` |
+| Other VPS apps | remote VPS (Dokploy) | no | `lab/inventory/services.md` |
+| Home app stacks (Immich, Jellyfin, Nextcloud and others) | Portainer, several VMs | no | `lab/inventory/services.md` |
+| TrueNAS, Garage, backups | VM, home | no | `lab/systems/truenas.md`, `lab/systems/backups.md` |
+| XCP-ng host | hardware, home | no | `lab/systems/xcp-ng.md` |
+| Router, DHCP, DNS | hardware, home | no | `lab/systems/router.md` |
 
 Hand-written from the files above; what runs and whether it is healthy is in
-`inventory/services.md`. The migration plan is `agents/plans/home-overhaul.md`.
+`lab/inventory/services.md`. The migration plan is `agents/plans/home-overhaul.md`.
 
 ## Why this repo exists
 
@@ -52,17 +52,17 @@ to an AI agent for routine maintenance without the agent having to guess — and
 without it slowly rewriting the design into something nobody chose.
 
 No secrets in this repo. Ever. Tokens, passwords, keys stay in a vault,
-never in git. See `systems/openbao.md` for where they live.
+never in git. See `lab/systems/openbao.md` for where they live.
 
 ## Find something
 
 | I want to know… | Look in |
 |---|---|
-| what runs, where, and whether it is healthy | `inventory/services.md` |
-| which machines exist | `inventory/hosts.md` |
-| an IP, or how traffic gets in | `inventory/network.md` |
-| how a thing works and what never to do to it | `systems/` — one page per thing (`xcp-ng.md`, `backups.md`, `openbao.md`) |
-| what is backed up, and which restores are untested | `systems/backups.md` |
+| what runs, where, and whether it is healthy | `lab/inventory/services.md` |
+| which machines exist | `lab/inventory/hosts.md` |
+| an IP, or how traffic gets in | `lab/inventory/network.md` |
+| how a thing works and what never to do to it | `lab/systems/` — one page per thing (`xcp-ng.md`, `backups.md`, `openbao.md`) |
+| what is backed up, and which restores are untested | `lab/systems/backups.md` |
 | how to do a task step by step | `agents/skills/` — runbooks and know-how, shared with the agent harnesses (`agents/`) |
 | what is in progress | `agents/plans/` |
 | what could be tried later (researched, not scheduled) | `agents/ideas/` |
@@ -90,4 +90,4 @@ Every folder has a README saying what goes in it and a template to copy.
    filtered and logged.
 4. **Backups that can restore** — a backup only counts when a test restore
    works. What is backed up and what is still untested:
-   `systems/backups.md`.
+   `lab/systems/backups.md`.

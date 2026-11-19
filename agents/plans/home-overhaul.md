@@ -9,8 +9,8 @@ tags:
 
 # Home overhaul
 
-**Status:** in progress — A1 done 2026-11-14 (`systems/oob.md`); A2, the read-only
-recon, done 2026-11-14 (facts in `inventory/` and `systems/truenas.md`); A3 done
+**Status:** in progress — A1 done 2026-11-14 (`lab/systems/oob.md`); A2, the read-only
+recon, done 2026-11-14 (facts in `lab/inventory/` and `lab/systems/truenas.md`); A3 done
 2026-11-15, after a rerun of a replication that failed on a checksum error in `imp`
 (checked 2026-11-16); B4a phase 1, the home proxy, done 2026-11-18
 (`agents/journal/2026-11-18-build-proxy-1-traefik.md`). Replaces `agents/plans/migration.md`
@@ -32,8 +32,8 @@ line says otherwise. Anything marked **UNTESTED** has not been run here.
 
 ## Where things stand (2026-11-14)
 
-Read live on 2026-11-14; the details are in their owner files (`inventory/hosts.md`,
-`inventory/services.md`, `systems/truenas.md`, `systems/backups.md`).
+Read live on 2026-11-14; the details are in their owner files (`lab/inventory/hosts.md`,
+`lab/inventory/services.md`, `lab/systems/truenas.md`, `lab/systems/backups.md`).
 
 **Machines.** Seven VMs run on the XCP-ng host: TrueNAS, `gpu_docker` (most apps),
 `portainer instance`, `NPM-set`, `adguard-docker`, `apt-cache` and `xo-ce`. Six more
@@ -110,7 +110,7 @@ Turned down, and why (owner, 2026-11-14):
   with one copy on the other disk; normal data daily, one week, no copy; scratch none.
   Nextcloud's Borg keeps 7 days, 4 weeks and 6 months. The offsite tier follows
   `agents/decisions/backup-tiers.md`. Today's TrueNAS tasks already keep two weeks for
-  `imp/back` and one for `Main/home` (`systems/truenas.md`).
+  `imp/back` and one for `Main/home` (`lab/systems/truenas.md`).
 
 How convenient versus how locked down: `agents/rules/agent-access.md` — convenient by
 default, with two hard guards (no agent credential can delete or overwrite backups; no
@@ -126,7 +126,7 @@ specific reason for one VM is written down here. Why: one OS means one Ansible
 base, one set of package names and one upgrade rhythm. The old VMs were split
 without a rule — Debian on the ones set up and left alone (NPM-set,
 adguard-docker, apt-cache, `xo-ce`), Ubuntu 24.04 on the ones used often
-(`gpu_docker`, portainer instance) (`inventory/hosts.md`) — and the owner
+(`gpu_docker`, portainer instance) (`lab/inventory/hosts.md`) — and the owner
 does not know of a reason for the Ubuntu ones. Debian is also the lighter
 of the two at idle, by roughly 50-100 MB (estimate, not measured).
 
@@ -301,7 +301,7 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
 
 ### A. Before anything at home changes
 
-1. **A second way in.** Done 2026-11-14: `oob-1` (`systems/oob.md`).
+1. **A second way in.** Done 2026-11-14: `oob-1` (`lab/systems/oob.md`).
 2. **Read-only recon.** Done 2026-11-14 ("Where things stand"). Not read yet: the
    size of each top-level folder in `back` and `home`, and Garage per bucket (needs
    Garage's admin token); both are read in B1, before any data moves.
@@ -311,7 +311,7 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
    `imp/back`'s. The 2026-10-30 copy was stale on 2026-11-14. On 2026-11-15 the
    snapshots ran again but the replication failed on a checksum error in `imp`;
    the damaged file and snapshot were removed and the replication rerun by hand
-   (`systems/truenas.md`, "Checksum errors on `imp`"). **Done 2026-11-15**, checked
+   (`lab/systems/truenas.md`, "Checksum errors on `imp`"). **Done 2026-11-15**, checked
    2026-11-16 through the TrueNAS API: `Main/repli` and `imp/back` both have
    `auto-2026-11-15_20-00` as their newest snapshot, and the scrub of `imp` that
    followed found 0 errors.
@@ -321,7 +321,7 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
    passed the same day. **2026-11-14 to -15, read on the GPU VM:** the owner restored
    it that evening (the data folder, an SMB mount of `back/nextcloud`, was rewritten
    around 19:30 UTC); the restore brought `daily_backup_time` (22:00) back, so the
-   nightly backup ran, failed on the damaged file in `imp` (`systems/truenas.md`,
+   nightly backup ran, failed on the damaged file in `imp` (`lab/systems/truenas.md`,
    "Checksum errors on `imp`") and then started every container. It ran on Nextcloud
    34.0.5 with `files_archive` 1.2.8 still installed until 2026-11-15, when the
    agent stopped all twelve containers at the owner's request and renamed
@@ -337,9 +337,9 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
    reaches the owner's phone.
 6. **Disk health is watched:** `smartd` on the XCP-ng host checks both passed-through
    hard disks and alerts to ntfy, because TrueNAS cannot read their SMART data
-   (`systems/truenas.md`). Both pools are single disks, so a failing disk must be seen
+   (`lab/systems/truenas.md`). Both pools are single disks, so a failing disk must be seen
    early. SMART was read by hand on 2026-11-15 (both PASSED; recorded in
-   `systems/truenas.md`); `smartd`, the long self-tests and the ntfy alert are not set
+   `lab/systems/truenas.md`); `smartd`, the long self-tests and the ntfy alert are not set
    up yet. Later, these alerts and the hosts' metrics also go to a central monitoring
    system (which one is open). — gate: `smartctl` results for both disks are recorded,
    and a test alert reaches the owner's phone.
@@ -536,6 +536,6 @@ move before its public route exists.
 ## Links
 
 `agents/plans/shared-postgres.md`, `agents/plans/vps-foundations.md`, `agents/plans/sablier-wakeups.md`,
-`agents/ideas/edge-and-security-layers.md`, `systems/backups.md`, `systems/oob.md`,
-`systems/truenas.md`, `agents/ideas/debrid-streaming.md`,
+`agents/ideas/edge-and-security-layers.md`, `lab/systems/backups.md`, `lab/systems/oob.md`,
+`lab/systems/truenas.md`, `agents/ideas/debrid-streaming.md`,
 `agents/decisions/backup-tiers.md`.

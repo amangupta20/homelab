@@ -36,7 +36,7 @@ services:
       - traefik.http.routers.cloudbeaver.entrypoints=websecure
       # The allowlist runs first, so nobody outside the tailnet can wake it.
       - traefik.http.routers.cloudbeaver.middlewares=cloudbeaver-tailnet,cloudbeaver-sablier
-      # The zone's wildcard certificate, over DNS-01 (systems/vps.md, "Certificates").
+      # The zone's wildcard certificate, over DNS-01 (lab/systems/vps.md, "Certificates").
       - traefik.http.routers.cloudbeaver.tls.certresolver=cloudflare
       - traefik.http.routers.cloudbeaver.tls.domains[0].main=${ZONE:?}
       - traefik.http.routers.cloudbeaver.tls.domains[0].sans=*.${ZONE:?}

@@ -14,17 +14,17 @@ still apply to the home edge.
 **In one line:** give every rarely-used stack a live URL that starts it on the
 first request and stops it again after a quiet period, so dozens of niche
 services can exist without any of them costing CPU or RAM while forgotten.
-**Why try it:** `inventory/services.md` records Coder, jobops and Odyssues as not
+**Why try it:** `lab/inventory/services.md` records Coder, jobops and Odyssues as not
 running (whether that is deliberate is not recorded), and niche things get
 dropped entirely because turning them back on is more effort than the thing was
 worth. This turns "off" into a state the lab maintains, so
 the constraint becomes how many stacks are awake at once instead of how many
 are installed.
 **Needs first:** a Traefik ≥3.6 that owns the route (Dokploy runs its own, but
-`systems/vps.md` records that the version is not kept in this repo), a Sablier
+`lab/systems/vps.md` records that the version is not kept in this repo), a Sablier
 container per Docker host, an HTTP ingress route per candidate, and a real
 healthcheck per service. The home edge is Nginx Proxy Manager
-(`inventory/services.md`, "in docs, not verified"), which has no Sablier
+(`lab/inventory/services.md`, "in docs, not verified"), which has no Sablier
 plugin — that node needs the dashboard-tile path or a proxy change.
 
 ## Design sketch
@@ -82,7 +82,7 @@ creates a router without the wake middleware, so one owner per host (corrected 2
   must answer an event nobody scheduled. A cold start makes the caller's
   request time out or arrive late, and Sablier queues nothing — it is a
   trigger, not a buffer. A chat server (Mattermost — run by the owner, not in
-  `inventory/services.md`; from memory), a polled API (Hindsight, inside the
+  `lab/inventory/services.md`; from memory), a polled API (Hindsight, inside the
   `hermes` row) and the model router (9router, the `router9` row) all sit in
   this category: not one of them has a trigger a human opens.
 - **Human-driven boards do fit.** Paperclip is sleepable while its agent
@@ -173,7 +173,7 @@ nginx built with Wasm support (`sablierapp.dev`, reverse-proxies/nginx_proxywasm
 the same plugin serves Nginx, Envoy, Istio and Apache APISIX). The stock NPM
 image is not documented to ship a Wasm-capable nginx. Whether a recent
 release does, and what the proxy host's build actually contains, is unverified —
-`inventory/services.md` lists NPM as "in docs, not verified".
+`lab/inventory/services.md` lists NPM as "in docs, not verified".
 
 Four paths, cheapest first:
 
@@ -217,7 +217,7 @@ Facts that decide the shape (Traefik docs, and
   writes the static config only when missing. Not confirmed on the running
   host.
 - The home side is the open part: NPM is the public entry
-  (Cloudflare → NPM → container, `inventory/network.md`), so a central Traefik
+  (Cloudflare → NPM → container, `lab/inventory/network.md`), so a central Traefik
   means replacing or fronting NPM — the same choice as above, one layer up.
 - Two open sub-questions: one Traefik with per-route `sablierUrl` for the VPS
   versus one Traefik per node; and whether a wildcard certificate is needed for

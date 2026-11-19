@@ -15,7 +15,7 @@ Every page starts with a property block (the Obsidian view reads it); the
 schema and rules are in `agents/obsidian/obsidian-view.md`, and `mise run check:properties`
 checks it.
 
-Naming: `systems/<thing>.md`, lowercase, the name you would search for
+Naming: `lab/systems/<thing>.md`, lowercase, the name you would search for
 (`truenas.md`, `edge.md` for Cloudflare + Nginx Proxy Manager, `vps.md`).
 
 Create a page when there is something to say beyond the inventory row — not
@@ -23,7 +23,7 @@ before.
 
 A page stays under 150 lines (`mise run check:docs`): how it works now, its
 rules, its backups. Measurements, reasons, closed incidents and sketches go to
-`systems/notes/<thing>.md`, linked from the page; split, never delete.
+`lab/systems/notes/<thing>.md`, linked from the page; split, never delete.
 
 ## Template
 
@@ -38,7 +38,7 @@ tags:
 
 <One line: what it is, for someone who has never heard of it.>
 
-**Status:** <running | planned | broken | …> — <one line>. Row: `inventory/services.md`.
+**Status:** <running | planned | broken | …> — <one line>. Row: `lab/inventory/services.md`.
 
 ## How it works
 
@@ -46,7 +46,7 @@ tags:
 <What must never be done, and why. Danger first.>
 
 ## Backups
-<One line + link to `systems/backups.md`; only what is specific to this thing.>
+<One line + link to `lab/systems/backups.md`; only what is specific to this thing.>
 
 ## Open questions
 <Link to the matching section of `agents/decisions/open-questions.md`.>

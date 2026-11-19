@@ -36,7 +36,7 @@ description: Use when adding a new skill to this homelab repo or changing an exi
 7. **Keep it public-safe.** No credentials, public IPs, domains or tailnet
    names — the commit hook blocks them (`agents/review/secret-scanning.md`), but write
    placeholders from the start. Credentials live in OpenBao
-   (`systems/openbao.md`).
+   (`lab/systems/openbao.md`).
 8. **List it** under "Skills" in `agents/skills/README.md`.
 9. **Make it visible to every harness:** run `mise run agents:link`; which
    harnesses need it and which do not is in `agents/README.md`.

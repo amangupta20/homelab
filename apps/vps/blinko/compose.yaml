@@ -1,4 +1,4 @@
-# Blinko: a note-taking app, run to test the shared Postgres (plans/shared-postgres.md).
+# Blinko: a note-taking app, run to test the shared Postgres (agents/plans/shared-postgres.md).
 # Public, behind its own login (owner's choice, 2026-11-07), on its own database on pigsty-1.
 # Source of the shape and what differs: README.
 
@@ -13,7 +13,7 @@ services:
     volumes:
       # Uploads. The notes themselves are in Postgres.
       - blinko-data:/app/.blinko
-    # Stops after 20 minutes without traffic, and starts on the next request (plans/sablier-wakeups.md).
+    # Stops after 20 minutes without traffic, and starts on the next request (agents/plans/sablier-wakeups.md).
     # The Dokploy domain names blinko-sablier@docker. A list, because Dokploy appends its own labels.
     labels:
       - sablier.enable=true

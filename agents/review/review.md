@@ -92,7 +92,7 @@ cannot:
 - New pages follow the template in their folder's README and open with what
   the thing is and a **Status:** line.
 - Every path mentioned in backticks exists after the change.
-- A page in `systems/`, `inventory/`, `plans/` or `ideas/` has a property
+- A page in `systems/`, `inventory/`, `agents/plans/` or `ideas/` has a property
   block with only `type` and `tags` (`agents/obsidian/obsidian-view.md`).
 
 ## 4. Within the author's permission

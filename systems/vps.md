@@ -12,7 +12,7 @@ tags:
 A small rented server outside the home network that runs the lab's
 always-on, shared and overflow services, deployed with Dokploy.
 
-**Status:** running. Step 0 of `plans/vps-foundations.md` documented it on
+**Status:** running. Step 0 of `agents/plans/vps-foundations.md` documented it on
 2026-10-26 with a read-only recon. Rows: `inventory/hosts.md`,
 `inventory/services.md`.
 

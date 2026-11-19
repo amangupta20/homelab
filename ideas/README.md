@@ -16,12 +16,12 @@ How this folder relates to the others:
 | Folder | Holds |
 |---|---|
 | `ideas/` | could do, someday; nothing is promised |
-| `plans/` | will do, in this order, with gates |
+| `agents/plans/` | will do, in this order, with gates |
 | `systems/`, `inventory/` | is true now |
 | `agents/decisions/` | why it is the way it is |
 
-**Promoting an idea:** when the owner decides to do it, write `plans/<what>.md`,
-set the idea's Status to `promoted to plans/<what>.md` and keep the page — it
+**Promoting an idea:** when the owner decides to do it, write `agents/plans/<what>.md`,
+set the idea's Status to `promoted to agents/plans/<what>.md` and keep the page — it
 holds the research behind the plan. An idea that is ruled out stays too, with
 Status `dropped` and the reason, so the next agent does not research it again.
 
@@ -49,7 +49,7 @@ tags:
 
 # <What>
 
-**Status:** idea | researched | promoted to `plans/<x>.md` | dropped (<why>)
+**Status:** idea | researched | promoted to `agents/plans/<x>.md` | dropped (<why>)
 **In one line:** <what it is, for someone who has never heard of it>
 **Why try it:** <what it would give the lab, or what it would teach>
 **Needs first:** <hardware, money, or a plan that has to finish before this can start>
@@ -68,7 +68,7 @@ tags:
 ## Ideas
 
 - `multi-site-postgres.md` — a read-only copy of the database on the VPS that can take over if home is lost, with reads served locally at each site.
-- `on-demand-container-wakeups.md` — promoted to `plans/sablier-wakeups.md` (VPS only); the research notes at the end still apply to the home edge.
+- `on-demand-container-wakeups.md` — promoted to `agents/plans/sablier-wakeups.md` (VPS only); the research notes at the end still apply to the home edge.
 - `dsh-superagent-and-harness2.md` — a repo agent that takes work only when the owner asks and has its setup tuned automatically from past jobs; the candidate for the migration agent once the home agent VM exists.
 - `edge-and-security-layers.md` — how public traffic reaches the lab and which security tool sits at which layer (Cloudflare, edge proxy and WAF, CrowdSec, sign-in, DNS, segmentation, detection, penetration testing). On hold until the Pangolin decision.
 - `phone-control-panel.md` — an old Android phone running postmarketOS as a small dashboard at home, with an easy way to shut the server down. Barely explored.

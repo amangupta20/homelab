@@ -19,7 +19,7 @@ checks it.
 Not scheduled yet? It belongs in `ideas/` until the owner decides to do it;
 a plan promoted from an idea links back to it.
 
-Naming: `plans/<what>.md` (`migration.md`, `portainer-to-git.md`, `vps-into-repo.md`).
+Naming: `agents/plans/<what>.md` (`migration.md`, `portainer-to-git.md`, `vps-into-repo.md`).
 
 ## Template
 

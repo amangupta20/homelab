@@ -1,7 +1,7 @@
 # VPS apps
 
 Stacks deployed on the remote VPS by Dokploy: `openbao/`, `hermes-webui/`
-(see its README for state), `blinko/` (see its README for state), `sablier/` (`plans/sablier-wakeups.md`),
+(see its README for state), `blinko/` (see its README for state), `sablier/` (`agents/plans/sablier-wakeups.md`),
 `pg-proxy/`, `pgadmin/`, `cloudbeaver/`, `authentik/` and `langfuse/` (see each README for state). `hermes-webui/` is deployed from this repo's
 `main`, verified 2026-10-27; how Dokploy pulls each of the rest is still
 `agents/decisions/open-questions.md`'s. The apps already on Dokploy move in later

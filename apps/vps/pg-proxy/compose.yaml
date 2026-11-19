@@ -1,4 +1,4 @@
-# pg-proxy: one fixed address on the VPS for the shared Postgres (plans/shared-postgres.md, "Proxy").
+# pg-proxy: one fixed address on the VPS for the shared Postgres (agents/plans/shared-postgres.md, "Proxy").
 # Apps on dokploy-network connect to pg-proxy:5432; when a second node arrives, only this file changes.
 # Source of the shape and what differs: README.
 
@@ -36,7 +36,7 @@ configs:
         # Logs failed or refused connections only, not every normal one.
         option dontlog-normal
         timeout connect 5s
-        # Apps keep pooled connections open between queries (plans/shared-postgres.md, "TLS"), so idle
+        # Apps keep pooled connections open between queries (agents/plans/shared-postgres.md, "TLS"), so idle
         # connections must outlive these; keepalives stop the tailnet path dropping them silently.
         timeout client 30m
         timeout server 30m

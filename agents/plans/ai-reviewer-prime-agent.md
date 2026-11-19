@@ -179,7 +179,7 @@ export its log before adding LiteLLM. None of it is checked.
    result, shut down. — gate: a review on the scratch copy completes, and a
    second run resumes it from a "go ahead" reply.
 6. **Trace viewer and evaluation.** Next after the SSO from
-   `plans/vps-foundations.md`, step 4, is up — Authentik, chosen by the owner
+   `agents/plans/vps-foundations.md`, step 4, is up — Authentik, chosen by the owner
    on 2026-11-10, recorded in PR #61. The owner put it there on 2026-11-10,
    because the run log shows one line per step and the owner cannot see what
    the reviewer read, called or said.
@@ -195,9 +195,9 @@ export its log before adding LiteLLM. None of it is checked.
    - Langfuse v4's Compose file has web, worker, an AI gateway, ClickHouse,
      MinIO, Redis and Postgres (read 2026-11-10). The stack is
      `apps/vps/langfuse/` (owner's choices, 2026-11-10): Postgres on the shared
-     cluster (`plans/shared-postgres.md`), a private B2 bucket instead of
+     cluster (`agents/plans/shared-postgres.md`), a private B2 bucket instead of
      MinIO, no AI gateway, a public domain with sign-in through Authentik
-     only, and asleep when idle behind Sablier (`plans/sablier-wakeups.md`)
+     only, and asleep when idle behind Sablier (`agents/plans/sablier-wakeups.md`)
      from the start, back to always on if that causes trouble. A cold start
      took 14 s on the workstation; on the VPS untested.
    - Deployed on the VPS on 2026-11-10 (`journal/2026-11-10-deploy-langfuse.md`);

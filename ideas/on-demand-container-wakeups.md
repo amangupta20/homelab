@@ -9,7 +9,7 @@ tags:
 
 # On-demand container wakeups (scale to zero)
 
-**Status:** promoted to `plans/sablier-wakeups.md` (owner, 2026-11-07), on the VPS only. The research notes at the end
+**Status:** promoted to `agents/plans/sablier-wakeups.md` (owner, 2026-11-07), on the VPS only. The research notes at the end
 still apply to the home edge.
 **In one line:** give every rarely-used stack a live URL that starts it on the
 first request and stops it again after a quiet period, so dozens of niche

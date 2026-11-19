@@ -9,7 +9,7 @@ tags:
 
 # Multi-site Postgres: a standby on the VPS
 
-**Status:** researched — not scheduled. Builds on `plans/shared-postgres.md`.
+**Status:** researched — not scheduled. Builds on `agents/plans/shared-postgres.md`.
 **In one line:** keep a read-only copy of the home database on the VPS that
 follows every change a few seconds behind, and that the owner can promote to be
 the database if home is lost.
@@ -17,7 +17,7 @@ the database if home is lost.
 with seconds of data lost instead of a day; serve reads to VPS apps from a
 nearby copy; and learn how production systems handle replication between
 sites.
-**Needs first:** `plans/shared-postgres.md` running at home with a tested
+**Needs first:** `agents/plans/shared-postgres.md` running at home with a tested
 restore; a VPN link between home and the VPS (the tailnet already is one);
 spare RAM and disk on the VPS, or a second VPS.
 
@@ -57,11 +57,11 @@ the VPS and on a third machine, a home internet outage leaves home with 1 of 3
 — no majority — so Patroni stops the home primary from accepting writes, even
 though home apps on the LAN could have kept working. A bad ISP day becomes a
 database outage. Keeping etcd at one site avoids that; the network rules for
-etcd are in `plans/shared-postgres.md` ("Network latency").
+etcd are in `agents/plans/shared-postgres.md` ("Network latency").
 
 On 2026-11-01 the owner chose the opposite for the shared cluster: Postgres
 nodes on a second VPS and at home, with an etcd tiebreaker on the Dokploy VPS
-(`plans/shared-postgres.md`, "Topology"). This section stays as the record of
+(`agents/plans/shared-postgres.md`, "Topology"). This section stays as the record of
 what that trade costs.
 
 ### Promotion runbook rule: isolate first, then promote
@@ -122,7 +122,7 @@ primary as backup, as recalled — check before relying on it.
 
 ## Promote when
 
-`plans/shared-postgres.md` is done, the VPS has room, and the owner wants the
+`agents/plans/shared-postgres.md` is done, the VPS has room, and the owner wants the
 home site to be survivable rather than restorable from backup.
 
 ## Sources

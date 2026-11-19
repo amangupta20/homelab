@@ -64,7 +64,7 @@ owner file, and is deleted from this list.
 
 - Portainer replacement: Arcane is the likely candidate, Komodo the
   alternative. Nothing chosen or tested.
-  Owner, 2026-11-14: Arcane, checked in step B3 of `plans/home-overhaul.md`
+  Owner, 2026-11-14: Arcane, checked in step B3 of `agents/plans/home-overhaul.md`
   (git deploys, OpenBao secrets, volume backups). The item stays for the owner
   to close.
 - Does the chosen manager read OpenBao natively?
@@ -126,7 +126,7 @@ owner file, and is deleted from this list.
   is part of this question rather than settled above it.
 - Answered by the owner, 2026-11-17, for the internal side of the item above:
   Traefik, with routes as files in this repo, is the home proxy for internal
-  apps, chosen for Sablier (`plans/home-overhaul.md`, B4a). The public side
+  apps, chosen for Sablier (`agents/plans/home-overhaul.md`, B4a). The public side
   goes through Pangolin, also Traefik. Left for the owner to close.
 - Does the proxy host's nginx have Wasm support? Unverified; one recon command
   on the host would answer it.
@@ -137,7 +137,7 @@ owner file, and is deleted from this list.
   needs it, and the running image tag has not been read.
   Agent's note, 2026-11-07, for the owner to close: it runs `traefik:v3.6.7` (`docker ps`).
 
-## AI reviewer (`plans/ai-reviewer-prime-agent.md`)
+## AI reviewer (`agents/plans/ai-reviewer-prime-agent.md`)
 
 - Trace viewer: Phoenix or Langfuse? Phoenix is one container (Elastic
   License 2.0); Langfuse is six (web, worker, ClickHouse, Redis, Postgres, S3
@@ -148,7 +148,7 @@ owner file, and is deleted from this list.
   idea's open reverse-proxy questions.
   - 2026-11-10: the owner chose Langfuse in a working session, over Phoenix
     and Opik, to deploy next after Authentik and to learn evaluation on
-    (`plans/ai-reviewer-prime-agent.md`, step 6).
+    (`agents/plans/ai-reviewer-prime-agent.md`, step 6).
 - Where do the reviewer's own instructions live? The plan proposes a private
   config repo (prompt, skills, tool manifest, `/refine` lessons) and keeps the
   shared rules public in `agents/review/review.md` and `AGENTS.md`. `AGENTS.md` says
@@ -191,7 +191,7 @@ owner file, and is deleted from this list.
   Agent's note, 2026-11-19: PR 97 changed the rows in `inventory/` to match the live lab (this
   item's recon); `.254` in the Home router section below is now named too. Closing both is the
   owner's.
-- Nextcloud's state is unclear. `plans/home-overhaul.md` (A4) says it is parked: containers
+- Nextcloud's state is unclear. `agents/plans/home-overhaul.md` (A4) says it is parked: containers
   stopped and AIO's daily backup turned off, with the restore not run (checked 2026-11-14).
   On 2026-11-15 the owner said he restored it and that Nextcloud then started on its own,
   and TrueNAS shows 93,535 files under `back/nextcloud` changed between 00:30 and 02:00 that
@@ -247,7 +247,7 @@ group waits on the first item.
 
 ## Shared Postgres (Pigsty) topology
 
-Chosen by the owner on 2026-11-01 (`plans/shared-postgres.md`, "Topology");
+Chosen by the owner on 2026-11-01 (`agents/plans/shared-postgres.md`, "Topology");
 these parts are open:
 
 - Where the primary normally lives once both nodes exist: home or the second
@@ -282,11 +282,11 @@ these parts are open:
   2026-11-06, after the owner chose one node only). The item stays for the owner to close.
 - Pigsty's pgBackRest setup makes the one selected repository `repo1`, while
   `agents/skills/back-up-a-service/` says `repo1` Garage, `repo2` B2; the owner wants B2
-  first (`plans/shared-postgres.md`, "Backups"). Which numbering wins, and how a
+  first (`agents/plans/shared-postgres.md`, "Backups"). Which numbering wins, and how a
   second repository gets added, is untested.
 - `agents/decisions/backup-tiers.md` keeps "3 daily, 1 weekly, 1 monthly" on B2, which
   pgBackRest cannot express; the owner chose one full backup for now
-  (`plans/shared-postgres.md`, "Backups"). Which wording should the decision keep?
+  (`agents/plans/shared-postgres.md`, "Backups"). Which wording should the decision keep?
 - For later, not now (agent's notes, owner has not decided): `pg_vault_tde` encrypts table values
   with keys from OpenBao, and OpenBao's Postgres secrets engine can issue short-lived logins per app.
   Neither is set up. Pigsty's page lists the extension's limits (`pigsty.io/ext/e/pg_vault_tde`).
@@ -295,10 +295,10 @@ these parts are open:
   Agent's note, 2026-11-07, for the owner to close: `vmalert` now watches it, with the rules in
   `ansible/pigsty/patch-node.sh` (`journal/2026-11-07-backup-age-alerts.md`). They run on `pigsty-1`, so they
   say nothing if that node is down.
-- `archive_timeout`: `plans/shared-postgres.md` says 60 s; the live cluster has 300 s, from Pigsty's `oltp`
+- `archive_timeout`: `agents/plans/shared-postgres.md` says 60 s; the live cluster has 300 s, from Pigsty's `oltp`
   template (`pg_settings`, 2026-11-07). A quiet database can lose up to 5 minutes rather than 1. Which is wanted?
   Agent's note, 2026-11-09, for the owner to close: the owner chose 300 s as the default (600 also acceptable),
-  lowered only when an app's usage needs it; `plans/shared-postgres.md` now says so, with the caveat that the
+  lowered only when an app's usage needs it; `agents/plans/shared-postgres.md` now says so, with the caveat that the
   setting covers the whole server.
 - The `hermes` Dokploy project (agent, WebUI, Hindsight) and its updater schedule are not in this repo;
   `inventory/services.md` only lists the project. The updater follows `:latest` and, on every new agent

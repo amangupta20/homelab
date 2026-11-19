@@ -5,11 +5,11 @@ agent. Status: proposed, for the owner to confirm in review.
 
 ## Why
 
-The owner chose Authentik for step 4 of `plans/vps-foundations.md`. The
+The owner chose Authentik for step 4 of `agents/plans/vps-foundations.md`. The
 earlier note against it (`agents/decisions/open-questions.md`, "Foundations": tried
 around 2024 and found too heavy) dated from early in learning self-hosting,
 and was never final. Since version 2025.10 it no longer needs Redis, and its
-database goes on the shared Postgres cluster (`plans/shared-postgres.md`), so
+database goes on the shared Postgres cluster (`agents/plans/shared-postgres.md`), so
 the stack is two containers. The lighter candidates (Authelia, Pocket ID,
 Kanidm) were not compared.
 
@@ -28,4 +28,4 @@ Kanidm) were not compared.
 
 ## Where it lives
 
-`apps/vps/authentik/`, `plans/vps-foundations.md`.
+`apps/vps/authentik/`, `agents/plans/vps-foundations.md`.

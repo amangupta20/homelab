@@ -31,7 +31,7 @@ Each app folder holds:
 - CI runs `docker compose config` on every compose file here
   (`agents/rules/pull-request-gate.md`).
 - Moving a stack in is a plan, not a drive-by: old copy keeps running until
-  the new one is healthy (`plans/home-overhaul.md`).
+  the new one is healthy (`agents/plans/home-overhaul.md`).
 - A homeserver stack that pulls an image from a registry other than Docker
   Hub, or a machine that gets a new apt source, goes through the LAN cache:
   if its upstream is not in `apps/homeserver/artifact-keeper/remotes.txt`, add it

@@ -1,4 +1,4 @@
-# CloudBeaver: a web UI for the shared Postgres (plans/shared-postgres.md, "Database UIs").
+# CloudBeaver: a web UI for the shared Postgres (agents/plans/shared-postgres.md, "Database UIs").
 # Tailnet only: Traefik refuses any client outside the tailnet range. Source of the shape: README.
 
 services:
@@ -27,7 +27,7 @@ services:
       start_interval: 3s
     labels:
       - traefik.enable=true
-      # Asleep when idle (plans/sablier-wakeups.md): stopped after 30 minutes without requests, started on the next.
+      # Asleep when idle (agents/plans/sablier-wakeups.md): stopped after 30 minutes without requests, started on the next.
       - sablier.enable=true
       - sablier.group=cloudbeaver
       - traefik.docker.allownonrunning=true

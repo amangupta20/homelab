@@ -17,12 +17,12 @@ them and links its journal entry here.
   home has, or it is a quick deploy.
 - Not for home apps: they go in `apps/homeserver/`, and their container
   manager is still open.
-- OpenBao itself is a foundation with its own steps (`plans/vps-foundations.md`),
+- OpenBao itself is a foundation with its own steps (`agents/plans/vps-foundations.md`),
   not an ordinary app.
 
 ## Before you start
 
-1. Check `plans/vps-foundations.md`. Foundations come first
+1. Check `agents/plans/vps-foundations.md`. Foundations come first
    (`agents/decisions/foundations-on-vps.md`): if OpenBao or SSO are not up yet,
    stop and work on the plan instead. Deploy anyway only if the owner says so
    for this app; then its secrets go in Dokploy's environment for now, and

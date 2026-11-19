@@ -13,7 +13,7 @@ tags:
 recon, done 2026-11-14 (facts in `inventory/` and `systems/truenas.md`); A3 done
 2026-11-15, after a rerun of a replication that failed on a checksum error in `imp`
 (checked 2026-11-16); B4a phase 1, the home proxy, done 2026-11-18
-(`journal/2026-11-18-build-proxy-1-traefik.md`). Replaces `plans/migration.md`
+(`journal/2026-11-18-build-proxy-1-traefik.md`). Replaces `agents/plans/migration.md`
 (owner, 2026-11-14).
 
 **Goal:** move every home workload to a setup where each app's data has one known
@@ -266,7 +266,7 @@ Check the account's Service Limits page before creating the VM.
 ### Databases
 
 Home apps' Postgres databases go to the shared Pigsty cluster
-(`plans/shared-postgres.md`), with a node at home. Only the primary takes writes.
+(`agents/plans/shared-postgres.md`), with a node at home. Only the primary takes writes.
 Where the primary sits is open (owner, 2026-11-14): the owner leans to the VPS as
 primary and home as the failover, and wants to see first what an outage does.
 Expected, **UNTESTED**:
@@ -280,7 +280,7 @@ Expected, **UNTESTED**:
 
 The owner prefers the VPS as primary and home as the failover (2026-11-14): home
 outages then only touch home apps, and the VPS side can be upgraded with home as the
-fallback. Two limits, from the cluster layout in `plans/shared-postgres.md`:
+fallback. Two limits, from the cluster layout in `agents/plans/shared-postgres.md`:
 
 - **Planned VPS work starts with a switchover.** Before upgrading `pigsty-1`, move
   the primary home with `patronictl switchover`, which waits for the replica to catch
@@ -349,13 +349,13 @@ only public apps wait for C, and only apps with a Postgres database wait for D.
 **Order (owner, 2026-11-15):** the package and image cache comes before the agent VM.
 Every VM built from code, and every CI runner, downloads the same packages and images
 again; with the cache first, only the first download leaves home. The cache runs on its
-own VM, which becomes the first VM built from code (`plans/package-and-image-cache.md`).
+own VM, which becomes the first VM built from code (`agents/plans/package-and-image-cache.md`).
 A self-hosted git host does not wait for any of B: it can start on the VPS
 (`ideas/self-hosted-git.md`, pull request #79).
 
 00. **Package and image cache** on its own VM, the first VM built the new way: OpenTofu
     through Xen Orchestra, cloud-init for the first key, Ansible for the rest. Its steps
-    and gates are in `plans/package-and-image-cache.md`. — gate: that plan's step 3
+    and gates are in `agents/plans/package-and-image-cache.md`. — gate: that plan's step 3
     (a miss then a hit for one package and one image) passes on this VM.
 0. **Agent VM** (`agent-1`), the second VM built from code, after the cache. It reuses
    the VM-from-code pipeline the cache VM proved, before `docker-1` and `gpu-1` depend on
@@ -409,7 +409,7 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
    - **4a. Home proxy: Traefik** (owner, 2026-11-17), the one reverse proxy for
      internal apps, on its own VM built from code (owner, 2026-11-17). Chosen
      for Sablier: Traefik loads its plugin without a custom build, and the VPS already
-     runs it that way (`plans/sablier-wakeups.md`); Pangolin is Traefik too.
+     runs it that way (`agents/plans/sablier-wakeups.md`); Pangolin is Traefik too.
      - **Order and progress** (owner, 2026-11-18): 4a goes ahead of B0, so the
        cache and the apps already deployed as code get names and sign-in first.
        Phase 1 done 2026-11-18: `proxy-1` built by OpenTofu, Traefik with the
@@ -514,7 +514,7 @@ journal entry).
 
 ## Portainer to git
 
-Moved from `plans/migration.md`. Today every home stack that predates this
+Moved from `agents/plans/migration.md`. Today every home stack that predates this
 plan exists only inside Portainer: its Compose file and `.env` live in Portainer's database, not here.
 The target: one directory per app, `apps/homeserver/<app>/compose.yaml`, with secrets and
 identifying values as references and everything else written in (`apps/README.md`),
@@ -535,7 +535,7 @@ move before its public route exists.
 
 ## Links
 
-`plans/shared-postgres.md`, `plans/vps-foundations.md`, `plans/sablier-wakeups.md`,
+`agents/plans/shared-postgres.md`, `agents/plans/vps-foundations.md`, `agents/plans/sablier-wakeups.md`,
 `ideas/edge-and-security-layers.md`, `systems/backups.md`, `systems/oob.md`,
 `systems/truenas.md`, `ideas/debrid-streaming.md`,
 `agents/decisions/backup-tiers.md`.

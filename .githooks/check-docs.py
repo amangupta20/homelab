@@ -37,7 +37,7 @@ ROOT_ENTRIES = {
     "AGENTS.md", "CLAUDE.md", "README.md", "mise.toml",
     "secret-scan.toml", "secret-scan.local.toml.example",
     "agents", "ansible", "apps", "iac", "ideas",
-    "inventory", "journal", "plans", "systems",
+    "inventory", "journal", "systems",
 }
 
 DATE = re.compile(r"\b20\d\d-\d\d-\d\d\b")

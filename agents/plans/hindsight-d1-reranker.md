@@ -141,5 +141,5 @@ measurements above. No earlier draft is the reference.
 
 ## Links
 
-`plans/README.md`, `systems/xcp-ng.md`, `systems/openbao.md`,
+`agents/plans/README.md`, `systems/xcp-ng.md`, `systems/openbao.md`,
 `inventory/hosts.md`, `inventory/services.md`.

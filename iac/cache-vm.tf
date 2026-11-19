@@ -1,5 +1,5 @@
-# cache-1: the package and image cache (plans/package-and-image-cache.md), the
-# first home VM built from code (plans/home-overhaul.md, step B).
+# cache-1: the package and image cache (agents/plans/package-and-image-cache.md), the
+# first home VM built from code (agents/plans/home-overhaul.md, step B).
 #
 # OpenTofu owns the VM's shape; cloud-init sets its address, hostname and first
 # SSH key once, at first boot; Ansible does everything after that.

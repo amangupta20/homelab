@@ -16,7 +16,6 @@ dates inventory/hosts.md 15
 dates inventory/network.md 12
 dates inventory/services.md 30
 dates systems/xcp-ng.md 1
-lines AGENTS.md 144
 lines apps/README.md 49
 lines apps/homeserver/artifact-keeper/README.md 180
 lines apps/homeserver/traefik/README.md 77

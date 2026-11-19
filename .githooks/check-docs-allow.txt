@@ -49,6 +49,3 @@ lines agents/journal/2026-11-18-cache-1-sign-in-authentik.md 42
 lines systems/openbao.md 204
 lines systems/router.md 187
 lines systems/truenas.md 159
-paths agents/plans/home-overhaul.md 1
-paths agents/plans/netbox.md 1
-paths agents/obsidian/obsidian-view.md 1

@@ -12,7 +12,6 @@ dates apps/vps/openbao/README.md 4
 dates apps/vps/pg-proxy/README.md 3
 dates apps/vps/pgadmin/README.md 2
 dates apps/vps/sablier/README.md 3
-dates inventory/services.md 30
 dates systems/xcp-ng.md 1
 lines apps/README.md 49
 lines apps/homeserver/artifact-keeper/README.md 180

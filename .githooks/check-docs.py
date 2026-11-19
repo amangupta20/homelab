@@ -8,7 +8,8 @@ Checks, over tracked Markdown files:
           they keep the paths of their day (agents/journal/README.md is not).
 - dates:  no `YYYY-MM-DD` in table rows of the human pages (README.md,
           inventory/, systems/, apps/**/README.md). Dates belong in journal
-          entries, which those pages link.
+          entries, which those pages link; a journal file name in a link
+          does not count.
 - lines:  length caps: AGENTS.md 40, app READMEs 40, journal entries 40,
           systems pages 150.
 - rules:  each danger rule is spelled out only in its owner file, the root
@@ -41,6 +42,8 @@ ROOT_ENTRIES = {
 }
 
 DATE = re.compile(r"\b20\d\d-\d\d-\d\d\b")
+# A journal entry's file name starts with its date; a link to one is evidence, not a date.
+JOURNAL_PATH = re.compile(r"agents/journal/20\d\d-\d\d-\d\d[\w.-]*")
 BACKTICK = re.compile(r"`([^`\s]+)`")
 LINK = re.compile(r"\]\(([^)\s]+)\)")
 
@@ -100,9 +103,10 @@ def findings():
             found[("lines", f)] = len(lines)
             detail.append(f"lines  {f}: {len(lines)} lines, cap {limit}")
         for n, line in enumerate(lines, 1):
-            if human_page(f) and line.startswith("|") and DATE.search(line):
+            cells = JOURNAL_PATH.sub("", line)
+            if human_page(f) and line.startswith("|") and DATE.search(cells):
                 found[("dates", f)] += 1
-                detail.append(f"dates  {f}:{n}: {DATE.search(line).group()}")
+                detail.append(f"dates  {f}:{n}: {DATE.search(cells).group()}")
             for name, pat, owners in RULES:
                 if f not in owners and not journal_entry(f) and pat.search(line):
                     found[("rules", f)] += 1

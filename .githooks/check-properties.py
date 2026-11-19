@@ -12,7 +12,11 @@ import pathlib
 import re
 import sys
 
-ROOT = pathlib.Path(__file__).resolve().parent.parent
+# The tree to check: the checkout this script sits in, or the folder given as
+# the only argument. The reviewer runs main's trusted copy of this script on a
+# pull request's tree (`check-properties.py .`), so it must not assume its own.
+ROOT = (pathlib.Path(sys.argv[1]) if len(sys.argv) > 1
+        else pathlib.Path(__file__).resolve().parent.parent).resolve()
 FOLDERS = {"systems": "system", "inventory": "inventory", "plans": "plan", "ideas": "idea"}
 ALLOWED = {"type", "tags"}
 REQUIRED_PAGE = {"type", "tags"}

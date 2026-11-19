@@ -29,8 +29,8 @@ rendered.
 | Diagram | Mermaid block in `inventory/network.md` | renders in Obsidian and on GitHub |
 | Check | `.githooks/check-properties.py` | fails a commit (pre-commit hook) or CI when properties are missing or wrong |
 
-`Home.md` is the Obsidian front page; `README.md` stays the GitHub front page.
-On GitHub, `Home.md`'s embeds show as plain `![[...]]` text — expected.
+`agents/obsidian/Home.md` is the Obsidian front page; `README.md` stays the GitHub front page.
+On GitHub, `agents/obsidian/Home.md`'s embeds show as plain `![[...]]` text — expected.
 
 ## Page properties
 
@@ -58,8 +58,9 @@ and this page in the same commit.
   template from that folder's README; it includes the property block.
 - **Links stay relative markdown links** (`[text](path.md)`), never
   `[[wikilinks]]`, so GitHub and agents keep working. The one exception is
-  `Home.md`'s `![[agents/obsidian/bases/...]]` embeds, which only Obsidian needs.
-- **A new table** goes in `agents/obsidian/bases/` and is embedded from `Home.md`; do not paste
+  `agents/obsidian/Home.md`'s `![[agents/obsidian/bases/...]]` embeds, which only Obsidian needs.
+- **A new table** goes in `agents/obsidian/bases/` and is embedded from
+  `agents/obsidian/Home.md`; do not paste
   table definitions into pages, or two copies drift.
 
 Run the check by hand: `mise run check:properties`.
@@ -67,5 +68,5 @@ Run the check by hand: `mise run check:properties`.
 ## What it does not catch
 
 The check sees a missing, misspelled or unknown property, a wrong `type`
-for the folder, and an embed in `Home.md` whose table file does not exist.
+for the folder, and an embed in `agents/obsidian/Home.md` whose table file does not exist.
 Whether the tags are useful is on whoever edits the page.

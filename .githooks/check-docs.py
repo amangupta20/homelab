@@ -5,7 +5,7 @@ Checks, over tracked Markdown files:
 
 - paths:  a repo path in backticks, or a relative Markdown link, points at a
           tracked (or git-ignored) file or folder. Journal entries are exempt:
-          they keep the paths of their day (journal/README.md is not).
+          they keep the paths of their day (agents/journal/README.md is not).
 - dates:  no `YYYY-MM-DD` in table rows of the human pages (README.md,
           inventory/, systems/, apps/**/README.md). Dates belong in journal
           entries, which those pages link.
@@ -37,7 +37,7 @@ ROOT_ENTRIES = {
     "AGENTS.md", "CLAUDE.md", "README.md", "mise.toml",
     "secret-scan.toml", "secret-scan.local.toml.example",
     "agents", "ansible", "apps", "iac",
-    "inventory", "journal", "systems",
+    "inventory", "systems",
 }
 
 DATE = re.compile(r"\b20\d\d-\d\d-\d\d\b")
@@ -64,8 +64,8 @@ def human_page(f):
 
 
 def journal_entry(f):
-    """A dated journal entry; journal/README.md is a living page, checked like others."""
-    return f.startswith("journal/") and f != "journal/README.md"
+    """A dated journal entry; agents/journal/README.md is a living page, checked like others."""
+    return f.startswith("agents/journal/") and f != "agents/journal/README.md"
 
 
 def cap(f):

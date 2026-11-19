@@ -22,7 +22,7 @@ source coding agent) reads the pull request against `agents/review/review.md` an
 
 It reports only findings that meet the bar in `agents/review/review.md`
 ("Blockers and warnings"), not wording or style. Never on its own: `iac/`, `agents/decisions/`, `.github/`,
-`.githooks/`, `agents/skills/`, `journal/`, `AGENTS.md`, `README.md`, `CLAUDE.md`,
+`.githooks/`, `agents/skills/`, `agents/journal/`, `AGENTS.md`, `README.md`, `CLAUDE.md`,
 `agents/review/review.md` — anything there is level 3. Source: `protected` in the
 private `repos/homelab/config.toml`, read 2026-11-14.
 
@@ -221,7 +221,7 @@ sessions and two trace bundles from the source snapshot above, downloaded
 them, and compared session files and root/child transcript contents. All
 comparisons passed. The original Git state remains intact. Details and the
 cutover limitation are recorded in
-`journal/2026-11-03-prime-reviewer-b2-migration.md`.
+`agents/journal/2026-11-03-prime-reviewer-b2-migration.md`.
 
 Since action pull request 9: if Prime exits 0 without `result.json`, the action resumes its session
 once and asks it to finish. Four runs on homelab pull request 41 (2026-11-06) failed that way, the model

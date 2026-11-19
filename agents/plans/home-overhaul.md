@@ -13,7 +13,7 @@ tags:
 recon, done 2026-11-14 (facts in `inventory/` and `systems/truenas.md`); A3 done
 2026-11-15, after a rerun of a replication that failed on a checksum error in `imp`
 (checked 2026-11-16); B4a phase 1, the home proxy, done 2026-11-18
-(`journal/2026-11-18-build-proxy-1-traefik.md`). Replaces `agents/plans/migration.md`
+(`agents/journal/2026-11-18-build-proxy-1-traefik.md`). Replaces `agents/plans/migration.md`
 (owner, 2026-11-14).
 
 **Goal:** move every home workload to a setup where each app's data has one known
@@ -414,7 +414,7 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
        cache and the apps already deployed as code get names and sign-in first.
        Phase 1 done 2026-11-18: `proxy-1` built by OpenTofu, Traefik with the
        wildcard certificate and the route to `cache-1`
-       (`apps/homeserver/traefik/`, `journal/2026-11-18-build-proxy-1-traefik.md`).
+       (`apps/homeserver/traefik/`, `agents/journal/2026-11-18-build-proxy-1-traefik.md`).
        Verified over Tailscale and on the LAN. Still open: Authentik sign-in (OIDC for the
        cache's web UI and Grafana, forward-auth for the dashboards), the
        dashboards, and Sablier.
@@ -428,7 +428,7 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
        (`uci add_list dhcp.@dnsmasq[0].rebind_domain`, previous file kept in
        `/root/dhcp.bak-20261117`). Tested 2026-11-18 with the real record: the
        router's dnsmasq answers `cache.home.<domain>` with the proxy's address
-       (`journal/2026-11-18-build-proxy-1-traefik.md`).
+       (`agents/journal/2026-11-18-build-proxy-1-traefik.md`).
      - **Certificate:** one wildcard by DNS challenge through Cloudflare's API, the
        token in OpenBao. Nothing at home has to be reachable, and app names stay out
        of certificate-transparency logs.
@@ -475,7 +475,7 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
 1. **Home Pigsty node,** primary placement decided, and the outage drill: cut home's
    internet for 2 minutes and record what the cluster and a test app do. — gate: a
    test app's database is restored from pgBackRest onto it, and the drill is in
-   `journal/`.
+   `agents/journal/`.
 
 ### Order of the apps
 

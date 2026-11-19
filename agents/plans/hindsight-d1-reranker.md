@@ -117,7 +117,7 @@ table, not from the model card.
    Hindsight recall shows the d1 call in 9router's log.
 6. **Compare and decide.** A few days of normal use against the current
    chain: answer quality on recalls the owner checks, latency, misses. — gate:
-   owner keeps, moves or removes the slot; the outcome goes to `journal/` and
+   owner keeps, moves or removes the slot; the outcome goes to `agents/journal/` and
    the running state to `inventory/services.md`.
 
 ## What the build needs

@@ -68,7 +68,7 @@ never in git. See `systems/openbao.md` for where they live.
 | what could be tried later (researched, not scheduled) | `agents/ideas/` |
 | why something is the way it is | `agents/decisions/` |
 | what is undecided or unverified | `agents/decisions/open-questions.md` |
-| what was done, when, and by whom | `journal/` |
+| what was done, when, and by whom | `agents/journal/` |
 | a stack's Compose file | `apps/homeserver/`, `apps/vps/` |
 | how VMs are created | `iac/README.md` |
 | how a machine is configured after it boots | `ansible/README.md` |

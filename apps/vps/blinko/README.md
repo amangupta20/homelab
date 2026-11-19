@@ -1,7 +1,7 @@
 # Blinko
 
 **Status:** running on the VPS since 2026-11-07, with its database on `pigsty-1`
-(`agents/plans/shared-postgres.md`, `journal/2026-11-07-deploy-blinko.md`). It is here to test the shared Postgres with an app nothing depends on (owner, 2026-11-06).
+(`agents/plans/shared-postgres.md`, `agents/journal/2026-11-07-deploy-blinko.md`). It is here to test the shared Postgres with an app nothing depends on (owner, 2026-11-06).
 
 ## Derived from
 
@@ -32,6 +32,6 @@ that until Garage is back, as they are not critical (2026-11-07).
 
 ## Sleeping
 
-It stops after 20 minutes without traffic and starts on the next request, which then takes about 6.5 s (`journal/2026-11-07-deploy-sablier.md`).
+It stops after 20 minutes without traffic and starts on the next request, which then takes about 6.5 s (`agents/journal/2026-11-07-deploy-sablier.md`).
 Its scheduled jobs do not run while it is stopped. A deploy that recreates the container gives a few seconds of 500s, up to 30 s
 (`apps/vps/sablier/README.md`).

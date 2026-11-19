@@ -8,11 +8,11 @@ tags:
 
 # Sablier wakeups
 
-**Status:** done 2026-11-07 (`journal/2026-11-07-deploy-sablier.md`). Promoted from `agents/ideas/on-demand-container-wakeups.md`, which holds the research (owner, 2026-11-07).
+**Status:** done 2026-11-07 (`agents/journal/2026-11-07-deploy-sablier.md`). Promoted from `agents/ideas/on-demand-container-wakeups.md`, which holds the research (owner, 2026-11-07).
 
 **Goal:** a rarely used app on the VPS stops when idle and starts again on its next request, with Blinko as the test.
 **Done when:** Blinko stops after its idle time, a request through its domain starts it and gets a normal answer, and stopping Sablier does not
-take a running Blinko offline. The results are in `journal/`.
+take a running Blinko offline. The results are in `agents/journal/`.
 
 Blinko uses about 172 MB (`docker stats`, 2026-11-07), with 17 GB available on the VPS, so this proves the pattern rather than saving memory. Home apps are out of scope.
 

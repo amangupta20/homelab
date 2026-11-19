@@ -5,7 +5,7 @@ Orchestra root in `iac/` so the two have separate state and a mistake in one
 cannot plan changes to the other.
 
 **Status:** running. `pigsty-1` and its network were created on 2026-11-06, and a
-second plan reported no changes (`journal/2026-11-06-create-pigsty-node.md`).
+second plan reported no changes (`agents/journal/2026-11-06-create-pigsty-node.md`).
 
 ## What it manages
 
@@ -131,7 +131,7 @@ After every command, `run.sh` syncs the encrypted object to Garage at home when
 Garage's newest copy differs (`../lib/state-copy.sh`, `agents/plans/oci-state-backup.md`).
 Garage being down never fails a command; the next run catches up. `./run.sh
 backup` runs the sync on its own and exits 1 if it fails. Restore-tested 2026-11-16
-(`journal/2026-11-16-restore-test-tofu-state-garage.md`).
+(`agents/journal/2026-11-16-restore-test-tofu-state-garage.md`).
 
 `tofu state pull` prints **decrypted** state, so never use it to make a copy. A
 second copy has to be the encrypted object from the bucket.

@@ -7,7 +7,7 @@ description: Use when a machine, stack or playbook starts pulling from an upstre
 
 **Status:** UNTESTED as a whole. Each step ran on 2026-11-16 while the first five
 upstreams were added, and steps 1, 3 and 4 again on 2026-11-17 for `raspi` and
-`tailscale-apt` (`journal/2026-11-16-deploy-artifact-keeper.md`).
+`tailscale-apt` (`agents/journal/2026-11-16-deploy-artifact-keeper.md`).
 **Touches:** writes to Artifact Keeper on `cache-1` (a new remote repository and its cap).
 
 ## When to use / when not to

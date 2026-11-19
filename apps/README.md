@@ -43,7 +43,7 @@ Each app folder holds:
 ## Apps
 
 - `vps/openbao/` — the secret store; the stack in this folder is what runs on
-  the VPS (`journal/2026-10-26-install-openbao.md`), see `systems/openbao.md`.
+  the VPS (`agents/journal/2026-10-26-install-openbao.md`), see `systems/openbao.md`.
 - `vps/hermes-webui/` — a second Hermes WebUI for someone without lab access;
   deployed and in use, its README owns the state, the image pin, the agent step
   and the upgrade rules.

@@ -1,6 +1,6 @@
 # Traefik: the home reverse proxy
 
-**Status:** running since 2026-11-18 (`journal/2026-11-18-build-proxy-1-traefik.md`):
+**Status:** running since 2026-11-18 (`agents/journal/2026-11-18-build-proxy-1-traefik.md`):
 HTTPS with a valid wildcard certificate over Tailscale and on the LAN. Phase 1 of step B4a of `agents/plans/home-overhaul.md`. Runs on
 `proxy-1` (`iac/proxy-vm.tf`), deployed by `ansible/proxy.yml`.
 

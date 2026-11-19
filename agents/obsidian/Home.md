@@ -21,7 +21,7 @@ How this view works and how to keep it working: [obsidian-view.md](obsidian-view
 | Decisions | Why it is this way | [agents/decisions/](../decisions/README.md) |
 | Open questions | What is undecided or unverified | [agents/decisions/open-questions.md](../decisions/open-questions.md) |
 | Skills | How to do X | [agents/skills/](../../agents/skills/README.md) |
-| Journal | What happened, when | [journal/](../../journal/README.md) |
+| Journal | What happened, when | [agents/journal/](../journal/README.md) |
 | Agent rules | How agents work here | [AGENTS.md](../../AGENTS.md) |
 
 > [!WARNING]

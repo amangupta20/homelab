@@ -286,8 +286,8 @@ would not have measured normal use.
    2026-11-01) — so other registries need per-host mirror configuration
    instead. Only after this passes is the digest written into the compose
    file as the verified one. — gate: the cache's log shows one miss then a
-   hit for each, usage stays under the cap, and a `journal/` entry records it.
-   **Done 2026-11-16** (`journal/2026-11-16-deploy-artifact-keeper.md`): apt as
+   hit for each, usage stays under the cap, and a `agents/journal/` entry records it.
+   **Done 2026-11-16** (`agents/journal/2026-11-16-deploy-artifact-keeper.md`): apt as
    the client against the full Debian archive, the security archive and
    Docker's apt repository; images from Docker Hub (by key and by the mirror
    path), ghcr.io and Docker Hub again past a 4 MB test cap, which evicted the
@@ -320,7 +320,7 @@ would not have measured normal use.
    on the volume against the cap, idle memory, and every manual clean-up.
    The cache's dashboard collects all but the clean-ups since 2026-11-17
    (`apps/homeserver/artifact-keeper/README.md`, "Dashboard").
-   — gate: the numbers in a `journal/` entry and in `inventory/services.md`
+   — gate: the numbers in a `agents/journal/` entry and in `inventory/services.md`
    or a new `systems/` page, and the owner's keep-or-change decision written
    in "Decisions".
 6. **Move from `main` to a release.** When a release carries the per-remote

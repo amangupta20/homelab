@@ -18,10 +18,10 @@ is the Xen Orchestra root.
   same for Oracle Cloud.
 - `lib/state-copy.sh` — that copy, shared by both roots.
 - `cache-vm.tf` — `cache-1`, the package and image cache VM
-  (`agents/plans/package-and-image-cache.md`). Built 2026-11-16 (`journal/2026-11-16-build-cache-1.md`).
+  (`agents/plans/package-and-image-cache.md`). Built 2026-11-16 (`agents/journal/2026-11-16-build-cache-1.md`).
 - `proxy-vm.tf` — `proxy-1`, the home reverse proxy, and the public `*.home.<zone>`
   record pointing at it (`apps/homeserver/traefik/`). Built 2026-11-18
-  (`journal/2026-11-18-build-proxy-1-traefik.md`).
+  (`agents/journal/2026-11-18-build-proxy-1-traefik.md`).
 - `cloud-init/` — the first-boot user data (hostname, the homelab VM key from
   `kv/general/vm-ssh`) and the static network configuration every VM gets.
 - `backend.tf` — where the state lives, and its encryption.
@@ -78,7 +78,7 @@ Debian publishes `SHA512SUMS` over HTTPS with no signature file next to it
 (checked 2026-11-16), so HTTPS is what vouches for the checksums.
 
 **In place:** `debian-13-cloud-20261111-2659`, made 2026-11-16 with the steps
-that script strings together (`journal/2026-11-16-debian-13-template.md`). The
+that script strings together (`agents/journal/2026-11-16-debian-13-template.md`). The
 script as a whole is **UNTESTED**; it was written from those steps.
 
 **Boot-test a new build before using it:** clone a throwaway VM from it with a

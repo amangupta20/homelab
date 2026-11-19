@@ -1,6 +1,6 @@
 # CloudBeaver
 
-**Status:** running since 2026-11-09 (`journal/2026-11-09-deploy-db-admin-uis.md`). A web UI for the shared Postgres, reachable from the tailnet only
+**Status:** running since 2026-11-09 (`agents/journal/2026-11-09-deploy-db-admin-uis.md`). A web UI for the shared Postgres, reachable from the tailnet only
 (`agents/plans/shared-postgres.md`, "Database UIs"). The owner keeps whichever of pgAdmin and CloudBeaver gets used more.
 
 ## Derived from

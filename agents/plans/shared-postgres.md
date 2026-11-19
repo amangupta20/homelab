@@ -10,8 +10,8 @@ tags:
 # Shared Postgres
 
 **Status:** in progress. Pigsty runs on `pigsty-1` since 2026-11-06
-(`journal/2026-11-06-install-pigsty.md`). The restore and alert drills passed, and Blinko runs on it as a test
-(`journal/2026-11-07-deploy-blinko.md`). No app has migrated to it.
+(`agents/journal/2026-11-06-install-pigsty.md`). The restore and alert drills passed, and Blinko runs on it as a test
+(`agents/journal/2026-11-07-deploy-blinko.md`). No app has migrated to it.
 Part of the migration (`agents/plans/home-overhaul.md`), and comes before it: each app's
 database target shapes how it is migrated. The owner chose the topology on
 2026-11-01 ("Topology", below) and how phase 1 starts on 2026-11-06 ("Phase 1,
@@ -21,7 +21,7 @@ with one user and one database each — so every app gets the same backups,
 point-in-time restore and monitoring instead of a forgotten database container
 per stack.
 **Done when:** a scratch-instance point-in-time restore of one migrated app's
-database is recorded in `journal/`, and an alert fires when WAL archiving is
+database is recorded in `agents/journal/`, and an alert fires when WAL archiving is
 broken on purpose.
 
 Everything here comes from a research conversation on 2026-10-31. Numbers
@@ -132,7 +132,7 @@ Open for this topology (also in `agents/decisions/open-questions.md`):
   template, on topic `pigsty-alerts`. A user that can only write to that topic has the token.
   A test alert arrived on 2026-11-06. Pigsty has no setting for this, so `render.sh` edits its
   template. `patch-node.sh` adds rules for failed WAL archiving and for backups that stop, which Pigsty does not ship
-  (`journal/2026-11-07-backup-age-alerts.md`).
+  (`agents/journal/2026-11-07-backup-age-alerts.md`).
 - **TLS:** on where a client asks for it: Postgres by default, PgBouncer with `prefer`.
   `pgbench` (16 clients, on the node itself, 2026-11-06) showed about 10% fewer
   transactions a second and 1 ms more latency, which the owner's rule accepts. Opening a new
@@ -307,7 +307,7 @@ Follows `agents/decisions/backup-tiers.md` (proposed).
   it for every database or giving that app its own cluster.
 - **Restores cover the whole server, not one database.** To roll back one
   app, restore to a scratch instance and copy that app's database across.
-  Tried on 2026-11-07, without swapping the app onto the copy (`journal/2026-11-07-restore-test-blinko-copy.md`).
+  Tried on 2026-11-07, without swapping the app onto the copy (`agents/journal/2026-11-07-restore-test-blinko-copy.md`).
 
 Failure to watch: if archiving fails (offsite down, expired key, full bucket),
 Postgres keeps every WAL file locally until the disk fills and Postgres stops.
@@ -396,7 +396,7 @@ bucket, with a lifecycle rule that removes hidden files after 7 days (read throu
 API). This is how it meets rule 3 of that decision. Tested with a throwaway object through
 the S3 API (virtual-hosted addressing): upload, multipart upload and abort work; a delete by
 name only hides the file; a delete of a specific version gets `AccessDenied`. On 2026-11-06 a full backup, WAL archiving, a restore and expiry all worked
-with this key. Expiry only hid the files, as intended (`journal/2026-11-06-install-pigsty.md`).
+with this key. Expiry only hid the files, as intended (`agents/journal/2026-11-06-install-pigsty.md`).
 
 B2 requests (2026-11-07): one `pgbackrest info` is 4 class C and 2 class B (trace log), and Pigsty's exporter
 runs it every 120 s. A restore reads about one file per class B request. The owner added a card and kept

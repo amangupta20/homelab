@@ -21,7 +21,7 @@ Read in this order:
 |---|---|
 | `inventory/`, `systems/`, `agents/plans/`, `apps/`, `iac/README.md`, `agents/review/` | edit, as long as every fact you add says how you know it |
 | `agents/ideas/` | correct facts and add sources; never promote, drop or act on an idea without the owner (`agents/ideas/README.md`) |
-| `journal/` | add an entry when a task changed the live lab, handled an incident, or tested a restore (`journal/README.md`); never edit an old one except to append a follow-up |
+| `agents/journal/` | add an entry when a task changed the live lab, handled an incident, or tested a restore (`agents/journal/README.md`); never edit an old one except to append a follow-up |
 | `agents/skills/` | follow; add new skills and propose changes to existing ones (`agents/skills/write-a-skill/`) |
 | `agents/decisions/open-questions.md` | append; never delete or resolve an item |
 | `agents/decisions/` (everything else), `agents/rules/`, `AGENTS.md`, `README.md` goal and principles | propose only, in a separate commit for the owner to review |

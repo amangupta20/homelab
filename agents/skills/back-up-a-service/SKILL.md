@@ -87,7 +87,7 @@ restic check
 ```
 
 Then load the restored data into a throwaway instance of the service (for
-OpenBao, the method in `journal/2026-10-29-restore-test-openbao.md`) and check
+OpenBao, the method in `agents/journal/2026-10-29-restore-test-openbao.md`) and check
 real data is there.
 
 ## Stop if
@@ -102,5 +102,5 @@ real data is there.
 
 - Update the service's line in `systems/backups.md` with both tiers, and tick
   its restore under "Tested restores" only after the restore worked.
-- Write `journal/YYYY-MM-DD-backup-<service>.md`.
+- Write `agents/journal/YYYY-MM-DD-backup-<service>.md`.
 - If a step here was wrong, propose the fix (`agents/skills/write-a-skill/`).

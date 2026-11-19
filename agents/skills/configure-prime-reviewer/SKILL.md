@@ -82,7 +82,7 @@ credentials live at `kv/general/prime-reviewer-b2` in OpenBao. Use the five
 named Actions secrets in the caller example, with `state-backend: b2` so
 missing credentials fail explicitly. The model subprocess must never receive
 B2 or GitHub credentials. Source: action integration and the live verification
-in `journal/2026-11-03-prime-reviewer-b2-migration.md`.
+in `agents/journal/2026-11-03-prime-reviewer-b2-migration.md`.
 
 Before cutover, wait for the last legacy Git-backed run, clone its clean
 `state` branch, and use the action's `migrate_state.py` preflight. Its `--apply`
@@ -98,7 +98,7 @@ be reachable for reviews to work.
 Run unfamiliar worker tests under memory, process and time limits. Inspect
 subprocess calls first: a test must never launch a suite that includes itself.
 The 2026-11-03 incident came from two such recursive test launchers; see
-`journal/2026-11-03-recursive-reviewer-tests-oom.md`. A local bounded example
+`agents/journal/2026-11-03-recursive-reviewer-tests-oom.md`. A local bounded example
 was run from the action checkout (temporary virtualenv prepared with `uv`):
 
 ```sh

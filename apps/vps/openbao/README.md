@@ -4,8 +4,8 @@ How OpenBao works and the rules around it: `systems/openbao.md`. This page is
 only about this stack.
 
 **Status:** running on the VPS since 2026-10-26, unsealed; backup and restore
-tested 2026-10-29 from Garage (`journal/2026-10-29-restore-test-openbao.md`) and
-2026-10-31 from Backblaze B2 (`journal/2026-10-31-restore-test-openbao-b2.md`).
+tested 2026-10-29 from Garage (`agents/journal/2026-10-29-restore-test-openbao.md`) and
+2026-10-31 from Backblaze B2 (`agents/journal/2026-10-31-restore-test-openbao-b2.md`).
 
 ## Derived from
 
@@ -97,8 +97,8 @@ Follows `agents/skills/deploy-on-dokploy/` steps 6 and 7, with these differences
 - `openbao-data` holds the Raft data; `openbao-logs` holds the audit log,
   `/openbao/logs/audit.log`, declared in the config (tested locally 2026-10-27).
 - Backup details, schedule, and retention are owned by `systems/backups.md`;
-  restore tests are recorded in `journal/2026-10-29-restore-test-openbao.md` (Garage)
-  and `journal/2026-10-31-restore-test-openbao-b2.md` (Backblaze B2).
+  restore tests are recorded in `agents/journal/2026-10-29-restore-test-openbao.md` (Garage)
+  and `agents/journal/2026-10-31-restore-test-openbao-b2.md` (Backblaze B2).
 
 ## Host scripts
 
@@ -114,7 +114,7 @@ Follows `agents/skills/deploy-on-dokploy/` steps 6 and 7, with these differences
     (Tier 2), and cleans it up on exit.
   - Verified live 2026-10-31: Raft snapshot streaming, Garage timeout fallback
     (with homelab offline), and Backblaze B2 upload were verified live
-    (`journal/2026-10-31-restore-test-openbao-b2.md`). Earlier tests on
+    (`agents/journal/2026-10-31-restore-test-openbao-b2.md`). Earlier tests on
     2026-10-29 verified Garage-only upload before moving from `/tmp/openbao-backup`,
     and the owner tested the `/etc/dokploy` path on 2026-10-30.
 
@@ -130,4 +130,4 @@ after unsealing. The server logged `unknown or unsupported field
 disable_mlock`, so that setting was removed. Live Dokploy scheduled task
 execution was verified on 2026-10-29 (Garage) and 2026-10-31 (Garage timeout
 fallback and B2 offsite backup; see Host scripts above and
-`journal/2026-10-31-restore-test-openbao-b2.md`).
+`agents/journal/2026-10-31-restore-test-openbao-b2.md`).

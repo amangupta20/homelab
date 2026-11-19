@@ -50,7 +50,7 @@ machine, which makes it a high-value target and needs its own tailnet rule.
 - **False confidence.** Being told "safe" feels stronger than it is, so the fixed rules must
   stay the real guard for machines that matter.
 - **The log stays out of this repo.** Versions of public-facing software must not be
-  published (`AGENTS.md`), so it goes somewhere private. A `journal/` entry for each
+  published (`AGENTS.md`), so it goes somewhere private. A `agents/journal/` entry for each
   automatic run would be too noisy; to decide how the journal rule applies.
 - **Ubuntu already auto-updates.** See "Sources". Installing through this gate means deciding
   what to do with `unattended-upgrades`, or it bypasses the check.

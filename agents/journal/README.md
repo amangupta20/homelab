@@ -16,8 +16,9 @@ It answers "what did we do to the lab, when, and how did we check it?" —
 what git history cannot show, because none of it is a file in this repo.
 
 No entry for read-only checks or changes to this repo alone: facts found by a
-check go into their owner file with their source ("verified: recon
-2026-11-02"), and the pull request describes the repo change.
+check go into their owner file with their source (in an inventory table:
+"verified: SSH" in the cell, the date in the page's "When each check ran"
+list), and the pull request describes the repo change.
 
 Naming: `agents/journal/YYYY-MM-DD-<what>.md` (`2026-11-02-restore-test-openbao.md`),
 so the folder sorts by date.

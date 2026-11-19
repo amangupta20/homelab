@@ -28,8 +28,9 @@ checks it.
 - Each fact appears once. An IP is written in `network.md` only; other tables
   name the host.
 - Every table says at the top that its rows are from the docs and not
-  verified. A row checked against the live lab names the date and how in its
-  State column (`verified: recon 2026-11-02`).
+  verified. A row checked against the live lab names the how in its State
+  column (`verified: SSH`); the date goes in the page's "When each check ran"
+  list, never in a cell (`mise run check:docs` fails on a dated cell).
 - Unknown is written as `unknown`, never guessed.
 - Only private addresses and placeholders. The scan blocks public IPs and
   tailnet names (`agents/review/secret-scanning.md`).

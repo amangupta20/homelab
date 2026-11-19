@@ -79,11 +79,10 @@ first is not automatically right.
   `inventory/network.md` owns IPs, `systems/<thing>.md` owns how each thing
   works. Update the owner file, link to it from elsewhere — don't copy the
   fact.
-- Pages in `systems/`, `inventory/` and `plans/` start with a property block
-  that the owner's Obsidian view reads (`agents/obsidian/obsidian-view.md`). It only
-  summarises the page — no fact that is not in the body — and changes in the
-  same commit as the line it summarises. `mise run check:properties` and CI
-  check its shape; keeping it true is on you.
+- Pages in `systems/`, `inventory/`, `plans/` and `ideas/` start with a
+  property block that the owner's Obsidian view reads
+  (`agents/obsidian/obsidian-view.md`): `type` and `tags` only. A page's
+  status lives in its body. `mise run check:properties` and CI check it.
 - One commit, one change. Keep commits atomic: a hook plus the docs and config
   it needs travel together, two unrelated changes never do. History is the
   traceback — when something breaks, the commit that caused it should be

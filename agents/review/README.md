@@ -7,9 +7,9 @@ do not wade through them when looking for something about the lab.
   secret, a public IP, a tailnet name or your domain; setup per checkout.
 - `agents/obsidian/obsidian-view.md` — the repo as an Obsidian vault: page
   properties, the tables in `agents/obsidian/bases/`, `agents/obsidian/Home.md`, and the check that keeps them valid.
-- `.githooks/check-docs.py` — doc rules for the clean-up: repo paths resolve,
-  no dates in the human pages' tables, length caps, danger rules only in their
-  owner files. Known offenders are listed in `.githooks/check-docs-allow.txt`,
+- `.githooks/check-docs.py` — doc rules for the clean-up: repo paths resolve
+  and do not use a moved folder's old name, no dates in the human pages'
+  tables, length caps, danger rules only in their owner files. Known offenders are listed in `.githooks/check-docs-allow.txt`,
   which only shrinks; anything new fails the commit and CI.
 - `review.md` — what a reviewer (AI subagent or person) checks before a
   change merges.

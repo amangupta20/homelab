@@ -75,7 +75,7 @@ never in git. See `systems/openbao.md` for where they live.
 | the tailnet's access rules | the private repo `homelab-private`, not this one |
 | how this repo's checks work, setting up a checkout | `agents/review/` |
 | a dashboard view of the lab (Obsidian) | `agents/obsidian/Home.md`, set up in `agents/obsidian/obsidian-view.md` |
-| how an AI agent is expected to work here | `AGENTS.md` |
+| how an AI agent is expected to work here | `AGENTS.md`, then `agents/rules.md` |
 | how each agent harness gets the skills and rules | `agents/` |
 
 Every folder has a README saying what goes in it and a template to copy.

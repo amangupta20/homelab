@@ -4,7 +4,7 @@ What a reviewer checks before a change reaches `main`. Written for an AI
 reviewer (a subagent in whatever harness made the change, or the Prime
 reviewer in CI), and readable by a person doing the same review by hand.
 
-The reviewer reads the full diff, `AGENTS.md`, and the README of every folder
+The reviewer reads the full diff, `AGENTS.md`, `agents/rules.md`, and the README of every folder
 the diff touches. A subagent or a person reports and does not fix; the Prime
 reviewer may also push mechanical fixes, under the limits in
 `agents/review/prime-reviewer.md`.
@@ -46,7 +46,7 @@ sections 5 or 1. This sequence does not introduce new gate categories.
 ## Where it runs
 
 - **Before a pull request:** the agent that made the change runs a separate
-  reviewer subagent with this file (`AGENTS.md`, "Before you open a pull
+  reviewer subagent with this file (`agents/rules.md`, "Before you open a pull
   request"). Fast feedback, not enforced.
 - **On every pull request:** the Prime reviewer
   (`.github/workflows/prime-review.yml`, `agents/review/prime-reviewer.md`) reviews

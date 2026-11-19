@@ -12,7 +12,7 @@ procedure, not a repeat of the July 2026 loss (`systems/xcp-ng.md`). An agent de
 recovering from it is planned for.
 
 So agents get the access a task needs to be done smoothly. Read-only first and
-approval before writes stay as working habits (`AGENTS.md`), but nothing
+approval before writes stay as working habits (`agents/rules.md`), but nothing
 should be locked down so hard that routine work becomes painful.
 
 ## What still holds without exception

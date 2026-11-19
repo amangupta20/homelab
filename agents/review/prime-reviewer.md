@@ -11,8 +11,8 @@ the diff to a model in one call.
 ## What it does
 
 [Prime Agent](https://github.com/PrimeIntellect-ai/prime-agent) (an open
-source coding agent) reads the pull request against `agents/review/review.md` and
-`AGENTS.md`, then sorts each finding by level:
+source coding agent) reads the pull request against `agents/review/review.md`,
+`AGENTS.md` and `agents/rules.md`, then sorts each finding by level:
 
 | Level | Kind | What happens |
 |---|---|---|
@@ -106,7 +106,7 @@ free for a public repository. Nothing runs on the lab.
 
 | What | Where |
 |---|---|
-| The rules it judges by | `agents/review/review.md` and `AGENTS.md`, always from `main`, so a pull request cannot rewrite them |
+| The rules it judges by | `agents/review/review.md`, `AGENTS.md` and `agents/rules.md`, always from `main`, so a pull request cannot rewrite them |
 | Shared execution code | public `prime-reviewer-action`, called as a composite action at commit `280578b3eac0` (pinned by full SHA) by this repo's workflow |
 | Its prompts, playbook and model settings | the owner's private repo `prime-reviewer` (`main`): shared `APPEND_SYSTEM.md` and `skills/common-review/`, with homelab settings and playbook in `repos/homelab/` |
 | Changes it makes to its own playbook | a pull request on `prime-reviewer`, which the owner merges or closes |

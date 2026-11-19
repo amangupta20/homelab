@@ -8,7 +8,6 @@ dates apps/vps/cloudbeaver/README.md 2
 dates apps/vps/hermes-webui/README.md 4
 dates apps/vps/langfuse/README.md 5
 dates apps/vps/pgadmin/README.md 2
-lines apps/homeserver/artifact-keeper/README.md 180
 lines apps/vps/hermes-webui/README.md 185
 lines apps/vps/langfuse/README.md 213
 lines systems/openbao.md 204

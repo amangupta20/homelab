@@ -1,0 +1,118 @@
+# Rules for agents
+
+How to work in this repo. `AGENTS.md` at the root holds the danger rules and
+who may edit what; this page holds everything else, and every agent reads it
+before changing anything. Moved here from `AGENTS.md` on 2026-11-19 (repo
+clean-up, step 7), unchanged apart from paths.
+
+Read in this order:
+1. `AGENTS.md`, then `README.md` — what this homelab is, and the "Find something" map
+2. `agents/decisions/open-questions.md` — what is undecided or unverified; do not
+   treat anything listed there as fact
+3. `agents/rules/docs-layout.md` — which file owns which kind of fact, and who
+   may edit what
+4. `inventory/` — services, hosts, IPs
+5. `systems/xcp-ng.md` — the platform rule that destroys VMs
+6. The README of the folder you are about to write in — it has the naming
+   rules and the template
+7. The `systems/` page, `agents/plans/` file or `agents/skills/` entry for your task
+
+## When facts disagree
+
+If two files disagree, or a file disagrees with what you observe on the live
+lab, or a file contradicts `agents/decisions/open-questions.md`: do not pick a side.
+Add the contradiction to `agents/decisions/open-questions.md` — what each source says
+and how you saw it — and stop that part of the task. Whichever source you read
+first is not automatically right.
+
+## Rules
+
+- Write for a stranger. Spell out acronyms on first use. Say why, not just
+  what. No filler, no marketing words ("robust", "seamless"), no fake
+  completeness. If something is untested, say so.
+- Every fact says how it is known. A fact you add names its source: the
+  command you ran, the UI page you read, or "from memory, unverified". A
+  number nobody measured is labelled as a guess.
+- Every command in a doc has been run at least once, or is marked
+  **UNTESTED**. A plausible-looking recipe nobody ran is worse than none.
+- No secrets in this repo. No tokens, passwords, private keys, real public
+  domains, or full configs containing secrets. Examples use placeholders like
+  `__PASTE_ONCE__`. See `systems/openbao.md` for where secrets live, and
+  `agents/review/secret-scanning.md` for the scan that blocks a commit or push.
+- Security flaws you find are fixed with the owner, never published. This
+  repo is public: a weakness that is not fixed yet — an exposed port or admin
+  page, a service without authentication, a firewall gap, the versions of
+  public-facing software, a key anyone can read, a tailnet name or address —
+  must not reach a commit, a commit message, a pull request or a CI log.
+  When you find one, stop that part of the task and start an interactive
+  fixing session with the owner in your harness: say what you found and how
+  you know, propose the fix, apply it once the owner agrees, and verify it.
+  Only after it is fixed may the repo mention it, in one line ("removed X:
+  it had no authentication"). If it cannot be fixed now, it stays out of the
+  repo; the owner decides where to track it. `agents/review/review.md` section 1 is
+  the CI backstop, not the plan.
+- Look before touching. Read-only recon first (list, describe, plan), report
+  what you found, then change.
+- Snapshots or verified backups before any write to infrastructure. Say which
+  snapshot you took.
+- Infrastructure changes go through OpenTofu: read `tofu plan` before
+  `tofu apply`, and never apply blind. This repo is public, so a pull request
+  gets only the plan's summary and its list of resource actions
+  (`iac/README.md`, "Plans in pull requests"). The full plan can show IDs and
+  addresses; it stays in your private task or chat.
+- One fact, one owner. `inventory/services.md` owns the service list,
+  `inventory/network.md` owns IPs, `systems/<thing>.md` owns how each thing
+  works. Update the owner file, link to it from elsewhere — don't copy the
+  fact.
+- Pages in `systems/`, `inventory/`, `agents/plans/` and `agents/ideas/` start with a
+  property block that the owner's Obsidian view reads
+  (`agents/obsidian/obsidian-view.md`): `type` and `tags` only. A page's
+  status lives in its body. `mise run check:properties` and CI check it.
+- One commit, one change. Keep commits atomic: a hook plus the docs and config
+  it needs travel together, two unrelated changes never do. History is the
+  traceback — when something breaks, the commit that caused it should be
+  findable and revertable on its own. No drive-by fixes inside an unrelated
+  commit, and no "and also" commits. Commit subjects are plain prose, present
+  tense, saying what changed (this repo does not use a prefix convention).
+
+## Before you open a pull request
+
+Run a reviewer over your change with `agents/review/review.md` as its instructions —
+a separate subagent or session, not the one that wrote the change. Fix what it
+finds, and paste its final verdict into the pull request. A `needs_owner`
+verdict is not a failure: say so in the pull request and leave it for the
+owner.
+
+## Task contract (Paperclip / Hermes / any agent)
+
+- The task body must state: what to do, scope (which VM/service), read-only
+  or write, and how to tell it worked (acceptance).
+- Your outcome must state: what changed, `tofu plan` output if relevant, how
+  you verified it, and what is still open.
+- If scope is unclear, ask. Doing nothing is better than doing the wrong
+  thing. Never invent busywork to look useful.
+
+## Extending this setup
+
+This setup is meant to grow, and you are expected to grow it — through the
+repo, never only inside your own harness:
+
+- **You did something in several steps, or the owner had to explain how:**
+  write it down as a skill so the next agent, in any harness, does not need
+  the explanation (`agents/skills/write-a-skill/`).
+- **Your harness saved a skill or memory of its own:** it is not part of the
+  setup until it is in `agents/skills/` or the owner file it belongs in. Move it there
+  and propose it. `mise run agents:link` lists the skills it finds outside the
+  repo.
+- **You need access you do not have** (an MCP server, an API, a tool): propose
+  it in `agents/` so every harness gets it. If it needs a credential, write in
+  `agents/decisions/open-questions.md` that one is needed and that it will live in
+  OpenBao — never the credential itself. Do not wire it into your harness's
+  private config only.
+- **Something only works in one harness:** `agents/extensions/<harness>/`.
+- **A new harness is being tried:** `agents/README.md`, "Adding a harness".
+
+Never make a harness's home directory the place of record, copy a skill
+instead of linking it, or put a credential in any of these files. New and
+changed skills arrive as UNTESTED drafts in their own commit and go through
+review like any other change.

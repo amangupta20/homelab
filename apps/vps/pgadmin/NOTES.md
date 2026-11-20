@@ -31,3 +31,4 @@ Checked locally on `9.19.0` with placeholder values: the config parses and the l
 When the facts in `README.md` were true from, or were checked.
 
 - Running since 2026-11-09; the tailnet-only check with a throwaway router ran that day.
+- Sign-in through Authentik set up on 2026-11-20 (`agents/journal/2026-11-20-db-ui-sign-in-authentik.md`).

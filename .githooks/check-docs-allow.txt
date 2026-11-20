@@ -3,8 +3,6 @@
 # raising one or adding a new one is the owner's call. For `lines` the
 # count is the file's allowed length.
 
-dates apps/homeserver/README.md 1
-dates apps/vps/README.md 1
 dates iac/oci/README.md 18
 dates lab/inventory/network.md 2
 dates lab/inventory/services.md 2

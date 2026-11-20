@@ -22,10 +22,10 @@ The zone is not in this public repo: `ansible/proxy.yml` reads it from OpenBao
 
 | Name | Goes to | Sign-in |
 |---|---|---|
-| `cache.home.<zone>` | `cache-1`'s Caddy, `http://10.22.33.137:80`: Artifact Keeper's web UI, and Grafana at `/grafana/` | Authentik by OIDC, in each app (`apps/homeserver/artifact-keeper/NOTES.md`, "Sign-in") |
+| `cache.home.<zone>` | `cache-1`'s Caddy, `http://<cache-1>:80`: Artifact Keeper's web UI, and Grafana at `/grafana/` | Authentik by OIDC, in each app (`apps/homeserver/artifact-keeper/NOTES.md`, "Sign-in") |
 
-apt and Docker clients keep using `http://10.22.33.137` directly. Which sign-in an app gets, how
-the names and certificate work, the token's scope, a browser gotcha and phase 2: `NOTES.md`.
+apt and Docker clients keep using `http://<cache-1>` directly (`lab/inventory/network.md`). Which
+sign-in an app gets, how the names and certificate work, the token's scope, a browser gotcha and phase 2: `NOTES.md`.
 
 To add an app: copy `routes/cache.yml.j2`, change the router and service names,
 the hostname and the address, and run `ansible-playbook proxy.yml`. To remove one,

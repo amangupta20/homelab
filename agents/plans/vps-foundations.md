@@ -70,9 +70,10 @@ Why this order and why on the VPS: `agents/decisions/foundations-on-vps.md`.
 
 - `apps/vps/hermes-webui/` — deployed 2026-10-27 while these foundations were
   unfinished (owner). Its password does come from OpenBao through Dokploy's
-  provider — the thing step 3 was for — but its own password is still the only
-  login: no SSO, and it is public. Revisit after step 4: put it behind SSO, or
-  move it to tailnet-only.
+  provider — the thing step 3 was for — and was public behind its own password
+  only. Since 2026-11-20 it also signs in through Authentik
+  (`apps/vps/hermes-webui/NOTES.md`, "Sign-in"); the password stays until the
+  owner drops it.
 
 ## Links
 

@@ -33,3 +33,8 @@ deploys; entry counts equal the volumes' file counts. The runtime config before 
 - A full browser sign-in to each, by the owner. UNTESTED until then.
 - pgAdmin's Authentik account has no server yet (`apps/vps/pgadmin/NOTES.md`, "Sign-in").
 - CloudBeaver signs in twice (Authentik, then its own login); one sign-in would need a way to trust only Traefik.
+
+## Follow-up, 2026-11-20 evening
+
+- Outpost `authentik_host` → public login domain (redirects went to the admin host's `akadmin` session; `apps/vps/authentik/NOTES.md`).
+  pgAdmin: server + `.pgpass` for the owner's Authentik account, `psql -w` logged in. CloudBeaver: anonymous access off.

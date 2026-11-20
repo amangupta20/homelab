@@ -192,3 +192,4 @@ and a redeploy could change version under the person using it.
 When the facts in `README.md` were true from, or were checked.
 
 - Deployed on Dokploy on 2026-10-27; the owner checked the login, provider and chat that day.
+- Sign-in through Authentik set up on 2026-11-20 (`agents/journal/2026-11-20-hermes-webui-sign-in-authentik.md`).

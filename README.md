@@ -63,22 +63,30 @@ never in git. See `lab/systems/openbao.md` for where they live.
 | an IP, or how traffic gets in | `lab/inventory/network.md` |
 | how a thing works and what never to do to it | `lab/systems/` — one page per thing (`xcp-ng.md`, `backups.md`, `openbao.md`) |
 | what is backed up, and which restores are untested | `lab/systems/backups.md` |
+| a stack's Compose file | `apps/homeserver/`, `apps/vps/` |
+| how VMs are created | `iac/README.md` |
+| how a machine is configured after it boots | `ansible/README.md` |
+| the tailnet's access rules | the private repo `homelab-private`, not this one |
+
+`agents/` holds the material for AI agents and for the work in progress:
+runbooks, plans, ideas, decisions, the change journal and the repo's checks.
+You can skip it unless you need one of these.
+
+| I want to know… | Look in |
+|---|---|
 | how to do a task step by step | `agents/skills/` — runbooks and know-how, shared with the agent harnesses (`agents/`) |
 | what is in progress | `agents/plans/` |
 | what could be tried later (researched, not scheduled) | `agents/ideas/` |
 | why something is the way it is | `agents/decisions/` |
 | what is undecided or unverified | `agents/decisions/open-questions.md` |
 | what was done, when, and by whom | `agents/journal/` |
-| a stack's Compose file | `apps/homeserver/`, `apps/vps/` |
-| how VMs are created | `iac/README.md` |
-| how a machine is configured after it boots | `ansible/README.md` |
-| the tailnet's access rules | the private repo `homelab-private`, not this one |
 | how this repo's checks work, setting up a checkout | `agents/review/` |
 | a dashboard view of the lab (Obsidian) | `agents/obsidian/Home.md`, set up in `agents/obsidian/obsidian-view.md` |
 | how an AI agent is expected to work here | `AGENTS.md`, then `agents/rules.md` |
 | how each agent harness gets the skills and rules | `agents/` |
 
-Every folder has a README saying what goes in it and a template to copy.
+Every folder has a README saying what goes in it; the ones you add pages to
+also have a template to copy.
 
 ## How I run it
 

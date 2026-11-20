@@ -13,6 +13,17 @@ services:
       PGADMIN_DISABLE_POSTFIX: "true"
       # Never offer to save database passwords in pgAdmin; they are typed per session.
       PGADMIN_CONFIG_ALLOW_SAVE_PASSWORD: "False"
+      # Sign-in through Authentik by OIDC, next to the login above (README, "Sign-in"). Values are Python
+      # literals: pgAdmin writes each PGADMIN_CONFIG_* line into its config file. Only members of the
+      # Authentik group homelab-admins get in; the application's policy binding in Authentik says the same.
+      PGADMIN_CONFIG_AUTHENTICATION_SOURCES: "['oauth2', 'internal']"
+      PGADMIN_CONFIG_OAUTH2_AUTO_CREATE_USER: "True"
+      PGADMIN_CONFIG_OAUTH2_CONFIG: >-
+        [{'OAUTH2_NAME': 'authentik', 'OAUTH2_DISPLAY_NAME': 'Authentik',
+        'OAUTH2_CLIENT_ID': '${PGADMIN_OIDC_CLIENT_ID:?}', 'OAUTH2_CLIENT_SECRET': '${PGADMIN_OIDC_CLIENT_SECRET:?}',
+        'OAUTH2_SERVER_METADATA_URL': 'https://${AUTHENTIK_DOMAIN:?}/application/o/pgadmin/.well-known/openid-configuration',
+        'OAUTH2_SCOPE': 'openid email profile', 'OAUTH2_ADDITIONAL_CLAIMS': {'groups': ['homelab-admins']},
+        'OAUTH2_ICON': 'fa-key', 'OAUTH2_BUTTON_COLOR': '#fd4b2d'}]
     configs:
       - source: servers-json
         target: /pgadmin4/servers.json

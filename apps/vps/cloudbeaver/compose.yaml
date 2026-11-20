@@ -12,6 +12,9 @@ services:
       CB_SERVER_NAME: "CloudBeaver"
       CB_ADMIN_NAME: "${CLOUDBEAVER_ADMIN_NAME:?}"
       CB_ADMIN_PASSWORD: "${CLOUDBEAVER_ADMIN_PASSWORD:?}"
+      # No anonymous session: everyone signs in. The runtime config reads this variable
+      # (".cloudbeaver.runtime.conf", app.anonymousAccessEnabled, default true).
+      CLOUDBEAVER_APP_ANONYMOUS_ACCESS_ENABLED: "false"
     volumes:
       # Its settings, users and saved connections. No database data.
       - cloudbeaver-workspace:/opt/cloudbeaver/workspace

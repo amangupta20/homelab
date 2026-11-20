@@ -11,7 +11,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: "${PGADMIN_EMAIL:?}"
       PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_PASSWORD:?}"
       PGADMIN_DISABLE_POSTFIX: "true"
-      # Never offer to save database passwords in pgAdmin; they are typed per session.
+      # Never offer to save database passwords in pgAdmin; only the internal login types them per session.
       PGADMIN_CONFIG_ALLOW_SAVE_PASSWORD: "False"
       # Sign-in through Authentik by OIDC, next to the login above (README, "Sign-in"). Values are Python
       # literals: pgAdmin writes each PGADMIN_CONFIG_* line into its config file. Only members of the

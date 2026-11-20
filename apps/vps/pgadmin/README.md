@@ -5,7 +5,7 @@
 
 **Sign-in:** through Authentik by OIDC (application `pgadmin`), for the Authentik group `homelab-admins`; pgAdmin's own
 login (`PGADMIN_EMAIL`) still works too. An Authentik sign-in is its own pgAdmin account, with its own servers
-(`NOTES.md`, "Sign-in"). Database passwords are typed per session either way.
+(`NOTES.md`, "Sign-in").
 
 ## Derived from
 
@@ -23,7 +23,9 @@ Dokploy's template was not read. Choices:
 - **Connects as `dbuser_owner` to `pg-proxy:5436`,** Pigsty's direct Postgres service, not PgBouncer
   (`apps/vps/pg-proxy/README.md`). `dbuser_owner` is in `dbrole_admin` and in each app's role, not a superuser
   (`ansible/pigsty/pigsty.yml.template`). Its password is in OpenBao (`kv/general/pigsty`, field
-  `pg_user_dbuser_owner`) and is typed at connect time: `ALLOW_SAVE_PASSWORD` is off.
+  `pg_user_dbuser_owner`). The owner's Authentik account reads it from a `.pgpass` in its storage folder, so it is not
+  typed each time (the owner's choice; `NOTES.md`, "Sign-in"); pgAdmin's own password store stays off
+  (`ALLOW_SAVE_PASSWORD`), and the internal login still types it.
 - **Asleep when idle,** behind Sablier (`apps/vps/sablier/README.md`, "Making an app sleep"): stopped after 30 minutes
   without requests, started by the next one, which waits up to 2 minutes. The tailnet allowlist runs before Sablier's
   middleware, so a request from outside the tailnet gets 403 and wakes nothing.

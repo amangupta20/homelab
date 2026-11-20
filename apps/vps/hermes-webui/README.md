@@ -11,6 +11,10 @@ password comes from OpenBao through Dokploy's secret provider. Backups are not
 set up yet; the deploy is recorded in
 `agents/journal/2026-10-27-deploy-hermes-webui.md`.
 
+**Sign-in:** through Authentik by OIDC (application `hermes-webui-1`), for
+members of the Authentik groups `hermes-webui-1` and `homelab-admins`. The
+shared password still works too, until the owner drops it (`NOTES.md`, "Sign-in").
+
 ## Data and backups
 
 - `hermes-webui-home` holds the state: sessions, agent memory, config, and
@@ -22,6 +26,6 @@ set up yet; the deploy is recorded in
 - Neither volume is shared with any other stack. The intent is that a restore
   touches this chat and nothing else — UNTESTED, never restored yet.
 
-Everything else, word for word, is in `NOTES.md`: "Derived from", "Deploying in
+Everything else, word for word, is in `NOTES.md`: "Derived from", "Sign-in", "Deploying in
 Dokploy", "First deploy: put the agent in the volume", "Troubleshooting", "Upgrading
 (UNTESTED)", "Tested".

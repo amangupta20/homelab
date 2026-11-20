@@ -34,15 +34,31 @@ services:
       - traefik.docker.network=dokploy-network
       - traefik.http.routers.cloudbeaver.rule=Host(`${CLOUDBEAVER_HOST:?}`)
       - traefik.http.routers.cloudbeaver.entrypoints=websecure
-      # The allowlist runs first, so nobody outside the tailnet can wake it.
-      - traefik.http.routers.cloudbeaver.middlewares=cloudbeaver-tailnet,cloudbeaver-sablier
+      # The allowlist runs first, so nobody outside the tailnet can wake it; then Authentik's sign-in, so nobody
+      # without it can either (README, "Sign-in").
+      - traefik.http.routers.cloudbeaver.middlewares=cloudbeaver-tailnet,cloudbeaver-authentik,cloudbeaver-sablier
       # The zone's wildcard certificate, over DNS-01 (lab/systems/vps.md, "Certificates").
       - traefik.http.routers.cloudbeaver.tls.certresolver=cloudflare
       - traefik.http.routers.cloudbeaver.tls.domains[0].main=${ZONE:?}
       - traefik.http.routers.cloudbeaver.tls.domains[0].sans=*.${ZONE:?}
+      - traefik.http.routers.cloudbeaver.service=cloudbeaver
       - traefik.http.services.cloudbeaver.loadbalancer.server.port=8978
       # The tailnet's address range (Tailscale's CGNAT block); anyone else gets 403.
       - traefik.http.middlewares.cloudbeaver-tailnet.ipallowlist.sourcerange=100.64.0.0/10
+      # Forward-auth through Authentik's embedded outpost (application `cloudbeaver`, single-application mode).
+      # The address is the Authentik server container on dokploy-network; Dokploy named it
+      # (apps/vps/authentik/README.md, "Deploying", step 4). Its "server" alias is not unique on that network.
+      # A gate only: CloudBeaver's own login still follows (NOTES.md, "Sign-in").
+      - traefik.http.middlewares.cloudbeaver-authentik.forwardauth.address=http://compose-reboot-optical-matrix-gsjyeo-server-1:9000/outpost.goauthentik.io/auth/traefik
+      # The outpost's own paths on this hostname (the sign-in callback, sign-out) go to Authentik, tailnet only.
+      - traefik.http.routers.cloudbeaver-outpost.rule=Host(`${CLOUDBEAVER_HOST:?}`) && PathPrefix(`/outpost.goauthentik.io/`)
+      - traefik.http.routers.cloudbeaver-outpost.priority=100
+      - traefik.http.routers.cloudbeaver-outpost.entrypoints=websecure
+      - traefik.http.routers.cloudbeaver-outpost.middlewares=cloudbeaver-tailnet
+      - traefik.http.routers.cloudbeaver-outpost.service=authentik@docker
+      - traefik.http.routers.cloudbeaver-outpost.tls.certresolver=cloudflare
+      - traefik.http.routers.cloudbeaver-outpost.tls.domains[0].main=${ZONE:?}
+      - traefik.http.routers.cloudbeaver-outpost.tls.domains[0].sans=*.${ZONE:?}
       - traefik.http.middlewares.cloudbeaver-sablier.plugin.sablier.sablierUrl=http://sablier:10000
       - traefik.http.middlewares.cloudbeaver-sablier.plugin.sablier.group=cloudbeaver
       - traefik.http.middlewares.cloudbeaver-sablier.plugin.sablier.sessionDuration=30m

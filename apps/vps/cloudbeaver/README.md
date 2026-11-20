@@ -3,6 +3,9 @@
 **Status:** running (`agents/journal/2026-11-09-deploy-db-admin-uis.md`). A web UI for the shared Postgres, reachable from the tailnet only
 (`agents/plans/shared-postgres.md`, "Database UIs"). The owner keeps whichever of pgAdmin and CloudBeaver gets used more.
 
+**Sign-in:** two steps. First Authentik's forward-auth on Traefik (application `cloudbeaver`), for the Authentik group
+`homelab-admins`, on every request; then CloudBeaver's own login (`NOTES.md`, "Sign-in").
+
 ## Derived from
 
 The sources and the versions read are in `NOTES.md`.

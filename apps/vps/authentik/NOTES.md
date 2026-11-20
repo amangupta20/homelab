@@ -79,7 +79,13 @@ These live in Authentik's database. Set through its API on 2026-11-10, with the 
 - **Every user may use every app, unless an app is restricted** (owner, 2026-11-10: "give default users access to
   all the apps since that was the point of SSO, unless I restrict some apps"). Authentik already works this way: an
   application with no policy binding is open to every user. To restrict an app, bind a group (or a policy) to its
-  application; then only the bound group gets in. No app is restricted yet.
+  application; then only the bound group gets in. Restricted on 2026-11-20: `hermes-webui-1` (groups `hermes-webui-1`
+  and `homelab-admins`), `pgadmin` and `cloudbeaver` (`homelab-admins`, as database admin tools); see each app's
+  NOTES.md, "Sign-in".
+- **Embedded outpost** (forward-auth, used by `cloudbeaver` only): its `authentik_host` is the public login domain, set
+  on 2026-11-20. It was the tailnet-only admin hostname, and the outpost sends browsers to that host, so a sign-in
+  there met an `akadmin` session and was refused by the group binding. `authentik_host_browser` did not change where
+  the embedded outpost redirects, even after a restart of the server container.
 - **Invite-only sign-up:** the enrollment flow `invite-enrollment` (stages, in order: invitation, with "continue
   without invitation" off; a form for username, name, email and password, checked by
   `default-password-change-password-policy`; create the user as an active internal user, in no group; log in). It is

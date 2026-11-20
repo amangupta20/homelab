@@ -13,6 +13,7 @@ Upstream base for later modifications (re-check these when upgrading):
 | nesquena/hermes-webui `docs/docker.md` | main, read 2026-10-27 | release-pair rule (WebUI and agent pinned and upgraded together) |
 | nesquena/hermes-webui issue #8113, #8524, #8544 | read 2026-10-27 | why the agent install failed on an older tag: the venv must be built on Python 3.14 (#8113, fixed in 0.52.544), and from 0.52.556 the WebUI also passes the agent's own `[tool.uv]` override table to uv (#8524, fixed by #8544). 0.52.561 is the pinned tag used here — the first that needs no workaround |
 | This repo's `agents/skills/deploy-on-dokploy/` | 2026-10-27 | file layout, placeholder rules, inventory + journal follow-ups |
+| nesquena/hermes-webui `api/auth_oidc.py`, `api/auth.py`, `static/login.js`, README | tag v0.52.702, read 2026-11-20; the same files inside the running `0.52.561` image | native OIDC: the `HERMES_WEBUI_OIDC_*` names, on only when issuer, client ID, allow claim and allow values are all set; redirect URI defaults to `<request base>/api/auth/oidc/callback`; issuer must be `https` and resolve to a public address; with no password set, the login page hides the password form (#7056) |
 
 Choices that differ from those sources, and why:
 
@@ -41,6 +42,29 @@ Choices that differ from those sources, and why:
 - **No model, provider or memory settings in the repo.** They are set inside
   the container after first boot and recorded in the deploy's journal entry.
 
+## Sign-in
+
+Through Authentik by OIDC, with the WebUI's own OIDC login. In Authentik
+(made through its API as `akadmin`): a group `hermes-webui-1`; an OAuth2/OpenID
+provider `hermes-webui-1` with the settings of Langfuse's provider
+(`apps/vps/langfuse/NOTES.md`, "Sign-in": confidential client, grant types
+`authorization_code` and `refresh_token` set by hand, the same flows, signing
+key and scopes `openid`, `email`, `profile`), redirect URI
+`https://<this app's domain>/api/auth/oidc/callback` (strict); an application
+with slug `hermes-webui-1`, and policy bindings for the groups `hermes-webui-1`
+and `homelab-admins`, so Authentik turns anyone else away before the app sees
+them. The client ID and secret are in OpenBao (`.env.example`).
+
+The app checks the same thing again: `HERMES_WEBUI_OIDC_ALLOW_CLAIM=groups`
+with those two group names. Authentik's default `profile` scope puts the
+`groups` claim in the token (read from the mapping's expression).
+
+Whoever uses this instance needs an Authentik account in `hermes-webui-1`; the
+owner makes it in Authentik's admin UI. The shared password stays as a second
+way in for now (owner's choice). To make it OIDC only: drop
+`HERMES_WEBUI_PASSWORD` from compose, `.env.example` and the Dokploy
+environment; the compose file still refuses to start without the OIDC values.
+
 ## Deploying in Dokploy
 
 Follows `agents/skills/deploy-on-dokploy/` steps 4–7 and 9, with these differences:
@@ -48,15 +72,14 @@ Follows `agents/skills/deploy-on-dokploy/` steps 4–7 and 9, with these differe
 - **Source:** this repo, branch `main`, compose path
   `apps/vps/hermes-webui/compose.yaml`. Auto-deploy off — downtime on every
   push to `main` helps nobody.
-- **Environment (step 4):** `HERMES_WEBUI_PASSWORD` (`.env.example`), whose
-  value lives in OpenBao at the path named there. Dokploy reads it at deploy
-  time through its OpenBao provider, as
-  `${{vault.<provider>.dokploy/hermes-webui:password}}`; nothing is copied into
+- **Environment (step 4):** `HERMES_WEBUI_PASSWORD` and the four sign-in values
+  (`.env.example`), whose values live in OpenBao at the path named there.
+  Dokploy reads them at deploy time through its OpenBao provider, as
+  `${{vault.<provider>.dokploy/hermes-webui:<field>}}`; nothing is copied into
   the service environment (`lab/systems/openbao.md`).
 - **Domain:** public, Cloudflare DNS, Dokploy-managed, pointing at port 8787.
-  Public for now, possibly tailnet-only later (owner, 2026-10-27). SSO is not
-  up yet, so the app's own password is the only login;
-  `agents/plans/vps-foundations.md` lists it for SSO once that runs. Whether Dokploy
+  Public for now, possibly tailnet-only later (owner, 2026-10-27). Sign-in
+  through Authentik as well as the password ("Sign-in"). Whether Dokploy
   joins the service to its Traefik network on its own is UNTESTED.
 
 ## First deploy: put the agent in the volume

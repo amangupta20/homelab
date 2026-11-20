@@ -50,6 +50,17 @@ services:
       # localhost use). `:?` stops the deploy when it is unset, so the app
       # can never come up on the internet without a password.
       - HERMES_WEBUI_PASSWORD=${HERMES_WEBUI_PASSWORD:?}
+      # Sign-in through Authentik by OIDC, next to the password (README,
+      # "Sign-in"; NOTES.md, "Sign-in"). Only members of the Authentik groups
+      # below get in; Authentik's policy bindings on the application say the same.
+      - HERMES_WEBUI_OIDC_ISSUER=https://${AUTHENTIK_DOMAIN:?}/application/o/hermes-webui-1/
+      - HERMES_WEBUI_OIDC_CLIENT_ID=${HERMES_WEBUI_OIDC_CLIENT_ID:?}
+      - HERMES_WEBUI_OIDC_CLIENT_SECRET=${HERMES_WEBUI_OIDC_CLIENT_SECRET:?}
+      # Set, not derived: behind Traefik the app may see http:// as its own
+      # scheme, and Authentik matches the redirect URI strictly.
+      - HERMES_WEBUI_OIDC_REDIRECT_URI=https://${HERMES_WEBUI_DOMAIN:?}/api/auth/oidc/callback
+      - HERMES_WEBUI_OIDC_ALLOW_CLAIM=groups
+      - HERMES_WEBUI_OIDC_ALLOW_VALUES=hermes-webui-1,homelab-admins
 
 volumes:
   hermes-webui-home:

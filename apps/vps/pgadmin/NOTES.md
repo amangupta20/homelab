@@ -20,9 +20,12 @@ and a policy binding for `homelab-admins`. pgAdmin checks the `groups` claim for
 pgAdmin keeps accounts from each sign-in source apart, even with the same email (`user_management.rst`, "Accounts from
 different authentication sources"). The first Authentik sign-in creates a new, non-admin account
 (`OAUTH2_AUTO_CREATE_USER`) without the server from `servers.json`, which is read for the first internal account only.
-Add the server by hand (host `pg-proxy`, port `5436`, user `dbuser_owner`), or load it for that account with
-`/venv/bin/python3 /pgadmin4/setup.py load-servers /pgadmin4/servers.json --user <email> --auth-source oauth2`
-**UNTESTED**.
+For the owner's Authentik account, the server was loaded on 2026-11-20 with `setup.py load-servers <file> --user
+<email> --auth-source oauth2`, from a copy of `servers.json` with `"PassFile": "/.pgpass"` (in server mode the path is
+relative to the account's storage folder, `/var/lib/pgadmin/storage/<email with @ as _>/`). The `.pgpass` there holds
+one line, `pg-proxy:5436:*:dbuser_owner:<password from OpenBao>`, mode 600, owned by `pgadmin`. `psql -w` with that
+file logged in as `dbuser_owner`. The file lives only in the volume, which has no backup: after a rebuild, write it
+again. A new account needs the same two steps.
 
 Checked locally on `9.19.0` with placeholder values: the config parses and the login page shows the Authentik button.
 
@@ -32,3 +35,4 @@ When the facts in `README.md` were true from, or were checked.
 
 - Running since 2026-11-09; the tailnet-only check with a throwaway router ran that day.
 - Sign-in through Authentik set up on 2026-11-20 (`agents/journal/2026-11-20-db-ui-sign-in-authentik.md`).
+- The owner chose a `.pgpass` for the Authentik account on 2026-11-20, so the password is not typed each time.

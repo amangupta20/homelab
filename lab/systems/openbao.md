@@ -53,7 +53,7 @@ If a machine without Tailscale ever needs one secret: give it that one secret
 through a narrow relay (Dokploy secret reference, or a CI runner that is on
 the tailnet). Never open the box itself.
 
-## How it is set up (2026-10-26)
+## How it is set up
 
 - **Unsealing:** initialised with 3 unseal pieces; any 2 unseal it. The
   pieces are kept offline, apart from each other (where is not written down

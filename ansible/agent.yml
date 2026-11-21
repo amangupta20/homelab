@@ -1,0 +1,221 @@
+# agent-1, the agent VM (agents/plans/home-overhaul.md, step B0): the owner's user, Docker, the tools agents
+# need, and the coding-agent harnesses. Run from ansible/ after common.yml, xcpng.yml and cache-client.yml:
+#   ansible-playbook agent.yml --check --diff      # read this first
+#   ansible-playbook agent.yml
+#
+# Everything downloads through the LAN cache on cache-1 (apps/homeserver/artifact-keeper/remotes.txt): apt
+# through cache-client.yml's mirror lists and the vendor remotes below, Docker images through the daemon's
+# mirror, gh from the `github-releases` remote, Node and npm packages through mise's settings
+# (files/agent/mise-config.toml).
+- name: agent-1
+  hosts: agent-1
+  become: true
+  vars:
+    lan_cache: http://10.22.33.137
+    user: aman
+    gh_version: "2.105.0"
+    # GitHub's published digest for gh_2.105.0_linux_amd64.deb (`gh release view`, 2026-11-22); the copy
+    # fetched through the cache matched it.
+    gh_sha256: "1dac939af3e84fb3861927c984b357531341be9403b889e4aa86e8822145a09d"
+    # mise's apt signing key, fingerprint 24853EC9F655CE80B48E6C3A8B81C9D17413A06D (`gpg --show-keys`,
+    # 2026-11-22; the key that signs the repository's Release file). Expires 2028-01-02.
+    mise_key_sha256: "91c72340c5cc84ae2ba98c1070083feacf789b0a4a3d34b2416147769e475d96" # gitleaks:allow (the SHA-256 of mise's public signing key, not a secret)
+  tasks:
+    # The owner asked for agent-1 to be fully up to date (2026-11-22). A second run finds nothing to do.
+    - name: Full upgrade
+      ansible.builtin.apt:
+        upgrade: dist
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Is a reboot needed
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+      register: reboot_required
+
+    - name: Reboot after a kernel or library upgrade
+      ansible.builtin.reboot:
+      when: reboot_required.stat.exists
+
+    - name: Packages from Debian
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - docker-compose
+          # Lets Ansible hand its temporary files to the owner's user (become_user, the mise tasks below).
+          - acl
+          - git
+          - tmux
+          - jq
+          - ripgrep
+          - curl
+          - unzip
+          - build-essential
+          - python3-venv
+          # For headless browsing and screenshots; Playwright can drive it (executablePath /usr/bin/chromium).
+          - chromium
+          - fonts-noto-core
+          - fonts-noto-color-emoji
+
+    # The owner's user: harnesses, Orca workers and the owner's own work run as this user, and its home
+    # folder is what agent-1's backup keeps (agents/plans/home-overhaul.md, B0). `debian` stays for Ansible.
+    - name: The owner's user
+      ansible.builtin.user:
+        name: "{{ user }}"
+        shell: /bin/bash
+        groups: [sudo, docker]
+        append: true
+
+    # Convenient by default (agents/rules/agent-access.md).
+    - name: Passwordless sudo for the owner's user
+      ansible.builtin.copy:
+        dest: "/etc/sudoers.d/{{ user }}"
+        content: "{{ user }} ALL=(ALL) NOPASSWD:ALL\n"
+        mode: "0440"
+        validate: visudo -cf %s
+
+    # The homelab VM key (kv/general/vm-ssh), which Orca and the owner use to reach it.
+    - name: SSH key for the owner's user
+      ansible.posix.authorized_key:
+        user: "{{ user }}"
+        key: "{{ lookup('pipe', 'bao kv get -mount=kv -field=public_key general/vm-ssh') }}"
+      # In --check the user above is not created yet.
+      ignore_errors: "{{ ansible_check_mode }}"
+
+    # Not on the cache's apt remote: its path ends in /packages, which Artifact Keeper rejects as an index
+    # file (is_debian_flat_or_mirrorlist, repository_service.rs). The release .deb comes through the
+    # `github-releases` remote instead, pinned by its digest.
+    - name: Download gh {{ gh_version }}
+      ansible.builtin.get_url:
+        url: "{{ lan_cache }}/general/github-releases/cli/cli/releases/download/v{{ gh_version }}/gh_{{ gh_version }}_linux_amd64.deb"
+        dest: "/var/cache/gh_{{ gh_version }}_linux_amd64.deb"
+        checksum: "sha256:{{ gh_sha256 }}"
+        mode: "0644"
+        timeout: 300
+
+    - name: Install gh {{ gh_version }}
+      ansible.builtin.apt:
+        deb: "/var/cache/gh_{{ gh_version }}_linux_amd64.deb"
+      ignore_errors: "{{ ansible_check_mode }}"
+
+    - name: mise's package signing key
+      ansible.builtin.get_url:
+        url: https://mise.jdx.dev/gpg-key.pub
+        dest: /usr/share/keyrings/mise-archive-keyring.asc
+        checksum: "sha256:{{ mise_key_sha256 }}"
+        mode: "0644"
+
+    - name: mise's package repository, through the cache
+      ansible.builtin.deb822_repository:
+        name: mise
+        uris: "{{ lan_cache }}/debian/mise-apt"
+        suites: stable
+        components: main
+        architectures: amd64
+        signed_by: /usr/share/keyrings/mise-archive-keyring.asc
+
+    - name: Tailscale's package signing key
+      ansible.builtin.get_url:
+        url: "https://pkgs.tailscale.com/stable/debian/{{ ansible_facts['distribution_release'] }}.noarmor.gpg"
+        dest: /usr/share/keyrings/tailscale-archive-keyring.gpg
+        mode: "0644"
+
+    # Installed only; joining the tailnet with tag:agent is the owner's sign-in (plan, B0).
+    - name: Tailscale's package repository, through the cache
+      ansible.builtin.deb822_repository:
+        name: tailscale
+        uris: "{{ lan_cache }}/debian/tailscale-apt"
+        suites: "{{ ansible_facts['distribution_release'] }}"
+        components: main
+        signed_by: /usr/share/keyrings/tailscale-archive-keyring.gpg
+
+    - name: Install mise and Tailscale
+      ansible.builtin.apt:
+        name: [mise, tailscale]
+        update_cache: true
+      ignore_errors: "{{ ansible_check_mode }}"
+
+    - name: mise's configuration folder
+      ansible.builtin.file:
+        path: "/home/{{ user }}/.config/mise"
+        state: directory
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0755"
+
+    - name: mise's configuration
+      ansible.builtin.copy:
+        src: files/agent/mise-config.toml
+        dest: "/home/{{ user }}/.config/mise/config.toml"
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0644"
+
+    # npm (and mise's npm backend) fetch packages from the cache's npm remote.
+    - name: npm registry, through the cache
+      ansible.builtin.copy:
+        dest: "/home/{{ user }}/.npmrc"
+        content: "registry={{ lan_cache }}/npm/npm/\n"
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0644"
+
+    - name: mise in the owner's shell
+      ansible.builtin.lineinfile:
+        path: "/home/{{ user }}/.bashrc"
+        line: 'eval "$(mise activate bash)"'
+        create: true
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0644"
+
+    - name: Install Node and the harnesses with mise
+      ansible.builtin.command: mise install --yes
+      become_user: "{{ user }}"
+      environment:
+        HOME: "/home/{{ user }}"
+      register: mise_install
+      changed_when: mise_install.stderr is not search('installed 0 tools|all tools are installed')
+      when: not ansible_check_mode
+
+    # Keeps the "latest" tools current; the harnesses' own updaters do not work in mise's install folders.
+    - name: mise upgrade timer
+      ansible.builtin.copy:
+        dest: "/etc/systemd/system/{{ item.name }}"
+        content: "{{ item.content }}"
+        mode: "0644"
+      loop:
+        - name: mise-upgrade.service
+          content: |
+            [Unit]
+            Description=Upgrade the owner's mise tools (ansible/agent.yml)
+            After=network-online.target
+            Wants=network-online.target
+
+            [Service]
+            Type=oneshot
+            User={{ user }}
+            Environment=HOME=/home/{{ user }}
+            ExecStart=/usr/bin/mise upgrade --yes
+        - name: mise-upgrade.timer
+          content: |
+            [Unit]
+            Description=Daily mise upgrade for the owner's tools
+
+            [Timer]
+            OnCalendar=daily
+            RandomizedDelaySec=1h
+            Persistent=true
+
+            [Install]
+            WantedBy=timers.target
+      loop_control:
+        label: "{{ item.name }}"
+      register: mise_timer
+
+    - name: Run the mise upgrade timer
+      ansible.builtin.systemd_service:
+        name: mise-upgrade.timer
+        state: started
+        enabled: true
+        daemon_reload: "{{ mise_timer is changed }}"

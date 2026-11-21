@@ -33,6 +33,9 @@ When each playbook first ran, and what showed it worked: `NOTES.md`.
 - `proxy.yml` — `proxy-1` only: Docker from Debian, then Traefik from
   `apps/homeserver/traefik/` with the Cloudflare token and the zone from OpenBao
   (`kv/general/cloudflare`; `agents/journal/2026-11-18-build-proxy-1-traefik.md`).
+- `agent.yml` — `agent-1` only: a full upgrade, the owner's user `aman`, Docker, Chromium, gh, Tailscale
+  (installed, not joined) and mise, which installs Node and the coding-agent harnesses through the LAN cache
+  (`files/agent/mise-config.toml`; `agents/journal/2026-11-22-build-agent-1.md`).
 
 ## Adding a host
 

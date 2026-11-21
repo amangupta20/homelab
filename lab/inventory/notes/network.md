@@ -10,5 +10,5 @@ linked journal entries hold the detail.
   `.100`–`.249` at the owner's request.
 - oob-1 and the home VMs (`.55`, `.99`, `.100`, `.123`, `.160`, `.252`–`.254`):
   the read-only recon of 2026-11-14.
-- cache-1 (`.137`): 2026-11-16. proxy-1 (`.138`): 2026-11-18. Both in the linked
-  journal entries.
+- cache-1 (`.137`): 2026-11-16. proxy-1 (`.138`): 2026-11-18. agent-1
+  (`.139`): 2026-11-22. All in the linked journal entries.

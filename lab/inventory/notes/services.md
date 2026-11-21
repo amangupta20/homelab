@@ -17,7 +17,7 @@ linked journal entries hold the detail.
   2026-11-10, the day the owner first signed in to Langfuse through Authentik
   and sent the probe trace; Artifact Keeper 2026-11-16, its first client
   (`oob-1`) 2026-11-17; Traefik on proxy-1 2026-11-18, the dashboard's
-  forward-auth 2026-11-21. Hermes WebUI (second): deployed 2026-10-27,
+  forward-auth and the log dashboard 2026-11-21. Hermes WebUI (second): deployed 2026-10-27,
   updated 2026-11-21.
 
 ## State detail

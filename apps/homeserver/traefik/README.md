@@ -15,7 +15,7 @@ The zone is not in this public repo: `ansible/proxy.yml` reads it from OpenBao
 | File | What it is |
 |---|---|
 | `compose.yaml` | Traefik, read-only root filesystem, every capability dropped except binding ports 80 and 443; Authentik's proxy outpost for forward-auth; traefik-log-dashboard's agent and dashboard; GoAccess and the web server for its report. All but Traefik have no capabilities and no published port, and all are read-only |
-| `goaccess.conf.j2` | GoAccess's configuration: how to read Traefik's JSON log, and the WebSocket for live updates |
+| `goaccess.conf.j2`, `logrotate.conf` | GoAccess's configuration (reading Traefik's JSON log, the WebSocket); weekly rotation of the access log |
 | `traefik.yml.j2` | static configuration: entry points (80 redirects to 443), the wildcard certificate, the file provider, the access log |
 | `routes/<app>.yml.j2` | one route per app: hostname, then the app's `http://<address>:<port>`. Traefik rereads a changed file without a restart |
 

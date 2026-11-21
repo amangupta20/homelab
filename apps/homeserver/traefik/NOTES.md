@@ -101,8 +101,12 @@ Traefik's dashboard. The plan is to try them and keep the ones used (`agents/pla
   Authentik's sign-in, also with a forged `X-authentik-username`. With the outpost stopped they answer 500. The
   agent answers 401 without the token, and with it returns the real log (162 entries from 200 lines). A browser sign-in by
   the owner: works, and shows traffic (2026-11-22).
-- **The access log is not rotated.** It grew to 1.2 MB in three days (`ls`, 2026-11-21). Rotation (`logrotate` plus
-  Traefik's `USR1` signal) is not set up; the agent's behaviour when the file is replaced is not tested.
+- **Access-log rotation** (`logrotate.conf`, set up 2026-11-22): weekly or past 50 MB, eight weeks kept, by
+  `copytruncate`. The log grew about 1.2 MB in three days (`ls`, 2026-11-21). Copy-and-truncate keeps the file in
+  place: GoAccess exits if the log is briefly missing (`verify_inode`, `src/goaccess.c`, v1.12), and Traefik writes
+  with `O_APPEND`, so it needs no signal. A forced rotation on 2026-11-22 (`logrotate --force`): the new file starts
+  at byte 0, GoAccess kept counting (1477 then 1505 requests, read over its WebSocket), and the agent returned the
+  requests sent after it. GoAccess's report only covers the current file, so its history starts again each week.
 - **GoAccess** (MIT), release 1.12 from 2026-09-16 (Docker Hub tags, read 2026-11-21). Set up 2026-11-21 at
   `goaccess.home.<zone>` (Authentik provider and application `goaccess-home`, `homelab-admins` only, on the outpost
   `home`). `goaccess` follows the log and rewrites one HTML report in `/srv/traefik/goaccess`. `goaccess-report`
@@ -135,3 +139,4 @@ When the facts in `README.md` were true from, or were checked.
 - The route clean-up was tested on 2026-11-19 with a planted file.
 - Forward-auth for the dashboard set up on 2026-11-21 (`agents/journal/2026-11-21-home-traefik-dashboard-sign-in.md`).
 - traefik-log-dashboard and GoAccess set up and checked on 2026-11-21 (`agents/journal/2026-11-21-traefik-log-dashboard.md`).
+- Access-log rotation and the forward-auth header settings on 2026-11-22 (`agents/journal/2026-11-22-traefik-tidy-up.md`).

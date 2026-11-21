@@ -72,6 +72,10 @@ For apps without their own single sign-on, and for view-only dashboards (the sig
   sign-in, also with a forged `X-authentik-username`; the outpost's `/outpost.goauthentik.io/ping` answers 204;
   `cache.home` still answers 200. Authentik's API shows the outpost checking in, version 2026.8.5. A browser sign-in
   by the owner: UNTESTED.
+- **Forwarded headers** (2026-11-22): the middleware sets `trustForwardHeader: false`, so Traefik drops every
+  `X-Forwarded-*` header a client sends and sets its own for the outpost, and `maxResponseBodySize` (1 MiB). Left
+  unset, Traefik 3.7 warned about both (`pkg/middlewares/auth/forward.go`). Checked with `curl`: each protected
+  hostname still answers 302, and with a forged `X-Forwarded-Host` the sign-in redirect still names the real host.
 - **To protect another app:** add its provider to the outpost `home` in Authentik, and use `middlewares:
   [authentik]` plus its own `/outpost.goauthentik.io/` router in its route file, as `routes/dashboard.yml.j2` does.
 

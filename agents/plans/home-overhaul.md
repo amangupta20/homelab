@@ -450,8 +450,8 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
        codes and response times per service; AGPL-3.0; the project's changelog lists
        v2.4.1 from 2026-01), and GoAccess (one report page from the access log). All
        three read Traefik's access log or API and edit nothing. Behind Authentik
-       forward-auth (Traefik's ForwardAuth to Authentik's embedded outpost), so they
-       have no passwords of their own.
+       forward-auth through the local outpost (`apps/homeserver/traefik/NOTES.md`,
+       "Forward-auth"), so they have no passwords of their own.
      - **First app:** `cache-1`'s web UI and Grafana, which then sign in through
        Authentik (OIDC) at their `home.<domain>` names instead of with their own
        passwords. apt and Docker clients keep using its address.

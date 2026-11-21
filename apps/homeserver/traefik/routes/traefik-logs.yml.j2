@@ -1,0 +1,22 @@
+# traefik-log-dashboard, the view-only dashboard of Traefik's access log, behind Authentik's forward-auth
+# (members of homelab-admins only; Authentik application `traefik-logs-home`). The dashboard has no login of
+# its own. Rendered by ansible/proxy.yml with the zone from OpenBao. The `authentik` middleware and the
+# `authentik-outpost` service are defined in dashboard.yml.
+http:
+  routers:
+    traefik-logs:
+      rule: "Host(`traefik-logs.home.{{ lab_zone }}`)"
+      entryPoints: [websecure]
+      middlewares: [authentik@file]
+      service: traefik-logs
+    # The outpost's own paths on this hostname: the sign-in callback and sign-out.
+    traefik-logs-outpost:
+      rule: "Host(`traefik-logs.home.{{ lab_zone }}`) && PathPrefix(`/outpost.goauthentik.io/`)"
+      priority: 100
+      entryPoints: [websecure]
+      service: authentik-outpost@file
+  services:
+    traefik-logs:
+      loadBalancer:
+        servers:
+          - url: "http://log-dashboard:3000"

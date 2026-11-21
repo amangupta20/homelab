@@ -14,7 +14,7 @@ The zone is not in this public repo: `ansible/proxy.yml` reads it from OpenBao
 
 | File | What it is |
 |---|---|
-| `compose.yaml` | Traefik, read-only root filesystem, every capability dropped except binding ports 80 and 443; and Authentik's proxy outpost for forward-auth, also read-only, no capabilities, no published port |
+| `compose.yaml` | Traefik, read-only root filesystem, every capability dropped except binding ports 80 and 443; Authentik's proxy outpost for forward-auth; and traefik-log-dashboard's agent and dashboard. Those three are also read-only, with no capabilities and no published port |
 | `traefik.yml.j2` | static configuration: entry points (80 redirects to 443), the wildcard certificate, the file provider, the access log |
 | `routes/<app>.yml.j2` | one route per app: hostname, then the app's `http://<address>:<port>`. Traefik rereads a changed file without a restart |
 
@@ -24,6 +24,7 @@ The zone is not in this public repo: `ansible/proxy.yml` reads it from OpenBao
 |---|---|---|
 | `cache.home.<zone>` | `cache-1`'s Caddy, `http://<cache-1>:80`: Artifact Keeper's web UI, and Grafana at `/grafana/` | Authentik by OIDC, in each app (`apps/homeserver/artifact-keeper/NOTES.md`, "Sign-in") |
 | `traefik.home.<zone>` | Traefik's own dashboard (`api@internal`), at `/dashboard/` | Authentik forward-auth through the local outpost, `homelab-admins` only (`NOTES.md`, "Forward-auth") |
+| `traefik-logs.home.<zone>` | traefik-log-dashboard, `http://log-dashboard:3000` in this stack: the access log as live traffic, status codes and response times per service | Authentik forward-auth through the local outpost, `homelab-admins` only (`NOTES.md`, "Log dashboards") |
 
 apt and Docker clients keep using `http://<cache-1>` directly (`lab/inventory/network.md`). Which
 sign-in an app gets, how the names and certificate work, the token's scope, a browser gotcha and phase 2: `NOTES.md`.
@@ -35,5 +36,5 @@ that no template produces (tested with a planted file; the rest kept serving).
 
 ## Secrets and data
 
-The Cloudflare DNS token and the Authentik outpost's token come from OpenBao as mode-0400 files, never in a
-container's environment; the certificate is not backed up (`NOTES.md`, "Secrets").
+Tokens come from OpenBao: Cloudflare's and the outpost's as mode-0400 files, the log agent's in the root-only `.env`
+(it reads only its environment). The certificate and the log dashboard's data are not backed up (`NOTES.md`, "Secrets").

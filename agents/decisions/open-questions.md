@@ -415,3 +415,8 @@ Page: `lab/systems/router.md`. Agent's notes, 2026-11-13, for the owner to close
   updates go through `agents/skills/update-hermes-webui/` with auto-deploy off);
   `compose.update` set `autoDeploy: false`, read back from the API, and `NOTES.md`
   says so. For the owner to close.
+- `apps/vps/cloudbeaver/README.md` says the Postgres password is not saved in
+  CloudBeaver. CloudBeaver's API (`userConnections`, 2026-11-21) reports
+  `credentialsSaved: true` for the saved connection, and it connected without a
+  password being typed (`initConnection`). Which should it be? Both are left as
+  they are.

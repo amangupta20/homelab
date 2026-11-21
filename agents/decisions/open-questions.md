@@ -404,17 +404,6 @@ Page: `lab/systems/router.md`. Agent's notes, 2026-11-13, for the owner to close
   Langfuse signs in through it, by the owner on 2026-11-10, and
   `apps/homeserver/artifact-keeper/README.md` has a "Sign-in" section through
   Authentik. Read in the repo only. The status line is left as it was.
-- `apps/vps/hermes-webui/NOTES.md`, "Deploying in Dokploy", says auto-deploy is
-  off for that service. Dokploy's API (`compose.one`, 2026-11-20) reports
-  `autoDeploy: true`. The repo has no GitHub webhooks (`gh api
-  repos/<owner>/homelab/hooks` returned none), and Dokploy's deploy list shows no
-  deploy of the service between 2026-10-27 and 2026-11-20, although `main` changed
-  the compose file's folder in that time. So the switch is on and nothing fires
-  it. Which should it be? Both are left as they are.
-  Follow-up 2026-11-21: the owner confirmed off (agreed in session to a plan where
-  updates go through `agents/skills/update-hermes-webui/` with auto-deploy off);
-  `compose.update` set `autoDeploy: false`, read back from the API, and `NOTES.md`
-  says so. For the owner to close.
 - `apps/vps/cloudbeaver/README.md` says the Postgres password is not saved in
   CloudBeaver. CloudBeaver's API (`userConnections`, 2026-11-21) reports
   `credentialsSaved: true` for the saved connection, and it connected without a

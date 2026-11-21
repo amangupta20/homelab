@@ -411,3 +411,7 @@ Page: `lab/systems/router.md`. Agent's notes, 2026-11-13, for the owner to close
   deploy of the service between 2026-10-27 and 2026-11-20, although `main` changed
   the compose file's folder in that time. So the switch is on and nothing fires
   it. Which should it be? Both are left as they are.
+  Follow-up 2026-11-21: the owner confirmed off (agreed in session to a plan where
+  updates go through `agents/skills/update-hermes-webui/` with auto-deploy off);
+  `compose.update` set `autoDeploy: false`, read back from the API, and `NOTES.md`
+  says so. For the owner to close.

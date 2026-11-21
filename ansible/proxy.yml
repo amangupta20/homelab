@@ -19,9 +19,9 @@
     lab_zone: "{{ lookup('pipe', 'bao kv get -mount=kv -field=zone general/cloudflare') }}"
   tasks:
     # Debian 13's own Docker and Compose, as on cache-1 (ansible/cache.yml).
-    - name: Install Docker and Compose from Debian
+    - name: Install Docker, Compose and logrotate from Debian
       ansible.builtin.apt:
-        name: [docker.io, docker-compose]
+        name: [docker.io, docker-compose, logrotate]
         update_cache: true
         cache_valid_time: 3600
 
@@ -59,6 +59,16 @@
         group: root
         mode: "0644"
       register: static_config
+
+    # Weekly rotation of the access log (logrotate.conf); Debian's logrotate.timer runs it daily.
+    - name: Access-log rotation
+      ansible.builtin.copy:
+        src: "{{ stack_src }}/logrotate.conf"
+        dest: /etc/logrotate.d/traefik
+        owner: root
+        group: root
+        mode: "0644"
+        validate: logrotate --debug %s
 
     - name: GoAccess's configuration, with the zone filled in
       ansible.builtin.template:

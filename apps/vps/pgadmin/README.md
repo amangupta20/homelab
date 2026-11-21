@@ -26,7 +26,7 @@ Dokploy's template was not read. Choices:
   `pg_user_dbuser_owner`). The owner's Authentik account reads it from a `.pgpass` in its storage folder, so it is not
   typed each time (the owner's choice; `NOTES.md`, "Sign-in"); pgAdmin's own password store stays off
   (`ALLOW_SAVE_PASSWORD`), and the internal login still types it. With nothing saved, pgAdmin's master password
-  is off (`MASTER_PASSWORD_REQUIRED`), so no sign-in is asked to make one.
+  is off (`MASTER_PASSWORD_REQUIRED`), so an Authentik sign-in is not asked for one; the internal login still is.
 - **Asleep when idle,** behind Sablier (`apps/vps/sablier/README.md`, "Making an app sleep"): stopped after 30 minutes
   without requests, started by the next one, which waits up to 2 minutes. The tailnet allowlist runs before Sablier's
   middleware, so a request from outside the tailnet gets 403 and wakes nothing.

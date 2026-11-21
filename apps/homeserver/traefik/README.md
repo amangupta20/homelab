@@ -14,7 +14,8 @@ The zone is not in this public repo: `ansible/proxy.yml` reads it from OpenBao
 
 | File | What it is |
 |---|---|
-| `compose.yaml` | Traefik, read-only root filesystem, every capability dropped except binding ports 80 and 443; Authentik's proxy outpost for forward-auth; and traefik-log-dashboard's agent and dashboard. Those three are also read-only, with no capabilities and no published port |
+| `compose.yaml` | Traefik, read-only root filesystem, every capability dropped except binding ports 80 and 443; Authentik's proxy outpost for forward-auth; traefik-log-dashboard's agent and dashboard; GoAccess and the web server for its report. All but Traefik have no capabilities and no published port, and all are read-only |
+| `goaccess.conf.j2` | GoAccess's configuration: how to read Traefik's JSON log, and the WebSocket for live updates |
 | `traefik.yml.j2` | static configuration: entry points (80 redirects to 443), the wildcard certificate, the file provider, the access log |
 | `routes/<app>.yml.j2` | one route per app: hostname, then the app's `http://<address>:<port>`. Traefik rereads a changed file without a restart |
 
@@ -24,10 +25,9 @@ The zone is not in this public repo: `ansible/proxy.yml` reads it from OpenBao
 |---|---|---|
 | `cache.home.<zone>` | `cache-1`'s Caddy, `http://<cache-1>:80`: Artifact Keeper's web UI, and Grafana at `/grafana/` | Authentik by OIDC, in each app (`apps/homeserver/artifact-keeper/NOTES.md`, "Sign-in") |
 | `traefik.home.<zone>` | Traefik's own dashboard (`api@internal`), at `/dashboard/` | Authentik forward-auth through the local outpost, `homelab-admins` only (`NOTES.md`, "Forward-auth") |
-| `traefik-logs.home.<zone>` | traefik-log-dashboard, `http://log-dashboard:3000` in this stack: the access log as live traffic, status codes and response times per service | Authentik forward-auth through the local outpost, `homelab-admins` only (`NOTES.md`, "Log dashboards") |
+| `traefik-logs.home.<zone>`, `goaccess.home.<zone>` | the view-only log dashboards in this stack: traefik-log-dashboard (`log-dashboard:3000`) and GoAccess's report (`goaccess-report:8080`, live updates at `/ws`) | Authentik forward-auth through the local outpost, `homelab-admins` only (`NOTES.md`, "Log dashboards") |
 
-apt and Docker clients keep using `http://<cache-1>` directly (`lab/inventory/network.md`). Which
-sign-in an app gets, how the names and certificate work, the token's scope, a browser gotcha and phase 2: `NOTES.md`.
+apt and Docker clients keep using `http://<cache-1>` directly (`lab/inventory/network.md`). Which sign-in an app gets, how the names and certificate work, the token's scope, a browser gotcha and phase 2: `NOTES.md`.
 
 To add an app: copy `routes/cache.yml.j2`, change the router and service names,
 the hostname and the address, and run `ansible-playbook proxy.yml`. To remove one,

@@ -15,7 +15,7 @@
   password, Docker, the homelab VM key), Docker, Chromium 156, gh 2.105.0, Tailscale 1.104.7 (not joined) and
   mise 2026.11.12. mise installed Node 26.13.1, Claude Code 2.1.330, Codex 0.171.0, opencode 1.19.6, pi 1.6.0,
   Bun 1.4.5, oh-my-pi and Playwright 1.65.1 from the cache's npm remote. Hermes is not installed yet.
-- The cache got five new remotes for this (`agents/journal/2026-11-22-cache-npm-node-github-mise.md`).
+- The cache got four new remotes for this (`agents/journal/2026-11-22-cache-npm-node-github-mise.md`).
 
 ## Snapshot / backup taken
 

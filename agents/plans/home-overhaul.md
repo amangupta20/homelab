@@ -378,9 +378,10 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
      with a light desktop) that starts only when an agent or the owner needs it, so the
      owner can watch or take over over VNC on the LAN or tailnet.
    - **Progress:** the VM was built on 2026-11-22 and has the base playbooks (guest
-     agent, LAN cache client), with a second run changing nothing
-     (`agents/journal/2026-11-22-build-agent-1.md`). Still to do: Docker and the
-     harnesses, the desktop, the tailnet, the OpenBao policy, backups, the Orca test.
+     agent, LAN cache client) and `ansible/agent.yml` (the owner's user, Docker, gh,
+     mise with Node and the harnesses, all through the cache), with second runs
+     changing nothing (`agents/journal/2026-11-22-build-agent-1.md`). Still to do:
+     Hermes, the desktop, the tailnet, the OpenBao policy, backups, the Orca test.
    - **Network:** on the main tailnet with its own tag (`tag:agent`, owner 2026-11-22) and
      rules in `homelab-private`'s access policy, so it reaches what its rules allow.
    - **Access** follows `agents/rules/agent-access.md`: convenient by default, with its own

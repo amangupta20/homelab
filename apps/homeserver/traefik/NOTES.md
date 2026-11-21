@@ -102,7 +102,8 @@ Traefik's dashboard. The plan is to try them and keep the ones used (`agents/pla
   agent answers 401 without the token, and with it returns the real log (162 entries from 200 lines). A browser sign-in by
   the owner: works, and shows traffic (2026-11-22).
 - **Access-log rotation** (`logrotate.conf`, set up 2026-11-22): weekly or past 50 MB, eight weeks kept, by
-  `copytruncate`. The log grew about 1.2 MB in three days (`ls`, 2026-11-21). Copy-and-truncate keeps the file in
+  `copytruncate`. Debian's systemd timer runs logrotate once a day (`logrotate.timer`, `OnCalendar=daily`, Debian's
+  logrotate package), so both rules are checked daily. The log grew about 1.2 MB in three days (`ls`, 2026-11-21). Copy-and-truncate keeps the file in
   place: GoAccess exits if the log is briefly missing (`verify_inode`, `src/goaccess.c`, v1.12), and Traefik writes
   with `O_APPEND`, so it needs no signal. A forced rotation on 2026-11-22 (`logrotate --force`): the new file starts
   at byte 0, GoAccess kept counting (1477 then 1505 requests, read over its WebSocket), and the agent returned the

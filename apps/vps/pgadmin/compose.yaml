@@ -13,6 +13,9 @@ services:
       PGADMIN_DISABLE_POSTFIX: "true"
       # Never offer to save database passwords in pgAdmin; only the internal login types them per session.
       PGADMIN_CONFIG_ALLOW_SAVE_PASSWORD: "False"
+      # No master password prompt: with nothing saved there is nothing for it to protect (the Authentik account
+      # reads a .pgpass). An Authentik session then keys on its access token (pgadmin/utils/master_password.py).
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
       # Sign-in through Authentik by OIDC, next to the login above (README, "Sign-in"). Values are Python
       # literals: pgAdmin writes each PGADMIN_CONFIG_* line into its config file. Only members of the
       # Authentik group homelab-admins get in; the application's policy binding in Authentik says the same.

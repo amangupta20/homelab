@@ -36,3 +36,5 @@ When the facts in `README.md` were true from, or were checked.
 - Running since 2026-11-09; the tailnet-only check with a throwaway router ran that day.
 - Sign-in through Authentik set up on 2026-11-20 (`agents/journal/2026-11-20-db-ui-sign-in-authentik.md`).
 - The owner chose a `.pgpass` for the Authentik account on 2026-11-20, so the password is not typed each time.
+- Master password prompt turned off on 2026-11-21, after it asked the owner's Authentik account for one; the
+  behaviour is from `web/pgadmin/utils/master_password.py` and `authenticate/oauth2.py` in the `9.19.0` image.

@@ -1,7 +1,7 @@
 # Artifact Keeper on cache-1
 
-The LAN's pull-through cache for apt packages and container images
-(`agents/plans/package-and-image-cache.md`). One Compose stack on its own VM, `cache-1`
+The LAN's pull-through cache for apt packages, container images, npm packages
+and plain files (`agents/plans/package-and-image-cache.md`). One Compose stack on its own VM, `cache-1`
 (`iac/`), at `http://<cache-1>` on the LAN only; the address is in
 `lab/inventory/network.md`.
 

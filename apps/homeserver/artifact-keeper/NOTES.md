@@ -7,7 +7,7 @@ The sources, reasons, tests and gotchas behind `README.md`.
 | File | What it is |
 |---|---|
 | `compose.yaml` | backend, PostgreSQL (with TLS, as upstream), web UI and Caddy, trimmed from upstream's `docker-compose.yml` at commit `825b75e9`; plus Prometheus, node-exporter and Grafana ("Dashboard") |
-| `Caddyfile` | plain HTTP on port 80: the API, the registry (`/v2`) and the Debian format go to the backend, `/grafana/` to Grafana, the rest to the web UI |
+| `Caddyfile` | plain HTTP on port 80: the API, the registry (`/v2`), the Debian, npm and generic formats go to the backend, `/grafana/` to Grafana, the rest to the web UI |
 | `prometheus.yml` | what Prometheus collects: the backend's metrics listener and node-exporter |
 | `grafana/` | Grafana's data source and the dashboard, `grafana/dashboards/cache.json`, provisioned read-only |
 | `init-pg-ssl.sh` | upstream's script that turns on TLS in PostgreSQL at first start, unchanged |

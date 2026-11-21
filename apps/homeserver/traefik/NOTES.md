@@ -96,7 +96,7 @@ Traefik's dashboard. The plan is to try them and keep the ones used (`agents/pla
 - **Checked on 2026-11-21** (`curl`): without a session, `/`, `/api/agents` and `/index.html` answer 302 to
   Authentik's sign-in, also with a forged `X-authentik-username`. With the outpost stopped they answer 500. The
   agent answers 401 without the token, and with it returns the real log (162 entries from 200 lines). A browser sign-in by
-  the owner: UNTESTED.
+  the owner: works, and shows traffic (2026-11-22).
 - **The access log is not rotated.** It grew to 1.2 MB in three days (`ls`, 2026-11-21). Rotation (`logrotate` plus
   Traefik's `USR1` signal) is not set up; the agent's behaviour when the file is replaced is not tested.
 - **GoAccess** (MIT), release 1.12 from 2026-09-16 (Docker Hub tags, read 2026-11-21). Set up 2026-11-21 at
@@ -113,7 +113,7 @@ Traefik's dashboard. The plan is to try them and keep the ones used (`agents/pla
 - **GoAccess checked on 2026-11-21** (`curl`): without a session, `/`, `/index.html` and `/ws` (also as a
   WebSocket upgrade) answer 302 to Authentik's sign-in, also with a forged `X-authentik-username`. With the
   outpost stopped, `/` and `/ws` answer 500 after about 8 seconds, while Traefik's lookup of the outpost's name
-  fails. From inside the stack, the WebSocket answers 101. A browser sign-in by the owner: UNTESTED.
+  fails. From inside the stack, the WebSocket answers 101. The owner signed in and saw traffic in a browser (2026-11-22).
 
 ## Not done yet (phase 2)
 

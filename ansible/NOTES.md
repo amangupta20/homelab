@@ -21,6 +21,9 @@ When each playbook in `README.md` first ran, and what showed it worked.
   (cache-1's log), and a second run changed nothing.
 - `proxy.yml`: first ran on 2026-11-18
   (`agents/journal/2026-11-18-build-proxy-1-traefik.md`).
+- `agent.yml`: first ran on `agent-1` on 2026-11-22: a full upgrade with one
+  reboot, every tool answers `--version`, and a second run changed nothing
+  (`agents/journal/2026-11-22-build-agent-1.md`).
 - Pigsty: `--check` against `pigsty.yml` passed on 2026-11-06.
 
 ## History

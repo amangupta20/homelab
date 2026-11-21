@@ -18,16 +18,43 @@
 # this folder's README.
 
 services:
+  # Puts the agent into the home volume, then exits. The WebUI image has no
+  # agent of its own; it runs the one in ~/.hermes/hermes-agent. The copy runs
+  # only when the image's install-stamp.json (its build commit) differs from
+  # the one in the volume, into a temporary folder first, so a failed copy
+  # leaves the old agent in place. The two tags here are the release pair:
+  # change them together, following agents/skills/update-hermes-webui/.
+  agent-src:
+    # v0.23.1, not the newer v0.23.2/v0.23.3 (checked 2026-11-21): both break
+    # tool turns on a custom chat-completions provider that returns encrypted
+    # reasoning (NousResearch/hermes-agent#157091, fix #157528 not merged), and
+    # on v0.23.3 deleting a session fails (nesquena/hermes-webui#9213).
+    image: nousresearch/hermes-agent:v0.23.1
+    restart: "no"
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        set -eu
+        src=/opt/hermes dst=/dst/hermes-agent
+        if [ -f "$$dst/install-stamp.json" ] && [ "$$(cat "$$dst/install-stamp.json")" = "$$(cat "$$src/install-stamp.json")" ]; then
+          echo "agent already current: $$(cat "$$src/install-stamp.json")"; exit 0
+        fi
+        rm -rf "$$dst.new"
+        cp -a "$$src/." "$$dst.new/"
+        rm -rf "$$dst"
+        mv "$$dst.new" "$$dst"
+        echo "agent copied: $$(cat "$$dst/install-stamp.json")"
+    volumes:
+      - hermes-webui-home:/dst
+
   hermes-webui:
-    # Pinned tag, not `latest`: on 2026-10-27 `latest` and `experimental`
-    # were the same moving build, hours old. The image has no agent of its
-    # own; it runs the one in ~/.hermes/hermes-agent, put there once from
-    # nousresearch/hermes-agent v0.22.5 — the release this WebUI version pairs
-    # with. Upgrade the two together (README, "First deploy" and "Upgrading").
-    # 0.52.561 is the first pinned build that installs agent v0.22.5 by itself:
-    # it passes the agent's own `[tool.uv]` overrides to uv, which 0.52.544 did
-    # not (upstream #8524, fixed by #8544).
-    image: ghcr.io/nesquena/hermes-webui:0.52.561
+    # Pinned tag, not `latest`: `latest` and `experimental` move without
+    # warning, so a redeploy could change version under the person using it.
+    # Released versions are checked before each bump (the skill above).
+    image: ghcr.io/nesquena/hermes-webui:0.52.723
+    depends_on:
+      agent-src:
+        condition: service_completed_successfully
     restart: unless-stopped
     # No published port: Dokploy's Traefik is the only way in, through the
     # domain set in Dokploy. `expose` names the port for Traefik; without it

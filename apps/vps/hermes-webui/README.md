@@ -27,5 +27,5 @@ shared password still works too, until the owner drops it (`NOTES.md`, "Sign-in"
   touches this chat and nothing else — UNTESTED, never restored yet.
 
 Everything else, word for word, is in `NOTES.md`: "Derived from", "Sign-in", "Deploying in
-Dokploy", "First deploy: put the agent in the volume", "Troubleshooting", "Upgrading
-(UNTESTED)", "Tested".
+Dokploy", "First deploy: the agent in the volume", "Troubleshooting", "Upgrading",
+"Tested".

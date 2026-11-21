@@ -417,8 +417,9 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
        (`apps/homeserver/traefik/`, `agents/journal/2026-11-18-build-proxy-1-traefik.md`).
        Verified over Tailscale and on the LAN. Since then: the cache's web UI and Grafana sign
        in through Authentik (2026-11-18), Traefik's dashboard is behind forward-auth
-       (2026-11-21), and so is traefik-log-dashboard
-       (`agents/journal/2026-11-21-traefik-log-dashboard.md`). Still open: GoAccess, and Sablier.
+       (2026-11-21), and so are traefik-log-dashboard and GoAccess
+       (`agents/journal/2026-11-21-traefik-log-dashboard.md`). Still open: which log dashboards
+       stay, and Sablier.
      - **Names:** one public Cloudflare record, `*.home.<domain>`, pointing at the
        proxy's LAN address, so any resolver that forwards to the internet answers it,
        and over Tailscale through the subnet route (`agents/ideas/edge-and-security-layers.md`,

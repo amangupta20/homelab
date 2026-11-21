@@ -5,8 +5,8 @@ page over a public domain, no Tailscale or SSH needed. The folder name is the
 same as the upstream project; which Dokploy project it is and who uses it live
 in Dokploy, not in this public repo.
 
-**Status:** deployed on Dokploy — sign-in verified after the latest update,
-a chat turn after it still UNTESTED (`NOTES.md`, "Tested"). Its password comes
+**Status:** deployed on Dokploy — sign-in and a chat turn with a tool checked after the
+latest update (`NOTES.md`, "Tested"). Its password comes
 from OpenBao through Dokploy's secret provider. Backups are not set up yet; the
 deploy and the update are recorded in
 `agents/journal/2026-10-27-deploy-hermes-webui.md` and

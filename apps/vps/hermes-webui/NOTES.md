@@ -185,7 +185,8 @@ update buttons do not apply here.
   `hermes --version` printed v0.23.1; the session count was unchanged (31);
   `/api/auth/status` still had OIDC and password on; the public URL answered
   302 to `/login` and `/api/sessions` 401 (`curl`).
-- Still UNTESTED: a chat turn after the upgrade, the backups below, and a restore.
+- A chat turn with a tool call after the upgrade works (owner, 2026-11-21, answering a request for one that uses a tool).
+- Still UNTESTED: the backups below, and a restore.
 
 ## Dates
 

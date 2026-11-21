@@ -35,3 +35,4 @@ to the end. Not restored.
 - A chat turn with a tool call after the upgrade, by the owner or the instance's user. UNTESTED until then.
 - After the pull request merges: set the Dokploy service's branch back to `main` (no redeploy needed).
 - The stack's real backups are still not set up (`apps/vps/hermes-webui/README.md`).
+- Follow-up 2026-11-21: the owner checked a chat turn with a tool call after the upgrade, and it works. Dokploy is back on `main`.

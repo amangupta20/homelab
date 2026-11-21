@@ -11,6 +11,12 @@
 - `ansible/inventory.yml`: `agent-1` in `xcpng` and `lan_cache_clients`. `common.yml`, `xcpng.yml` and
   `cache-client.yml` run on it: htop and btop, the XCP-ng guest agent, apt and Docker pointed at cache-1.
 
+- `ansible/agent.yml` (same day): a full upgrade and one reboot (kernel 6.12.117), user `aman` (sudo without a
+  password, Docker, the homelab VM key), Docker, Chromium 156, gh 2.105.0, Tailscale 1.104.7 (not joined) and
+  mise 2026.11.12. mise installed Node 26.13.1, Claude Code 2.1.330, Codex 0.171.0, opencode 1.19.6, pi 1.6.0,
+  Bun 1.4.5, oh-my-pi and Playwright 1.65.1 from the cache's npm remote. Hermes is not installed yet.
+- The cache got five new remotes for this (`agents/journal/2026-11-22-cache-npm-node-github-mise.md`).
+
 ## Snapshot / backup taken
 
 None: nothing existing was changed. The plan only added one resource; `run.sh` copied the new state to Garage
@@ -22,9 +28,10 @@ None: nothing existing was changed. The plan only added one resource; `run.sh` c
 - Over SSH: hostname `agent-1`, `eth0` at `.139/24`, 4 CPUs, about 3.9 GB of memory, a 74 GB root file system,
   Secure Boot enabled, `cloud-init status` done, Debian 13.
 - The guest agent is active, and apt lists cache-1 first and Debian second.
-- A second run of the three playbooks changed nothing.
+- A second run of the three playbooks changed nothing, and two runs of `agent.yml` in a row changed nothing.
+- As `aman` over SSH: every tool above answers `--version`; `sudo -n true` and `docker ps` work.
 
 ## Still open
 
-The rest of B0 (`agents/plans/home-overhaul.md`): Docker and the harnesses, the on-demand desktop, the tailnet
-(`tag:agent`; the owner approves its sign-in), the OpenBao policy, backups, and the Orca test.
+The rest of B0 (`agents/plans/home-overhaul.md`): Hermes, the harness sign-ins (the owner's), the on-demand
+desktop, the tailnet (`tag:agent`; the owner approves its sign-in), the OpenBao policy, backups, the Orca test.

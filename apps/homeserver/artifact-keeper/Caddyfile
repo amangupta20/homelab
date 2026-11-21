@@ -1,7 +1,7 @@
 # Artifact Keeper's front door on cache-1: plain HTTP on port 80, LAN only.
 # Routes taken from the project's docker/Caddyfile at commit 825b75e9, cut to
-# what a cache serves: the API and health checks, the OCI registry (Docker) and
-# the Debian format. Everything else goes to the web UI. A format added later
+# what a cache serves: the API and health checks, the OCI registry (Docker),
+# the Debian format, npm and the generic format. Everything else goes to the web UI. A format added later
 # needs its prefix here, or its requests reach the web UI and get an HTML 404.
 {
 	auto_https off
@@ -15,6 +15,9 @@
 	reverse_proxy /v2 backend:8080
 	reverse_proxy /v2/* backend:8080
 	reverse_proxy /debian/* backend:8080
+	# npm packages and plain files (Node's release tarballs, for mise), added 2026-11-22.
+	reverse_proxy /npm/* backend:8080
+	reverse_proxy /general/* backend:8080
 	# Grafana, the cache's dashboard (compose.yaml, "Monitoring").
 	redir /grafana /grafana/
 	reverse_proxy /grafana/* grafana:3000

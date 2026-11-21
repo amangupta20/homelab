@@ -3,8 +3,10 @@
 **Status:** running (`agents/journal/2026-11-09-deploy-db-admin-uis.md`). A web UI for the shared Postgres, reachable from the tailnet only
 (`agents/plans/shared-postgres.md`, "Database UIs"). The owner keeps whichever of pgAdmin and CloudBeaver gets used more.
 
-**Sign-in:** two steps. First Authentik's forward-auth on Traefik (application `cloudbeaver`), for the Authentik group
-`homelab-admins`, on every request; then CloudBeaver's own login (`NOTES.md`, "Sign-in").
+**Sign-in:** once, through Authentik's forward-auth on Traefik (application `cloudbeaver`), for the Authentik group
+`homelab-admins`, on every request. CloudBeaver takes the Authentik username from a header Traefik sets, and puts the
+user in its `admin` team; it can only be reached through Traefik, on its own network (`NOTES.md`, "Sign-in"). Its own
+admin login is still enabled, but sits behind the same Authentik gate: if Authentik is down, CloudBeaver is unreachable.
 
 ## Derived from
 
@@ -13,7 +15,9 @@ The sources and the versions read are in `NOTES.md`.
 Dokploy's template was not read. Choices, the same as pgAdmin's (`apps/vps/pgadmin/README.md`):
 
 - Tailnet only, through Traefik's `ipallowlist`, with the zone's wildcard certificate.
-- The connection is added by hand once, in the UI: host `pg-proxy`, port `5436`, user `dbuser_owner`, database
+- **Postgres through `pg-relay`,** a one-port TCP relay in this stack: CloudBeaver is not on `dokploy-network`, where
+  `pg-proxy` is (`NOTES.md`, "Sign-in"). A new connection needs access granted to the `admin` team.
+- The connection is added by hand once, in the UI: host `pg-relay`, port `5436`, user `dbuser_owner`, database
   `postgres`. Its password is in OpenBao (`kv/general/pigsty`, field `pg_user_dbuser_owner`); do not save it in
   CloudBeaver.
 - **"Show all databases"** is off by default, so only `postgres` appears. It is the provider property

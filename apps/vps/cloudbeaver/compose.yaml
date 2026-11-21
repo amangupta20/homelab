@@ -34,12 +34,15 @@ services:
       - sablier.enable=true
       - sablier.group=cloudbeaver
       - traefik.docker.allownonrunning=true
-      - traefik.docker.network=dokploy-network
+      # Dokploy's isolated deployment: a network named after the app (its appName), holding only this stack and
+      # Traefik, which Dokploy connects after each deploy (NOTES.md, "Sign-in"). Not dokploy-network: any container
+      # there could send the identity headers below straight to CloudBeaver.
+      - traefik.docker.network=cloudbeaver-i45yie
       - traefik.http.routers.cloudbeaver.rule=Host(`${CLOUDBEAVER_HOST:?}`)
       - traefik.http.routers.cloudbeaver.entrypoints=websecure
       # The allowlist runs first, so nobody outside the tailnet can wake it; then Authentik's sign-in, so nobody
       # without it can either (README, "Sign-in").
-      - traefik.http.routers.cloudbeaver.middlewares=cloudbeaver-tailnet,cloudbeaver-authentik,cloudbeaver-sablier
+      - traefik.http.routers.cloudbeaver.middlewares=cloudbeaver-tailnet,cloudbeaver-identity,cloudbeaver-authentik,cloudbeaver-sablier
       # The zone's wildcard certificate, over DNS-01 (lab/systems/vps.md, "Certificates").
       - traefik.http.routers.cloudbeaver.tls.certresolver=cloudflare
       - traefik.http.routers.cloudbeaver.tls.domains[0].main=${ZONE:?}
@@ -51,9 +54,21 @@ services:
       # Forward-auth through Authentik's embedded outpost (application `cloudbeaver`, single-application mode).
       # The address is the Authentik server container on dokploy-network; Dokploy named it
       # (apps/vps/authentik/README.md, "Deploying", step 4). Its "server" alias is not unique on that network.
-      # A gate only: CloudBeaver's own login still follows (NOTES.md, "Sign-in").
+      # It also signs CloudBeaver in: Authentik's username is copied onto the request, replacing any the client sent,
+      # and CloudBeaver's reverseProxy provider reads it (NOTES.md, "Sign-in").
       - traefik.http.middlewares.cloudbeaver-authentik.forwardauth.address=http://compose-reboot-optical-matrix-gsjyeo-server-1:9000/outpost.goauthentik.io/auth/traefik
       # The outpost's own paths on this hostname (the sign-in callback, sign-out) go to Authentik, tailnet only.
+      - traefik.http.middlewares.cloudbeaver-authentik.forwardauth.authResponseHeaders=X-authentik-username
+      # Every identity header CloudBeaver reads (RPAuthProvider, 26.2.5) is removed from the client's request (an
+      # empty value deletes it), and the team is set here: only homelab-admins pass Authentik, so all are admins.
+      - traefik.http.middlewares.cloudbeaver-identity.headers.customrequestheaders.X-authentik-username=
+      - traefik.http.middlewares.cloudbeaver-identity.headers.customrequestheaders.X-User=
+      - traefik.http.middlewares.cloudbeaver-identity.headers.customrequestheaders.X-Role=
+      - traefik.http.middlewares.cloudbeaver-identity.headers.customrequestheaders.X-Role-TE=
+      - traefik.http.middlewares.cloudbeaver-identity.headers.customrequestheaders.X-First-name=
+      - traefik.http.middlewares.cloudbeaver-identity.headers.customrequestheaders.X-Last-name=
+      - traefik.http.middlewares.cloudbeaver-identity.headers.customrequestheaders.X-Full-name=
+      - traefik.http.middlewares.cloudbeaver-identity.headers.customrequestheaders.X-Team=admin
       - traefik.http.routers.cloudbeaver-outpost.rule=Host(`${CLOUDBEAVER_HOST:?}`) && PathPrefix(`/outpost.goauthentik.io/`)
       - traefik.http.routers.cloudbeaver-outpost.priority=100
       - traefik.http.routers.cloudbeaver-outpost.entrypoints=websecure
@@ -69,8 +84,46 @@ services:
       - traefik.http.middlewares.cloudbeaver-sablier.plugin.sablier.dialTimeout=2s
       # Holds the request while it starts, instead of a waiting page.
       - traefik.http.middlewares.cloudbeaver-sablier.plugin.sablier.blocking.timeout=2m
+    # No networks listed: Dokploy adds only the app's own network (above).
+
+  # Postgres for CloudBeaver: it is no longer on dokploy-network, where pg-proxy is. This relay is on both and
+  # forwards one TCP port, so nothing on dokploy-network can reach CloudBeaver's HTTP port through it.
+  pg-relay:
+    # The image pg-proxy pins (apps/vps/pg-proxy/compose.yaml).
+    image: haproxy:3.2.26-alpine
+    restart: unless-stopped
+    expose:
+      - "5436"
+    configs:
+      - source: pg-relay-cfg
+        target: /usr/local/etc/haproxy/haproxy.cfg
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "5436"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     networks:
       - dokploy-network
+
+configs:
+  pg-relay-cfg:
+    content: |
+      # Docker's DNS, so the relay starts even while pg-proxy is down and follows it when it moves.
+      resolvers docker
+        nameserver dns 127.0.0.11:53
+
+      defaults
+        mode tcp
+        timeout connect 5s
+        timeout client 30m
+        timeout server 30m
+
+      frontend postgres-admin
+        bind :5436
+        default_backend pg-proxy
+
+      backend pg-proxy
+        server pg-proxy pg-proxy:5436 check inter 10s resolvers docker init-addr none
 
 volumes:
   cloudbeaver-workspace:

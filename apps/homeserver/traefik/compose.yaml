@@ -66,3 +66,55 @@ services:
     cap_drop: [ALL]
     security_opt:
       - no-new-privileges:true
+
+  # traefik-log-dashboard (AGPL-3.0), a view-only dashboard of the access log: its agent parses the log and
+  # serves it over an API; the dashboard below shows it at traefik-logs.home.<zone>, behind Authentik
+  # (routes/traefik-logs.yml.j2, NOTES.md "Log dashboards"). Release 3.1.1, pinned by digest (Docker Hub, read
+  # 2026-11-21), pulled through the LAN cache's Docker Hub mirror. Both images run as root; with every
+  # capability dropped root can read only what root owns, which is the access log, and the root filesystem is read-only.
+  log-agent:
+    image: docker.io/hhftechnology/traefik-log-dashboard-agent:3.1.1@sha256:4c9853d486a0e3108678fd00aeda86ce1b269c0ae1b1c2ab9e5c81760e12d53a
+    restart: unless-stopped
+    environment:
+      TRAEFIK_LOG_DASHBOARD_ACCESS_PATH: /logs/access.log
+      # Traefik's own log goes to stdout (docker logs), not a file; the agent only reports it missing.
+      TRAEFIK_LOG_DASHBOARD_ERROR_PATH: /logs/traefik.log
+      TRAEFIK_LOG_DASHBOARD_LOG_FORMAT: json
+      # Its "system" view would show this container's CPU and memory, not the VM's; off.
+      TRAEFIK_LOG_DASHBOARD_SYSTEM_MONITORING: "false"
+      # Without a token the agent serves the log to anyone on this network, so a missing token stops the
+      # stack instead (ansible/proxy.yml writes it into .env from OpenBao).
+      TRAEFIK_LOG_DASHBOARD_AUTH_TOKEN: "${LOG_AGENT_TOKEN:?}"
+    volumes:
+      - /srv/traefik/log:/logs:ro
+      # Its read position in the log; losing it only means the log is read from the start again.
+      - /srv/traefik/log-agent:/data
+    # No published port: only the dashboard talks to it (port 5000).
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+
+  log-dashboard:
+    image: docker.io/hhftechnology/traefik-log-dashboard:3.1.1@sha256:f982908e6d0665fd361eeef893d50d7743be09e1c95d3a087d4f7d47a651bead
+    restart: unless-stopped
+    environment:
+      AGENT_1_NAME: proxy-1
+      AGENT_1_URL: http://log-agent:5000
+      AGENT_1_TOKEN: "${LOG_AGENT_TOKEN:?}"
+      # Agents come from these variables only; the UI cannot add one.
+      DASHBOARD_AGENTS_ENV_ONLY: "true"
+      # On by default, the dashboard sends client addresses to ipwho.is and ip-api.com for the map. Every
+      # client here is on the LAN or the tailnet, so the map would be empty anyway; off, so nothing leaves.
+      GEOIP_LOOKUP_ENABLED: "false"
+      SHOW_DEMO_PAGE: "false"
+    volumes:
+      # Its SQLite database (agent list from the variables above, alert settings); nothing to back up.
+      - /srv/traefik/log-dashboard:/data
+    # No published port: Traefik reaches it on this network (port 3000).
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true

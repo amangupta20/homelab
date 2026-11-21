@@ -6,8 +6,9 @@
 # The zone and the Cloudflare token are read from OpenBao on this machine
 # (kv/general/cloudflare, fields zone and zonedns), and so are Authentik's
 # address and the outpost's token (kv/general/authentik field domain,
-# kv/homelab/authentik-outpost-home field token); the tokens are written to
-# proxy-1 as secret files and never appear in the output.
+# kv/homelab/authentik-outpost-home field token), and the log dashboard's
+# agent token (kv/homelab/traefik-log-dashboard field token); the tokens are
+# written to proxy-1 as root-only files and never appear in the output.
 - name: Traefik on proxy-1
   hosts: proxy-1
   become: true
@@ -37,6 +38,8 @@
         - { path: "{{ stack_dir }}/secrets", mode: "0700" }
         - { path: "{{ data_dir }}/letsencrypt", mode: "0700" }
         - { path: "{{ data_dir }}/log", mode: "0750" }
+        - { path: "{{ data_dir }}/log-agent", mode: "0700" }
+        - { path: "{{ data_dir }}/log-dashboard", mode: "0700" }
 
     - name: Compose file
       ansible.builtin.copy:
@@ -108,14 +111,18 @@
       no_log: true
       register: outpost_token
 
-    # Compose reads .env for ${AUTHENTIK_HOST}; Authentik's domain stays out of the repo.
-    - name: Authentik's address for the outpost
+    # Compose reads .env for ${AUTHENTIK_HOST} and ${LOG_AGENT_TOKEN}: Authentik's domain stays out of the
+    # repo, and the log agent's token is a secret, so the file is root's only. Compose stops if either is missing.
+    - name: Authentik's address and the log agent's token
       ansible.builtin.copy:
         dest: "{{ stack_dir }}/.env"
-        content: "AUTHENTIK_HOST=https://{{ lookup('pipe', 'bao kv get -mount=kv -field=domain general/authentik') }}\n"
+        content: |
+          AUTHENTIK_HOST=https://{{ lookup('pipe', 'bao kv get -mount=kv -field=domain general/authentik') }}
+          LOG_AGENT_TOKEN={{ lookup('pipe', 'bao kv get -mount=kv -field=token homelab/traefik-log-dashboard') }}
         owner: root
         group: root
-        mode: "0644"
+        mode: "0600"
+      no_log: true
 
     - name: Start or update the stack
       ansible.builtin.command:

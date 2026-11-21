@@ -12,6 +12,8 @@ Upstream base for later modifications (re-check these when upgrading):
 | nesquena/hermes-webui `docker_init.bash` | tag v0.52.544, and again at the `0.52.561` build's revision `4d975aa` | the image has no agent of its own: it looks for one in `~/.hermes/hermes-agent` or `/opt/hermes` and serves without it; from `0.52.556` it also passes the agent's uv overrides to the install |
 | nesquena/hermes-webui `docs/docker.md` | main, read 2026-10-27 | release-pair rule (WebUI and agent pinned and upgraded together) |
 | nesquena/hermes-webui issue #8113, #8524, #8544 | read 2026-10-27 | why the agent install failed on an older tag: the venv must be built on Python 3.14 (#8113, fixed in 0.52.544), and from 0.52.556 the WebUI also passes the agent's own `[tool.uv]` override table to uv (#8524, fixed by #8544). 0.52.561 is the pinned tag used here — the first that needs no workaround |
+| nesquena/hermes-webui release `v0.52.723` ("Known issues"), issue #9213; NousResearch/hermes-agent releases `v0.23.1`–`v0.23.3`, issue #157091 and PR #157528 (open) | read 2026-11-21 | the pair in `compose.yaml`: WebUI 0.52.723 with agent v0.23.1, because v0.23.2 and v0.23.3 break tool turns on a custom chat-completions provider with encrypted reasoning (#157091), and v0.23.3 cannot delete sessions (#9213) |
+| The `nousresearch/hermes-agent:v0.22.5` and `v0.23.1` images | 2026-11-21 | `/opt/hermes` holds the whole agent, venv included (2.2–2.3 GB); its `install-stamp.json` names the build commit, which `agent-src` compares |
 | This repo's `agents/skills/deploy-on-dokploy/` | 2026-10-27 | file layout, placeholder rules, inventory + journal follow-ups |
 | nesquena/hermes-webui `api/auth_oidc.py`, `api/auth.py`, `static/login.js`, README | tag v0.52.702, read 2026-11-20; the same files inside the running `0.52.561` image | native OIDC: the `HERMES_WEBUI_OIDC_*` names, on only when issuer, client ID, allow claim and allow values are all set; redirect URI defaults to `<request base>/api/auth/oidc/callback`; issuer must be `https` and resolve to a public address; with no password set, the login page hides the password form (#7056) |
 
@@ -25,15 +27,25 @@ Choices that differ from those sources, and why:
   agent comes from. That would hand over the owner's sessions and memory —
   the thing this stack exists to avoid — so the agent is put into the fresh
   volume once instead ("First deploy").
-- **Pinned tag, not `latest` or `experimental`.** Checked in ghcr on
+- **Pinned tags, not `latest` or `experimental`.** Checked in ghcr on
   2026-10-27: both of those tags resolved to one manifest labelled `0.52.561`
-  (revision `4d975aa`), and ghcr served a numbered `0.52.561` tag for it too.
-  This stack pins the number, so a redeploy cannot silently change version and
-  a rollback is one line. The newest *git* release tag is still `v0.52.544`,
-  which is why the pin came from the registry rather than a release. 0.52.544 was tried
-  first and dropped: it installs agent v0.22.5 only with a workaround for
-  upstream #8524 (see Troubleshooting). Both images used here are published
-  for `arm64` (checked in ghcr 2026-10-27).
+  (revision `4d975aa`), so they move without warning. This stack pins numbers,
+  so a redeploy cannot silently change version and a rollback is a revert.
+  Since 2026-11-21 both pins come from stable releases (`v0.52.723`, agent
+  `v0.23.1`); the first pin, `0.52.561`, came from the registry because the
+  newest git release then, `v0.52.544`, needed a workaround for upstream #8524
+  (see Troubleshooting). Both images are published for `arm64` (`docker
+  manifest inspect`, 2026-11-21).
+- **The agent is copied in by the stack** (`agent-src`, 2026-11-21). Upstream's
+  two-container file shares the agent image's `/opt/hermes` through a volume;
+  here a one-shot service copies it into the home volume instead, so the
+  WebUI keeps one volume and both halves of the release pair are pinned in
+  one file. It copies only when the image's `install-stamp.json` differs from
+  the volume's (a 2.3 GB copy otherwise runs on every deploy), into
+  `hermes-agent.new` first, so a failed copy keeps the old agent. Tested
+  locally with a stand-in image on 2026-11-21: first copy, skip on the same
+  stamp, replace on a new stamp, other files in the volume kept, the WebUI
+  waiting for it (`service_completed_successfully`).
 - **Password required.** Upstream defaults it to empty for localhost use.
   `${HERMES_WEBUI_PASSWORD:?}` makes the deploy fail when it is unset. CI
   validates with `.env.example` (`.github/workflows/ci.yml`).
@@ -71,7 +83,9 @@ Follows `agents/skills/deploy-on-dokploy/` steps 4–7 and 9, with these differe
 
 - **Source:** this repo, branch `main`, compose path
   `apps/vps/hermes-webui/compose.yaml`. Auto-deploy off — downtime on every
-  push to `main` helps nobody.
+  push to `main` helps nobody. Dokploy had it on until 2026-11-21, when the
+  owner confirmed off and it was set through the API (`compose.update`,
+  `autoDeploy: false`). Updates follow `agents/skills/update-hermes-webui/`.
 - **Environment (step 4):** `HERMES_WEBUI_PASSWORD` and the four sign-in values
   (`.env.example`), whose values live in OpenBao at the path named there.
   Dokploy reads them at deploy time through its OpenBao provider, as
@@ -82,53 +96,37 @@ Follows `agents/skills/deploy-on-dokploy/` steps 4–7 and 9, with these differe
   through Authentik as well as the password ("Sign-in"). Whether Dokploy
   joins the service to its Traefik network on its own is UNTESTED.
 
-## First deploy: put the agent in the volume
+## First deploy: the agent in the volume
 
-This image ships the WebUI only. It finds an agent in
-`~/.hermes/hermes-agent` or `/opt/hermes`; with neither it still serves, and
-the page reports that Hermes is not importable. The fresh volume has neither,
-so the agent goes in once, after the first deploy has created the volume.
-Copying it is not enough on the older 0.52.544 image — there the install of
-its dependencies fails and the log shows the agent directory as `[ok]` while
-imports fail (Troubleshooting) — which is why the tag below is 0.52.561.
+This image ships the WebUI only. It finds an agent in `~/.hermes/hermes-agent`
+or `/opt/hermes`; with neither it still serves, and the page reports that
+Hermes is not importable. Since 2026-11-21 the `agent-src` service puts the
+agent there on every deploy that changes it (above, "Choices"). Until then it
+was copied by hand once, on 2026-10-27, with `docker run --rm --entrypoint sh
+-v <home volume>:/dst nousresearch/hermes-agent:v0.22.5 -c 'cp -a /opt/hermes/.
+/dst/hermes-agent/'`, which is what `agent-src` now does.
 
-On the VPS, into the `hermes-webui-home` volume:
-
-```bash
-docker volume ls | grep hermes-webui-home   # Dokploy prefixes the name
-docker run --rm --entrypoint sh \
-  -v <volume name from above>:/dst \
-  nousresearch/hermes-agent:v0.22.5 \
-  -c 'cp -a /opt/hermes/. /dst/hermes-agent/'
-```
-
-`/opt/hermes` is where upstream's two-container file takes the agent source
-from the same image. The WebUI installs the agent's Python dependencies from
-that copy into its own venv on the next start — nothing to run by hand.
-
-Then restart the service in Dokploy and follow its log. The expected lines are,
+The WebUI installs the agent's Python dependencies from that copy into its
+own venv on the next start — nothing to run by hand. The expected log lines,
 in order:
 
 - `-- Auto-detected UID` and the init script switching to `hermeswebui`;
-- `!! WARNING: hermes-agent source mount is writable from the WebUI container`
-  — expected in this one-container shape: the agent lives in the volume the
-  WebUI owns, so it cannot also be a separate read-only mount. The warning is
-  aimed at the two-container layout, where the agent is its own container;
-- `== Existing virtual environment cannot satisfy the staged agent — rebuilding`
-  on the first restart (the image's venv is Python 3.12, the agent needs
-  3.14 — upstream #8113, fixed in this tag);
-- `Using CPython 3.14` then `uv pip install` resolving **around 100 packages**
-  and ending without `No solution found`;
-- `[ok]` for the agent dir, and no `!! WARNING: the Hermes agent is installed
-  but is NOT importable` line;
+- on an agent change, a new venv: `Using CPython 3.14` (the agent needs 3.14 —
+  upstream #8113), then `Applying hermes-agent's [tool.uv] override-dependencies`
+  and `uv pip install` resolving **around 100 packages** without
+  `No solution found`;
+- `Hermes agent critical imports verified` and `[ok]` for the agent dir, and no
+  `!! WARNING: the Hermes agent is installed but is NOT importable` line;
 - `Hermes Web UI listening on http://0.0.0.0:8787`.
 
-A resolution that installs ~58 packages instead of ~100 means the 3.14 gate
-was dropped; `No solution found` naming `pillow` means the image is older than
-0.52.556 (Troubleshooting).
+On 0.52.561 the log also showed `!! WARNING: hermes-agent source mount is
+writable from the WebUI container`, expected in this one-container shape. A
+resolution of ~58 packages instead of ~100 means the 3.14 gate was dropped;
+`No solution found` naming `pillow` means the image is older than 0.52.556
+(Troubleshooting).
 
-After that, inside the WebUI (recorded in the journal entry, never here):
-pick the model/provider, set up memory, confirm the password login works
+After the very first deploy, inside the WebUI (recorded in the journal entry,
+never here): pick the model/provider, set up memory, confirm the login works
 from outside the tailnet.
 
 ## Troubleshooting
@@ -151,17 +149,13 @@ visible in the Dokploy log. Neither should appear on 0.52.561:
   releases from 0.52.556 on. The same failure means the image tag was moved
   back below 0.52.556.
 
-## Upgrading (UNTESTED)
+## Upgrading
 
-Change the WebUI tag in one commit, together with the agent version named in
-the compose comment: a WebUI release and the agent release it was made
-against. After redeploying, replace `hermes-agent/` in the volume by
-repeating the copy above with the new agent tag (remove the old directory
-first). The WebUI's own "update agent" button does not apply here.
-
-Upgrade to a numbered tag, not `latest` or `experimental`: on 2026-10-27 both
-of those followed the newest build (`0.52.561`), so they move without warning
-and a redeploy could change version under the person using it.
+Follow `agents/skills/update-hermes-webui/`: check the newest releases, their
+known issues and open bug reports, choose the pair, back up, bump both pins,
+deploy, verify. Done once on 2026-11-21, 0.52.561 + v0.22.5 to 0.52.723 +
+v0.23.1 (`agents/journal/2026-11-21-update-hermes-webui.md`). The WebUI's own
+update buttons do not apply here.
 
 ## Tested
 
@@ -185,7 +179,13 @@ and a redeploy could change version under the person using it.
   `docker exec -it -u hermeswebui -e HOME=/home/hermeswebui <container>
   /app/venv/bin/hermes model`, which writes `~/.hermes/config.yaml` and `.env`
   in the volume (owner, 2026-10-27).
-- Still UNTESTED: upgrading either image, the backups below, and a restore.
+- Upgrade to 0.52.723 + agent v0.23.1 on 2026-11-21: `agent-src` logged `agent
+  copied` with `displayVersion` 0.23.1; the WebUI resolved 103 packages, logged
+  `Hermes agent critical imports verified` and became healthy with no restarts;
+  `hermes --version` printed v0.23.1; the session count was unchanged (31);
+  `/api/auth/status` still had OIDC and password on; the public URL answered
+  302 to `/login` and `/api/sessions` 401 (`curl`).
+- Still UNTESTED: a chat turn after the upgrade, the backups below, and a restore.
 
 ## Dates
 
@@ -193,3 +193,4 @@ When the facts in `README.md` were true from, or were checked.
 
 - Deployed on Dokploy on 2026-10-27; the owner checked the login, provider and chat that day.
 - Sign-in through Authentik set up on 2026-11-20 (`agents/journal/2026-11-20-hermes-webui-sign-in-authentik.md`).
+- Upgraded to WebUI 0.52.723 and agent v0.23.1 on 2026-11-21; Dokploy auto-deploy turned off the same day.

@@ -1,0 +1,34 @@
+# GoAccess, the second view-only dashboard of Traefik's access log, behind Authentik's forward-auth (members of
+# homelab-admins only; Authentik application `goaccess-home`). Neither the report nor its WebSocket has a login of
+# its own. Rendered by ansible/proxy.yml with the zone from OpenBao. The `authentik` middleware and the
+# `authentik-outpost` service are defined in dashboard.yml.
+http:
+  routers:
+    # The report page, a static file served by goaccess-report.
+    goaccess:
+      rule: "Host(`goaccess.home.{{ lab_zone }}`)"
+      entryPoints: [websecure]
+      middlewares: [authentik@file]
+      service: goaccess-report
+    # GoAccess's WebSocket, which pushes live updates to the page (goaccess.conf, ws-url).
+    goaccess-ws:
+      rule: "Host(`goaccess.home.{{ lab_zone }}`) && Path(`/ws`)"
+      priority: 90
+      entryPoints: [websecure]
+      middlewares: [authentik@file]
+      service: goaccess-ws
+    # The outpost's own paths on this hostname: the sign-in callback and sign-out.
+    goaccess-outpost:
+      rule: "Host(`goaccess.home.{{ lab_zone }}`) && PathPrefix(`/outpost.goauthentik.io/`)"
+      priority: 100
+      entryPoints: [websecure]
+      service: authentik-outpost@file
+  services:
+    goaccess-report:
+      loadBalancer:
+        servers:
+          - url: "http://goaccess-report:8080"
+    goaccess-ws:
+      loadBalancer:
+        servers:
+          - url: "http://goaccess:7890"

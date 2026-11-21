@@ -99,11 +99,25 @@ Traefik's dashboard. The plan is to try them and keep the ones used (`agents/pla
   the owner: UNTESTED.
 - **The access log is not rotated.** It grew to 1.2 MB in three days (`ls`, 2026-11-21). Rotation (`logrotate` plus
   Traefik's `USR1` signal) is not set up; the agent's behaviour when the file is replaced is not tested.
-- **GoAccess:** not set up yet.
+- **GoAccess** (MIT), release 1.12 from 2026-09-16 (Docker Hub tags, read 2026-11-21). Set up 2026-11-21 at
+  `goaccess.home.<zone>` (Authentik provider and application `goaccess-home`, `homelab-admins` only, on the outpost
+  `home`). `goaccess` follows the log and rewrites one HTML report in `/srv/traefik/goaccess`. `goaccess-report`
+  (busybox's httpd) serves that page, and Traefik routes `/ws` to GoAccess's WebSocket for live updates, behind the
+  same forward-auth. GoAccess refuses a WebSocket handshake whose `Origin` is another site (400, tested locally).
+  GoAccess has no preset for Traefik's JSON log, so `goaccess.conf.j2` maps the fields; all 1,364 lines of the real
+  log parsed with it, none failed (a one-off JSON report, 2026-11-21). Nothing is persisted: it rereads the whole
+  log on every start.
+- **No browsers, systems or referrers in GoAccess.** Traefik keeps no request headers in the JSON log by default,
+  so there is no User-Agent or Referer to read. Keeping those two headers (`accessLog.fields.headers`) would fill
+  those panels; not done, since it changes what the log holds about every visitor.
+- **GoAccess checked on 2026-11-21** (`curl`): without a session, `/`, `/index.html` and `/ws` (also as a
+  WebSocket upgrade) answer 302 to Authentik's sign-in, also with a forged `X-authentik-username`. With the
+  outpost stopped, `/` and `/ws` answer 500 after about 8 seconds, while Traefik's lookup of the outpost's name
+  fails. From inside the stack, the WebSocket answers 101. A browser sign-in by the owner: UNTESTED.
 
 ## Not done yet (phase 2)
 
-- **GoAccess**, the second log dashboard (above).
+- **Which log dashboards stay:** both are on trial; drop the one not used.
 - **Sablier wakeups.** No sleepable app at home yet; when there is one, pin the
   plugin and keep `plugins-storage` on disk (`agents/plans/home-overhaul.md`).
 - **Pulling through the cache.** `proxy-1` pulls Traefik's image and its apt
@@ -116,4 +130,4 @@ When the facts in `README.md` were true from, or were checked.
 
 - The route clean-up was tested on 2026-11-19 with a planted file.
 - Forward-auth for the dashboard set up on 2026-11-21 (`agents/journal/2026-11-21-home-traefik-dashboard-sign-in.md`).
-- traefik-log-dashboard set up and checked on 2026-11-21 (`agents/journal/2026-11-21-traefik-log-dashboard.md`).
+- traefik-log-dashboard and GoAccess set up and checked on 2026-11-21 (`agents/journal/2026-11-21-traefik-log-dashboard.md`).

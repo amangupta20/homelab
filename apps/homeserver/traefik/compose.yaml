@@ -118,3 +118,38 @@ services:
     cap_drop: [ALL]
     security_opt:
       - no-new-privileges:true
+
+  # GoAccess (MIT), the second view-only dashboard: it follows the access log and rewrites one HTML report, and
+  # pushes live updates over a WebSocket (goaccess.conf). Shown at goaccess.home.<zone> behind Authentik
+  # (routes/goaccess.yml.j2). Release 1.12, pinned by digest (Docker Hub, read 2026-11-21). Runs as root, with
+  # no capabilities and a read-only root filesystem, like the log dashboard above.
+  goaccess:
+    image: docker.io/allinurl/goaccess:1.12@sha256:9e6dfd4abce94bd7c2907c1840b7b35f666587d56b24ffbb930b4782a87ea172
+    restart: unless-stopped
+    command: ["--config-file=/etc/goaccess/goaccess.conf", "/logs/access.log"]
+    volumes:
+      - ./goaccess.conf:/etc/goaccess/goaccess.conf:ro
+      - /srv/traefik/log:/logs:ro
+      # The report; rebuilt from the whole log on every start, so nothing to back up.
+      - /srv/traefik/goaccess:/report
+    # No published port: Traefik reaches the WebSocket on this network (port 7890).
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+
+  # Serves GoAccess's report page; GoAccess itself serves only the WebSocket. Busybox's httpd, the official image,
+  # pinned by digest (Docker Hub, read 2026-11-21).
+  goaccess-report:
+    image: docker.io/library/busybox:1.38.0-musl@sha256:80e38f9a1b39188b8bdb28879178edb322a4402b081a9aedda1924609decd6f6
+    restart: unless-stopped
+    command: ["httpd", "-f", "-p", "8080", "-h", "/www"]
+    volumes:
+      - /srv/traefik/goaccess:/www:ro
+    # No published port: Traefik reaches it on this network (port 8080).
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true

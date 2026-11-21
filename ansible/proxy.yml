@@ -40,6 +40,7 @@
         - { path: "{{ data_dir }}/log", mode: "0750" }
         - { path: "{{ data_dir }}/log-agent", mode: "0700" }
         - { path: "{{ data_dir }}/log-dashboard", mode: "0700" }
+        - { path: "{{ data_dir }}/goaccess", mode: "0700" }
 
     - name: Compose file
       ansible.builtin.copy:
@@ -58,6 +59,15 @@
         group: root
         mode: "0644"
       register: static_config
+
+    - name: GoAccess's configuration, with the zone filled in
+      ansible.builtin.template:
+        src: "{{ stack_src }}/goaccess.conf.j2"
+        dest: "{{ stack_dir }}/goaccess.conf"
+        owner: root
+        group: root
+        mode: "0644"
+      register: goaccess_config
 
     # Traefik rereads these without a restart (file provider, watch).
     - name: One route file per app
@@ -139,6 +149,16 @@
         chdir: "{{ stack_dir }}"
       when:
         - static_config.changed or cf_token.changed
+        - not compose_up.changed | default(false)
+        - not ansible_check_mode
+
+    # GoAccess reads its configuration only at start.
+    - name: Restart GoAccess when its configuration changed
+      ansible.builtin.command:
+        cmd: docker compose restart goaccess
+        chdir: "{{ stack_dir }}"
+      when:
+        - goaccess_config.changed
         - not compose_up.changed | default(false)
         - not ansible_check_mode
 

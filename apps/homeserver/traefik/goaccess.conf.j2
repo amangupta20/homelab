@@ -1,0 +1,18 @@
+# GoAccess on proxy-1: a live HTML report of Traefik's access log (compose.yaml, service goaccess; NOTES.md,
+# "Log dashboards"). Rendered by ansible/proxy.yml with the zone from OpenBao.
+
+# Traefik's JSON access log (traefik.yml, accessLog). GoAccess has no preset for it, so each field is mapped to a
+# GoAccess specifier; every line of the real log parsed with this mapping (2026-11-21). User-Agent and Referer are
+# not in the log (Traefik drops request headers by default), so the browser, OS and referrer panels stay empty.
+log-format {"ClientHost":"%h","RequestMethod":"%m","RequestPath":"%U","RequestProtocol":"%H","DownstreamStatus":"%s","DownstreamContentSize":"%b","RequestHost":"%v","Duration":"%n","time":"%x","TLSVersion":"%K","TLSCipher":"%k"}
+# Traefik's `time` field, in UTC.
+datetime-format %Y-%m-%dT%H:%M:%SZ
+
+# Follow the log and push updates to open reports over a WebSocket on port 7890, which Traefik routes at /ws on
+# the report's own hostname, behind the same forward-auth (routes/goaccess.yml).
+real-time-html true
+port 7890
+ws-url wss://goaccess.home.{{ lab_zone }}:443/ws
+# A WebSocket handshake from any other page is refused (400, tested 2026-11-21).
+origin https://goaccess.home.{{ lab_zone }}
+output /report/index.html

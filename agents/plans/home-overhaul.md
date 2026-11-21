@@ -369,12 +369,19 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
      is up (owner, 2026-11-14). Long runs follow the owner's rule for jobs over 25
      minutes: an independent scheduled check, which this VM can host with systemd
      timers.
-   - **Size:** memory static range 1–8 GB with dynamic memory 1–4 GB to start; the
-     owner raises the dynamic maximum when needed, which XCP-ng allows while the VM runs,
-     up to the static maximum (raising the static maximum needs a restart). 4 CPUs and
-     about 80 GB on the `Nvme` repository (proposed). The running VMs take about 22 GB
-     of the host's 40 GB.
-   - **Network:** on the main tailnet with its own tag (for example `tag:agent`) and
+   - **Size** (owner, 2026-11-22): 4 CPUs, 80 GB on the `Nvme` repository, dynamic
+     memory 256 MiB–4 GiB. The OpenTofu provider sets the static and dynamic maximum
+     together (`iac/agent-vm.tf`), so going above 4 GiB is a change there and a restart
+     of the VM. The running VMs took about 22 GB of the host's 40 GB (2026-11-14).
+   - **A desktop on demand** (owner, 2026-11-22): headless browsers (Playwright,
+     Chromium) for agents' screenshots and web tests, and one virtual display (TigerVNC
+     with a light desktop) that starts only when an agent or the owner needs it, so the
+     owner can watch or take over over VNC on the LAN or tailnet.
+   - **Progress:** the VM was built on 2026-11-22 and has the base playbooks (guest
+     agent, LAN cache client), with a second run changing nothing
+     (`agents/journal/2026-11-22-build-agent-1.md`). Still to do: Docker and the
+     harnesses, the desktop, the tailnet, the OpenBao policy, backups, the Orca test.
+   - **Network:** on the main tailnet with its own tag (`tag:agent`, owner 2026-11-22) and
      rules in `homelab-private`'s access policy, so it reaches what its rules allow.
    - **Access** follows `agents/rules/agent-access.md`: convenient by default, with its own
      OpenBao policy that holds **no credential able to delete or overwrite backups**

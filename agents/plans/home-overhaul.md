@@ -540,7 +540,6 @@ move before its public route exists.
 - Whether to keep BorgWarehouse once restic or Kopia handle offsite copies.
 - The change to `agents/decisions/backup-tiers.md` this design needs (proposed separately).
 - How to recover Nextcloud (A4).
-- The agent VM's size and tag (B0).
 - What the clean-up removes (B1).
 
 ## Links

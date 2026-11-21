@@ -22,6 +22,8 @@ is the Xen Orchestra root.
 - `proxy-vm.tf` — `proxy-1`, the home reverse proxy, and the public `*.home.<zone>`
   record pointing at it (`apps/homeserver/traefik/`,
   `agents/journal/2026-11-18-build-proxy-1-traefik.md`).
+- `agent-vm.tf` — `agent-1`, the agent VM (`agents/plans/home-overhaul.md`, step B0;
+  `agents/journal/2026-11-22-build-agent-1.md`).
 - `cloud-init/` — the first-boot user data (hostname, the homelab VM key from
   `kv/general/vm-ssh`) and the static network configuration every VM gets.
 - `backend.tf` — where the state lives, and its encryption.

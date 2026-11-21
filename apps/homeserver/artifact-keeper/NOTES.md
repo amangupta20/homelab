@@ -137,6 +137,15 @@ layers that exist on both Docker Hub and ghcr.io.
 
 ## Quirks
 
+- **No apt remote for GitHub CLI** (2026-11-22). Its archive root, `https://cli.github.com/packages`, ends in
+  `/packages`, and the backend refuses any Debian upstream whose path ends that way, as if it pointed at a
+  `Packages` index (`is_debian_flat_or_mirrorlist`, `backend/src/services/repository_service.rs` on `main`,
+  read 2026-11-22; `cache-remotes.sh` got a 400 `VALIDATION_ERROR`). A trailing slash is trimmed first, so it
+  cannot be worked around in the URL. `gh` comes from the `github-releases` remote instead, pinned by its digest.
+- **The first fetch from GitHub is slow** (133 s for the 15 MB gh `.deb` on 2026-11-22, then 0.15 s from the
+  cache), most likely the router's GitHub detour (`agents/decisions/open-questions.md`, "Home network"). npm and Node
+  were fetched twice the same day: npm metadata for `@openai/codex` 5.2 s then 0.19 s, Node 26.8.2's 33 MB
+  tarball 6.4 s then 0.39 s, its SHA-256 equal to Node's `SHASUMS256.txt`.
 - **Plain HTTP.** apt checks package signatures itself and Docker checks image
   digests, so the transport adds no trust. Docker daemons must list
   `10.22.33.137` under `insecure-registries` to use it.

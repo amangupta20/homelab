@@ -22,10 +22,13 @@ by OIDC (`NOTES.md`, "Sign-in"). apt and Docker clients need none.
 | `debian-security` | `security.debian.org/debian-security` | 15 GB | `deb http://<cache-1>/debian/debian-security trixie-security main` |
 | `docker-apt` | `download.docker.com/linux/debian` | 15 GB | `deb [signed-by=<Docker's key>] http://<cache-1>/debian/docker-apt trixie stable` |
 | `raspi` | `archive.raspberrypi.com/debian` | 15 GB | `deb http://<cache-1>/debian/raspi trixie main` (used by `oob-1`) |
-| `tailscale-apt` | `pkgs.tailscale.com/stable/debian` | 15 GB | `deb [signed-by=<Tailscale's key>] http://<cache-1>/debian/tailscale-apt trixie main` (used by `oob-1`) |
+| `tailscale-apt` | `pkgs.tailscale.com/stable/debian` | 15 GB | `deb [signed-by=<Tailscale's key>] http://<cache-1>/debian/tailscale-apt trixie main` (used by `oob-1`, `agent-1`) |
+| `mise-apt` | `mise.jdx.dev/deb` | 15 GB | `deb [signed-by=<mise's key>] http://<cache-1>/debian/mise-apt stable main` (used by `agent-1`) |
+| `npm` | `registry.npmjs.org` | 30 GB | `registry=http://<cache-1>/npm/npm/` in `.npmrc`; package links come back as `https://cache.home.<zone>/npm/npm/…` (used by `agent-1`) |
+| `nodejs` | `nodejs.org/dist` | 10 GB | `http://<cache-1>/general/nodejs/<version>/<file>`; mise's `node.mirror_url` (used by `agent-1`) |
+| `github-releases` | `github.com` | 30 GB | `http://<cache-1>/general/github-releases/<owner>/<repo>/releases/download/<tag>/<file>` (gh on `agent-1`). GitHub CLI's apt repository is refused: `NOTES.md`, "Quirks" |
 
-Clients today: `oob-1`, through `ansible/oob.yml`; `proxy-1`, apt and the
-Docker Hub mirror, through `ansible/cache-client.yml`.
+Clients today: `oob-1` (`ansible/oob.yml`); `proxy-1` and `agent-1`, apt and Docker Hub (`ansible/cache-client.yml`).
 
 ## Data
 

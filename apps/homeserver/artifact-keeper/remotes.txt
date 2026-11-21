@@ -18,3 +18,7 @@ debian-security  debian  15   https://security.debian.org/debian-security
 docker-apt       debian  15   https://download.docker.com/linux/debian
 raspi            debian  15   https://archive.raspberrypi.com/debian
 tailscale-apt    debian  15   https://pkgs.tailscale.com/stable/debian
+npm              npm     30   https://registry.npmjs.org
+nodejs           generic 10   https://nodejs.org/dist
+github-releases  generic 30   https://github.com
+mise-apt         debian  15   https://mise.jdx.dev/deb

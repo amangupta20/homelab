@@ -6,6 +6,8 @@ name: traefik
 secrets:
   cf_dns_api_token:
     file: ./secrets/cf_dns_api_token
+  authentik_outpost_token:
+    file: ./secrets/authentik_outpost_token
 
 services:
   traefik:
@@ -42,3 +44,25 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+
+  # Authentik's proxy outpost for this site: Traefik's forward-auth asks it on every request to a route
+  # behind Authentik (routes/dashboard.yml.j2). It connects out to Authentik's public URL with its own
+  # token, and serves the sign-in callback on each protected hostname (NOTES.md, "Forward-auth").
+  authentik-outpost:
+    # The Authentik server's version (its API, 2026-11-21); outpost and server are upgraded together.
+    # Pulled through the LAN cache's ghcr remote; the digest is ghcr.io's for this tag.
+    image: 10.22.33.137/ghcr/goauthentik/proxy:2026.8.5@sha256:34640cf41e009ab052d4b9119cea816713adcd1eaac95de6caefebfe86d3fcd9
+    restart: unless-stopped
+    environment:
+      # Written into .env by ansible/proxy.yml from OpenBao: the zone stays out of this repo.
+      AUTHENTIK_HOST: "${AUTHENTIK_HOST:?}"
+      AUTHENTIK_INSECURE: "false"
+      # Read from the file, not the environment (Authentik's config loader takes file:// values).
+      AUTHENTIK_TOKEN: file:///run/secrets/authentik_outpost_token
+    secrets:
+      - authentik_outpost_token
+    # No published port: only Traefik, on this compose network, talks to it (port 9000).
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true

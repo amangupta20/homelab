@@ -84,8 +84,8 @@ Traefik's dashboard. The plan is to try them and keep the ones used (`agents/pla
   2026-11-21). Set up 2026-11-21 at `traefik-logs.home.<zone>` (Authentik provider and application
   `traefik-logs-home`, `homelab-admins` only, on the outpost `home`). Two containers: `log-agent` parses the log
   and serves it over an API that needs a token, and `log-dashboard` is the web UI, with no login of its own.
-- **GeoIP lookups off.** By default the dashboard sends client addresses to `ipwho.is` and `ip-api.com` to draw its
-  map (`dashboard/server/routes/location.ts`, v3.1.1). Clients here are LAN or tailnet addresses, so the map has
+- **GeoIP lookups off.** By default the dashboard sends client addresses to `ipwho.is` to draw its map (the
+  project's example compose file adds `ip-api.com`; `dashboard/server/routes/location.ts`, v3.1.1). Clients here are LAN or tailnet addresses, so the map has
   nothing to show anyway. A local MaxMind database (`GEOIP_LOCAL_DB_PATH`) is the option if the public apps ever
   log here.
 - **Not set:** Discord alerts, the mobile app, the agent's system view (it would show the container, not the VM).

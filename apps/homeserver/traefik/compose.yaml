@@ -104,7 +104,7 @@ services:
       AGENT_1_TOKEN: "${LOG_AGENT_TOKEN:?}"
       # Agents come from these variables only; the UI cannot add one.
       DASHBOARD_AGENTS_ENV_ONLY: "true"
-      # On by default, the dashboard sends client addresses to ipwho.is and ip-api.com for the map. Every
+      # On by default, the dashboard sends client addresses to ipwho.is for the map. Every
       # client here is on the LAN or the tailnet, so the map would be empty anyway; off, so nothing leaves.
       GEOIP_LOOKUP_ENABLED: "false"
       SHOW_DEMO_PAGE: "false"

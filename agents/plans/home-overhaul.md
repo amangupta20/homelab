@@ -415,9 +415,10 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
        Phase 1 done 2026-11-18: `proxy-1` built by OpenTofu, Traefik with the
        wildcard certificate and the route to `cache-1`
        (`apps/homeserver/traefik/`, `agents/journal/2026-11-18-build-proxy-1-traefik.md`).
-       Verified over Tailscale and on the LAN. Still open: Authentik sign-in (OIDC for the
-       cache's web UI and Grafana, forward-auth for the dashboards), the
-       dashboards, and Sablier.
+       Verified over Tailscale and on the LAN. Since then: the cache's web UI and Grafana sign
+       in through Authentik (2026-11-18), Traefik's dashboard is behind forward-auth
+       (2026-11-21), and so is traefik-log-dashboard
+       (`agents/journal/2026-11-21-traefik-log-dashboard.md`). Still open: GoAccess, and Sablier.
      - **Names:** one public Cloudflare record, `*.home.<domain>`, pointing at the
        proxy's LAN address, so any resolver that forwards to the internet answers it,
        and over Tailscale through the subnet route (`agents/ideas/edge-and-security-layers.md`,
@@ -447,8 +448,8 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
      - **View-only dashboards**, to try together and keep the ones used (owner,
        2026-11-17): Traefik's own dashboard (routes, services, middlewares, their
        state), traefik-log-dashboard (live traffic, a map of client locations, status
-       codes and response times per service; AGPL-3.0; the project's changelog lists
-       v2.4.1 from 2026-01), and GoAccess (one report page from the access log). All
+       codes and response times per service; AGPL-3.0; release 3.1.1 from 2026-04-14, GitHub
+       releases, read 2026-11-21), and GoAccess (one report page from the access log). All
        three read Traefik's access log or API and edit nothing. Behind Authentik
        forward-auth through the local outpost (`apps/homeserver/traefik/NOTES.md`,
        "Forward-auth"), so they have no passwords of their own.

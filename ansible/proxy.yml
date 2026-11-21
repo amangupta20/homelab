@@ -4,8 +4,10 @@
 #   ansible-playbook proxy.yml
 #
 # The zone and the Cloudflare token are read from OpenBao on this machine
-# (kv/general/cloudflare, fields zone and zonedns); the token is written to
-# proxy-1 as a secret file and never appears in the output.
+# (kv/general/cloudflare, fields zone and zonedns), and so are Authentik's
+# address and the outpost's token (kv/general/authentik field domain,
+# kv/homelab/authentik-outpost-home field token); the tokens are written to
+# proxy-1 as secret files and never appear in the output.
 - name: Traefik on proxy-1
   hosts: proxy-1
   become: true
@@ -95,6 +97,26 @@
       no_log: true
       register: cf_token
 
+    # The outpost runs as user 1000 (its image), so the file is that user's.
+    - name: Authentik outpost token from OpenBao
+      ansible.builtin.copy:
+        dest: "{{ stack_dir }}/secrets/authentik_outpost_token"
+        content: "{{ lookup('pipe', 'bao kv get -mount=kv -field=token homelab/authentik-outpost-home') }}"
+        owner: "1000"
+        group: "1000"
+        mode: "0400"
+      no_log: true
+      register: outpost_token
+
+    # Compose reads .env for ${AUTHENTIK_HOST}; Authentik's domain stays out of the repo.
+    - name: Authentik's address for the outpost
+      ansible.builtin.copy:
+        dest: "{{ stack_dir }}/.env"
+        content: "AUTHENTIK_HOST=https://{{ lookup('pipe', 'bao kv get -mount=kv -field=domain general/authentik') }}\n"
+        owner: root
+        group: root
+        mode: "0644"
+
     - name: Start or update the stack
       ansible.builtin.command:
         cmd: docker compose up -d --remove-orphans
@@ -110,5 +132,14 @@
         chdir: "{{ stack_dir }}"
       when:
         - static_config.changed or cf_token.changed
+        - not compose_up.changed | default(false)
+        - not ansible_check_mode
+
+    - name: Restart the outpost when its token changed
+      ansible.builtin.command:
+        cmd: docker compose restart authentik-outpost
+        chdir: "{{ stack_dir }}"
+      when:
+        - outpost_token.changed
         - not compose_up.changed | default(false)
         - not ansible_check_mode

@@ -14,8 +14,8 @@ accessLog:
   filePath: /var/log/traefik/access.log
   format: json
 
-# The dashboard is on, but no route leads to it until it sits behind
-# Authentik's forward-auth (phase 2 in README.md).
+# The dashboard, reached only through routes/dashboard.yml.j2, behind
+# Authentik's forward-auth (README.md, "Routes").
 api:
   dashboard: true
 

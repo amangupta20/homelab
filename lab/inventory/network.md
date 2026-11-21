@@ -29,6 +29,7 @@ Private subnet `10.22.33.0/24`, served by the Home router
 | `.100` | Xen Orchestra (`xo-ce`) | verified: its REST API answered |
 | `.137` | cache VM `cache-1` (`agents/plans/package-and-image-cache.md`); set on the VM by OpenTofu and cloud-init | verified: over SSH `eth0` at `.137/24`, and Xen Orchestra's agent reported it (`agents/journal/2026-11-16-build-cache-1.md`) |
 | `.138` | home reverse proxy `proxy-1` (`apps/homeserver/traefik/`); set on the VM by OpenTofu and cloud-init. The public record `*.home.<zone>` points here | verified: over SSH `eth0` at `.138/24`, and the router's dnsmasq answering `cache.home.<zone>` with it (`agents/journal/2026-11-18-build-proxy-1-traefik.md`) |
+| `.139` | agent VM `agent-1` (`agents/plans/home-overhaul.md`, step B0); set on the VM by OpenTofu and cloud-init | verified: over SSH `eth0` at `.139/24` (`agents/journal/2026-11-22-build-agent-1.md`) |
 | `.123` | gpu_docker | verified: SSH |
 | `.160` | TrueNAS VM | verified: TrueNAS API |
 | `.253` | adguard-docker | verified: SSH and Portainer API |

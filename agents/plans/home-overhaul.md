@@ -385,9 +385,12 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
      timer (`agents/journal/2026-11-22-orca-server-agent-1.md`), and so does the
      Antigravity CLI, `agy` (owner, 2026-11-22; `agents/journal/2026-11-22-agy-agent-1.md`).
      Hermes is installed by its own installer, outside Ansible and the cache (owner,
-     2026-11-22; `agents/journal/2026-11-22-hermes-agent-1.md`). Still to do:
-     the desktop, the tailnet, the OpenBao policy, backups, and the Orca test (the
-     owner signed in to the harnesses on 2026-11-22).
+     2026-11-22; `agents/journal/2026-11-22-hermes-agent-1.md`). The owner's agent
+     config and Hindsight are on every harness, DeepSeek Harness is installed, and
+     agent-1 is on the tailnet as `tag:agent`
+     (`agents/journal/2026-11-22-agent-1-config-hindsight-dsh.md`). Still to do: the
+     desktop, the OpenBao policy, backups, and the Orca test (the owner signed in to
+     the harnesses on 2026-11-22).
    - **Network:** on the main tailnet with its own tag (`tag:agent`, owner 2026-11-22) and
      rules in `homelab-private`'s access policy, so it reaches what its rules allow.
    - **Access** follows `agents/rules/agent-access.md`: convenient by default, with its own

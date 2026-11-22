@@ -389,6 +389,15 @@ Page: `lab/systems/router.md`. Agent's notes, 2026-11-13, for the owner to close
   link to the VPS was direct, its CPU 97% idle, flow offloading off, the
   `tailscale` zone with `masq` on. Cause unknown; left for the owner, who set up
   the detour.
+  Agent's note, 2026-11-22, for the owner to close: cause found. The router's
+  Ethernet driver sends tailscaled's merged packets to the LAN unsplit, so
+  everything from the tailnet to the LAN was slow, not just the detour. It is
+  worked around with a tailscaled setting (`lab/systems/router.md`, "Tailscale's
+  TCP coalescing is off"), and the detour ran at 4.6–4.7 MB/s afterwards.
+  GitHub's own range over the plain WAN path swung between 2.0 and 5.0 MB/s,
+  so the owner kept the detour (`lab/systems/notes/router.md`, "Tailscale
+  forwarding bug"). Reporting the driver bug upstream is set aside for now
+  (owner, 2026-11-22).
 
 ## Docs that disagree (added 2026-11-19, during the repo clean-up)
 

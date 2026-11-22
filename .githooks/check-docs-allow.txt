@@ -9,6 +9,6 @@ dates lab/inventory/services.md 2
 dates lab/systems/backups.md 16
 dates lab/systems/oob.md 9
 dates lab/systems/openbao.md 13
-dates lab/systems/router.md 20
+dates lab/systems/router.md 19
 dates lab/systems/truenas.md 12
 dates lab/systems/vps.md 15

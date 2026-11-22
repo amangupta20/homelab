@@ -434,8 +434,9 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
        Phase 1 done 2026-11-18: `proxy-1` built by OpenTofu, Traefik with the
        wildcard certificate and the route to `cache-1`
        (`apps/homeserver/traefik/`, `agents/journal/2026-11-18-build-proxy-1-traefik.md`).
-       Verified over Tailscale and on the LAN. Since then: the cache's web UI and Grafana sign
-       in through Authentik (2026-11-18), Traefik's dashboard is behind forward-auth
+       Verified over Tailscale and on the LAN. Since then: the cache's web UI signs
+       in through Authentik (2026-11-18; its Grafana did too until it was removed on
+       2026-11-22), Traefik's dashboard is behind forward-auth
        (2026-11-21), and so are traefik-log-dashboard and GoAccess
        (`agents/journal/2026-11-21-traefik-log-dashboard.md`). Still open: which log dashboards
        stay, and Sablier.
@@ -473,9 +474,9 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
        three read Traefik's access log or API and edit nothing. Behind Authentik
        forward-auth through the local outpost (`apps/homeserver/traefik/NOTES.md`,
        "Forward-auth"), so they have no passwords of their own.
-     - **First app:** `cache-1`'s web UI and Grafana, which then sign in through
-       Authentik (OIDC) at their `home.<domain>` names instead of with their own
-       passwords. apt and Docker clients keep using its address.
+     - **First app:** `cache-1`'s web UI, which then signs in through Authentik (OIDC)
+       at its `home.<domain>` name instead of with its own password; its Grafana did
+       too until it was removed (2026-11-22). apt and Docker clients keep using its address.
      — gate: a test name has a valid certificate on the LAN and over Tailscale,
      whichever resolver answers; a stopped test container on another VM wakes through
      its route; the dashboards ask for Authentik.

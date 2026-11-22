@@ -12,5 +12,5 @@ linked journal entries hold the detail.
 - Home router, over SSH: 2026-11-13 (`agents/journal/2026-11-13-openwrt-home-router.md`).
 - oob-1: 2026-11-14, after its rebuild. Remote VPS: recon of 2026-10-26.
   pigsty-1: 2026-11-06, the day Pigsty was installed.
-- cache-1: 2026-11-16. proxy-1: 2026-11-18. agent-1: 2026-11-22. All in the
+- cache-1: 2026-11-16. proxy-1: 2026-11-18. agent-1: 2026-11-23. All in the
   linked journal entries.

@@ -32,3 +32,12 @@ node = "26"
 # them; the package has no install script.
 "npm:@deepseek-ai/dsh" = { version = "latest", prerelease = true }
 "npm:playwright" = "latest"
+# The owner's fleet research toolchain, as on his workstation (versions read there 2026-11-22: deno 2.9.8,
+# rustc 1.100.0, uv 0.13.9, pnpm 12.14.0, Java 21). deno and rust come from their own release servers and
+# uv from GitHub releases (mise's default backends), except pnpm, which comes through the cache's npm remote. Java comes from
+# Debian instead (agent.yml): mise's Temurin downloads from GitHub, which the router's tailnet detour
+# slowed to about 60 KB/s on 2026-11-22.
+deno = "2"
+rust = "1.100"
+uv = "0.13"
+"npm:pnpm" = "12"

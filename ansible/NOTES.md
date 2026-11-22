@@ -33,7 +33,9 @@ When each playbook in `README.md` first ran, and what showed it worked.
   second run changed nothing (`agents/journal/2026-11-22-web-search-agent-1.md`). The
   desktop and OpenBao CLI tasks ran the same day: a connection started the desktop, stopping
   the proxy stopped it, and a second run changed nothing
-  (`agents/journal/2026-11-22-agent-1-desktop-orca.md`).
+  (`agents/journal/2026-11-22-agent-1-desktop-orca.md`). The fleet toolchain tasks ran on
+  2026-11-23: every tool answers `--version`, and a second run changed nothing
+  (`agents/journal/2026-11-23-agent-1-fleet-toolchain.md`).
 - Pigsty: `--check` against `pigsty.yml` passed on 2026-11-06.
 
 ## History

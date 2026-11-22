@@ -92,6 +92,10 @@
           - python3-venv
           # mise installs Python tools such as this repo's ansible-core with it.
           - pipx
+          # The jail the fleet research benches use for untrusted commands.
+          - bubblewrap
+          # Java 21 for the fleet research, from Debian through the cache (mise-config.toml says why).
+          - openjdk-21-jdk-headless
           # For headless browsing and screenshots; Playwright can drive it (executablePath /usr/bin/chromium).
           - chromium
           - fonts-noto-core

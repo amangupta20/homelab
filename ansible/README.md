@@ -43,7 +43,8 @@ When each playbook first ran, and what showed it worked: `NOTES.md`.
   their own: pi's `pi-web-access` and OpenCode 2's built-in search on `random`
   (`files/agent/opencode.json`; `agents/journal/2026-11-22-web-search-agent-1.md`); the OpenBao CLI; and a
   TigerVNC and Xfce desktop that starts when someone connects to port 5901
-  (`agents/journal/2026-11-22-agent-1-desktop-orca.md`).
+  (`agents/journal/2026-11-22-agent-1-desktop-orca.md`); and the owner's fleet research toolchain
+  (`agents/journal/2026-11-23-agent-1-fleet-toolchain.md`).
 
 ## Adding a host
 

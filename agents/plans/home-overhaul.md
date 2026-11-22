@@ -369,10 +369,8 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
      is up (owner, 2026-11-14). Long runs follow the owner's rule for jobs over 25
      minutes: an independent scheduled check, which this VM can host with systemd
      timers.
-   - **Size** (owner, 2026-11-22): 4 CPUs, 80 GB on the `Nvme` repository, dynamic
-     memory 256 MiB–4 GiB. The OpenTofu provider sets the static and dynamic maximum
-     together (`iac/agent-vm.tf`), so going above 4 GiB is a change there and a restart
-     of the VM. The running VMs took about 22 GB of the host's 40 GB (2026-11-14).
+   - **Size:** see the agent-1 row in `lab/inventory/hosts.md` for the current disk
+     and memory limits, and `iac/agent-vm.tf` for how OpenTofu handles those limits.
    - **A desktop on demand** (owner, 2026-11-22): headless browsers (Playwright,
      Chromium) for agents' screenshots and web tests, and one virtual display (TigerVNC
      with a light desktop) that starts only when an agent or the owner needs it, so the

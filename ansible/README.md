@@ -39,7 +39,9 @@ When each playbook first ran, and what showed it worked: `NOTES.md`.
   the owner's user service, which `files/agent/orca-server-update.sh` keeps on Orca's latest release
   (`agents/journal/2026-11-22-orca-server-agent-1.md`); and the Antigravity CLI (`agy`) with an unencrypted
   keyring for its sign-in, kept current by `files/agent/agy-update.sh`
-  (`agents/journal/2026-11-22-agy-agent-1.md`).
+  (`agents/journal/2026-11-22-agy-agent-1.md`); and free web search for the harnesses that lack one of
+  their own: pi's `pi-web-access` and OpenCode 2's built-in search on `random`
+  (`files/agent/opencode.json`; `agents/journal/2026-11-22-web-search-agent-1.md`).
 
 ## Adding a host
 

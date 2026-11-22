@@ -108,12 +108,8 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
   tried here.
 - **Install Wi-Fi packages (`wpad`, `hostapd-common`, `wifi-scripts`) from
   the feed only when their versions match the image's.** The feed is a
-  moving snapshot. On the previous firmware it had moved ahead of the image,
-  and on 2026-11-14 the feed's full daemon would not start there (`logread`:
-  "common.uc does not export 'macaddr_keep'"); both radios were down for
-  about 75 seconds, twice, until the old files were put back from an
-  archive. On v1.0.1 the image and the feed carried the same release
-  (`apk list -I`, `apk add --simulate`), and the swap worked. Before any such
+  moving snapshot; a mismatch took both radios down twice
+  (`lab/systems/notes/router.md`, "Wi-Fi daemon swap"). Before any such
   change: compare versions, archive the current daemon's files, and have a
   script restore them if the radios do not come back.
 - **Attach the Tailscale firewall zone to the device, not to a network

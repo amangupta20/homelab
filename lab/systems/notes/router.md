@@ -36,6 +36,16 @@ Tested
   the detour the same file had reached 3.7 MB in 500 seconds from that
   laptop.
 
+## Wi-Fi daemon swap
+
+Moved here from `lab/systems/router.md`, Rules, on 2026-11-22 to keep that page
+under its length cap. On the previous firmware the feed had moved ahead of the
+image, and on 2026-11-14 the feed's full daemon would not start there
+(`logread`: "common.uc does not export 'macaddr_keep'"); both radios were down
+for about 75 seconds, twice, until the old files were put back from an
+archive. On v1.0.1 the image and the feed carried the same release
+(`apk list -I`, `apk add --simulate`), and the swap worked.
+
 ## Why the Wi-Fi settings are what they are
 
 Measured on the router on 2026-11-13 (`iw dev <radio> scan`, `logread`).

@@ -28,9 +28,10 @@ hold credentials): `~/router-backups/cfg-2026-11-22-pre-tcpdump.tar.gz` and `cfg
   and table 52 has its 9 routes again (`ip route show table 52`).
 - GitHub release through the detour from `agent-1`: 4.6–4.7 MB/s over three 15-second runs.
 - Router CPU during a 4.8 MB/s tailnet download: 5–7% busy before, 8% after.
+- Detour against GitHub's range over the WAN (a temporary `ip rule`, deleted after, `ip rule` checked): detour
+  4.6–4.7 MB/s, direct 2.0–5.0 MB/s, so the detour stays.
 
 ## Still open
 
-- Whether the GitHub detour is still needed, and whether to report the driver bug upstream
-  (`agents/decisions/open-questions.md`, "Home network").
+- Reporting the driver bug upstream: set aside by the owner for now.
 - The init-script line is lost on a `tailscale` reinstall or firmware upgrade (`lab/systems/router.md`, Rules).

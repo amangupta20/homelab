@@ -182,6 +182,38 @@
       changed_when: mise_install.stderr is not search('installed 0 tools|all tools are installed')
       when: not ansible_check_mode
 
+    # Web search for the harnesses that lack a free one of their own (owner, 2026-11-22). Claude Code, Codex,
+    # omp and agy search with their own tools. pi gets pi-web-access, as on the owner's workstation: no key,
+    # Exa's free MCP endpoint first and a chain of other providers after it. OpenCode 2 gets its built-in
+    # search on `random`, which keeps one free provider until it is rate limited and then switches, allowed
+    # without a prompt so a run with no one to answer can search (opencode.ai/config.json). Hermes needs no
+    # file: its keyless ring rotates across free tiers (agents/journal/2026-11-22-web-search-agent-1.md).
+    - name: pi's web search package
+      ansible.builtin.command: pi install npm:pi-web-access
+      args:
+        creates: "/home/{{ user }}/.pi/agent/npm/node_modules/pi-web-access"
+      become_user: "{{ user }}"
+      environment:
+        HOME: "/home/{{ user }}"
+        PATH: "/home/{{ user }}/.local/share/mise/shims:/usr/local/bin:/usr/bin:/bin"
+      when: not ansible_check_mode
+
+    - name: OpenCode's configuration folder
+      ansible.builtin.file:
+        path: "/home/{{ user }}/.config/opencode"
+        state: directory
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0755"
+
+    - name: OpenCode's web search
+      ansible.builtin.copy:
+        src: files/agent/opencode.json
+        dest: "/home/{{ user }}/.config/opencode/opencode.json"
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0644"
+
     # Keeps the "latest" tools current; the harnesses' own updaters do not work in mise's install folders.
     - name: mise upgrade timer
       ansible.builtin.copy:

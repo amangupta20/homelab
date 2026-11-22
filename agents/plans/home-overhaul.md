@@ -380,8 +380,13 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
    - **Progress:** the VM was built on 2026-11-22 and has the base playbooks (guest
      agent, LAN cache client) and `ansible/agent.yml` (the owner's user, Docker, gh,
      mise with Node and the harnesses, all through the cache), with second runs
-     changing nothing (`agents/journal/2026-11-22-build-agent-1.md`). Still to do:
-     Hermes, the desktop, the tailnet, the OpenBao policy, backups, the Orca test.
+     changing nothing (`agents/journal/2026-11-22-build-agent-1.md`). The Orca server
+     runs there, paired with the owner's Orca and kept on Orca's latest release by a
+     timer (`agents/journal/2026-11-22-orca-server-agent-1.md`), and so does the
+     Antigravity CLI, `agy` (owner, 2026-11-22; `agents/journal/2026-11-22-agy-agent-1.md`).
+     Still to do: Hermes,
+     the desktop, the tailnet, the OpenBao policy, backups, and the Orca test, which
+     waits for the owner's harness sign-ins.
    - **Network:** on the main tailnet with its own tag (`tag:agent`, owner 2026-11-22) and
      rules in `homelab-private`'s access policy, so it reaches what its rules allow.
    - **Access** follows `agents/rules/agent-access.md`: convenient by default, with its own

@@ -27,6 +27,7 @@ by OIDC (`NOTES.md`, "Sign-in"). apt and Docker clients need none.
 | `npm` | `registry.npmjs.org` | 30 GB | `registry=http://<cache-1>/npm/npm/` in `.npmrc`; package links come back as `https://cache.home.<zone>/npm/npm/…` (used by `agent-1`) |
 | `nodejs` | `nodejs.org/dist` | 10 GB | `http://<cache-1>/general/nodejs/<version>/<file>`; mise's `node.mirror_url` (used by `agent-1`) |
 | `github-releases` | `github.com` | 30 GB | `http://<cache-1>/general/github-releases/<owner>/<repo>/releases/download/<tag>/<file>` (gh on `agent-1`). GitHub CLI's apt repository is refused: `NOTES.md`, "Quirks" |
+| `antigravity` | `storage.googleapis.com/antigravity-public` | 10 GB | `http://<cache-1>/general/antigravity/<path from Google's manifest>` (the Antigravity CLI on `agent-1`, `ansible/files/agent/agy-update.sh`) |
 
 Clients today: `oob-1` (`ansible/oob.yml`); `proxy-1` and `agent-1`, apt and Docker Hub (`ansible/cache-client.yml`).
 
@@ -36,5 +37,4 @@ Bind mounts on the VM: `/srv/artifact-keeper/{postgres,storage,backups,plugins}`
 No backups by design: the files refill from upstream and the settings come back
 from `cache-remotes.sh` (`agents/decisions/backup-tiers.md`, rebuildable state).
 
-Everything else, word for word, is in `NOTES.md`: "Files", "Sign-in", "How it stays
-inside the disk", "Dashboard", "Deduplication", "Quirks".
+Everything else, word for word, is in `NOTES.md`: "Files", "Sign-in", "How it stays inside the disk", "Dashboard", "Deduplication", "Quirks".

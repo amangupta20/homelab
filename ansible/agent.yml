@@ -20,6 +20,10 @@
     # mise's apt signing key, fingerprint 24853EC9F655CE80B48E6C3A8B81C9D17413A06D (`gpg --show-keys`,
     # 2026-11-22; the key that signs the repository's Release file). Expires 2028-01-02.
     mise_key_sha256: "91c72340c5cc84ae2ba98c1070083feacf789b0a4a3d34b2416147769e475d96" # gitleaks:allow (the SHA-256 of mise's public signing key, not a secret)
+    # The Orca server's first install; orca-server-update.timer moves it forward after that. The digest is
+    # Orca's orca-server-sha256sums.txt for v1.4.269 (2026-11-22); the copy fetched through the cache matched it.
+    orca_version: "1.4.269"
+    orca_sha256: "f28156c0ceda9d034d9c55e27f5c0b73f38de70e4ec8b4ba8d740c00f26d0e74" # gitleaks:allow (a release file's SHA-256, not a secret)
   tasks:
     # The owner asked for agent-1 to be fully up to date (2026-11-22). A second run finds nothing to do.
     - name: Full upgrade
@@ -219,3 +223,277 @@
         state: started
         enabled: true
         daemon_reload: "{{ mise_timer is changed }}"
+
+    # A keyring for harnesses that keep their sign-in in the system's secret store (the Secret Service over
+    # D-Bus), as agy does; without one it fails with "secret keyring is locked" (its troubleshooting page). A
+    # headless VM has no login to unlock a keyring with, so this one is unencrypted: its secrets are a 0600 file
+    # in the owner's home folder, like the logins Claude Code and Codex keep in their own files. Both are
+    # credentials, and agent-1's backup is treated like one (plan, B0).
+    - name: The keyring and its command-line tool
+      ansible.builtin.apt:
+        name: [gnome-keyring, libsecret-tools]
+        install_recommends: false
+
+    - name: The owner's keyring folder
+      ansible.builtin.file:
+        path: "/home/{{ user }}/.local/share/keyrings"
+        state: directory
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0700"
+
+    # Written once: the daemon adds the secrets to this file, so a later run must not replace it.
+    - name: An unencrypted login keyring, the default
+      ansible.builtin.copy:
+        dest: "/home/{{ user }}/.local/share/keyrings/{{ item.name }}"
+        content: "{{ item.content }}"
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0600"
+        force: false
+      loop:
+        - name: login.keyring
+          content: |
+            [keyring]
+            display-name=login
+            ctime=0
+            mtime=0
+            lock-on-idle=false
+            lock-after=false
+        - name: default
+          content: login
+      loop_control:
+        label: "{{ item.name }}"
+
+    # The Antigravity CLI (agy), through the cache's `antigravity` remote; files/agent/agy-update.sh installs it
+    # and agy-update.timer keeps it current. agy's own updater is off, in the shell here and in the Orca
+    # server's service below.
+    - name: The Antigravity CLI installer and updater
+      ansible.builtin.copy:
+        src: files/agent/agy-update.sh
+        dest: /usr/local/sbin/agy-update
+        mode: "0755"
+
+    - name: Install the Antigravity CLI
+      ansible.builtin.command: /usr/local/sbin/agy-update
+      args:
+        creates: /usr/local/bin/agy
+      when: not ansible_check_mode
+
+    - name: agy's own updater off in the owner's shell
+      ansible.builtin.lineinfile:
+        path: "/home/{{ user }}/.bashrc"
+        line: export AGY_CLI_DISABLE_AUTO_UPDATE=true
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0644"
+
+    - name: agy update timer
+      ansible.builtin.copy:
+        dest: "/etc/systemd/system/{{ item.name }}"
+        content: "{{ item.content }}"
+        mode: "0644"
+      loop:
+        - name: agy-update.service
+          content: |
+            [Unit]
+            Description=Update the Antigravity CLI to Google's latest release (ansible/agent.yml)
+            After=network-online.target
+            Wants=network-online.target
+
+            [Service]
+            Type=oneshot
+            ExecStart=/usr/local/sbin/agy-update
+        - name: agy-update.timer
+          content: |
+            [Unit]
+            Description=Daily update of the Antigravity CLI
+
+            [Timer]
+            OnCalendar=daily
+            RandomizedDelaySec=1h
+            Persistent=true
+
+            [Install]
+            WantedBy=timers.target
+      loop_control:
+        label: "{{ item.name }}"
+      register: agy_timer
+
+    - name: Run the agy update timer
+      ansible.builtin.systemd_service:
+        name: agy-update.timer
+        state: started
+        enabled: true
+        daemon_reload: "{{ agy_timer is changed }}"
+      # In --check the timer above is not written yet.
+      ignore_errors: "{{ ansible_check_mode }}"
+
+    # The Orca server (agents/plans/home-overhaul.md, B0): Orca's server-only build, so workers start here from
+    # the owner's Orca (`orchestration worker-start --on agent-1`) and keep running while his laptop sleeps.
+    # Orca's own install (docs/site/content/docs/remote-servers.mdx, "Install only the server on Linux"), with
+    # one folder per release under /opt/orca-server and `current` pointing at the one in use. This pinned release
+    # is only the first install; files/agent/orca-server-update.sh keeps it on the latest after that.
+    - name: Is the Orca server installed
+      ansible.builtin.stat:
+        path: /opt/orca-server/current
+      register: orca_current
+
+    - name: Install the Orca server {{ orca_version }}
+      when: not orca_current.stat.exists
+      block:
+        - name: Download the Orca server {{ orca_version }}
+          ansible.builtin.get_url:
+            url: "{{ lan_cache }}/general/github-releases/stablyai/orca/releases/download/v{{ orca_version }}/orca-server-linux-x64.tar.gz"
+            dest: "/var/cache/orca-server-{{ orca_version }}-linux-x64.tar.gz"
+            checksum: "sha256:{{ orca_sha256 }}"
+            mode: "0644"
+            timeout: 300
+
+        - name: The Orca server's release folder
+          ansible.builtin.file:
+            path: "/opt/orca-server/{{ orca_version }}"
+            state: directory
+            mode: "0755"
+
+        - name: Unpack the Orca server {{ orca_version }}
+          ansible.builtin.unarchive:
+            src: "/var/cache/orca-server-{{ orca_version }}-linux-x64.tar.gz"
+            dest: "/opt/orca-server/{{ orca_version }}"
+            remote_src: true
+            extra_opts: [--strip-components=1]
+          # In --check the folder above is not created yet.
+          ignore_errors: "{{ ansible_check_mode }}"
+
+        - name: Point current at {{ orca_version }}
+          ansible.builtin.file:
+            src: "{{ orca_version }}"
+            dest: /opt/orca-server/current
+            state: link
+          ignore_errors: "{{ ansible_check_mode }}"
+
+    # No GNOME screen reader on this VM, so `orca` is free; Orca's skills and docs use both names.
+    - name: orca and orca-ide on everyone's PATH
+      ansible.builtin.file:
+        src: /opt/orca-server/current/bin/orca-ide
+        dest: "/usr/local/bin/{{ item }}"
+        state: link
+        force: true
+      loop: [orca, orca-ide]
+      ignore_errors: "{{ ansible_check_mode }}"
+
+    # The server runs as a systemd user service, which stops at logout unless lingering is on (Orca's docs).
+    - name: Keep the owner's user services running without a login
+      ansible.builtin.command: loginctl enable-linger {{ user }}
+      args:
+        creates: "/var/lib/systemd/linger/{{ user }}"
+
+    - name: The owner's user id, for the user services below
+      ansible.builtin.getent:
+        database: passwd
+        key: "{{ user }}"
+
+    - name: Remember the owner's user id
+      ansible.builtin.set_fact:
+        orca_uid: "{{ ansible_facts['getent_passwd'][user][1] }}"
+
+    # Orca writes and owns the unit (orca-serve.service: `orca serve --supervise --no-pairing`). It listens on all
+    # interfaces, so the tailnet can reach it once agent-1 joins, and --refuse-public turns away public
+    # addresses. The pairing address goes into pairing links only.
+    - name: The Orca server's service
+      ansible.builtin.command: >-
+        /opt/orca-server/current/bin/orca-ide serve service install
+        --command /opt/orca-server/current/bin/orca-ide
+        --port 6768 --refuse-public --pairing-address {{ ansible_facts['default_ipv4']['address'] }}
+      args:
+        creates: "/home/{{ user }}/.config/systemd/user/orca-serve.service"
+      become_user: "{{ user }}"
+      environment:
+        XDG_RUNTIME_DIR: "/run/user/{{ orca_uid }}"
+      when: not ansible_check_mode
+
+    - name: The Orca server's settings folder
+      ansible.builtin.file:
+        path: "/home/{{ user }}/.config/systemd/user/orca-serve.service.d"
+        state: directory
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0755"
+
+    # Orca's unit sets PATH to the system folders only, which hides the harnesses mise installs; and nothing caps
+    # a terminal's memory by default, so one runaway job could take the whole 4 GiB VM into the OOM killer
+    # (remote-servers.mdx, "Limit terminal memory on a Linux server"). 3G is a first guess, not measured.
+    - name: The Orca server's PATH and terminal memory limits
+      ansible.builtin.copy:
+        dest: "/home/{{ user }}/.config/systemd/user/orca-serve.service.d/agent.conf"
+        content: |
+          # Written by ansible/agent.yml.
+          [Service]
+          Environment=PATH=/home/{{ user }}/.local/share/mise/shims:/home/{{ user }}/.local/bin:/usr/local/bin:/usr/bin:/bin
+          Environment=ORCA_TERMINAL_MEMORY_MAX=3G
+          Environment=ORCA_TERMINAL_MEMORY_SWAP_MAX=0
+          Environment=AGY_CLI_DISABLE_AUTO_UPDATE=true
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0644"
+      register: orca_dropin
+
+    - name: Run the Orca server
+      ansible.builtin.systemd_service:
+        name: orca-serve.service
+        scope: user
+        state: "{{ 'restarted' if orca_dropin is changed else 'started' }}"
+        enabled: true
+        daemon_reload: "{{ orca_dropin is changed }}"
+      become_user: "{{ user }}"
+      environment:
+        XDG_RUNTIME_DIR: "/run/user/{{ orca_uid }}"
+      when: not ansible_check_mode
+
+    - name: The Orca server updater
+      ansible.builtin.copy:
+        src: files/agent/orca-server-update.sh
+        dest: /usr/local/sbin/orca-server-update
+        mode: "0755"
+
+    # Every 6 hours, so agent-1 is at most a few hours behind the owner's desktop and phone.
+    - name: Orca server update timer
+      ansible.builtin.copy:
+        dest: "/etc/systemd/system/{{ item.name }}"
+        content: "{{ item.content }}"
+        mode: "0644"
+      loop:
+        - name: orca-server-update.service
+          content: |
+            [Unit]
+            Description=Update the Orca server to Orca's latest release (ansible/agent.yml)
+            After=network-online.target
+            Wants=network-online.target
+
+            [Service]
+            Type=oneshot
+            ExecStart=/usr/local/sbin/orca-server-update
+        - name: orca-server-update.timer
+          content: |
+            [Unit]
+            Description=Check for a new Orca server release every 6 hours
+
+            [Timer]
+            OnCalendar=00/6:00
+            RandomizedDelaySec=30min
+            Persistent=true
+
+            [Install]
+            WantedBy=timers.target
+      loop_control:
+        label: "{{ item.name }}"
+      register: orca_timer
+
+    - name: Run the Orca server update timer
+      ansible.builtin.systemd_service:
+        name: orca-server-update.timer
+        state: started
+        enabled: true
+        daemon_reload: "{{ orca_timer is changed }}"
+      # In --check the timer above is not written yet.
+      ignore_errors: "{{ ansible_check_mode }}"

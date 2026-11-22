@@ -1,4 +1,4 @@
-# 2026-11-22 — Home router: slow Tailscale forwarding found and worked around
+# 2026-11-23 — Home router: slow Tailscale forwarding found and worked around
 
 **Who:** Claude Code (Opus 5.5), on `agent-1`  **Scope:** Home router (OpenWrt), Tailscale  **Mode:** write
 **Task:** owner, in session: find why traffic the router forwards between the tailnet and the LAN runs at

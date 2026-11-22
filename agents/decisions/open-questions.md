@@ -393,10 +393,11 @@ Page: `lab/systems/router.md`. Agent's notes, 2026-11-13, for the owner to close
   Ethernet driver sends tailscaled's merged packets to the LAN unsplit, so
   everything from the tailnet to the LAN was slow, not just the detour. It is
   worked around with a tailscaled setting (`lab/systems/router.md`, "Tailscale's
-  TCP coalescing is off"), and the detour ran at 4.6–4.7 MB/s afterwards. Still
-  open: whether the detour is needed at all. Other Fastly addresses gave
-  4.9 MB/s over the WAN, but GitHub's own range over the WAN was not measured.
-  Also open: whether to report the driver bug upstream.
+  TCP coalescing is off"), and the detour ran at 4.6–4.7 MB/s afterwards.
+  GitHub's own range over the plain WAN path swung between 2.0 and 5.0 MB/s,
+  so the owner kept the detour (`lab/systems/notes/router.md`, "Tailscale
+  forwarding bug"). Reporting the driver bug upstream is set aside for now
+  (owner, 2026-11-22).
 
 ## Docs that disagree (added 2026-11-19, during the repo clean-up)
 

@@ -28,7 +28,9 @@ When each playbook in `README.md` first ran, and what showed it worked.
   from a release relabelled 1.4.268 to 1.4.269 went through, and a second run
   changed nothing (`agents/journal/2026-11-22-orca-server-agent-1.md`). The
   keyring and `agy` tasks ran the same day: `agy --version` answers 1.5.14 and a
-  second run changed nothing (`agents/journal/2026-11-22-agy-agent-1.md`).
+  second run changed nothing (`agents/journal/2026-11-22-agy-agent-1.md`). The web-search
+  tasks ran the same day too: pi and OpenCode 2 each answered a live search, and a
+  second run changed nothing (`agents/journal/2026-11-22-web-search-agent-1.md`).
 - Pigsty: `--check` against `pigsty.yml` passed on 2026-11-06.
 
 ## History

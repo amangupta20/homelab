@@ -20,15 +20,11 @@ resource "xenorchestra_vm" "agent" {
 
   # 4 vCPUs (plan, owner 2026-11-22).
   cpus = 4
-  # Dynamic memory 256 MiB to 4 GiB (owner, 2026-11-22). memory_max sets the static and
-  # dynamic maximum together (provider v0.41.2, which reads it back as the dynamic
-  # maximum), so a static maximum above 4 GiB cannot be kept here without drift: going
-  # above 4 GiB is a change to this line, and the provider stops and starts the VM for it.
-  # The static minimum, 128 MiB, comes from the template. XenServer's documentation asks
-  # for a dynamic minimum of at least a quarter of the static maximum (1 GiB here); the
-  # owner chose 256 MiB. XCP-ng only squeezes a VM towards its minimum when the host is
-  # short of memory, so it normally runs at 4 GiB.
-  memory_max = 4096 * 1024 * 1024
+  # Dynamic memory 256 MiB to 8 GiB, with a 10 GiB static maximum (owner, 2026-11-23).
+  # Provider v0.41.2 reads the dynamic maximum here and writes both maxima on VM
+  # updates. Verify the 10 GiB static maximum in Xen Orchestra after any such update.
+  # The 128 MiB static minimum comes from the template.
+  memory_max = 8192 * 1024 * 1024
   memory_min = 256 * 1024 * 1024
   vga        = "std"
 
@@ -41,11 +37,11 @@ resource "xenorchestra_vm" "agent" {
     mac_address = local.agent.mac
   }
 
-  # 80 GB (plan, owner 2026-11-22) in whole 2 MiB blocks (see the cache-1 disk for why).
+  # 150 GB (owner, 2026-11-23) rounded up to whole 2 MiB blocks.
   disk {
     sr_id      = data.xenorchestra_sr.nvme.id
     name_label = "${local.agent.hostname}-root"
-    size       = 38147 * 2 * 1024 * 1024
+    size       = 71526 * 2 * 1024 * 1024
   }
 
   cloud_config = templatefile("${path.module}/cloud-init/user-data.yaml.tftpl", {

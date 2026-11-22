@@ -45,8 +45,8 @@ Oracle Cloud): the cache answers on the LAN only.
      The caps may add up to more than the disk; no single cap may exceed the
      instance ceiling, `STORAGE_QUOTA_BYTES` in `compose.yaml` (README, "How it
      stays inside the disk").
-2. **Route the format if it is new.** `Caddyfile` passes only `/api`, `/v2`
-   and `/debian` to the backend. A new format needs its prefix there (upstream's
+2. **Route the format if it is new.** `Caddyfile` passes each format's prefix
+   to the backend and everything else to the web UI. A new format needs its prefix there (upstream's
    `docker/Caddyfile` lists them), then `ansible-playbook cache.yml` from
    `ansible/` — expect: the stack task reports changed.
 3. **Create it.** `apps/homeserver/artifact-keeper/cache-remotes.sh` — expect:

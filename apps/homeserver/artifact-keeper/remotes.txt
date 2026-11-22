@@ -23,3 +23,4 @@ nodejs           generic 10   https://nodejs.org/dist
 github-releases  generic 30   https://github.com
 mise-apt         debian  15   https://mise.jdx.dev/deb
 antigravity      generic 10   https://storage.googleapis.com/antigravity-public
+pypi             pypi    30   https://pypi.org

@@ -388,15 +388,15 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
      2026-11-22; `agents/journal/2026-11-22-hermes-agent-1.md`). The owner's agent
      config and Hindsight are on every harness, DeepSeek Harness is installed, and
      agent-1 is on the tailnet as `tag:agent`
-     (`agents/journal/2026-11-22-agent-1-config-hindsight-dsh.md`). Still to do: the
-     desktop, the OpenBao policy, backups, and the Orca test (the owner signed in to
-     the harnesses on 2026-11-22).
+     (`agents/journal/2026-11-22-agent-1-config-hindsight-dsh.md`). The desktop runs on
+     demand, an Orca worker from the owner's Orca finished a read-only task there, and
+     Claude Code's working setup is on it (`agents/journal/2026-11-22-agent-1-desktop-orca.md`). Still to do:
+     backups (owner, 2026-11-22: decide later).
    - **Network:** on the main tailnet with its own tag (`tag:agent`, owner 2026-11-22) and
      rules in `homelab-private`'s access policy, so it reaches what its rules allow.
-   - **Access** follows `agents/rules/agent-access.md`: convenient by default, with its own
-     OpenBao policy that holds **no credential able to delete or overwrite backups**
-     (no deleting Garage or B2 keys, nothing that writes to BorgWarehouse or the Xen
-     Orchestra backup location), and no deleting or merging XCP-ng snapshots by hand.
+   - **Access** follows `agents/rules/agent-access.md`; how agent-1's credentials are set up
+     is the owner's decision (2026-11-22), recorded in `homelab-private`. No deleting or
+     merging XCP-ng snapshots by hand.
    - **Backups:** the machine is rebuilt from the repo, but as a development machine
      its home folder holds work in progress and the harnesses' logins, so it is backed
      up: a low-frequency Xen Orchestra delta backup to start, or the home folder to

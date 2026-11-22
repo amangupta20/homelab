@@ -19,6 +19,12 @@
     gh_sha256: "1dac939af3e84fb3861927c984b357531341be9403b889e4aa86e8822145a09d"
     # mise's apt signing key, fingerprint 24853EC9F655CE80B48E6C3A8B81C9D17413A06D (`gpg --show-keys`,
     # 2026-11-22; the key that signs the repository's Release file). Expires 2028-01-02.
+    # The OpenBao CLI, as on the owner's workstation; GitHub's digest for openbao_2.7.3_linux_amd64.deb
+    # (`gh release view`, 2026-11-22).
+    bao_version: "2.7.3"
+    # Cloudflare's public DNS over TLS, for the resolved drop-in below.
+    cloudflare_dns: "1.1.1.1#cloudflare-dns.com 1.0.0.1#cloudflare-dns.com 2606:4700:4700::1111#cloudflare-dns.com" # gitleaks:allow (Cloudflare's public resolvers, not lab addresses)
+    bao_sha256: "0800c71469c1d7a5d5c9fb37ce0e441cad97d9fe122dab70391c8371e290b935" # gitleaks:allow (a release file's SHA-256, not a secret)
     mise_key_sha256: "91c72340c5cc84ae2ba98c1070083feacf789b0a4a3d34b2416147769e475d96" # gitleaks:allow (the SHA-256 of mise's public signing key, not a secret)
     # The Orca server's first install; orca-server-update.timer moves it forward after that. The digest is
     # Orca's orca-server-sha256sums.txt for v1.4.269 (2026-11-22); the copy fetched through the cache matched it.
@@ -41,6 +47,34 @@
       ansible.builtin.reboot:
       when: reboot_required.stat.exists
 
+    # DNS through Cloudflare over TLS, as on the owner's workstation. The router's dnsmasq drops public
+    # records that point at tailnet addresses (rebind protection; 2026-11-22 it answered nothing for
+    # OpenBao's name where Cloudflare answered), and the owner's tools reach OpenBao and Hindsight by such names.
+    # Tailscale's MagicDNS keeps its own routing domain on tailscale0.
+    - name: systemd-resolved's settings folder
+      ansible.builtin.file:
+        path: /etc/systemd/resolved.conf.d
+        state: directory
+        mode: "0755"
+
+    - name: DNS through Cloudflare over TLS
+      ansible.builtin.copy:
+        dest: /etc/systemd/resolved.conf.d/cloudflare.conf
+        content: |
+          # Written by ansible/agent.yml.
+          [Resolve]
+          DNS={{ cloudflare_dns }}
+          DNSOverTLS=yes
+          Domains=~.
+        mode: "0644"
+      register: resolved_conf
+
+    - name: Apply the DNS settings
+      ansible.builtin.systemd_service:
+        name: systemd-resolved
+        state: restarted
+      when: resolved_conf is changed
+
     - name: Packages from Debian
       ansible.builtin.apt:
         name:
@@ -56,6 +90,8 @@
           - unzip
           - build-essential
           - python3-venv
+          # mise installs Python tools such as this repo's ansible-core with it.
+          - pipx
           # For headless browsing and screenshots; Playwright can drive it (executablePath /usr/bin/chromium).
           - chromium
           - fonts-noto-core
@@ -100,6 +136,27 @@
     - name: Install gh {{ gh_version }}
       ansible.builtin.apt:
         deb: "/var/cache/gh_{{ gh_version }}_linux_amd64.deb"
+      ignore_errors: "{{ ansible_check_mode }}"
+
+    # The CLI only: the package also ships the server's unit, which stays disabled and stopped.
+    - name: Download the OpenBao CLI {{ bao_version }}
+      ansible.builtin.get_url:
+        url: "{{ lan_cache }}/general/github-releases/openbao/openbao/releases/download/v{{ bao_version }}/openbao_{{ bao_version }}_linux_amd64.deb"
+        dest: "/var/cache/openbao_{{ bao_version }}_linux_amd64.deb"
+        checksum: "sha256:{{ bao_sha256 }}"
+        mode: "0644"
+        timeout: 300
+
+    - name: Install the OpenBao CLI {{ bao_version }}
+      ansible.builtin.apt:
+        deb: "/var/cache/openbao_{{ bao_version }}_linux_amd64.deb"
+      ignore_errors: "{{ ansible_check_mode }}"
+
+    - name: The OpenBao server stays off here
+      ansible.builtin.systemd_service:
+        name: openbao.service
+        state: stopped
+        enabled: false
       ignore_errors: "{{ ansible_check_mode }}"
 
     - name: mise's package signing key
@@ -428,6 +485,107 @@
     - name: Remember the owner's user id
       ansible.builtin.set_fact:
         orca_uid: "{{ ansible_facts['getent_passwd'][user][1] }}"
+
+    # A desktop on demand (agents/plans/home-overhaul.md, B0; owner, 2026-11-22): one TigerVNC display (:1)
+    # with Xfce, so the owner can watch an agent or take over. It runs only when used: a connection to port
+    # 5901 starts it through systemd-socket-proxyd, which hands the connection to Xvnc on localhost and exits
+    # after 30 idle minutes, taking the desktop with it. An agent that needs a screen runs
+    # `systemctl --user start desktop` and uses DISPLAY=:1. TLS plus the VNC password, which is in OpenBao
+    # (kv/homelab/agent-1-vnc); agent-1 has only LAN and tailnet addresses.
+    - name: The desktop's packages
+      ansible.builtin.apt:
+        name:
+          - tigervnc-standalone-server
+          - tigervnc-tools
+          - xfce4-session
+          - xfwm4
+          - xfce4-panel
+          - xfdesktop4
+          - xfce4-terminal
+          - thunar
+          - dbus-x11
+        install_recommends: false
+
+    - name: The owner's VNC folder
+      ansible.builtin.file:
+        path: "/home/{{ user }}/.vnc"
+        state: directory
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0700"
+
+    - name: The VNC password, from OpenBao
+      ansible.builtin.shell: >-
+        set -o pipefail &&
+        printf '%s' "$VNC_PASSWORD" | vncpasswd -f > /home/{{ user }}/.vnc/passwd.new &&
+        if cmp -s /home/{{ user }}/.vnc/passwd.new /home/{{ user }}/.vnc/passwd;
+        then rm /home/{{ user }}/.vnc/passwd.new; echo same;
+        else mv /home/{{ user }}/.vnc/passwd.new /home/{{ user }}/.vnc/passwd; fi
+      args:
+        executable: /bin/bash
+      environment:
+        VNC_PASSWORD: "{{ lookup('pipe', 'bao kv get -mount=kv -field=password homelab/agent-1-vnc') }}"
+      become_user: "{{ user }}"
+      register: vnc_passwd
+      changed_when: vnc_passwd.stdout != 'same'
+      no_log: true
+      when: not ansible_check_mode
+
+    - name: The desktop's user units
+      ansible.builtin.copy:
+        dest: "/home/{{ user }}/.config/systemd/user/{{ item.name }}"
+        content: "{{ item.content }}"
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0644"
+      loop:
+        - name: desktop.service
+          content: |
+            # Written by ansible/agent.yml. Xvnc on localhost only; vnc-proxy.socket is the way in.
+            [Unit]
+            Description=Desktop on display :1 (Xvnc and Xfce)
+
+            [Service]
+            ExecStart=/bin/sh -c 'Xvnc :1 -rfbport 5911 -localhost=1 -SecurityTypes TLSVnc -PasswordFile %h/.vnc/passwd -geometry 1600x900 -depth 24 & for i in $(seq 50); do [ -S /tmp/.X11-unix/X1 ] && break; sleep 0.2; done; exec env DISPLAY=:1 dbus-launch --exit-with-session startxfce4'
+            KillMode=control-group
+        - name: vnc-proxy.socket
+          content: |
+            # Written by ansible/agent.yml. A connection here starts the desktop.
+            [Unit]
+            Description=VNC on port 5901, starting the desktop on demand
+
+            [Socket]
+            ListenStream=5901
+
+            [Install]
+            WantedBy=sockets.target
+        - name: vnc-proxy.service
+          content: |
+            # Written by ansible/agent.yml.
+            [Unit]
+            Description=Hand VNC connections to the desktop's Xvnc
+            Requires=desktop.service
+            After=desktop.service
+
+            [Service]
+            ExecStartPre=/bin/sh -c 'for i in $(seq 100); do ss -ltn | grep -q "127.0.0.1:5911 " && exit 0; sleep 0.2; done; exit 1'
+            ExecStart=/usr/lib/systemd/systemd-socket-proxyd --exit-idle-time=30min 127.0.0.1:5911
+            ExecStopPost=/usr/bin/systemctl --user --no-block stop desktop.service
+      loop_control:
+        label: "{{ item.name }}"
+      register: desktop_units
+
+    - name: Listen for VNC connections
+      ansible.builtin.systemd_service:
+        name: vnc-proxy.socket
+        scope: user
+        state: started
+        enabled: true
+        daemon_reload: "{{ desktop_units is changed }}"
+      become_user: "{{ user }}"
+      environment:
+        XDG_RUNTIME_DIR: "/run/user/{{ orca_uid }}"
+      when: not ansible_check_mode
 
     # Orca writes and owns the unit (orca-serve.service: `orca serve --supervise --no-pairing`). It listens on all
     # interfaces, so the tailnet can reach it once agent-1 joins, and --refuse-public turns away public

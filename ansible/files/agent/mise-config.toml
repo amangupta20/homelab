@@ -27,4 +27,8 @@ node = "26"
 # place, so it too comes through the cache's npm remote; mise's `bun` backend downloads from GitHub instead.
 "npm:bun" = { version = "latest", allow_builds = ["bun"] }
 "npm:@oh-my-pi/pi-coding-agent" = "latest"
+# DeepSeek Harness, as on the owner's workstation (owner, 2026-11-22). Every release so far is a
+# prerelease (npm's `latest` tag was 0.2.2-rc.5 on 2026-11-22), which mise skips unless this tool allows
+# them; the package has no install script.
+"npm:@deepseek-ai/dsh" = { version = "latest", prerelease = true }
 "npm:playwright" = "latest"

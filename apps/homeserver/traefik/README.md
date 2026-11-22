@@ -23,7 +23,7 @@ The zone is not in this public repo: `ansible/proxy.yml` reads it from OpenBao
 
 | Name | Goes to | Sign-in |
 |---|---|---|
-| `cache.home.<zone>` | `cache-1`'s Caddy, `http://<cache-1>:80`: Artifact Keeper's web UI, and Grafana at `/grafana/` | Authentik by OIDC, in each app (`apps/homeserver/artifact-keeper/NOTES.md`, "Sign-in") |
+| `cache.home.<zone>` | `cache-1`'s Caddy, `http://<cache-1>:80`: Artifact Keeper's web UI | Authentik by OIDC, in each app (`apps/homeserver/artifact-keeper/NOTES.md`, "Sign-in") |
 | `traefik.home.<zone>` | Traefik's own dashboard (`api@internal`), at `/dashboard/` | Authentik forward-auth through the local outpost, `homelab-admins` only (`NOTES.md`, "Forward-auth") |
 | `traefik-logs.home.<zone>`, `goaccess.home.<zone>` | the view-only log dashboards in this stack: traefik-log-dashboard (`log-dashboard:3000`) and GoAccess's report (`goaccess-report:8080`, live updates at `/ws`) | Authentik forward-auth through the local outpost, `homelab-admins` only (`NOTES.md`, "Log dashboards") |
 

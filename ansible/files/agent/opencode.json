@@ -1,5 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "websearch": { "provider": "random" },
-  "permissions": [ { "action": "websearch", "resource": "*", "effect": "allow" } ]
+  "permissions": [ { "action": "websearch", "resource": "*", "effect": "allow" } ],
+  "plugin": [ "/home/aman/.hindsight/coding-agents" ]
 }

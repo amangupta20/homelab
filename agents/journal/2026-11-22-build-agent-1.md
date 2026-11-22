@@ -35,3 +35,6 @@ None: nothing existing was changed. The plan only added one resource; `run.sh` c
 
 The rest of B0 (`agents/plans/home-overhaul.md`): Hermes, the harness sign-ins (the owner's), the on-demand
 desktop, the tailnet (`tag:agent`; the owner approves its sign-in), the OpenBao policy, backups, the Orca test.
+
+**Follow-up (2026-11-22):** OpenCode 2 (`@opencode/cli` 2.3.2, `opencode` and `opencode2`) replaced opencode
+1.19.6 at the owner's request, as on his workstation (`mise uninstall npm:opencode-ai --all`); a rerun changed nothing.

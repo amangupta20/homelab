@@ -14,12 +14,14 @@ npm.package_manager = "npm"
 [tools]
 # The current LTS line, as on the owner's workstation (26.8.2 there, 2026-11-22).
 node = "26"
-# These three ship their program as a platform package that their own postinstall script puts in place.
+# These ship their program as a platform package that their own postinstall script puts in place.
 # mise runs npm with --ignore-scripts unless a package is approved (allow_builds, npm 11.16 or later; mise's
 # docs/dev-tools/backends/npm.md, v2026.11.12), so each approves only its own package.
 "npm:@anthropic-ai/claude-code" = { version = "latest", allow_builds = ["@anthropic-ai/claude-code"] }
 "npm:@openai/codex" = { version = "latest", allow_builds = ["@openai/codex"] }
-"npm:opencode-ai" = { version = "latest", allow_builds = ["opencode-ai"] }
+# OpenCode 2 (`@opencode/cli`, both `opencode` and `opencode2`), as on the owner's workstation (owner,
+# 2026-11-22); it replaced OpenCode 1 (`opencode-ai`). Orca lists the two as separate agents.
+"npm:@opencode/cli" = { version = "latest", allow_builds = ["@opencode/cli"] }
 "npm:@earendil-works/pi-coding-agent" = "latest"
 # oh-my-pi runs on Bun (its package's engines field). Bun from npm, whose own postinstall puts its binary in
 # place, so it too comes through the cache's npm remote; mise's `bun` backend downloads from GitHub instead.

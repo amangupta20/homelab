@@ -105,8 +105,12 @@ Found and worked around on 2026-11-22. The setting and the rule are in
 - **GitHub detour afterwards:** a GitHub release from `agent-1` ran at
   4.6–4.7 MB/s through the detour and at 4.9 MB/s from two other Fastly
   addresses over the plain WAN path (`curl --resolve`, three 15-second runs
-  each). GitHub's own range over the WAN was not measured, so whether the
-  detour is still needed is open.
+  each). GitHub's own range over the plain WAN path, tested the same day
+  with a temporary `ip rule` on the router (pref 5200, `lookup main`, deleted
+  after), was uneven: 5.0, 2.5, 2.5, 5.0, 2.8, 2.0 and 4.8 MB/s on the same
+  release, about 3.5 on average, and a 13 MB release at 1.3 MB/s. The detour
+  stayed at 4.6–4.7 MB/s on every run, so it stays. The direct path is no
+  longer the crawl measured on 2026-11-14.
 - **Tried earlier without effect** (handoff notes, 2026-11-23): UDP GRO
   forwarding on `wan` (`ethtool -K wan rx-udp-gro-forwarding on
   rx-gro-list off`, reverted). MSS clamping (`mtu_fix`), masquerading and

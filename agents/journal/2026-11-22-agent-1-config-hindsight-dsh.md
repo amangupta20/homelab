@@ -11,8 +11,10 @@ through Hindsight itself; install DeepSeek Harness; join the tailnet  **Skill:**
   agy, OpenCode and omp to `~/.agents/AGENTS.md`, Claude's skill links, `~/.hindsight/coding-agent.json`.
 - Hindsight: `npx @vectorize-io/hindsight-coding-agents@0.8.2 install all`, the workstation's version,
   wired Claude Code, Codex, OpenCode, OpenCode 2, pi, agy and DeepSeek Harness. 0.8.8 renamed the page
-  tools and its OpenCode plugin reported "server does not support pages", so it was replaced. omp has no
-  integration. Hermes uses its own `hindsight` plugin on the same server and bank, auto-recall off.
+  tools and its OpenCode plugin reported "server does not support pages", so it was replaced. omp, a pi
+  fork with no integration of its own, loads pi's (`extensions:` in `~/.omp/agent/config.yml`). Hermes
+  uses its own `hindsight` plugin on the same server and bank, auto-recall off, and its `SOUL.md` points
+  at `~/.agents/AGENTS.md` (DeepSeek Harness reads that file as its global instructions by itself).
 - DeepSeek Harness 0.2.2-rc.5 by mise (`ansible/files/agent/mise-config.toml`; `prerelease = true`, as
   every release is one). `~/.dsh/cordis.patch.yml`: opencode-go with DeepSeek V4.1 Flash, Parallel's
   free search, and the credential store on (the headless profile ships it off).
@@ -27,11 +29,11 @@ None: configuration in the owner's home folder only.
 ## How it was verified
 
 - Each harness's one-shot mode asked for the first Hindsight knowledge page: Claude Code, Codex, OpenCode
-  2, pi, agy and DeepSeek Harness answered "Homelab"; Hermes's `hindsight_recall` returned a memory.
+  2, pi, omp, agy and DeepSeek Harness answered "Homelab"; Hermes's `hindsight_recall` returned a memory.
+  All eight named the bank (`aman-mem`) from their global instructions alone.
 - Hermes first lacked `hindsight_client` in two of its environments; `hermes pm repair` fixed it.
 - DeepSeek Harness's copied opencode-go key got 401; the key Hermes uses here works.
 - `tailscale status`: tagged `tag:agent`; the Hindsight server answers over the tailnet.
-- `agent.yml` rerun: 0 changed.
 
 ## Still open
 

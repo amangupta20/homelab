@@ -384,9 +384,10 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
      runs there, paired with the owner's Orca and kept on Orca's latest release by a
      timer (`agents/journal/2026-11-22-orca-server-agent-1.md`), and so does the
      Antigravity CLI, `agy` (owner, 2026-11-22; `agents/journal/2026-11-22-agy-agent-1.md`).
-     Still to do: Hermes,
-     the desktop, the tailnet, the OpenBao policy, backups, and the Orca test, which
-     waits for the owner's harness sign-ins.
+     Hermes is installed by its own installer, outside Ansible and the cache (owner,
+     2026-11-22; `agents/journal/2026-11-22-hermes-agent-1.md`). Still to do:
+     the desktop, the tailnet, the OpenBao policy, backups, and the Orca test (the
+     owner signed in to the harnesses on 2026-11-22).
    - **Network:** on the main tailnet with its own tag (`tag:agent`, owner 2026-11-22) and
      rules in `homelab-private`'s access policy, so it reaches what its rules allow.
    - **Access** follows `agents/rules/agent-access.md`: convenient by default, with its own
@@ -397,6 +398,11 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
      its home folder holds work in progress and the harnesses' logins, so it is backed
      up: a low-frequency Xen Orchestra delta backup to start, or the home folder to
      Garage. Its harness logins are credentials, so the backup is treated like one.
+     **To explore, not decided** (owner, 2026-11-22: "all that is just theory for now"):
+     backing up only what cannot be rebuilt instead of whole-VM snapshots, for example
+     targeted config backups or a file-level tool such as Kopia; or a second disk that
+     holds the work (home folder, repositories), so the system disk is backed up or
+     snapshotted on its own without churning snapshots of the work.
    — gate: the VM is created by `tofu apply` and configured by Ansible from this repo;
    a second Ansible run changes nothing; an Orca worker started on it from the owner's
    Orca finishes a read-only task; its OpenBao token is refused when it asks for a

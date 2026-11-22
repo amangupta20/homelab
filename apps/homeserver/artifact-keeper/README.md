@@ -1,9 +1,8 @@
 # Artifact Keeper on cache-1
 
-The LAN's pull-through cache for apt packages, container images, npm packages
-and plain files (`agents/plans/package-and-image-cache.md`). One Compose stack on its own VM, `cache-1`
-(`iac/`), at `http://<cache-1>` on the LAN only; the address is in
-`lab/inventory/network.md`.
+The LAN's pull-through cache for apt packages, container images, npm and Python packages and plain files
+(`agents/plans/package-and-image-cache.md`). One Compose stack on its own VM, `cache-1` (`iac/`), at
+`http://<cache-1>` on the LAN only; the address is in `lab/inventory/network.md`.
 
 **Status:** running (`agents/journal/2026-11-16-deploy-artifact-keeper.md`).
 Clients: `oob-1` (its own apt sources) and every VM in the inventory's `lan_cache_clients`
@@ -27,6 +26,7 @@ by OIDC (`NOTES.md`, "Sign-in"). apt and Docker clients need none.
 | `npm` | `registry.npmjs.org` | 30 GB | `registry=http://<cache-1>/npm/npm/` in `.npmrc`; package links come back as `https://cache.home.<zone>/npm/npm/…` (used by `agent-1`) |
 | `nodejs` | `nodejs.org/dist` | 10 GB | `http://<cache-1>/general/nodejs/<version>/<file>`; mise's `node.mirror_url` (used by `agent-1`) |
 | `github-releases` | `github.com` | 30 GB | `http://<cache-1>/general/github-releases/<owner>/<repo>/releases/download/<tag>/<file>` (gh on `agent-1`). GitHub CLI's apt repository is refused: `NOTES.md`, "Quirks" |
+| `pypi` | `pypi.org` | 30 GB | `index-url = http://<cache-1>/pypi/pypi/simple/` with `trusted-host = <cache-1>` in `pip.conf` (pip refuses a plain-HTTP index otherwise); the index reports upload times. No client yet |
 | `antigravity` | `storage.googleapis.com/antigravity-public` | 10 GB | `http://<cache-1>/general/antigravity/<path from Google's manifest>` (the Antigravity CLI on `agent-1`, `ansible/files/agent/agy-update.sh`) |
 
 Clients today: `oob-1` (`ansible/oob.yml`); `proxy-1` and `agent-1`, apt and Docker Hub (`ansible/cache-client.yml`).

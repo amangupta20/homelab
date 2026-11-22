@@ -615,7 +615,7 @@
         mode: "0755"
 
     # Orca's unit sets PATH to the system folders only, which hides the harnesses mise installs; and nothing caps
-    # a terminal's memory by default, so one runaway job could take the whole 4 GiB VM into the OOM killer
+    # a terminal's memory by default, so one runaway job could exhaust the VM's memory
     # (remote-servers.mdx, "Limit terminal memory on a Linux server"). 3G is a first guess, not measured.
     - name: The Orca server's PATH and terminal memory limits
       ansible.builtin.copy:

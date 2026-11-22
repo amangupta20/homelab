@@ -318,8 +318,9 @@ would not have measured normal use.
 5. **The month's trial, measured.** At least a month of normal use after step
    3: hit rate, bytes served from disk against bytes fetched upstream, `df`
    on the volume against the cap, idle memory, and every manual clean-up.
-   The cache's dashboard collects all but the clean-ups since 2026-11-17
-   (`apps/homeserver/artifact-keeper/NOTES.md`, "Dashboard").
+   The cache's dashboard collected all but the clean-ups from 2026-11-17 until its removal
+   on 2026-11-22; the backend's counters are still served on `METRICS_PORT=9091`
+   (`apps/homeserver/artifact-keeper/NOTES.md`, "Metrics").
    — gate: the numbers in an `agents/journal/` entry and in `lab/inventory/services.md`
    or a new `lab/systems/` page, and the owner's keep-or-change decision written
    in "Decisions".

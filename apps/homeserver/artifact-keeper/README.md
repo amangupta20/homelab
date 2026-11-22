@@ -8,7 +8,7 @@ The LAN's pull-through cache for apt packages, container images, npm and Python 
 Clients: `oob-1` (its own apt sources) and every VM in the inventory's `lan_cache_clients`
 group (`ansible/cache-client.yml`; `proxy-1` first).
 
-**Sign-in:** the web UI and Grafana, at `https://cache.home.<zone>/`, through Authentik
+**Sign-in:** the web UI, at `https://cache.home.<zone>/`, through Authentik
 by OIDC (`NOTES.md`, "Sign-in"). apt and Docker clients need none.
 
 ## Repositories
@@ -37,4 +37,4 @@ Bind mounts on the VM: `/srv/artifact-keeper/{postgres,storage,backups,plugins}`
 No backups by design: the files refill from upstream and the settings come back
 from `cache-remotes.sh` (`agents/decisions/backup-tiers.md`, rebuildable state).
 
-Everything else, word for word, is in `NOTES.md`: "Files", "Sign-in", "How it stays inside the disk", "Dashboard", "Deduplication", "Quirks".
+Everything else, word for word, is in `NOTES.md`: "Files", "Sign-in", "How it stays inside the disk", "Metrics", "Deduplication", "Quirks".

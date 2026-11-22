@@ -20,8 +20,5 @@
 	reverse_proxy /general/* backend:8080
 	# Python packages (PyPI), no client yet (first meant for Hermes on agent-1), added 2026-11-22.
 	reverse_proxy /pypi/* backend:8080
-	# Grafana, the cache's dashboard (compose.yaml, "Monitoring").
-	redir /grafana /grafana/
-	reverse_proxy /grafana/* grafana:3000
 	reverse_proxy web:3000
 }

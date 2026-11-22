@@ -409,8 +409,3 @@ Page: `lab/systems/router.md`. Agent's notes, 2026-11-13, for the owner to close
   `credentialsSaved: true` for the saved connection, and it connected without a
   password being typed (`initConnection`). Which should it be? Both are left as
   they are.
-- `ansible/NOTES.md` says a second run of `cache.yml` changed nothing (2026-11-16). On 2026-11-22 two
-  reruns each reported the "Start or update the stack" task changed: `docker compose up` starts the
-  `pg-certs` one-shot container every time, and the task's `changed_when` counts "Started"
-  (`agents/journal/2026-11-22-cache-1-memory-and-grafana.md`). Whether it was ever idempotent, and whether
-  to fix `changed_when` or the NOTES line, is open. Both are left as they are.

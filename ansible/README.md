@@ -37,7 +37,9 @@ When each playbook first ran, and what showed it worked: `NOTES.md`.
   (installed, not joined) and mise, which installs Node and the coding-agent harnesses through the LAN cache
   (`files/agent/mise-config.toml`; `agents/journal/2026-11-22-build-agent-1.md`); and Orca's server-only build as
   the owner's user service, which `files/agent/orca-server-update.sh` keeps on Orca's latest release
-  (`agents/journal/2026-11-22-orca-server-agent-1.md`).
+  (`agents/journal/2026-11-22-orca-server-agent-1.md`); and the Antigravity CLI (`agy`) with an unencrypted
+  keyring for its sign-in, kept current by `files/agent/agy-update.sh`
+  (`agents/journal/2026-11-22-agy-agent-1.md`).
 
 ## Adding a host
 

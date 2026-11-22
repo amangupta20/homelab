@@ -67,8 +67,11 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
   DNS settings from the tailnet. A firewall zone `tailscale`, attached to
   the device `tailscale0`, accepts traffic from the tailnet and forwards
   between it and the LAN; who on the tailnet may use that is set by the
-  tailnet's access rules, kept in the private repo. Reaching a LAN machine
-  from outside through it is **UNTESTED**.
+  tailnet's access rules, kept in the private repo.
+- **Tailscale's TCP coalescing is off** (`TS_TUN_DISABLE_TCP_GRO=true` in
+  `/etc/init.d/tailscale`): with it on, this build's Ethernet driver slows all
+  tailnet-to-LAN traffic, the GitHub detour too, to about 0.1 MB/s. No update
+  fixes it (`lab/systems/notes/router.md`, "Tailscale forwarding bug").
 - **Detour for GitHub downloads:** the router accepts routes from the
   tailnet, and the Remote VPS advertises the address range GitHub serves
   release and raw files from, so that traffic would leave through the VPS
@@ -118,6 +121,8 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
   router then sent tailnet traffic out of its WAN until Tailscale was
   restarted (`ip route show table 52`, 2026-11-14). With the zone's `device`
   option instead, the routes survived a reload (checked the same day).
+- **Keep `TS_TUN_DISABLE_TCP_GRO=true` in `/etc/init.d/tailscale`.** An
+  upgrade drops it; restore: `lab/systems/notes/router.md`, "Tailscale forwarding bug".
 - **Do not run `apk upgrade`.** It pulls everything to the feed's newer
   versions, the same mismatch on a larger scale. Kernel modules never come
   from the feed: this build's kernel does not match it, and the release

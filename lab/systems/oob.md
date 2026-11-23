@@ -113,24 +113,12 @@ reach LAN addresses directly (for example `10.22.33.1`). SSH to the Pi itself:
 
 ## DNS resolver
 
-Technitium runs here in Docker (the owner's choice: DNS is the Pi's only other
-job, so it carries the home's primary resolver; `agents/plans/home-overhaul.md`,
-B4b). What `ansible/oob.yml` adds for it, checked over SSH when it was deployed
-(`agents/journal/2026-11-23-technitium-oob-1.md`):
-
-- Firewall: DNS (UDP and TCP 53) and the console (TCP 5380) from the home subnet.
-  The file now replaces only its own table (`table inet filter` /
-  `delete table inet filter`) instead of `flush ruleset`, which would delete
-  Tailscale's tables on a reload; after the change all seven tables were still
-  there (`nft list tables`) and the route stayed primary.
-- Docker from Debian through the LAN cache, with Docker's own firewall rules off
-  (`/etc/docker/daemon.json`), so `nftables.conf` stays the only firewall.
-- `cgroup_enable=memory` in `/boot/firmware/cmdline.txt`, so the container's 640 MB
-  cap is enforced (it was not before: `apps/homeserver/technitium/NOTES.md`).
-  Previous file kept as `/root/cmdline.txt.bak-20261123`, the previous firewall file
-  as `/root/nftables.conf.bak-20261123`.
-- After the reboot this needed, Tailscale, the route, the firewall and Technitium
-  came back without help (`tailscale status --json`, `nft list tables`, `dig`).
+Technitium runs here in Docker as the primary node of the home DNS cluster (the
+owner's choice: DNS is the Pi's only other job; `agents/plans/home-overhaul.md`,
+B4b; `apps/homeserver/technitium/`). For it, `ansible/oob.yml` opens DNS and the
+console to the home subnet and the cluster's port to the router, runs Docker with
+its own firewall rules off, and turns on the kernel's memory controller. What each
+change is, why, and how it was checked: `lab/systems/notes/oob.md`.
 
 ## Rules
 

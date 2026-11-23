@@ -8,8 +8,9 @@ deployed by `ansible/oob.yml`; step B4b of `agents/plans/home-overhaul.md`, wher
 the design (Pi primary, VPS fallback, one cluster) and its measurements live.
 
 **Status:** running on the Pi
-(`agents/journal/2026-11-23-technitium-oob-1.md`). No client uses it yet: DHCP
-and the tailnet still point at the router until the VPS node exists.
+(`agents/journal/2026-11-23-technitium-oob-1.md`), as the primary node of the
+DNS cluster (the VPS joins as secondary: `apps/vps/technitium/`). The router hands
+it out by DHCP and forwards to it (`lab/systems/router.md`, "DNS").
 
 ## Address and sign-in
 
@@ -26,8 +27,8 @@ a route on the home proxy are not set up.
 | `compose.yaml` | the container: pinned by digest, host networking, 640 MB memory cap |
 | `allowlist.txt` | domains the blocklists may not block; the playbook makes the live list match it |
 
-Blocklists, upstreams, who may query, the allowlist and the `home` zone are set
-by `ansible/oob.yml` through Technitium's API on every run, so a change made in
+Blocklists, upstreams, who may query, the allowlist, the `home` zone and the
+cluster are set by `ansible/oob.yml` through Technitium's API on every run, so a change made in
 the console is undone by the next run. Change them here and in the playbook.
 
 ## Data and backups

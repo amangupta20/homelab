@@ -18,6 +18,7 @@
   become: true
   vars:
     home_subnet: "10.22.33.0/24"
+    router_address: 10.22.33.1
     tailscale_port: 41641
     # apt goes through the LAN cache on cache-1 (apps/homeserver/artifact-keeper,
     # owner 2026-11-17). Set to "" and rerun to point the Pi straight at the
@@ -34,6 +35,11 @@
     dns_dir: /opt/technitium
     dns_api: http://127.0.0.1:5380/api
     lab_zone: "{{ lookup('pipe', 'bao kv get -mount=kv -field=zone general/cloudflare') }}"
+    # The Technitium cluster: this Pi is its primary, the VPS
+    # (apps/vps/technitium/) joins as secondary. dns.home.arpa is the special-use
+    # home domain (RFC 8375), so the cluster's own zones name nothing public.
+    dns_cluster_domain: dns.home.arpa
+    dns_cluster_catalog: "cluster-catalog.{{ dns_cluster_domain }}"
     # What the repo controls in Technitium (agents/plans/home-overhaul.md, B4b).
     # Upstreams are written with their address, so no lookup is needed to reach them.
     dns_settings:
@@ -46,9 +52,10 @@
         - https://dns.quad9.net/dns-query (9.9.9.9) # gitleaks:allow (Quad9's public resolver, not a lab address)
       forwarderProtocol: Https
       recursion: UseSpecifiedNetworkACL
-      # Loopback and the home subnet. Tailnet clients arrive from the router's
-      # address (its Tailscale translates them), so they are inside it.
-      recursionNetworkACL: ["127.0.0.0/8", "::1", "{{ home_subnet }}"]
+      # Loopback and the home subnet; tailnet clients reach the Pi as the router
+      # (its Tailscale translates them). Tailscale's ranges are for the VPS node,
+      # which takes these settings from the cluster and sees tailnet addresses.
+      recursionNetworkACL: ["127.0.0.0/8", "::1", "{{ home_subnet }}", "100.64.0.0/10", "fd7a:115c:a1e0::/48"]
       enableBlocking: true
     # The settings as the API takes them: lists comma-separated, booleans in lower case.
     dns_settings_form: >-
@@ -140,6 +147,9 @@
               # Technitium: DNS and its web console, from the home subnet only.
               ip saddr {{ home_subnet }} udp dport 53 accept
               ip saddr {{ home_subnet }} tcp dport { 53, 5380 } accept
+              # The cluster's HTTPS API, for the VPS node; it arrives through the
+              # router's subnet route as the router's own address.
+              ip saddr {{ router_address }} tcp dport 53443 accept
               iifname "tailscale0" accept
             }
             chain forward {
@@ -426,6 +436,58 @@
           overwrite: "true"
       when: not ansible_check_mode
       changed_when: false
+
+    # Once: make this server the cluster's primary. Turns on the HTTPS API on
+    # port 53443 with a self-signed certificate; the HTTP API above keeps working
+    # (both checked on a throwaway pair of 15.6.2 containers on agent-1).
+    - name: Read the cluster's state
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/admin/cluster/state"
+        method: POST
+        body_format: form-urlencoded
+        body: { token: "{{ dns_login.json.token }}" }
+      register: dns_cluster
+      when: not ansible_check_mode
+
+    - name: Start the cluster with this Pi as primary
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/admin/cluster/init"
+        method: POST
+        body_format: form-urlencoded
+        body:
+          token: "{{ dns_login.json.token }}"
+          clusterDomain: "{{ dns_cluster_domain }}"
+          primaryNodeIpAddresses: "{{ ansible_host }}"
+      when:
+        - not ansible_check_mode
+        - not (dns_cluster.json.response.clusterInitialized | default(false))
+      changed_when: true
+
+    # Zones do not sync with the settings; a member of the cluster's catalog zone
+    # is copied to every secondary node as a secondary zone.
+    - name: Read the zones again, with their catalog
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/zones/list"
+        method: POST
+        body_format: form-urlencoded
+        body: { token: "{{ dns_login.json.token }}" }
+      register: dns_zones_now
+      when: not ansible_check_mode
+
+    - name: Put the home zone in the cluster's catalog
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/zones/options/set"
+        method: POST
+        body_format: form-urlencoded
+        body:
+          token: "{{ dns_login.json.token }}"
+          zone: "home.{{ lab_zone }}"
+          catalog: "{{ dns_cluster_catalog }}"
+      when:
+        - not ansible_check_mode
+        - (dns_zones_now.json.response.zones | selectattr('name', 'equalto', 'home.' ~ lab_zone)
+           | map(attribute='catalog') | first | default(none)) != dns_cluster_catalog
+      changed_when: true
 
     - name: Sign out of Technitium's API
       ansible.builtin.uri:

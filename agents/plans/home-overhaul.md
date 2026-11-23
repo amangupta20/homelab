@@ -504,7 +504,10 @@ because other pages cite them.
      whichever resolver answers; a stopped test container on another VM wakes through
      its route; the dashboards ask for Authentik.
    - **4b. Resolver: Technitium DNS Server** on two servers (owner, 2026-11-23). Nothing
-     in 4a waits on it. Researched 2026-11-23 by three research agents and checked by
+     in 4a waits on it. **Progress:** the Pi's server runs since 2026-11-23, deployed
+     by `ansible/oob.yml` (`apps/homeserver/technitium/`,
+     `agents/journal/2026-11-23-technitium-oob-1.md`); no client uses it yet. Next: the
+     VPS node, the cluster, then DHCP and the tailnet's nameservers. Researched 2026-11-23 by three research agents and checked by
      hand where noted; AdGuard Home, Pi-hole and Blocky were compared and set aside
      for now (owner).
      - **Two servers, same software** (owner, 2026-11-23): `oob-1`, the Raspberry Pi,
@@ -557,11 +560,23 @@ because other pages cite them.
        cluster views, at home behind Authentik with its own narrow API token; not on
        the VPS (owner). Technitium's own console stays for settings. The repo, not
        either UI, is where lists live.
-     - **The Pi:** Technitium runs on arm64 (Docker image for `arm64` and `arm/v7`,
-       Docker Hub, 2026-11-23; the native installer fetches .NET 10 from Microsoft,
-       which the LAN cache does not proxy yet). Its firewall opens DNS to the LAN, which
-       changes it from a single-purpose recovery box (`lab/systems/oob.md`). The Pi and
-       its card are rebuilt from code, so a dead card is a reflash (owner, 2026-11-23).
+     - **The Pi:** Technitium in Docker (owner, 2026-11-23: one image pin for the Pi
+       and the VPS), through the LAN cache's Docker Hub remote, with host networking
+       and Docker's own firewall rules off; details in `lab/systems/oob.md`, "DNS
+       resolver". Its firewall opens DNS to the LAN, which changes it from a
+       single-purpose recovery box. The Pi and its card are rebuilt from code, so a
+       dead card is a reflash (owner, 2026-11-23).
+     - **The Pi is on the other tailnet** (`lab/systems/oob.md`), so the main tailnet
+       reaches it like any home VM: by its LAN address through the router's subnet
+       route. Checked over SSH on 2026-11-23: the VPS takes subnet routes and sends
+       the Pi's address into the tailnet; the Pi's own Tailscale claims only its one
+       peer and `100.100.100.100` (`ip route show table 52`), so traffic to the VPS
+       leaves through the router. So the tailnet's nameservers are the Pi's LAN
+       address and the VPS's tailnet address, and the cluster talks the same way. The
+       Pi sees the VPS and tailnet clients as the router; its firewall opens the
+       cluster port to the router's address when the VPS node is added. The main
+       tailnet's access rules must allow both paths (not checked; they are in
+       `homelab-private`). Cost: all of this depends on the router's Tailscale.
      — gate: both servers answer the same for a blocked name, an allowlisted name and a
      `home.<domain>` name; stopping the Pi leaves LAN and tailnet clients resolving
      through the VPS; the Pi stays under its memory budget through a week of daily list

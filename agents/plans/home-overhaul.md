@@ -508,8 +508,8 @@ because other pages cite them.
      by `ansible/oob.yml` (`apps/homeserver/technitium/`,
      `agents/journal/2026-11-23-technitium-oob-1.md`); since then it is the cluster's
      primary, and the router hands it out first by DHCP with itself second, forwarding
-     its own DNS to the Pi first (owner's interim choice; `lab/systems/router.md`,
-     "DNS"). The VPS node is defined in `apps/vps/technitium/`. Next: deploy and join
+     its own DNS to the Pi first (owner's interim choice; `lab/systems/notes/router.md`,
+     "DNS through the Pi"). The VPS node is defined in `apps/vps/technitium/`. Next: deploy and join
      it, put it in DHCP instead of the router, then the tailnet's nameservers. Researched 2026-11-23 by three research agents and checked by
      hand where noted; AdGuard Home, Pi-hole and Blocky were compared and set aside
      for now (owner).

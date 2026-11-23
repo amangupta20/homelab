@@ -7,7 +7,8 @@
 # (kv/general/cloudflare, fields zone and zonedns), and so are Authentik's
 # address and the outpost's token (kv/general/authentik field domain,
 # kv/homelab/authentik-outpost-home field token), and the log dashboard's
-# agent token (kv/homelab/traefik-log-dashboard field token); the tokens are
+# agent token (kv/homelab/traefik-log-dashboard field token), and Resolvr's
+# Technitium token and seed password (kv/homelab/resolvr); the tokens are
 # written to proxy-1 as root-only files and never appear in the output.
 - name: Traefik on proxy-1
   hosts: proxy-1
@@ -109,6 +110,27 @@
       vars:
         routes_wanted: "{{ query('fileglob', stack_src ~ '/routes/*.yml.j2') | map('basename') | map('regex_replace', '\\.j2$', '') | list }}"
 
+    # Resolvr runs as user 1000 (compose.yaml), so its folder and options file are that user's.
+    - name: Resolvr's data folder
+      ansible.builtin.file:
+        path: "{{ data_dir }}/resolvr"
+        state: directory
+        owner: "1000"
+        group: "1000"
+        mode: "0700"
+
+    # The add-on options file: Technitium's address and a view-only API token (user `resolvr` on the
+    # Pi's Technitium; apps/homeserver/traefik/NOTES.md, "Resolvr").
+    - name: Resolvr's Technitium connection from OpenBao
+      ansible.builtin.copy:
+        dest: "{{ stack_dir }}/secrets/resolvr_options"
+        content: "{{ {'technitium_url': 'http://' ~ hostvars['oob-1'].ansible_host ~ ':5380', 'technitium_token': lookup('pipe', 'bao kv get -mount=kv -field=technitium_token homelab/resolvr')} | to_json }}"
+        owner: "1000"
+        group: "1000"
+        mode: "0400"
+      no_log: true
+      register: resolvr_options
+
     # Traefik runs as root in its container, so the file can stay root-only.
     - name: Cloudflare token from OpenBao
       ansible.builtin.copy:
@@ -139,6 +161,7 @@
         content: |
           AUTHENTIK_HOST=https://{{ lookup('pipe', 'bao kv get -mount=kv -field=domain general/authentik') }}
           LOG_AGENT_TOKEN={{ lookup('pipe', 'bao kv get -mount=kv -field=token homelab/traefik-log-dashboard') }}
+          RESOLVR_SEED_PASSWORD={{ lookup('pipe', 'bao kv get -mount=kv -field=seed_password homelab/resolvr') }}
         owner: root
         group: root
         mode: "0600"
@@ -169,6 +192,15 @@
         chdir: "{{ stack_dir }}"
       when:
         - goaccess_config.changed
+        - not compose_up.changed | default(false)
+        - not ansible_check_mode
+
+    - name: Restart Resolvr when its Technitium connection changed
+      ansible.builtin.command:
+        cmd: docker compose restart resolvr
+        chdir: "{{ stack_dir }}"
+      when:
+        - resolvr_options.changed
         - not compose_up.changed | default(false)
         - not ansible_check_mode
 

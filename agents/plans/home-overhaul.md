@@ -560,7 +560,8 @@ because other pages cite them.
        turned on. Port 53 and Technitium's console on the VPS listen on the tailnet
        only. Queries from home over the subnet route arrive as the router's address
        (its Tailscale translates source addresses, `NoSNAT: false`, 2026-11-23).
-     - **Dashboard, to try:** Resolvr (`bassem-elsodany/resolvr-dns-dashboard`, MIT,
+     - **Dashboard, running on `proxy-1` since 2026-11-23** (`apps/homeserver/traefik/NOTES.md`,
+       "Resolvr"): Resolvr (`bassem-elsodany/resolvr-dns-dashboard`, MIT,
        v1.3.2 from 2026-10-12, GitHub), a read-mostly dashboard on Technitium's API with
        cluster views, at home behind Authentik with its own narrow API token; not on
        the VPS (owner). Technitium's own console stays for settings. The repo, not

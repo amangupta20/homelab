@@ -1,0 +1,23 @@
+# Resolvr, the dashboard for the Technitium DNS cluster (in this stack), behind Authentik's forward-auth
+# (members of homelab-admins only; Authentik application `resolvr-home`). Passing Authentik is the sign-in:
+# Resolvr trusts requests from Traefik's address on its network (compose.yaml). Rendered by
+# ansible/proxy.yml with the zone from OpenBao. The `authentik` middleware and the `authentik-outpost`
+# service are defined in dashboard.yml.
+http:
+  routers:
+    resolvr:
+      rule: "Host(`resolvr.home.{{ lab_zone }}`)"
+      entryPoints: [websecure]
+      middlewares: [authentik@file]
+      service: resolvr
+    # The outpost's own paths on this hostname: the sign-in callback and sign-out.
+    resolvr-outpost:
+      rule: "Host(`resolvr.home.{{ lab_zone }}`) && PathPrefix(`/outpost.goauthentik.io/`)"
+      priority: 100
+      entryPoints: [websecure]
+      service: authentik-outpost@file
+  services:
+    resolvr:
+      loadBalancer:
+        servers:
+          - url: "http://resolvr:8787"

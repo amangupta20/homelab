@@ -148,3 +148,29 @@ When the facts in `README.md` were true from, or were checked.
 - Forward-auth for the dashboard set up on 2026-11-21 (`agents/journal/2026-11-21-home-traefik-dashboard-sign-in.md`).
 - traefik-log-dashboard and GoAccess set up and checked on 2026-11-21 (`agents/journal/2026-11-21-traefik-log-dashboard.md`).
 - Access-log rotation and the forward-auth header settings on 2026-11-22 (`agents/journal/2026-11-22-traefik-tidy-up.md`).
+
+## Resolvr
+
+A dashboard for the Technitium DNS cluster (`apps/homeserver/technitium/`), MIT, release 1.3.2 from 2026-10-12
+(GitHub releases, read 2026-11-23), at `resolvr.home.<zone>`. Set up 2026-11-23 at the owner's request; here on
+`proxy-1` for now, which has room (1 CPU, about 477 MB free before it, `free -m`), and may move to `docker-1`.
+
+- **One container:** `ghcr.io/bassem-elsodany/resolvr`, the image whose API also serves the web app
+  (`docker/resolvr.Dockerfile`), through the cache's ghcr remote, amd64 and arm64.
+- **No second login.** Resolvr's Home Assistant add-on mode, switched on with `RESOLVR_ADDON=true`, signs in any
+  request whose connection comes from a trusted address, as admin, and judges that by the socket's peer, not a
+  header (`backend/src/auth.ts`, `attachUser`; `backend/src/addon.ts`). The only trusted address is Traefik's fixed
+  `172.31.250.2` on the `resolvr` network, which only Traefik and Resolvr join. So passing Authentik's
+  forward-auth (`homelab-admins`; Authentik provider and application `resolvr-home`) is the sign-in. Resolvr's own
+  seeded `admin` and `viewer` accounts get a random password from OpenBao (`kv/homelab/resolvr`, `seed_password`).
+- **Its access to Technitium:** user `resolvr` on the Pi, view-only through the built-in Everyone group plus view on
+  Settings and Administration (for the server and cluster pages); an API token named `resolvr-proxy-1` in OpenBao
+  (`kv/homelab/resolvr`, `technitium_token`), written by `ansible/proxy.yml` into the add-on options file. Resolvr's
+  admin actions (block a domain, edit feeds) are refused by Technitium for this user; lists come from the repo.
+- **Checked on 2026-11-23** (`curl`, `docker exec`): without a session `/` and `/api/auth/me` answer 302 to
+  Authentik's sign-in, also with a forged `X-Remote-User-Name`; from Traefik's address `/api/auth/me` returns the
+  admin user; from the `proxy-1` host it answers 401 (reachable, not trusted); `/api/status` reports it connected
+  to `oob-1.dns.home.arpa`, version 15.6.2, cluster initialised. With the token, Technitium refused a settings
+  change ("Access was denied"). A browser sign-in by the owner: UNTESTED.
+- **Not yet:** its query-log panels (Resolution, Clients, Query Logs) need one of Technitium's query-logging apps,
+  which the Pi does not run (it would write every query to the SD card).

@@ -7,6 +7,12 @@
 #
 # Without TS_AUTHKEY the Tailscale login is skipped; log in once by hand instead
 # (lab/systems/oob.md, "Rebuild").
+#
+# It also runs the home's primary DNS resolver, Technitium, in Docker
+# (apps/homeserver/technitium/). The lab's zone and the admin password are read
+# from OpenBao on this machine (kv/general/cloudflare field zone,
+# kv/homelab/technitium field admin_password); the password reaches the Pi only
+# as a root-only file and never appears in the output.
 - name: Out-of-band box
   hosts: oob
   become: true
@@ -21,6 +27,42 @@
     apt_security: "{{ apt_cache ~ '/debian-security' if apt_cache else 'http://deb.debian.org/debian-security' }}"
     apt_raspi: "{{ apt_cache ~ '/raspi' if apt_cache else 'http://archive.raspberrypi.com/debian' }}"
     apt_tailscale: "{{ apt_cache ~ '/tailscale-apt' if apt_cache else 'https://pkgs.tailscale.com/stable/debian' }}"
+    # Docker Hub pulls go through the same cache; Docker falls back to Docker Hub
+    # when it fails (as in ansible/cache-client.yml).
+    docker_cache: "{{ 'http://10.22.33.137' if apt_cache else '' }}"
+    dns_src: "{{ playbook_dir }}/../apps/homeserver/technitium"
+    dns_dir: /opt/technitium
+    dns_api: http://127.0.0.1:5380/api
+    lab_zone: "{{ lookup('pipe', 'bao kv get -mount=kv -field=zone general/cloudflare') }}"
+    # What the repo controls in Technitium (agents/plans/home-overhaul.md, B4b).
+    # Upstreams are written with their address, so no lookup is needed to reach them.
+    dns_settings:
+      blockListUrls:
+        - https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/ultimate.txt
+        - https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.medium.txt
+      blockListUpdateIntervalHours: 24
+      forwarders:
+        - https://cloudflare-dns.com/dns-query (1.1.1.1) # gitleaks:allow (Cloudflare's public resolver, not a lab address)
+        - https://dns.quad9.net/dns-query (9.9.9.9) # gitleaks:allow (Quad9's public resolver, not a lab address)
+      forwarderProtocol: Https
+      recursion: UseSpecifiedNetworkACL
+      # Loopback and the home subnet. Tailnet clients arrive from the router's
+      # address (its Tailscale translates them), so they are inside it.
+      recursionNetworkACL: ["127.0.0.0/8", "::1", "{{ home_subnet }}"]
+      enableBlocking: true
+    # The settings as the API takes them: lists comma-separated, booleans in lower case.
+    dns_settings_form: >-
+      {% set f = {} %}{% for k, v in dns_settings.items() %}{% set _ = f.update({k:
+      (v | join(',')) if (v is iterable and v is not string) else
+      ((v | string | lower) if v is boolean else (v | string))}) %}{% endfor %}{{ f }}
+    # Settings whose live value differs from dns_settings (read just before).
+    dns_changed_keys: >-
+      {% set c = dns_current.json.response %}{% set out = [] %}{% for k, v in dns_settings.items() %}{%
+      if ((c[k] if c[k] is not none else []) | string) != (v | string) %}{% set _ = out.append(k) %}{%
+      endif %}{% endfor %}{{ out }}
+    # allowlist.txt without comments and blank lines, and the live allowed list.
+    dns_allow_wanted: "{{ lookup('file', dns_src ~ '/allowlist.txt').splitlines() | map('regex_replace', '#.*$', '') | map('trim') | select | list }}"
+    dns_allow_have: "{{ (dns_allowed_now.content | default('')).splitlines() | map('trim') | select | list }}"
   tasks:
     # The break-glass key works when OpenBao or the main tailnet does not. The
     # workstation key is the daily one until the SSH certificate authority exists.
@@ -83,7 +125,10 @@
         dest: /etc/nftables.conf
         content: |
           #!/usr/sbin/nft -f
-          flush ruleset
+          # Replaces only this table: Tailscale keeps its own tables next to it, and
+          # `flush ruleset` would delete them (and the subnet route's rules) on reload.
+          table inet filter
+          delete table inet filter
           table inet filter {
             chain input {
               type filter hook input priority filter; policy drop;
@@ -92,6 +137,9 @@
               meta l4proto { icmp, ipv6-icmp } accept
               tcp dport 22 accept
               udp dport {{ tailscale_port }} accept
+              # Technitium: DNS and its web console, from the home subnet only.
+              ip saddr {{ home_subnet }} udp dport 53 accept
+              ip saddr {{ home_subnet }} tcp dport { 53, 5380 } accept
               iifname "tailscale0" accept
             }
             chain forward {
@@ -161,6 +209,231 @@
       when:
         - ts_status.rc == 0
         - (ts_status.stdout | from_json).BackendState | default('') == 'Running'
+      changed_when: false
+
+    # ---- Technitium, the home's primary DNS resolver ----
+
+    # Written before Docker is installed, so its first start already reads it.
+    # iptables off: the only container uses host networking, so Docker needs no
+    # rules, and with them on it would set the forward policy to drop and break the
+    # subnet route. nftables.conf above stays the only firewall.
+    - name: Docker's configuration folder
+      ansible.builtin.file:
+        path: /etc/docker
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Docker's configuration (registry mirror, no firewall rules)
+      ansible.builtin.copy:
+        dest: /etc/docker/daemon.json
+        content: "{{ ({'iptables': false, 'ip6tables': false} | combine({'registry-mirrors': [docker_cache], 'insecure-registries': [docker_cache | regex_replace('^https?://', '')]} if docker_cache else {})) | to_nice_json }}\n"
+        owner: root
+        group: root
+        mode: "0644"
+      register: docker_config
+
+    # Debian's own Docker and Compose, as on proxy-1 (ansible/proxy.yml).
+    - name: Install Docker and Compose from Debian
+      ansible.builtin.apt:
+        name: [docker.io, docker-compose]
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Restart Docker to read it
+      ansible.builtin.systemd_service:
+        name: docker
+        state: restarted
+        enabled: true
+      when: docker_config.changed and not ansible_check_mode
+
+    # Raspberry Pi kernels leave the memory controller off, so Docker cannot enforce
+    # the container's mem_limit without this (/proc/cgroups had no memory row,
+    # 2026-11-23). cmdline.txt is a single line; the option is appended once.
+    - name: Turn on the kernel's memory controller
+      ansible.builtin.lineinfile:
+        path: /boot/firmware/cmdline.txt
+        regexp: '^(?!.*\bcgroup_enable=memory\b)(.*\S)\s*$'
+        line: '\1 cgroup_enable=memory'
+        backrefs: true
+      register: cgroup_memory
+
+    - name: Reboot for the memory controller
+      ansible.builtin.reboot:
+        reboot_timeout: 600
+      when: cgroup_memory.changed and not ansible_check_mode
+
+    - name: Technitium's folders
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "{{ item.mode }}"
+      loop:
+        - { path: "{{ dns_dir }}", mode: "0755" }
+        - { path: "{{ dns_dir }}/secrets", mode: "0700" }
+        - { path: /srv/technitium, mode: "0700" }
+
+    - name: Technitium's compose file
+      ansible.builtin.copy:
+        src: "{{ dns_src }}/compose.yaml"
+        dest: "{{ dns_dir }}/compose.yaml"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Technitium's admin password from OpenBao
+      ansible.builtin.copy:
+        dest: "{{ dns_dir }}/secrets/admin_password"
+        content: "{{ lookup('pipe', 'bao kv get -mount=kv -field=admin_password homelab/technitium') }}"
+        owner: root
+        group: root
+        mode: "0400"
+      no_log: true
+
+    - name: Start or update Technitium
+      ansible.builtin.command:
+        cmd: docker compose up -d --remove-orphans
+        chdir: "{{ dns_dir }}"
+      register: dns_up
+      changed_when: dns_up.stderr is search('(Creat|Recreat|Start|Pull)(ed|ing)')
+      when: not ansible_check_mode
+
+    # The settings below go through the API, so they run only when the server is
+    # up; in --check nothing on the Pi is changed and they are skipped.
+    - name: Wait for Technitium's API
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/user/session/get"
+        status_code: [200]
+      register: dns_ready
+      until: dns_ready.status == 200
+      retries: 30
+      delay: 2
+      when: not ansible_check_mode
+
+    - name: Sign in to Technitium's API
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/user/login"
+        method: POST
+        body_format: form-urlencoded
+        body:
+          user: admin
+          pass: "{{ lookup('pipe', 'bao kv get -mount=kv -field=admin_password homelab/technitium') }}"
+          includeInfo: "false"
+      register: dns_login
+      failed_when: dns_login.json.status | default('') != 'ok'
+      no_log: true
+      when: not ansible_check_mode
+
+    - name: Read Technitium's settings
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/settings/get"
+        method: POST
+        body_format: form-urlencoded
+        body: { token: "{{ dns_login.json.token }}" }
+      register: dns_current
+      when: not ansible_check_mode
+
+    - name: Set the lists, upstreams and who may ask
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/settings/set"
+        method: POST
+        body_format: form-urlencoded
+        body: "{{ {'token': dns_login.json.token} | combine(dns_settings_form) }}"
+      when:
+        - not ansible_check_mode
+        - dns_changed_keys | length > 0
+      register: dns_set
+      changed_when: true
+      no_log: true
+
+    - name: Download the blocklists now that they changed
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/settings/forceUpdateBlockLists"
+        method: POST
+        body_format: form-urlencoded
+        body: { token: "{{ dns_login.json.token }}" }
+      when:
+        - not ansible_check_mode
+        - "'blockListUrls' in dns_changed_keys"
+
+    - name: Read the allowed list
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/allowed/export"
+        method: POST
+        body_format: form-urlencoded
+        body: { token: "{{ dns_login.json.token }}" }
+        return_content: true
+      register: dns_allowed_now
+      when: not ansible_check_mode
+
+    - name: Allow what allowlist.txt names
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/allowed/add"
+        method: POST
+        body_format: form-urlencoded
+        body: { token: "{{ dns_login.json.token }}", domain: "{{ item }}" }
+      loop: "{{ dns_allow_wanted | difference(dns_allow_have) }}"
+      changed_when: true
+      when: not ansible_check_mode
+
+    - name: Stop allowing what allowlist.txt no longer names
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/allowed/delete"
+        method: POST
+        body_format: form-urlencoded
+        body: { token: "{{ dns_login.json.token }}", domain: "{{ item }}" }
+      loop: "{{ dns_allow_have | difference(dns_allow_wanted) }}"
+      changed_when: true
+      when: not ansible_check_mode
+
+    # Internal names answer without the internet: every <app>.home.<zone> is the
+    # home proxy (apps/homeserver/traefik/).
+    - name: List Technitium's zones
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/zones/list"
+        method: POST
+        body_format: form-urlencoded
+        body: { token: "{{ dns_login.json.token }}" }
+      register: dns_zones
+      when: not ansible_check_mode
+
+    - name: Create the home zone
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/zones/create"
+        method: POST
+        body_format: form-urlencoded
+        body: { token: "{{ dns_login.json.token }}", zone: "home.{{ lab_zone }}", type: Primary }
+      when:
+        - not ansible_check_mode
+        - ("home." ~ lab_zone) not in (dns_zones.json.response.zones | map(attribute='name'))
+      changed_when: true
+
+    - name: Point every home name at the home proxy
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/zones/records/add"
+        method: POST
+        body_format: form-urlencoded
+        body:
+          token: "{{ dns_login.json.token }}"
+          zone: "home.{{ lab_zone }}"
+          domain: "*.home.{{ lab_zone }}"
+          type: A
+          ipAddress: "{{ hostvars['proxy-1'].ansible_host }}"
+          ttl: "300"
+          overwrite: "true"
+      when: not ansible_check_mode
+      changed_when: false
+
+    - name: Sign out of Technitium's API
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/user/logout"
+        method: POST
+        body_format: form-urlencoded
+        body: { token: "{{ dns_login.json.token }}" }
+      when: not ansible_check_mode
       changed_when: false
 
   handlers:

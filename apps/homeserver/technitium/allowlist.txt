@@ -1,0 +1,4 @@
+# Domains the blocklists may not block, one per line (subdomains included).
+# ansible/oob.yml makes Technitium's allowed list match this file exactly: it adds
+# what is here and removes what is not. Say why next to each entry, for example:
+#   example.com  # breaks the bank's login page (owner, 2026-11-23)

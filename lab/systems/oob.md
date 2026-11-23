@@ -13,7 +13,9 @@ A Raspberry Pi that is a second way into the home LAN, for the day the main
 way in is broken.
 
 **Status:** running since 2026-11-14 — subnet router for the home subnet on a
-second Tailscale account. Rows: `lab/inventory/hosts.md`, `lab/inventory/network.md`.
+second Tailscale account. It also runs the home's primary DNS
+resolver, Technitium (`apps/homeserver/technitium/`;
+`agents/journal/2026-11-23-technitium-oob-1.md`). Rows: `lab/inventory/hosts.md`, `lab/inventory/network.md`.
 Story: `agents/journal/2026-11-14-rebuild-oob-pi.md`.
 
 ## Why it exists
@@ -100,21 +102,46 @@ reach LAN addresses directly (for example `10.22.33.1`). SSH to the Pi itself:
    On 2026-11-14 the image was streamed onto the running Pi's own card over
    SSH (`agents/journal/2026-11-14-rebuild-oob-pi.md`); a card reader and Raspberry
    Pi Imager work as well.
-2. From `ansible/`: `ansible-playbook oob.yml --check --diff`, read it, then
-   `ansible-playbook oob.yml`. A second run should report `changed=0`.
+2. From `ansible/`, on a machine with an OpenBao token (the playbook reads the
+   lab's zone and Technitium's password): `ansible-playbook oob.yml --check --diff`,
+   read it, then `ansible-playbook oob.yml`. The first run reboots the Pi once for
+   the memory controller. A second run should report `changed=0`.
 3. Log in to the second account: either set `TS_AUTHKEY` for the playbook, or
    run `sudo tailscale up --advertise-routes=10.22.33.0/24 --hostname=oob-1`
    on the Pi and open the link it prints. Then approve the route and turn off
    key expiry in that account's admin console, and remove the old machine.
 
+## DNS resolver
+
+Technitium runs here in Docker (the owner's choice: DNS is the Pi's only other
+job, so it carries the home's primary resolver; `agents/plans/home-overhaul.md`,
+B4b). What `ansible/oob.yml` adds for it, checked over SSH when it was deployed
+(`agents/journal/2026-11-23-technitium-oob-1.md`):
+
+- Firewall: DNS (UDP and TCP 53) and the console (TCP 5380) from the home subnet.
+  The file now replaces only its own table (`table inet filter` /
+  `delete table inet filter`) instead of `flush ruleset`, which would delete
+  Tailscale's tables on a reload; after the change all seven tables were still
+  there (`nft list tables`) and the route stayed primary.
+- Docker from Debian through the LAN cache, with Docker's own firewall rules off
+  (`/etc/docker/daemon.json`), so `nftables.conf` stays the only firewall.
+- `cgroup_enable=memory` in `/boot/firmware/cmdline.txt`, so the container's 640 MB
+  cap is enforced (it was not before: `apps/homeserver/technitium/NOTES.md`).
+  Previous file kept as `/root/cmdline.txt.bak-20261123`, the previous firewall file
+  as `/root/nftables.conf.bak-20261123`.
+- After the reboot this needed, Tailscale, the route, the firewall and Technitium
+  came back without help (`tailscale status --json`, `nft list tables`, `dig`).
+
 ## Rules
 
-- **Never run anything else on it.** It is the way in when other things are
-  broken; every extra service is one more thing that can break it or fill its
-  memory.
+- **Nothing else on it besides DNS** (owner, when DNS moved here, replacing "never run
+  anything else on it"). It is the way in when other things are broken; every
+  extra service is one more thing that can break it or fill its memory, which is
+  why Technitium has a memory cap.
 - **Change it through `ansible/oob.yml`**, not by hand, so a rebuild gives the
   same box.
 
 ## Backups
 
-None needed: it holds no data. It is rebuilt from this repo (above).
+None needed: it holds no data that the repo cannot rebuild. Technitium's settings
+and stats in `/srv/technitium` come back from `ansible/oob.yml` (above).

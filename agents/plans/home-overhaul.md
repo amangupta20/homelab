@@ -507,13 +507,16 @@ because other pages cite them.
      in 4a waits on it. Researched 2026-11-23 by three research agents and checked by
      hand where noted; AdGuard Home, Pi-hole and Blocky were compared and set aside
      for now (owner).
-     - **Two servers, same software:** a container in the lab as primary (which VM is
-       decided later) and `oob-1`, the Raspberry Pi, as fallback; the Pi first. Kept in
-       step by Technitium's own clustering (since v14, changelog).
+     - **Two servers, same software** (owner, 2026-11-23): `oob-1`, the Raspberry Pi,
+       as primary, since DNS is its only other job; the VPS as fallback. No lab
+       container. Kept in step by Technitium's own clustering (since v14, changelog),
+       over the tailnet.
      - **Both must answer the same:** a client stays on whichever server answered last
-       until that one fails (`man systemd-resolved.service`, read 2026-11-23), so the
-       fallback carries real traffic for hours. Blocklists, allowlist and local records
-       are identical on both.
+       until that one fails (`man systemd-resolved.service`, read 2026-11-23), and
+       Tailscale asks every listed server at once and takes the first answer
+       (`net/dns/resolver/forwarder.go`, `forwardWithDestChan`, read 2026-11-23). So
+       the fallback carries real traffic. Blocklists, allowlist and local records are
+       identical on both.
      - **Blocklists** (owner): HaGeZi Ultimate plus HaGeZi Threat Intelligence Feeds
        (TIF) Medium, about 570,000 entries (counted from the list files, 2026-11-23).
        Things that break go into an allowlist kept in this repo, so both servers get
@@ -531,31 +534,38 @@ because other pages cite them.
        about 1.4 ms and uncached ones in about 90 ms in the same test (dnsperf, one
        client, not a benchmark).
      - **Local records:** `*.home.<domain>` answered locally with the proxy's address,
-       so internal names work without the internet.
-     - **LAN clients** get both servers' addresses from the router's DHCP and ask them
-       directly, so the query log shows each device; through the router, every query
-       would show the router.
+       so internal names work without the internet while the Pi is up.
+     - **LAN clients** get the Pi first and the VPS second from the router's DHCP and
+       ask them directly, so the Pi's query log shows each device; through the router,
+       every query would show the router. LAN clients reach the VPS through the
+       router's Tailscale (**UNTESTED**). With the Pi down and home's internet down
+       too, the LAN has no DNS; accepted (owner, 2026-11-23).
      - **IPv6 gap to close:** the router relays the ISP router's IPv6 announcements
        (`uci show dhcp`: `ra='relay'`, 2026-11-23), so clients may also learn the
        ISP's IPv6 resolvers and skip the blocklists. Not yet seen on a client.
-     - **Tailnet clients** reach the resolvers through the router's subnet route, and
-       arrive as the router's address (the router's Tailscale translates source
-       addresses, `NoSNAT: false`, 2026-11-23), so the log cannot tell them apart.
-       Open for the owner: blocking away from home through Tailscale's "override
-       local DNS" (all DNS on those devices fails while home is down), or split DNS
-       for `home.<domain>` only (no blocking away from home).
+     - **Tailnet clients** (owner, 2026-11-23): both servers as the tailnet's global
+       nameservers, with "override local DNS" on, so devices away from home are
+       blocked too, and the VPS keeps answering when home is down. No public
+       resolver in that list: it would win some of the races and skip blocking.
+       Servers on the tailnet (agent-1, the VPS itself) must not take the tailnet's
+       DNS (`--accept-dns=false`); which ones do is to be checked before override is
+       turned on. Port 53 and Technitium's console on the VPS listen on the tailnet
+       only. Queries from home over the subnet route arrive as the router's address
+       (its Tailscale translates source addresses, `NoSNAT: false`, 2026-11-23).
      - **Dashboard, to try:** Resolvr (`bassem-elsodany/resolvr-dns-dashboard`, MIT,
        v1.3.2 from 2026-10-12, GitHub), a read-mostly dashboard on Technitium's API with
-       cluster views, behind Authentik with its own narrow API token. Technitium's own
-       console stays for settings. The repo, not either UI, is where lists live.
+       cluster views, at home behind Authentik with its own narrow API token; not on
+       the VPS (owner). Technitium's own console stays for settings. The repo, not
+       either UI, is where lists live.
      - **The Pi:** Technitium runs on arm64 (Docker image for `arm64` and `arm/v7`,
        Docker Hub, 2026-11-23; the native installer fetches .NET 10 from Microsoft,
        which the LAN cache does not proxy yet). Its firewall opens DNS to the LAN, which
        changes it from a single-purpose recovery box (`lab/systems/oob.md`). The Pi and
        its card are rebuilt from code, so a dead card is a reflash (owner, 2026-11-23).
      — gate: both servers answer the same for a blocked name, an allowlisted name and a
-     `home.<domain>` name; stopping one leaves LAN clients resolving; the Pi stays
-     under its memory budget through a week of daily list updates.
+     `home.<domain>` name; stopping the Pi leaves LAN and tailnet clients resolving
+     through the VPS; the Pi stays under its memory budget through a week of daily list
+     updates.
 5. **Pilot:** one small internal app whose data stays in local Docker volumes (see
    B1), end to end, then a new skill
    in `agents/skills/` (working name `migrate-a-home-app`) with the steps as they were done. — gate: the app
@@ -623,8 +633,8 @@ move before its public route exists.
 ## Open, for the owner
 
 - Where the Pigsty primary sits (after D1).
-- DNS away from home: blocking through Tailscale's override, or split DNS for home
-  names only (B4b). The resolver itself is chosen: Technitium (2026-11-23).
+- Which tailnet machines take the tailnet's DNS today, before override is turned on
+  (B4b). The resolver itself is chosen: Technitium on the Pi and the VPS (2026-11-23).
 - Badger or an Authentik outpost (C2).
 - Whether to keep BorgWarehouse once restic or Kopia handle offsite copies.
 - The change to `agents/decisions/backup-tiers.md` this design needs (proposed separately).

@@ -232,9 +232,9 @@ group waits on the first item.
   on 2026-11-14 (`agents/journal/2026-11-14-rebuild-oob-pi.md`); nothing used it.
   Which resolver replaces it, and where it runs, is to be researched (owner,
   2026-11-14).
-  Answered by the owner, 2026-11-23, for the item above: Technitium on a lab
-  container and on the Pi (`agents/plans/home-overhaul.md`, B4b). The item stays
-  for the owner to close.
+  Answered by the owner, 2026-11-23, for the item above: Technitium on the Pi
+  (primary) and the VPS (fallback) (`agents/plans/home-overhaul.md`, B4b).
+  The item stays for the owner to close.
 - The two-NPM split (public and private by listener), approved 2026-10-27, is
   back to research (owner, 2026-11-01). The home edge candidates are
   BunkerWeb, NPMplus, Caddy, Traefik or Pangolin's Traefik; the WAF engine

@@ -23,8 +23,8 @@
 
 Rehearsed on two throwaway 15.6.2 containers on agent-1 on 2026-11-23: the
 secondary took the primary's settings, allowed list and catalog zones, and
-answered a `home` name. Against the real nodes it is **UNTESTED** until the
-journal entry of the first deploy says otherwise. From a machine on the tailnet
+answered a `home` name. Done against the real nodes on 2026-11-23
+(`agents/journal/2026-11-23-deploy-technitium-vps.md`). From a machine on the tailnet
 with an OpenBao token, sign in to the VPS node and call, as `POST` form fields:
 
 ```
@@ -40,6 +40,33 @@ with an OpenBao token, sign in to the VPS node and call, as `POST` form fields:
 The VPS reaches the Pi through the router's subnet route, and the Pi sees it as
 the router's address; the Pi's firewall opens 53443 to that address only
 (`ansible/oob.yml`).
+
+## What the first join needed
+
+- **A tailnet rule:** the main tailnet only let `tag:dokploy` reach Garage at home, so
+  the join timed out. The owner added a grant from `tag:dokploy` to the Pi's
+  address on TCP 53443 and TCP/UDP 53 (policy in `homelab-private`).
+- **Zone transfers through the router:** the Pi sees the VPS as the router's address,
+  which was not on the cluster catalog's transfer list, so only the empty catalog
+  arrived. Without the cluster zone `dns.home.arpa` the VPS also lacked the TLSA
+  records that let it trust the Pi's self-signed certificate, so every heartbeat
+  failed (`RemoteCertificateNameMismatch, RemoteCertificateChainErrors`). Ongoing
+  cluster calls do not use the join's `ignoreCertificateErrors`
+  (`DnsServerCore/Cluster/ClusterNode.cs`). `ansible/oob.yml` now adds the router to
+  that list; transfers still need the cluster's TSIG key. Then the zones arrived and
+  the heartbeats passed.
+- **One-way cluster:** the Pi's own Tailscale (the out-of-band tailnet) drops packets
+  from `100.64.0.0/10` that do not arrive on `tailscale0`, which includes the VPS's
+  replies when the Pi starts a connection through the router. So the Pi lists the VPS
+  as `Unreachable` and cannot notify it of changes; the VPS still pulls settings
+  (every 900 s) and zones (on their refresh timers), and its heartbeats to the Pi pass.
+- **Dokploy, by its REST API** (`x-api-key`, the key in `kv/general/dokploy`): project
+  and Compose service `technitium` from this repo's `main`, `autoDeploy` off, the two
+  variables as `${{vault.openbao.dokploy/technitium:<field>}}`. Adding the project to
+  the OpenBao provider failed with "Assignment references a project outside this
+  organization": the assignment list still named a deleted project. Dropping that one
+  entry and adding the new one in the same `vaultProvider.update` worked; the
+  provider's connection test passed after.
 
 ## Rebuild
 

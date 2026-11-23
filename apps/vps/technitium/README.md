@@ -5,7 +5,7 @@ for the Raspberry Pi (`apps/homeserver/technitium/`), and the resolver that keep
 the tailnet's DNS working while home is down. Step B4b of
 `agents/plans/home-overhaul.md`, which holds the design.
 
-**Status:** see `lab/inventory/services.md`.
+**Status:** running and joined (`agents/journal/2026-11-23-deploy-technitium-vps.md`); see `lab/inventory/services.md`.
 
 - **Where:** remote VPS, deployed by Dokploy from `compose.yaml` here.
 - **Address:** DNS (53), the web console (5380) and the cluster's HTTPS API

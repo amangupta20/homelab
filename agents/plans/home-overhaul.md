@@ -13,7 +13,8 @@ tags:
 recon, done 2026-11-14 (facts in `lab/inventory/` and `lab/systems/truenas.md`); A3 done
 2026-11-15, after a rerun of a replication that failed on a checksum error in `imp`
 (checked 2026-11-16); B4a phase 1, the home proxy, done 2026-11-18
-(`agents/journal/2026-11-18-build-proxy-1-traefik.md`). Replaces `agents/plans/migration.md`
+(`agents/journal/2026-11-18-build-proxy-1-traefik.md`). Next: B2a, then B3 (order
+revised 2026-11-23, see "B. Before the first internal app moves"). Replaces `agents/plans/migration.md`
 (owner, 2026-11-14).
 
 **Goal:** move every home workload to a setup where each app's data has one known
@@ -353,6 +354,15 @@ own VM, which becomes the first VM built from code (`agents/plans/package-and-im
 A self-hosted git host does not wait for any of B: it can start on the VPS
 (`agents/ideas/self-hosted-git.md`, pull request #79).
 
+**Order from here (owner, 2026-11-23):** B2a (the bare `docker-1`) → B3 (Arcane on it)
+→ B2b (the NAS wait, the reconcile timer and the boot order) → B5 (the pilot). Arcane
+comes before the NAS plumbing because the reconcile timer is "`docker compose up -d`
+or Arcane's equivalent", and whether Arcane reads OpenBao and backs up volumes decides
+what else `docker-1` needs. B1 runs alongside the migration instead of before it.
+Deferred, so none of them blocks the order above: agent-1's backups (B0), the dashboard
+review and the Sablier wakeup test (both in B4a). The step numbers are unchanged
+because other pages cite them.
+
 00. **Package and image cache** on its own VM, the first VM built the new way: OpenTofu
     through Xen Orchestra, cloud-init for the first key, Ansible for the rest. Its steps
     and gates are in `agents/plans/package-and-image-cache.md`. — gate: that plan's step 3
@@ -389,7 +399,8 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
      (`agents/journal/2026-11-22-agent-1-config-hindsight-dsh.md`). The desktop runs on
      demand, an Orca worker from the owner's Orca finished a read-only task there, and
      Claude Code's working setup is on it (`agents/journal/2026-11-22-agent-1-desktop-orca.md`). Still to do:
-     backups (owner, 2026-11-22: decide later).
+     backups (owner, 2026-11-22: decide later; 2026-11-23: deferred for longer, and
+     nothing else in B waits on them).
    - **Network:** on the main tailnet with its own tag (`tag:agent`, owner 2026-11-22) and
      rules in `homelab-private`'s access policy, so it reaches what its rules allow.
    - **Access** follows `agents/rules/agent-access.md`; how agent-1's credentials are set up
@@ -418,12 +429,20 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
    each (`imp` has about 455 GiB free). The owner expects the finished layout to use
    less space than today's, since each dataset gets one backup method instead of
    several copies. — gate: a test dataset is snapshotted, copied and browsable.
-2. **`docker-1`** from OpenTofu and Ansible, with the NAS wait, the reconcile timer
-   and the boot order. — gate: rebooting TrueNAS, and cold-booting the whole host,
-   each bring a test container on NFS back without help.
-3. **Arcane:** deploy a test stack from git, give it a secret from OpenBao, back up and
-   restore its local volume. — gate: all three work, or their replacements are
-   chosen.
+   - **Alongside the migration** (owner, 2026-11-23), not before it. The clean-up
+     can happen at any time. An app whose data goes on NFS waits until its dataset
+     exists, or its data is moved twice; so the first apps to move, the pilot
+     included, are ones whose data stays in local Docker volumes.
+2. **`docker-1`**, split in two around B3 (owner, 2026-11-23):
+   - **2a.** The VM from OpenTofu and the base Ansible playbooks (guest agent, LAN
+     cache client) plus Docker, the way `proxy-1` and `agent-1` were built. — gate: a
+     second Ansible run changes nothing.
+   - **2b.** After B3: the NAS wait, the reconcile timer (whatever B3 shows Arcane
+     can do) and the boot order. — gate: rebooting TrueNAS, and cold-booting the
+     whole host, each bring a test container on NFS back without help.
+3. **Arcane**, on `docker-1` after 2a: deploy a test stack from git, give it a secret
+   from OpenBao, back up and restore its local volume. — gate: all three work, or their
+   replacements are chosen.
 4. **Internal names and the home proxy.** Split in two (owner, 2026-11-17), so the
    names and certificates do not depend on whichever DNS resolver is being tried:
    - **4a. Home proxy: Traefik** (owner, 2026-11-17), the one reverse proxy for
@@ -440,7 +459,10 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
        2026-11-22), Traefik's dashboard is behind forward-auth
        (2026-11-21), and so are traefik-log-dashboard and GoAccess
        (`agents/journal/2026-11-21-traefik-log-dashboard.md`). Still open: which log dashboards
-       stay, and Sablier.
+       stay, and Sablier. Both deferred (owner, 2026-11-23): the dashboards are barely
+       used yet, so there is no difference to judge; Sablier waits for the first
+       migrated app that can sleep, and the wakeup part of this step's gate is checked
+       then, not before the pilot.
      - **Names:** one public Cloudflare record, `*.home.<domain>`, pointing at the
        proxy's LAN address, so any resolver that forwards to the internet answers it,
        and over Tailscale through the subnet route (`agents/ideas/edge-and-security-layers.md`,
@@ -481,8 +503,71 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
      — gate: a test name has a valid certificate on the LAN and over Tailscale,
      whichever resolver answers; a stopped test container on another VM wakes through
      its route; the dashboards ask for Authentik.
-   - **4b. Resolver** (to be researched, owner 2026-11-14). Nothing in 4a waits on it.
-5. **Pilot:** one small internal app, end to end, then a new skill
+   - **4b. Resolver: Technitium DNS Server** on two servers (owner, 2026-11-23). Nothing
+     in 4a waits on it. Researched 2026-11-23 by three research agents and checked by
+     hand where noted; AdGuard Home, Pi-hole and Blocky were compared and set aside
+     for now (owner).
+     - **Two servers, same software** (owner, 2026-11-23): `oob-1`, the Raspberry Pi,
+       as primary, since DNS is its only other job; the VPS as fallback. No lab
+       container. Kept in step by Technitium's own clustering (since v14, changelog),
+       over the tailnet.
+     - **Both must answer the same:** a client stays on whichever server answered last
+       until that one fails (`man systemd-resolved.service`, read 2026-11-23), and
+       Tailscale asks every listed server at once and takes the first answer
+       (`net/dns/resolver/forwarder.go`, `forwardWithDestChan`, read 2026-11-23). So
+       the fallback carries real traffic. Blocklists, allowlist and local records are
+       identical on both.
+     - **Blocklists** (owner): HaGeZi Ultimate plus HaGeZi Threat Intelligence Feeds
+       (TIF) Medium, about 570,000 entries (counted from the list files, 2026-11-23).
+       Things that break go into an allowlist kept in this repo, so both servers get
+       it. The full TIF list (about 2 million entries) is too big for the Pi; see the
+       measurements below.
+     - **Measured on 2026-11-23** in a throwaway Technitium 15.6.2 container on
+       `agent-1`, capped at 900 MB to match the Pi (x86, so a guide for the Pi, not
+       its own figure). Memory the process cannot give back (anonymous):
+       Ultimate alone 82 MB; Ultimate + TIF Medium 252 MB after loading and 345 MB at
+       the peak of a forced list update (319 MB after it); Ultimate + full TIF 670 MB,
+       not released when TIF was removed. The Pi had 732 MB available (`free -m`,
+       same day). Whether daily list updates keep raising memory was not tested; if
+       they do, .NET's `DOTNET_GCHeapHardLimit` caps it (**UNTESTED**).
+     - **Upstream:** DNS over HTTPS to public resolvers; cached answers came back in
+       about 1.4 ms and uncached ones in about 90 ms in the same test (dnsperf, one
+       client, not a benchmark).
+     - **Local records:** `*.home.<domain>` answered locally with the proxy's address,
+       so internal names work without the internet while the Pi is up.
+     - **LAN clients** get the Pi first and the VPS second from the router's DHCP and
+       ask them directly, so the Pi's query log shows each device; through the router,
+       every query would show the router. LAN clients reach the VPS through the
+       router's Tailscale (**UNTESTED**). With the Pi down and home's internet down
+       too, the LAN has no DNS; accepted (owner, 2026-11-23).
+     - **IPv6 gap to close:** the router relays the ISP router's IPv6 announcements
+       (`uci show dhcp`: `ra='relay'`, 2026-11-23), so clients may also learn the
+       ISP's IPv6 resolvers and skip the blocklists. Not yet seen on a client.
+     - **Tailnet clients** (owner, 2026-11-23): both servers as the tailnet's global
+       nameservers, with "override local DNS" on, so devices away from home are
+       blocked too, and the VPS keeps answering when home is down. No public
+       resolver in that list: it would win some of the races and skip blocking.
+       Servers on the tailnet (agent-1, the VPS itself) must not take the tailnet's
+       DNS (`--accept-dns=false`); which ones do is to be checked before override is
+       turned on. Port 53 and Technitium's console on the VPS listen on the tailnet
+       only. Queries from home over the subnet route arrive as the router's address
+       (its Tailscale translates source addresses, `NoSNAT: false`, 2026-11-23).
+     - **Dashboard, to try:** Resolvr (`bassem-elsodany/resolvr-dns-dashboard`, MIT,
+       v1.3.2 from 2026-10-12, GitHub), a read-mostly dashboard on Technitium's API with
+       cluster views, at home behind Authentik with its own narrow API token; not on
+       the VPS (owner). Technitium's own console stays for settings. The repo, not
+       either UI, is where lists live.
+     - **The Pi:** Technitium runs on arm64 (Docker image for `arm64` and `arm/v7`,
+       Docker Hub, 2026-11-23; the native installer fetches .NET 10 from Microsoft,
+       which the LAN cache does not proxy yet). Its firewall opens DNS to the LAN, which
+       changes it from a single-purpose recovery box (`lab/systems/oob.md`). The Pi and
+       its card are rebuilt from code, so a dead card is a reflash (owner, 2026-11-23).
+     — gate: both servers answer the same for a blocked name, an allowlisted name and a
+     `home.<domain>` name; stopping the Pi leaves LAN and tailnet clients resolving
+     through the VPS; the Pi stays under its memory budget through a week of daily list
+     updates.
+5. **Pilot:** one small internal app whose data stays in local Docker volumes (see
+   B1), end to end, then a new skill
    in `agents/skills/` (working name `migrate-a-home-app`) with the steps as they were done. — gate: the app
    runs from `apps/homeserver/<app>/`, and its data restore has been tested.
 
@@ -548,7 +633,8 @@ move before its public route exists.
 ## Open, for the owner
 
 - Where the Pigsty primary sits (after D1).
-- Which DNS resolver (B4b).
+- Which tailnet machines take the tailnet's DNS today, before override is turned on
+  (B4b). The resolver itself is chosen: Technitium on the Pi and the VPS (2026-11-23).
 - Badger or an Authentik outpost (C2).
 - Whether to keep BorgWarehouse once restic or Kopia handle offsite copies.
 - The change to `agents/decisions/backup-tiers.md` this design needs (proposed separately).

@@ -1,0 +1,39 @@
+# Technitium DNS Server on oob-1, the Raspberry Pi: the home's primary resolver
+# (README.md here; agents/plans/home-overhaul.md, step B4b). Deployed by
+# ansible/oob.yml, which writes the admin password from OpenBao as a secret file
+# and then sets everything the repo controls through Technitium's API.
+name: technitium
+
+secrets:
+  admin_password:
+    file: ./secrets/admin_password
+
+services:
+  technitium:
+    # Pinned by digest (Docker Hub, tag 15.6.2, read 2026-11-23); the same pin
+    # goes into the VPS's copy so both cluster nodes run one release.
+    image: docker.io/technitium/dns-server:15.6.2@sha256:eb48ac5c135f4ab936b536f74f853d53e15ab39ef37fdbc9598a089b90d9f245
+    restart: unless-stopped
+    # Host networking: port 53 is bound on the Pi itself, so the query log sees
+    # each client's real address (on a bridge network every query comes from the
+    # bridge), and Docker needs no firewall rules (daemon.json sets iptables off).
+    network_mode: host
+    # Keeps a runaway list update from starving Tailscale, the Pi's other job.
+    # Measured peak with HaGeZi Ultimate + TIF Medium: about 440 MB resident
+    # (agents/plans/home-overhaul.md, B4b).
+    mem_limit: 640m
+    secrets:
+      - admin_password
+    environment:
+      # Read only when the server starts for the first time (no config yet);
+      # afterwards ansible/oob.yml sets the lists, upstreams and access by API.
+      DNS_SERVER_DOMAIN: oob-1
+      DNS_SERVER_ADMIN_PASSWORD_FILE: /run/secrets/admin_password
+      DNS_SERVER_WEB_SERVICE_HTTP_PORT: "5380"
+      DNS_SERVER_ENABLE_BLOCKING: "true"
+      DNS_SERVER_LOG_USING_LOCAL_TIME: "true"
+      DNS_SERVER_LOG_MAX_LOG_FILE_DAYS: "7"
+      DNS_SERVER_STATS_MAX_STAT_FILE_DAYS: "30"
+    volumes:
+      # Settings, zones, stats and logs. Rebuilt from this repo, so not backed up.
+      - /srv/technitium:/etc/dns

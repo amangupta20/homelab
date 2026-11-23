@@ -37,11 +37,11 @@ resource "xenorchestra_vm" "agent" {
     mac_address = local.agent.mac
   }
 
-  # 150 GB (owner, 2026-11-23) rounded up to whole 2 MiB blocks.
+  # 200 GB (owner, 2026-11-23) rounded up to whole 2 MiB blocks.
   disk {
     sr_id      = data.xenorchestra_sr.nvme.id
     name_label = "${local.agent.hostname}-root"
-    size       = 71526 * 2 * 1024 * 1024
+    size       = 95368 * 2 * 1024 * 1024
   }
 
   cloud_config = templatefile("${path.module}/cloud-init/user-data.yaml.tftpl", {

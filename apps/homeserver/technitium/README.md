@@ -14,11 +14,12 @@ it out by DHCP and forwards to it (`lab/systems/router.md`, "DNS").
 
 ## Address and sign-in
 
-DNS on port 53 and the web console on `http://<oob-1>:5380`, both from the home
-subnet only (the Pi's firewall); tailnet clients arrive through the router's
-subnet route. The console has its own `admin` login; the password is in OpenBao
-(`kv/homelab/technitium`, field `admin_password`). Sign-in through Authentik and
-a route on the home proxy are not set up.
+DNS on port 53 from the home subnet (the Pi's firewall); tailnet clients arrive
+through the router's subnet route. The web console is at `https://dns.home.<zone>`
+through the home proxy, behind Authentik (`homelab-admins`;
+`apps/homeserver/traefik/`), then its own `admin` login, whose password is in
+OpenBao (`kv/homelab/technitium`, field `admin_password`). Directly,
+`http://<oob-1>:5380` from the home subnet still works.
 
 ## Files
 

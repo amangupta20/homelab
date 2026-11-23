@@ -55,11 +55,12 @@ the router's address; the Pi's firewall opens 53443 to that address only
   (`DnsServerCore/Cluster/ClusterNode.cs`). `ansible/oob.yml` now adds the router to
   that list; transfers still need the cluster's TSIG key. Then the zones arrived and
   the heartbeats passed.
-- **One-way cluster:** the Pi's own Tailscale (the out-of-band tailnet) drops packets
-  from `100.64.0.0/10` that do not arrive on `tailscale0`, which includes the VPS's
-  replies when the Pi starts a connection through the router. So the Pi lists the VPS
-  as `Unreachable` and cannot notify it of changes; the VPS still pulls settings
-  (every 900 s) and zones (on their refresh timers), and its heartbeats to the Pi pass.
+- **One-way cluster at first:** the Pi's own Tailscale (the out-of-band tailnet)
+  dropped packets from `100.64.0.0/10` that did not arrive on `tailscale0`, which
+  included the VPS's replies when the Pi started a connection through the router. So
+  the Pi listed the VPS as `Unreachable`. Fixed the same day: the Pi's Tailscale no
+  longer hooks its own firewall rules (`lab/systems/notes/oob.md`, "Tailscale's
+  firewall"), and both nodes list each other as `Connected`.
 - **Dokploy, by its REST API** (`x-api-key`, the key in `kv/general/dokploy`): project
   and Compose service `technitium` from this repo's `main`, `autoDeploy` off, the two
   variables as `${{vault.openbao.dokploy/technitium:<field>}}`. Adding the project to

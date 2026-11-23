@@ -60,7 +60,9 @@ Read on 2026-11-14 over SSH unless a line says otherwise.
     `workstation.pub` is the daily key until the lab has an SSH certificate
     authority in OpenBao (planned, not started).
   - Firewall (`nftables`): in, only SSH, Tailscale's UDP port 41641 and the
-    tailnet itself; forwarding only to and from the tailnet.
+    tailnet itself; forwarding only to and from the tailnet; the subnet route's
+    masquerade. Tailscale runs with `--netfilter-mode=nodivert`, so this file is the
+    only firewall (`lab/systems/notes/oob.md`, "Tailscale's firewall").
   - Automatic security updates (`unattended-upgrades`).
   - apt through the LAN cache on `cache-1`, for Debian, Debian security,
     Raspberry Pi and Tailscale (`apps/homeserver/artifact-keeper/`; since

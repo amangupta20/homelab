@@ -62,7 +62,7 @@
       endif %}{% endfor %}{{ out }}
     # allowlist.txt without comments and blank lines, and the live allowed list.
     dns_allow_wanted: "{{ lookup('file', dns_src ~ '/allowlist.txt').splitlines() | map('regex_replace', '#.*$', '') | map('trim') | select | list }}"
-    dns_allow_have: "{{ dns_allowed_now.content.splitlines() | map('trim') | select | list }}"
+    dns_allow_have: "{{ (dns_allowed_now.content | default('')).splitlines() | map('trim') | select | list }}"
   tasks:
     # The break-glass key works when OpenBao or the main tailnet does not. The
     # workstation key is the daily one until the SSH certificate authority exists.

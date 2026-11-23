@@ -26,4 +26,10 @@ B4b). What `ansible/oob.yml` adds for it, checked over SSH when it was deployed
   `home` zone is in the cluster's catalog, so the VPS node gets a copy.
 - After the reboot this needed, Tailscale, the route, the firewall and Technitium
   came back without help (`tailscale status --json`, `nft list tables`, `dig`).
+- The cluster catalog's zone-transfer list also holds the router's address, because
+  the VPS node reaches the Pi through the router's subnet route
+  (`apps/vps/technitium/NOTES.md`, "What the first join needed").
+- The Pi cannot open connections to the main tailnet's addresses through the router:
+  its own Tailscale drops replies from `100.64.0.0/10` that do not arrive on
+  `tailscale0`. So the cluster works one way (same section).
 

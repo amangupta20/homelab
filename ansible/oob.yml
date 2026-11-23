@@ -489,6 +489,36 @@
            | map(attribute='catalog') | first | default(none)) != dns_cluster_catalog
       changed_when: true
 
+    # The VPS node transfers zones from here through the router's subnet route,
+    # so the Pi sees the router's address, not the node's. Technitium keeps the
+    # catalog's transfer list at the nodes' own addresses (and may rewrite it when
+    # the cluster changes), so the router is added back on every run. Transfers
+    # still need the cluster's TSIG key, which stays as Technitium set it.
+    - name: Read the cluster catalog's zone-transfer settings
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/zones/options/get"
+        method: POST
+        body_format: form-urlencoded
+        body: { token: "{{ dns_login.json.token }}", zone: "{{ dns_cluster_catalog }}" }
+      register: dns_catalog
+      when: not ansible_check_mode
+
+    - name: Let the VPS node's transfers through the router
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/zones/options/set"
+        method: POST
+        body_format: form-urlencoded
+        body:
+          token: "{{ dns_login.json.token }}"
+          zone: "{{ dns_cluster_catalog }}"
+          zoneTransfer: UseSpecifiedNetworkACL
+          zoneTransferNetworkACL: "{{ (dns_catalog.json.response.zoneTransferNetworkACL + [router_address]) | unique | join(',') }}"
+          zoneTransferTsigKeyNames: "{{ dns_catalog.json.response.zoneTransferTsigKeyNames | join(',') }}"
+      when:
+        - not ansible_check_mode
+        - router_address not in dns_catalog.json.response.zoneTransferNetworkACL
+      changed_when: true
+
     # Sign-in to the console through Authentik (OIDC client `dns-console`), so the
     # console needs no password of its own: members of homelab-admins become
     # Administrators. The local admin stays, for this playbook's API calls.

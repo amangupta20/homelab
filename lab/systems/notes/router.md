@@ -152,3 +152,13 @@ two DHCP servers until the VPS node exists (`agents/plans/home-overhaul.md`, B4b
 - The ISP router's IPv6 resolvers are no longer used by the router itself; LAN
   devices may still learn them from the relayed IPv6 announcements (B4b, "IPv6
   gap").
+
+Changed the same day, once the VPS node had joined (previous file kept as
+`/etc/config/dhcp.bak-2026-11-23b`): option 6 is now the Pi, then the VPS's tailnet
+address, which LAN devices reach through the router's Tailscale; dnsmasq's `server`
+list is the Pi, the VPS, then the ISP router. A LAN host (`proxy-1`) got an answer
+from the VPS. With the Pi's container stopped, `dig +tries=3 +time=3 @10.22.33.1`
+answered every name in about 3 seconds through the VPS, blocking included; with
+`+tries=1` every query timed out, because dnsmasq's `strict-order` moves to the
+next server only when the client asks again. Real clients do.
+

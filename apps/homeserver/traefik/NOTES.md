@@ -84,7 +84,7 @@ For apps without their own single sign-on, and for view-only dashboards (the sig
   `traefik-home` (forward-auth, single application, same flows and mappings), application `dns-home` bound to
   `homelab-admins`, added to the outpost `home`; created through Authentik's API. Checked with `curl`: without a
   session `/`, `/index.html` and `/api/user/session/get` answer 302 to Authentik's sign-in, also with a forged
-  `X-authentik-username`; the other dashboards still answer 302. A browser sign-in by the owner: UNTESTED.
+  `X-authentik-username`; the other dashboards still answer 302. A browser sign-in by the owner works (2026-11-23).
 
 ## Log dashboards
 

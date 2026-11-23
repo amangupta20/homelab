@@ -49,7 +49,7 @@ cannot switch its own login off, so it signs in by OIDC instead.
   `dns.home.<zone>`.
 - **Checked:** `admin/sso/get` shows it on with the group map; `/sso/login`
   answers 302 to Authentik's `dns-console` client with that callback. A browser
-  sign-in: UNTESTED until the owner tries it.
+  sign-in by the owner works, after the grant-types fix below (2026-11-23).
 - **Grant types:** an OAuth2 provider created through Authentik's API (2026.8.5)
   gets an empty `grant_types` list, and the first browser sign-in failed: Authentik
   logged "Invalid grant_type for provider" and sent back `invalid_request`, which

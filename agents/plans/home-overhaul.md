@@ -13,7 +13,8 @@ tags:
 recon, done 2026-11-14 (facts in `lab/inventory/` and `lab/systems/truenas.md`); A3 done
 2026-11-15, after a rerun of a replication that failed on a checksum error in `imp`
 (checked 2026-11-16); B4a phase 1, the home proxy, done 2026-11-18
-(`agents/journal/2026-11-18-build-proxy-1-traefik.md`). Replaces `agents/plans/migration.md`
+(`agents/journal/2026-11-18-build-proxy-1-traefik.md`). Next: B2a, then B3 (order
+revised 2026-11-23, see "B. Before the first internal app moves"). Replaces `agents/plans/migration.md`
 (owner, 2026-11-14).
 
 **Goal:** move every home workload to a setup where each app's data has one known
@@ -353,6 +354,15 @@ own VM, which becomes the first VM built from code (`agents/plans/package-and-im
 A self-hosted git host does not wait for any of B: it can start on the VPS
 (`agents/ideas/self-hosted-git.md`, pull request #79).
 
+**Order from here (owner, 2026-11-23):** B2a (the bare `docker-1`) → B3 (Arcane on it)
+→ B2b (the NAS wait, the reconcile timer and the boot order) → B5 (the pilot). Arcane
+comes before the NAS plumbing because the reconcile timer is "`docker compose up -d`
+or Arcane's equivalent", and whether Arcane reads OpenBao and backs up volumes decides
+what else `docker-1` needs. B1 runs alongside the migration instead of before it.
+Deferred, so none of them blocks the order above: agent-1's backups (B0), the dashboard
+review and the Sablier wakeup test (both in B4a). The step numbers are unchanged
+because other pages cite them.
+
 00. **Package and image cache** on its own VM, the first VM built the new way: OpenTofu
     through Xen Orchestra, cloud-init for the first key, Ansible for the rest. Its steps
     and gates are in `agents/plans/package-and-image-cache.md`. — gate: that plan's step 3
@@ -389,7 +399,8 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
      (`agents/journal/2026-11-22-agent-1-config-hindsight-dsh.md`). The desktop runs on
      demand, an Orca worker from the owner's Orca finished a read-only task there, and
      Claude Code's working setup is on it (`agents/journal/2026-11-22-agent-1-desktop-orca.md`). Still to do:
-     backups (owner, 2026-11-22: decide later).
+     backups (owner, 2026-11-22: decide later; 2026-11-23: deferred for longer, and
+     nothing else in B waits on them).
    - **Network:** on the main tailnet with its own tag (`tag:agent`, owner 2026-11-22) and
      rules in `homelab-private`'s access policy, so it reaches what its rules allow.
    - **Access** follows `agents/rules/agent-access.md`; how agent-1's credentials are set up
@@ -418,12 +429,20 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
    each (`imp` has about 455 GiB free). The owner expects the finished layout to use
    less space than today's, since each dataset gets one backup method instead of
    several copies. — gate: a test dataset is snapshotted, copied and browsable.
-2. **`docker-1`** from OpenTofu and Ansible, with the NAS wait, the reconcile timer
-   and the boot order. — gate: rebooting TrueNAS, and cold-booting the whole host,
-   each bring a test container on NFS back without help.
-3. **Arcane:** deploy a test stack from git, give it a secret from OpenBao, back up and
-   restore its local volume. — gate: all three work, or their replacements are
-   chosen.
+   - **Alongside the migration** (owner, 2026-11-23), not before it. The clean-up
+     can happen at any time. An app whose data goes on NFS waits until its dataset
+     exists, or its data is moved twice; so the first apps to move, the pilot
+     included, are ones whose data stays in local Docker volumes.
+2. **`docker-1`**, split in two around B3 (owner, 2026-11-23):
+   - **2a.** The VM from OpenTofu and the base Ansible playbooks (guest agent, LAN
+     cache client) plus Docker, the way `proxy-1` and `agent-1` were built. — gate: a
+     second Ansible run changes nothing.
+   - **2b.** After B3: the NAS wait, the reconcile timer (whatever B3 shows Arcane
+     can do) and the boot order. — gate: rebooting TrueNAS, and cold-booting the
+     whole host, each bring a test container on NFS back without help.
+3. **Arcane**, on `docker-1` after 2a: deploy a test stack from git, give it a secret
+   from OpenBao, back up and restore its local volume. — gate: all three work, or their
+   replacements are chosen.
 4. **Internal names and the home proxy.** Split in two (owner, 2026-11-17), so the
    names and certificates do not depend on whichever DNS resolver is being tried:
    - **4a. Home proxy: Traefik** (owner, 2026-11-17), the one reverse proxy for
@@ -440,7 +459,10 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
        2026-11-22), Traefik's dashboard is behind forward-auth
        (2026-11-21), and so are traefik-log-dashboard and GoAccess
        (`agents/journal/2026-11-21-traefik-log-dashboard.md`). Still open: which log dashboards
-       stay, and Sablier.
+       stay, and Sablier. Both deferred (owner, 2026-11-23): the dashboards are barely
+       used yet, so there is no difference to judge; Sablier waits for the first
+       migrated app that can sleep, and the wakeup part of this step's gate is checked
+       then, not before the pilot.
      - **Names:** one public Cloudflare record, `*.home.<domain>`, pointing at the
        proxy's LAN address, so any resolver that forwards to the internet answers it,
        and over Tailscale through the subnet route (`agents/ideas/edge-and-security-layers.md`,
@@ -482,7 +504,8 @@ A self-hosted git host does not wait for any of B: it can start on the VPS
      whichever resolver answers; a stopped test container on another VM wakes through
      its route; the dashboards ask for Authentik.
    - **4b. Resolver** (to be researched, owner 2026-11-14). Nothing in 4a waits on it.
-5. **Pilot:** one small internal app, end to end, then a new skill
+5. **Pilot:** one small internal app whose data stays in local Docker volumes (see
+   B1), end to end, then a new skill
    in `agents/skills/` (working name `migrate-a-home-app`) with the steps as they were done. — gate: the app
    runs from `apps/homeserver/<app>/`, and its data restore has been tested.
 

@@ -10,16 +10,16 @@ the design (Pi primary, VPS fallback, one cluster) and its measurements live.
 **Status:** running on the Pi
 (`agents/journal/2026-11-23-technitium-oob-1.md`), as the primary node of the
 DNS cluster (the VPS joins as secondary: `apps/vps/technitium/`). The router hands
-it out by DHCP and forwards to it (`lab/systems/router.md`, "DNS").
+it out by DHCP and forwards to it (`lab/systems/notes/router.md`, "DNS through the Pi").
 
 ## Address and sign-in
 
 DNS on port 53 from the home subnet (the Pi's firewall); tailnet clients arrive
-through the router's subnet route. The web console is at `https://dns.home.<zone>`
-through the home proxy, behind Authentik (`homelab-admins`;
-`apps/homeserver/traefik/`), then its own `admin` login, whose password is in
-OpenBao (`kv/homelab/technitium`, field `admin_password`). Directly,
-`http://<oob-1>:5380` from the home subnet still works.
+through the router's subnet route. The web console is at `https://dns.home.<zone>` through the home proxy, behind
+Authentik's forward-auth (`homelab-admins`; `apps/homeserver/traefik/`); then
+"Login with SSO" signs in through Authentik too (OIDC client `dns-console`), so
+there is no second password. The local `admin` (OpenBao `kv/homelab/technitium`)
+stays for the playbook; `http://<oob-1>:5380` works from the home subnet.
 
 ## Files
 

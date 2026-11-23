@@ -489,6 +489,42 @@
            | map(attribute='catalog') | first | default(none)) != dns_cluster_catalog
       changed_when: true
 
+    # Sign-in to the console through Authentik (OIDC client `dns-console`), so the
+    # console needs no password of its own: members of homelab-admins become
+    # Administrators. The local admin stays, for this playbook's API calls.
+    - name: Read the single sign-on settings
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/admin/sso/get"
+        method: POST
+        body_format: form-urlencoded
+        body: { token: "{{ dns_login.json.token }}" }
+      register: dns_sso
+      when: not ansible_check_mode
+
+    - name: Sign in through Authentik
+      ansible.builtin.uri:
+        url: "{{ dns_api }}/admin/sso/set"
+        method: POST
+        body_format: form-urlencoded
+        body:
+          token: "{{ dns_login.json.token }}"
+          ssoEnabled: "true"
+          ssoAuthority: "{{ dns_sso_authority }}"
+          ssoClientId: "{{ lookup('pipe', 'bao kv get -mount=kv -field=sso_client_id homelab/technitium') }}"
+          ssoClientSecret: "{{ lookup('pipe', 'bao kv get -mount=kv -field=sso_client_secret homelab/technitium') }}"
+          ssoAllowSignup: "true"
+          ssoAllowSignupOnlyForMappedUsers: "true"
+          ssoGroupMap: "homelab-admins|Administrators"
+      vars:
+        dns_sso_authority: "https://{{ lookup('pipe', 'bao kv get -mount=kv -field=domain general/authentik') }}/application/o/dns-console/"
+      when:
+        - not ansible_check_mode
+        - not (dns_sso.json.response.ssoEnabled | default(false))
+          or dns_sso.json.response.ssoAuthority != dns_sso_authority
+          or dns_sso.json.response.ssoClientId != lookup('pipe', 'bao kv get -mount=kv -field=sso_client_id homelab/technitium')
+      changed_when: true
+      no_log: true
+
     - name: Sign out of Technitium's API
       ansible.builtin.uri:
         url: "{{ dns_api }}/user/logout"

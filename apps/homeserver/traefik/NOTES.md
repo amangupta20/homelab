@@ -172,5 +172,6 @@ A dashboard for the Technitium DNS cluster (`apps/homeserver/technitium/`), MIT,
   admin user; from the `proxy-1` host it answers 401 (reachable, not trusted); `/api/status` reports it connected
   to `oob-1.dns.home.arpa`, version 15.6.2, cluster initialised. With the token, Technitium refused a settings
   change ("Access was denied"). A browser sign-in by the owner: UNTESTED.
-- **Not yet:** its query-log panels (Resolution, Clients, Query Logs) need one of Technitium's query-logging apps,
-  which the Pi does not run (it would write every query to the SD card).
+- **Query logs:** its query panels (Resolution, Clients, Query Logs) read Technitium's "Query Logs (Sqlite)" app,
+  installed by `ansible/oob.yml` in memory only (two days or 10,000 records), so nothing is written to the Pi's SD
+  card; the cluster copies it to the VPS node (`apps/vps/technitium/`). The logs reset when the container restarts.

@@ -13,6 +13,7 @@ domains before writing anything here (`agents/review/secret-scanning.md`).
 | `blinko/` | note-taking app, the test app for the shared Postgres |
 | `pg-proxy/` | one address for the shared Postgres on the VPS |
 | `pgadmin/`, `cloudbeaver/` | web UIs for the shared Postgres, tailnet only |
+| `technitium/` | the home DNS cluster's secondary node and fallback resolver, tailnet only |
 | `sablier/` | stops idle apps and starts them on the next request |
 
 Each folder's README says its state and how you sign in. Only `hermes-webui/`

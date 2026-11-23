@@ -1,0 +1,22 @@
+# oob-1: Technitium's web console (apps/homeserver/technitium/), behind Authentik's forward-auth (members of
+# homelab-admins only; Authentik application `dns-home`). The console keeps its own admin login behind that.
+# Rendered by ansible/proxy.yml with the zone from OpenBao. The `authentik` middleware and the
+# `authentik-outpost` service are defined in dashboard.yml.
+http:
+  routers:
+    dns:
+      rule: "Host(`dns.home.{{ lab_zone }}`)"
+      entryPoints: [websecure]
+      middlewares: [authentik@file]
+      service: dns-console
+    # The outpost's own paths on this hostname: the sign-in callback and sign-out.
+    dns-outpost:
+      rule: "Host(`dns.home.{{ lab_zone }}`) && PathPrefix(`/outpost.goauthentik.io/`)"
+      priority: 100
+      entryPoints: [websecure]
+      service: authentik-outpost@file
+  services:
+    dns-console:
+      loadBalancer:
+        servers:
+          - url: "http://{{ hostvars['oob-1'].ansible_host }}:5380"

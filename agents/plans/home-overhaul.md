@@ -506,8 +506,11 @@ because other pages cite them.
    - **4b. Resolver: Technitium DNS Server** on two servers (owner, 2026-11-23). Nothing
      in 4a waits on it. **Progress:** the Pi's server runs since 2026-11-23, deployed
      by `ansible/oob.yml` (`apps/homeserver/technitium/`,
-     `agents/journal/2026-11-23-technitium-oob-1.md`); no client uses it yet. Next: the
-     VPS node, the cluster, then DHCP and the tailnet's nameservers. Researched 2026-11-23 by three research agents and checked by
+     `agents/journal/2026-11-23-technitium-oob-1.md`); since then it is the cluster's
+     primary, and the router hands it out first by DHCP with itself second, forwarding
+     its own DNS to the Pi first (owner's interim choice; `lab/systems/notes/router.md`,
+     "DNS through the Pi"). The VPS node is defined in `apps/vps/technitium/`. Next: deploy and join
+     it, put it in DHCP instead of the router, then the tailnet's nameservers. Researched 2026-11-23 by three research agents and checked by
      hand where noted; AdGuard Home, Pi-hole and Blocky were compared and set aside
      for now (owner).
      - **Two servers, same software** (owner, 2026-11-23): `oob-1`, the Raspberry Pi,

@@ -78,6 +78,13 @@ For apps without their own single sign-on, and for view-only dashboards (the sig
   hostname still answers 302, and with a forged `X-Forwarded-Host` the sign-in redirect still names the real host.
 - **To protect another app:** add its provider to the outpost `home` in Authentik, and use `middlewares:
   [authentik]` plus its own `/outpost.goauthentik.io/` router in its route file, as `routes/dashboard.yml.j2` does.
+  The outpost does not pick up a provider added to it at once: on 2026-11-23 `dns.home.<zone>` answered 400 ("no
+  app for hostname", failing closed) until `docker compose restart authentik-outpost`, then 302 to the sign-in.
+- **`dns.home.<zone>`** (2026-11-23): Technitium's console on `oob-1`. Provider `dns-home` copied from
+  `traefik-home` (forward-auth, single application, same flows and mappings), application `dns-home` bound to
+  `homelab-admins`, added to the outpost `home`; created through Authentik's API. Checked with `curl`: without a
+  session `/`, `/index.html` and `/api/user/session/get` answer 302 to Authentik's sign-in, also with a forged
+  `X-authentik-username`; the other dashboards still answer 302. A browser sign-in by the owner works (2026-11-23).
 
 ## Log dashboards
 

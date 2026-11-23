@@ -31,6 +31,33 @@ lists changed, `allowed/export`, `allowed/add` and `allowed/delete`, `zones/list
 throwaway 15.6.2 container on agent-1 before the playbook used it. Upstreams are
 written as `https://<host>/dns-query (<address>)`, so reaching them needs no lookup.
 
+## Sign-in through Authentik
+
+Set up 2026-11-23 at the owner's request ("two logins are annoying"). Technitium
+cannot switch its own login off, so it signs in by OIDC instead.
+
+- **Authentik:** OAuth2 provider and application `dns-console` (confidential; the
+  flows, signing key and the openid, email and profile mappings copied from
+  `langfuse`), redirect URI `https://dns.home.<zone>/sso/callback` (strict), bound
+  to `homelab-admins`. Its client ID and secret are in `kv/homelab/technitium`.
+- **Technitium:** `ansible/oob.yml` sets it by `admin/sso/set`: the authority
+  `https://<authentik>/application/o/dns-console/`, sign-up only for users in a
+  mapped group, and `homelab-admins` mapped to `Administrators`. The callback path
+  `/sso/callback` and the `groups` claim are fixed in its code
+  (`DnsServerCore/DnsWebService.cs`, read 2026-11-23); by default it trusts the
+  proxy's `X-Forwarded-*` headers from private ranges, so the callback is built for
+  `dns.home.<zone>`.
+- **Checked:** `admin/sso/get` shows it on with the group map; `/sso/login`
+  answers 302 to Authentik's `dns-console` client with that callback. A browser
+  sign-in by the owner works, after the grant-types fix below (2026-11-23).
+- **Grant types:** an OAuth2 provider created through Authentik's API (2026.8.5)
+  gets an empty `grant_types` list, and the first browser sign-in failed: Authentik
+  logged "Invalid grant_type for provider" and sent back `invalid_request`, which
+  Technitium shows as "SSO remote failure". Fixed by setting
+  `["authorization_code", "refresh_token"]`, as on `langfuse`; set it when creating
+  the provider.
+- **Cluster:** the SSO settings are part of what the VPS node takes from the Pi.
+
 ## Gotchas
 
 - **Memory cap needs the kernel's memory controller.** Raspberry Pi OS ships with it

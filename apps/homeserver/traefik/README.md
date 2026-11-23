@@ -26,13 +26,13 @@ The zone is not in this public repo: `ansible/proxy.yml` reads it from OpenBao
 | `cache.home.<zone>` | `cache-1`'s Caddy, `http://<cache-1>:80`: Artifact Keeper's web UI | Authentik by OIDC, in each app (`apps/homeserver/artifact-keeper/NOTES.md`, "Sign-in") |
 | `traefik.home.<zone>` | Traefik's own dashboard (`api@internal`), at `/dashboard/` | Authentik forward-auth through the local outpost, `homelab-admins` only (`NOTES.md`, "Forward-auth") |
 | `traefik-logs.home.<zone>`, `goaccess.home.<zone>` | the view-only log dashboards in this stack: traefik-log-dashboard (`log-dashboard:3000`) and GoAccess's report (`goaccess-report:8080`, live updates at `/ws`) | Authentik forward-auth through the local outpost, `homelab-admins` only (`NOTES.md`, "Log dashboards") |
+| `dns.home.<zone>` | Technitium's web console on `oob-1`, `http://<oob-1>:5380` (`apps/homeserver/technitium/`) | Authentik forward-auth through the local outpost, `homelab-admins` only, then the console's "Login with SSO", also through Authentik (`apps/homeserver/technitium/NOTES.md`) |
 
 apt and Docker clients keep using `http://<cache-1>` directly (`lab/inventory/network.md`). Which sign-in an app gets, how the names and certificate work, the token's scope, a browser gotcha and phase 2: `NOTES.md`.
 
-To add an app: copy `routes/cache.yml.j2`, change the router and service names,
-the hostname and the address, and run `ansible-playbook proxy.yml`. To remove one,
-delete its file here and run the playbook: it deletes every route file on `proxy-1`
-that no template produces (tested with a planted file; the rest kept serving).
+To add an app: copy `routes/cache.yml.j2` (or `routes/dns.yml.j2` for forward-auth), change the router and
+service names, the hostname and the address, and run `ansible-playbook proxy.yml`. To remove one, delete its file
+here and run the playbook: it deletes every route file on `proxy-1` that no template produces (tested).
 
 ## Secrets and data
 

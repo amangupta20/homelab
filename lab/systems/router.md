@@ -33,12 +33,12 @@ Read on 2026-11-13 over SSH (`uci show`, `iw dev`, `iwinfo`, `ifstatus`,
   (`/etc/openwrt_release`, `uname -r`, 2026-11-14). The device is not in
   official OpenWrt yet: pull requests `openwrt/openwrt` #26498 and #26551
   were both open on 2026-11-14 (`gh pr view`), and neither publishes images.
-- **LAN:** `10.22.33.1/24`, DHCP from dnsmasq, leases 12 hours. Addresses are
-  in `lab/inventory/network.md`.
-- **WAN:** the `wan` port takes a private address by DHCP from the ISP
-  router. The firewall masquerades LAN traffic and rejects everything
-  arriving on the WAN side. The ISP uses carrier-grade NAT, so nothing is
-  forwarded inward (owner, 2026-11-13).
+- **LAN:** `10.22.33.1/24`, DHCP from dnsmasq, leases 12 hours (addresses:
+  `lab/inventory/network.md`). DNS: the Pi first, then the router, which forwards
+  to the Pi first (`lab/systems/notes/router.md`, "DNS through the Pi").
+- **WAN:** the `wan` port takes a private address by DHCP from the ISP router. The
+  firewall masquerades LAN traffic and rejects everything arriving on the WAN side.
+  The ISP uses carrier-grade NAT, so nothing is forwarded inward (owner, 2026-11-13).
 - **IPv6:** on since 2026-11-13. The ISP router does not delegate a prefix
   (`ifstatus wan6` shows none), so the router runs in relay mode: `odhcpd`
   passes the ISP router's address announcements and neighbour discovery

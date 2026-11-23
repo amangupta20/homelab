@@ -130,3 +130,25 @@ Measured on the router on 2026-11-13 (`iw dev <radio> scan`, `logread`).
 - **WPA2-PSK, not mixed WPA2/WPA3:** with the mixed mode a phone alternated
   between the two sign-in methods while moving between the radios and
   reconnected repeatedly (`logread`, 2026-11-13).
+
+## DNS through the Pi
+
+Set on 2026-11-23 over SSH (`uci`), with the previous file kept as
+`/etc/config/dhcp.bak-2026-11-23`. The owner chose the Pi plus the router as the
+two DHCP servers until the VPS node exists (`agents/plans/home-overhaul.md`, B4b).
+
+- `uci add_list dhcp.lan.dhcp_option='6,10.22.33.252,10.22.33.1'`: the Pi first,
+  the router second. Clients take it at their next lease renewal (leases are 12
+  hours).
+- `dhcp.@dnsmasq[0]`: `noresolv=1` (no longer reads the ISP's servers from
+  `/tmp/resolv.conf.d/resolv.conf.auto`), `strictorder=1`, and `server` set to
+  the Pi, then the ISP router. The generated config shows `strict-order`,
+  `no-resolv` and the two `server=` lines in that order.
+- Tested the same day with `dig @10.22.33.1`: `example.com` answered,
+  `ads.doubleclick.net` came back empty (blocked by the Pi), `cache.home.<zone>`
+  gave the proxy. With the Pi's container stopped, two queries timed out after
+  15 seconds each and the third answered through the ISP in 45 ms; with it back,
+  blocking returned at once.
+- The ISP router's IPv6 resolvers are no longer used by the router itself; LAN
+  devices may still learn them from the relayed IPv6 announcements (B4b, "IPv6
+  gap").

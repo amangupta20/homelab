@@ -503,7 +503,59 @@ because other pages cite them.
      — gate: a test name has a valid certificate on the LAN and over Tailscale,
      whichever resolver answers; a stopped test container on another VM wakes through
      its route; the dashboards ask for Authentik.
-   - **4b. Resolver** (to be researched, owner 2026-11-14). Nothing in 4a waits on it.
+   - **4b. Resolver: Technitium DNS Server** on two servers (owner, 2026-11-23). Nothing
+     in 4a waits on it. Researched 2026-11-23 by three research agents and checked by
+     hand where noted; AdGuard Home, Pi-hole and Blocky were compared and set aside
+     for now (owner).
+     - **Two servers, same software:** a container in the lab as primary (which VM is
+       decided later) and `oob-1`, the Raspberry Pi, as fallback; the Pi first. Kept in
+       step by Technitium's own clustering (since v14, changelog).
+     - **Both must answer the same:** a client stays on whichever server answered last
+       until that one fails (`man systemd-resolved.service`, read 2026-11-23), so the
+       fallback carries real traffic for hours. Blocklists, allowlist and local records
+       are identical on both.
+     - **Blocklists** (owner): HaGeZi Ultimate plus HaGeZi Threat Intelligence Feeds
+       (TIF) Medium, about 570,000 entries (counted from the list files, 2026-11-23).
+       Things that break go into an allowlist kept in this repo, so both servers get
+       it. The full TIF list (about 2 million entries) is too big for the Pi; see the
+       measurements below.
+     - **Measured on 2026-11-23** in a throwaway Technitium 15.6.2 container on
+       `agent-1`, capped at 900 MB to match the Pi (x86, so a guide for the Pi, not
+       its own figure). Memory the process cannot give back (anonymous):
+       Ultimate alone 82 MB; Ultimate + TIF Medium 252 MB after loading and 345 MB at
+       the peak of a forced list update (319 MB after it); Ultimate + full TIF 670 MB,
+       not released when TIF was removed. The Pi had 732 MB available (`free -m`,
+       same day). Whether daily list updates keep raising memory was not tested; if
+       they do, .NET's `DOTNET_GCHeapHardLimit` caps it (**UNTESTED**).
+     - **Upstream:** DNS over HTTPS to public resolvers; cached answers came back in
+       about 1.4 ms and uncached ones in about 90 ms in the same test (dnsperf, one
+       client, not a benchmark).
+     - **Local records:** `*.home.<domain>` answered locally with the proxy's address,
+       so internal names work without the internet.
+     - **LAN clients** get both servers' addresses from the router's DHCP and ask them
+       directly, so the query log shows each device; through the router, every query
+       would show the router.
+     - **IPv6 gap to close:** the router relays the ISP router's IPv6 announcements
+       (`uci show dhcp`: `ra='relay'`, 2026-11-23), so clients may also learn the
+       ISP's IPv6 resolvers and skip the blocklists. Not yet seen on a client.
+     - **Tailnet clients** reach the resolvers through the router's subnet route, and
+       arrive as the router's address (the router's Tailscale translates source
+       addresses, `NoSNAT: false`, 2026-11-23), so the log cannot tell them apart.
+       Open for the owner: blocking away from home through Tailscale's "override
+       local DNS" (all DNS on those devices fails while home is down), or split DNS
+       for `home.<domain>` only (no blocking away from home).
+     - **Dashboard, to try:** Resolvr (`bassem-elsodany/resolvr-dns-dashboard`, MIT,
+       v1.3.2 from 2026-10-12, GitHub), a read-mostly dashboard on Technitium's API with
+       cluster views, behind Authentik with its own narrow API token. Technitium's own
+       console stays for settings. The repo, not either UI, is where lists live.
+     - **The Pi:** Technitium runs on arm64 (Docker image for `arm64` and `arm/v7`,
+       Docker Hub, 2026-11-23; the native installer fetches .NET 10 from Microsoft,
+       which the LAN cache does not proxy yet). Its firewall opens DNS to the LAN, which
+       changes it from a single-purpose recovery box (`lab/systems/oob.md`). The Pi and
+       its card are rebuilt from code, so a dead card is a reflash (owner, 2026-11-23).
+     — gate: both servers answer the same for a blocked name, an allowlisted name and a
+     `home.<domain>` name; stopping one leaves LAN clients resolving; the Pi stays
+     under its memory budget through a week of daily list updates.
 5. **Pilot:** one small internal app whose data stays in local Docker volumes (see
    B1), end to end, then a new skill
    in `agents/skills/` (working name `migrate-a-home-app`) with the steps as they were done. — gate: the app
@@ -571,7 +623,8 @@ move before its public route exists.
 ## Open, for the owner
 
 - Where the Pigsty primary sits (after D1).
-- Which DNS resolver (B4b).
+- DNS away from home: blocking through Tailscale's override, or split DNS for home
+  names only (B4b). The resolver itself is chosen: Technitium (2026-11-23).
 - Badger or an Authentik outpost (C2).
 - Whether to keep BorgWarehouse once restic or Kopia handle offsite copies.
 - The change to `agents/decisions/backup-tiers.md` this design needs (proposed separately).

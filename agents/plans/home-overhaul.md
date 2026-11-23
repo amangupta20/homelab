@@ -509,10 +509,11 @@ because other pages cite them.
      `agents/journal/2026-11-23-technitium-oob-1.md`); since then it is the cluster's
      primary. The VPS node (`apps/vps/technitium/`) runs and joined the cluster, and the
      router hands out the Pi then the VPS by DHCP (`lab/systems/notes/router.md`, "DNS
-     through the Pi"; `agents/journal/2026-11-23-deploy-technitium-vps.md`). The cluster
-     works one way: the Pi cannot reach the VPS (its own Tailscale drops replies from
-     tailnet addresses), so the VPS pulls changes on its timers, within 15 minutes;
-     fixing that direction is open for the owner. Next: the tailnet's nameservers. Researched 2026-11-23 by three research agents and checked by
+     through the Pi"; `agents/journal/2026-11-23-deploy-technitium-vps.md`). Both nodes
+     reach each other since the Pi's Tailscale stopped hooking its own firewall rules
+     (`lab/systems/notes/oob.md`, "Tailscale's firewall"), and the tailnet uses both as
+     its nameservers with override on (owner, 2026-11-23). Query logs are kept in
+     memory, two days at most. Still open: the IPv6 relay gap. Researched 2026-11-23 by three research agents and checked by
      hand where noted; AdGuard Home, Pi-hole and Blocky were compared and set aside
      for now (owner).
      - **Two servers, same software** (owner, 2026-11-23): `oob-1`, the Raspberry Pi,
